@@ -148,17 +148,14 @@ namespace Qweree.Authentication.WebApi
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree.Authentication.WebApi v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Type down web api v1"));
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
