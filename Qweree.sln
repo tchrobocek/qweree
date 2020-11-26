@@ -1,8 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.MongoDb", "src\Qweree.MongoDb\Qweree.MongoDb.csproj", "{C6B0D71B-4374-48E2-880E-2140E1C6EC10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
