@@ -1,0 +1,20 @@
+using System;
+using DevOne.Security.Cryptography.BCrypt;
+using Qweree.Authentication.WebApi.Domain.Identity;
+
+namespace Qweree.Authentication.WebApi.Test.Fixture.Factories
+{
+    public static class UserFactory
+    {
+        public const string Password = "pwd";
+        public static User CreateDefault()
+        {
+            return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com", BCryptHelper.HashPassword(Password, Settings.Security.PasswordKey), Array.Empty<string>(), DateTime.UtcNow, DateTime.UtcNow);
+        }
+
+        public static User CreateAdmin()
+        {
+            return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com", BCryptHelper.HashPassword(Password, Settings.Security.PasswordKey), new[] {"UserUpdate"}, DateTime.UtcNow, DateTime.UtcNow);
+        }
+    }
+}

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DevOne.Security.Cryptography.BCrypt;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.WebApi.Domain.Identity;
-using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 

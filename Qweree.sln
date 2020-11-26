@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Utils", "src\Qweree.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.AspNet", "src\Qweree.AspNet\Qweree.AspNet.csproj", "{33F4CFB8-E3FE-4697-A722-400D800C029C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.WebApi.Test", "src\Qweree.Authentication.WebApi.Test\Qweree.Authentication.WebApi.Test.csproj", "{496B29DC-4D37-4C61-8A04-0550C900F8DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.TestUtils", "src\Qweree.TestUtils\Qweree.TestUtils.csproj", "{B458B3A7-ADDE-411F-A7EA-8B1481CFED37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496B29DC-4D37-4C61-8A04-0550C900F8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496B29DC-4D37-4C61-8A04-0550C900F8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496B29DC-4D37-4C61-8A04-0550C900F8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496B29DC-4D37-4C61-8A04-0550C900F8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B458B3A7-ADDE-411F-A7EA-8B1481CFED37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B458B3A7-ADDE-411F-A7EA-8B1481CFED37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B458B3A7-ADDE-411F-A7EA-8B1481CFED37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B458B3A7-ADDE-411F-A7EA-8B1481CFED37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
