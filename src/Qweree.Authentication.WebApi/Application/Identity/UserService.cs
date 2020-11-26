@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DevOne.Security.Cryptography.BCrypt;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
@@ -13,13 +12,11 @@ namespace Qweree.Authentication.WebApi.Application.Identity
     {
         private readonly IDateTimeProvider _datetimeProvider;
         private readonly IUserRepository _userRepository;
-        private readonly string _passwordSalt;
 
-        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, string passwordSalt)
+        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository)
         {
             _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
-            _passwordSalt = passwordSalt;
         }
 
         public async Task<Response<User>> CreateUserAsync(CreateUserInput createUserInput, CancellationToken cancellationToken = new CancellationToken())
@@ -47,7 +44,7 @@ namespace Qweree.Authentication.WebApi.Application.Identity
                 return string.Empty;
             }
 
-            return BCryptHelper.HashPassword(password, _passwordSalt);
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -21,7 +20,6 @@ using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
-using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Mongo;
 using Qweree.Utils;
 
@@ -114,9 +112,6 @@ namespace Qweree.Authentication.WebApi
                 return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
             });
 
-            // Security
-            services.Configure<SecurityConfigurationDo>(Configuration.GetSection("Security"));
-
             // Authentication
             services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
             services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -137,22 +132,16 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton(p =>
             {
-                var passwordSalt = p.GetRequiredService<IOptions<SecurityConfigurationDo>>().Value.PasswordKey;
                 return new UserService(p.GetRequiredService<IDateTimeProvider>(),
-                    p.GetRequiredService<IUserRepository>(), passwordSalt ?? "");
+                    p.GetRequiredService<IUserRepository>());
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Type down web api v1"));
-            }
-
-            app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree OAUTH v1"));
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

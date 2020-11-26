@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DevOne.Security.Cryptography.BCrypt;
 using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.WebApi.Domain.Authentication;
@@ -140,7 +139,7 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
 
         private bool ValidatePassword(string password, string hashed)
         {
-            return BCryptHelper.CheckPassword(password, hashed);
+            return BCrypt.Net.BCrypt.Verify(password, hashed);
         }
     }
 }

@@ -1,9 +1,9 @@
 conn = new Mongo();
-db = conn.getDB("type_down");
+db = conn.getDB("type_down_auth");
 db.users.insert({
     "_id": UUID("8caa1d0c-401d-42d7-a726-943a30b73373"),
     "Username": "admin",
-    "Password": "$2a$06$A.ioEWhhL4a.S8gSeeF73enq.6k5nw227OkdZNClrNlONq0wKYXo2",
+    "Password": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
     "ContactEmail": "admin@admin.com",
     "FullName": "Admin Adminowitch",
     "Roles": ["UserUpdate"],

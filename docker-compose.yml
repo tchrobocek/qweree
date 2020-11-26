@@ -7,3 +7,16 @@ services:
       - "27017:27017"
     volumes:
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+  qweree-auth:
+    depends_on:
+      - qweree-db
+    build:
+      dockerfile: ./docker/Qweree.Authentication.WebApi/.Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      Database__ConnectionString: "mongodb://qweree-db:27017"
+      Database__Database: "type_down_auth"
