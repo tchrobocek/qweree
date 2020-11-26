@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.MongoDb", "src\Qweree.MongoDb\Qweree.MongoDb.csproj", "{C6B0D71B-4374-48E2-880E-2140E1C6EC10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.WebApi", "src\Qweree.Authentication.WebApi\Qweree.Authentication.WebApi.csproj", "{B4764376-505F-401F-8FB9-E9C6931352C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Utils", "src\Qweree.Utils\Qweree.Utils.csproj", "{B9DA49B9-DFF0-47DF-A1E3-C82202FF65E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.AspNet", "src\Qweree.AspNet\Qweree.AspNet.csproj", "{33F4CFB8-E3FE-4697-A722-400D800C029C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6B0D71B-4374-48E2-880E-2140E1C6EC10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4764376-505F-401F-8FB9-E9C6931352C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4764376-505F-401F-8FB9-E9C6931352C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4764376-505F-401F-8FB9-E9C6931352C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4764376-505F-401F-8FB9-E9C6931352C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9DA49B9-DFF0-47DF-A1E3-C82202FF65E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9DA49B9-DFF0-47DF-A1E3-C82202FF65E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9DA49B9-DFF0-47DF-A1E3-C82202FF65E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9DA49B9-DFF0-47DF-A1E3-C82202FF65E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F4CFB8-E3FE-4697-A722-400D800C029C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
