@@ -11,7 +11,7 @@ namespace Qweree.Validator.Test.Constraints
         {
             var validator = new EmailConstraintValidator();
             var builder = new ValidationBuilder();
-            await validator.ValidateAsync(new ValidationContext("", ""), new EmailConstraint("", ""), builder);
+            await validator.ValidateAsync(new ValidationContext("", "", null), new EmailConstraint("", ""), builder);
 
             Assert.Single(builder.Build().Errors);
         }
@@ -21,7 +21,7 @@ namespace Qweree.Validator.Test.Constraints
         {
             var validator = new EmailConstraintValidator();
             var builder = new ValidationBuilder();
-            await validator.ValidateAsync(new ValidationContext("b", ""), new EmailConstraint("", ""), builder);
+            await validator.ValidateAsync(new ValidationContext("b", "", null), new EmailConstraint("", ""), builder);
 
             Assert.Single(builder.Build().Errors);
         }

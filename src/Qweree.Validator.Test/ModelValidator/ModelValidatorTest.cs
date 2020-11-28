@@ -65,7 +65,7 @@ namespace Qweree.Validator.Test.ModelValidator
                 var item = new Model(1);
                 Assert.True(modelValidator.Supports(item.GetType()));
                 var builder = new ValidationBuilder();
-                await modelValidator.ValidateAsync(new ValidationContext("", item), builder);
+                await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder);
 
                 var result = builder.Build();
                 Assert.Single(result.Errors);
@@ -75,7 +75,7 @@ namespace Qweree.Validator.Test.ModelValidator
                 var item = new Model(5);
                 Assert.True(modelValidator.Supports(item.GetType()));
                 var builder = new ValidationBuilder();
-                await modelValidator.ValidateAsync(new ValidationContext("", item), builder);
+                await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder);
                 Assert.Empty(builder.Build().Errors);
             }
         }
@@ -100,7 +100,7 @@ namespace Qweree.Validator.Test.ModelValidator
             var item = new Model(1);
             var builder = new ValidationBuilder();
             await Assert.ThrowsAsync<ArgumentException>(async () =>
-                await modelValidator.ValidateAsync(new ValidationContext("", item), builder));
+                await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder));
         }
     }
 }

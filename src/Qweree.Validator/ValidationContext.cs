@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Qweree.Validator
 {
     /// <summary>
@@ -10,9 +12,11 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="path">Validation subject path.</param>
         /// <param name="subject">Validation subject.</param>
-        public ValidationContext(string path, object subject)
+        /// <param name="memberInfo">Validation subject member info.</param>
+        public ValidationContext(string path, object subject, MemberInfo? memberInfo)
         {
             Subject = subject;
+            MemberInfo = memberInfo;
             Path = path;
         }
 
@@ -20,6 +24,8 @@ namespace Qweree.Validator
         ///     Validation subject.
         /// </summary>
         public object Subject { get; }
+
+        public MemberInfo? MemberInfo { get; }
 
         /// <summary>
         ///     Subject path.
@@ -38,7 +44,8 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="path">Validation subject path.</param>
         /// <param name="subject">Validation subject.</param>
-        public ValidationContext(string path, TModelType subject) : base(path, subject!)
+        /// <param name="memberInfo">Validation subject member info.</param>
+        public ValidationContext(string path, TModelType subject, MemberInfo? memberInfo) : base(path, subject!, memberInfo)
         {
             Subject = subject;
         }

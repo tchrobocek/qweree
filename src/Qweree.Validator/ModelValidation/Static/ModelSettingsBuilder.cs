@@ -73,7 +73,7 @@ namespace Qweree.Validator.ModelValidation.Static
         /// <param name="propertySettingsExpression">Property settings expression.</param>
         /// <returns>Property settings builder.</returns>
         /// <exception cref="ArgumentException">Thrown when property is already mapped.</exception>
-        public PropertySettingsBuilder AddProperty(Expression<Func<TModelType, object>> propertySettingsExpression)
+        public PropertySettingsBuilder AddProperty(Expression<Func<TModelType, object?>> propertySettingsExpression)
         {
             PropertyInfo propertyInfo;
 

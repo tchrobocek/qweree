@@ -21,7 +21,7 @@ namespace Qweree.Validator
                 throw new InvalidCastException(
                     @$"Subject is expected to be type of ""{typeof(TModelType)}"" but got ""{validationContext.Subject.GetType()}"".");
 
-            await ValidateAsync(new ValidationContext<TModelType>(validationContext.Path, typedSubject), builder)
+            await ValidateAsync(new ValidationContext<TModelType>(validationContext.Path, typedSubject, validationContext.MemberInfo), builder)
                 .ConfigureAwait(false);
         }
 

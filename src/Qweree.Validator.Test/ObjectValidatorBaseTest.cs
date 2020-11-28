@@ -16,7 +16,7 @@ namespace Qweree.Validator.Test
 
             var validator = mock.Object;
             Assert.True(validator.Supports(subjectType));
-            await validator.ValidateAsync(new ValidationContext("", subject), new ValidationBuilder());
+            await validator.ValidateAsync(new ValidationContext("", subject, null), new ValidationBuilder());
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Qweree.Validator.Test
             Assert.False(validator.Supports(subjectType));
 
             await Assert.ThrowsAsync<InvalidCastException>(async () =>
-                await validator.ValidateAsync(new ValidationContext("", subject), new ValidationBuilder()));
+                await validator.ValidateAsync(new ValidationContext("", subject, null), new ValidationBuilder()));
         }
     }
 }

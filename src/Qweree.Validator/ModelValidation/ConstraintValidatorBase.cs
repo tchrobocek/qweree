@@ -25,7 +25,7 @@ namespace Qweree.Validator.ModelValidation
             if (!(constraint is TConstraintType typedConstraint))
                 throw new InvalidCastException(@$"The constraint should be type of ""{typeof(TConstraintType)}"".");
 
-            return ValidateAsync(new ValidationContext<TSubjectType>(validationContext.Path, typedValue),
+            return ValidateAsync(new ValidationContext<TSubjectType>(validationContext.Path, typedValue, validationContext.MemberInfo),
                 typedConstraint, builder);
         }
 

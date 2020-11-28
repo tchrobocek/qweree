@@ -55,7 +55,7 @@ namespace Qweree.Validator
 
             foreach (var validator in matching)
             {
-                await validator.ValidateAsync(new ValidationContext(path, subject), builder)
+                await validator.ValidateAsync(new ValidationContext(path, subject, null), builder)
                     .ConfigureAwait(false);
             }
         }
