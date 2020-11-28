@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.Sdk",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Sdk", "src\Qweree.Sdk\Qweree.Sdk.csproj", "{426F6D2E-8C99-4CAD-B3B1-22FCFDA810A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.Sdk.Test", "src\Qweree.Authentication.Sdk.Test\Qweree.Authentication.Sdk.Test.csproj", "{E5D992EE-EA07-4F4E-A813-1F5529E69AA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{426F6D2E-8C99-4CAD-B3B1-22FCFDA810A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{426F6D2E-8C99-4CAD-B3B1-22FCFDA810A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{426F6D2E-8C99-4CAD-B3B1-22FCFDA810A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5D992EE-EA07-4F4E-A813-1F5529E69AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5D992EE-EA07-4F4E-A813-1F5529E69AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5D992EE-EA07-4F4E-A813-1F5529E69AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5D992EE-EA07-4F4E-A813-1F5529E69AA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
