@@ -95,7 +95,7 @@ namespace Qweree.Authentication.WebApi
                     ValidIssuer = AuthenticationService.Issuer,
                     ValidateAudience = true,
                     ValidAudience = AuthenticationService.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:PasswordKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:AccessTokenKey"])),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };

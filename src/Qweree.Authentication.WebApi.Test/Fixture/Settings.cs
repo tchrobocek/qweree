@@ -5,7 +5,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
         public static class Database
         {
             public const string ConnectionString = "mongodb://localhost:27017";
-            public const string DatabaseName = "type_down_auth_test";
+            public const string DatabaseName = "qweree_auth_test";
         }
 
         public static class Authentication
