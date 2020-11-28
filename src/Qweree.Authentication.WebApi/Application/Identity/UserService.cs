@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
+using Qweree.Validator;
 
 namespace Qweree.Authentication.WebApi.Application.Identity
 {
@@ -12,18 +14,24 @@ namespace Qweree.Authentication.WebApi.Application.Identity
     {
         private readonly IDateTimeProvider _datetimeProvider;
         private readonly IUserRepository _userRepository;
+        private readonly IValidator _validator;
 
-        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository)
+        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator)
         {
             _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
+            _validator = validator;
         }
 
-        public async Task<Response<User>> CreateUserAsync(CreateUserInput createUserInput, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput, CancellationToken cancellationToken = new CancellationToken())
         {
-            var password = EncryptPassword(createUserInput.Password);
-            var user = new User(Guid.NewGuid(), createUserInput.Username, createUserInput.FullName, createUserInput.ContactEmail,
-                password, createUserInput.Roles, _datetimeProvider.UtcNow, _datetimeProvider.UtcNow);
+            var validationResult = await _validator.ValidateAsync(userCreateInput);
+            if (validationResult.HasFailed)
+                return Response.Fail<User>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
+
+            var password = EncryptPassword(userCreateInput.Password);
+            var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName, userCreateInput.ContactEmail,
+                password, userCreateInput.Roles, _datetimeProvider.UtcNow, _datetimeProvider.UtcNow);
 
             try
             {

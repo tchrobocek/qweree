@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 
 namespace Qweree.Authentication.WebApi.Application.Identity
 {
-    public class CreateUserInput
+    public class UserCreateInput
     {
-        public CreateUserInput(string username, string contactEmail, string fullName, string password, IEnumerable<string> roles)
+        public UserCreateInput(string username, string contactEmail, string fullName, string password, IEnumerable<string> roles)
         {
             Username = username;
             ContactEmail = contactEmail;

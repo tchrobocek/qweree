@@ -10,5 +10,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
+        <ProjectReference Include="..\Qweree.Validator\Qweree.Validator.csproj" />
     </ItemGroup>
 </Project>

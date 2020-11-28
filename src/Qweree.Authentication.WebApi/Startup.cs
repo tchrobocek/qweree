@@ -18,10 +18,15 @@ using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Application.Identity;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
+using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Utils;
+using Qweree.Validator;
+using Qweree.Validator.Extensions;
+using Qweree.Validator.ModelValidation;
 
 namespace Qweree.Authentication.WebApi
 {
@@ -100,7 +105,24 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "UserUpdate"));
             });
 
-            
+            // Validator
+            services.AddSingleton<IConstraintValidator, PasswordConstraintValidator>();
+            services.AddSingleton<IConstraintValidator, UniqueConstraintValidator>();
+            services.AddSingleton<IValidator>(p =>
+            {
+                var validatorBuilder = new ValidatorBuilder();
+                validatorBuilder.WithModelValidator();
+                validatorBuilder.WithStaticModelSettings(ValidationMap.ConfigureValidator);
+                validatorBuilder.WithAttributeModelSettings(typeof(Program).Assembly);
+                validatorBuilder.WithDefaultConstraints();
+
+                var validators = p.GetServices<IConstraintValidator>();
+                foreach (var validator in validators)
+                    validatorBuilder.WithConstraintValidator(validator);
+
+                return validatorBuilder.Build();
+            });
+
             // _
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
@@ -130,10 +152,11 @@ namespace Qweree.Authentication.WebApi
             services.AddScoped(p => p.GetRequiredService<HttpContext>().User);
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
             services.AddSingleton(p =>
             {
                 return new UserService(p.GetRequiredService<IDateTimeProvider>(),
-                    p.GetRequiredService<IUserRepository>());
+                    p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>());
             });
         }
 

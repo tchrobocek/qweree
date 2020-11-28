@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
 {
-    public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository
+    public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository, IUniqueConstraintValidatorRepository
     {
         public UserRepository(MongoContext context) : base("users", context)
         {
@@ -26,6 +27,14 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
                 throw new DocumentNotFoundException(@$"User ""{username}"" was not found.");
 
             return user;
+        }
+
+        public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var user = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
+                .FirstOrDefault();
+
+            return user != null;
         }
     }
 }
