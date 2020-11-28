@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.WebApi.Web.Identity
+namespace Qweree.Authentication.Sdk.Identity
 {
     public class UserCreateInputDto
     {

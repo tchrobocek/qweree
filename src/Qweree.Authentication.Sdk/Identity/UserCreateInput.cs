@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.WebApi.Application.Identity
+namespace Qweree.Authentication.Sdk.Identity
 {
     public class UserCreateInput
     {

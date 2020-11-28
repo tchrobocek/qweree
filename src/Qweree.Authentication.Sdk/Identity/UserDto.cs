@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.WebApi.Web.Identity
+namespace Qweree.Authentication.Sdk.Identity
 {
     public class UserDto
     {

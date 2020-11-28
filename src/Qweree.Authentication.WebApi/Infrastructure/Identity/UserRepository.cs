@@ -6,6 +6,7 @@ using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
+using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
 {

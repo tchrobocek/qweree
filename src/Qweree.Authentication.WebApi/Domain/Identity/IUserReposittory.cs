@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Persistence;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity

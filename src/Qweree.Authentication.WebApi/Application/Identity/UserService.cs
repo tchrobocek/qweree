@@ -3,10 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
+using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Application.Identity
 {

@@ -1,3 +1,4 @@
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Application.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;

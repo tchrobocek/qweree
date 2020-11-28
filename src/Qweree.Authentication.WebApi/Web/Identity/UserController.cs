@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Application.Identity;
-using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Sdk;
+using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Web.Identity
 {
