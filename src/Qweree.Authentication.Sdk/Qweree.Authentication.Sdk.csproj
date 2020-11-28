@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Qweree.Sdk\Qweree.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
     </ItemGroup>
 

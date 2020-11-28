@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Moq;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk;
+using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;

@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.Sdk
+namespace Qweree.Authentication.Sdk.Authentication
 {
     public class RefreshTokenGrantInput
     {

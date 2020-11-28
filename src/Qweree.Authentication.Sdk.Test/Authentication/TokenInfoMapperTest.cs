@@ -1,8 +1,9 @@
 using System;
 using DeepEqual.Syntax;
+using Qweree.Authentication.Sdk.Authentication;
 using Xunit;
 
-namespace Qweree.Authentication.Sdk.Test
+namespace Qweree.Authentication.Sdk.Test.Authentication
 {
     [Trait("Category", "Unit test")]
     public class TokenInfoMapperTest
