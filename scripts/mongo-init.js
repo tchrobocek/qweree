@@ -1,5 +1,5 @@
 conn = new Mongo();
-db = conn.getDB("type_down_auth");
+db = conn.getDB("qweree_auth");
 db.users.insert({
     "_id": UUID("8caa1d0c-401d-42d7-a726-943a30b73373"),
     "Username": "admin",

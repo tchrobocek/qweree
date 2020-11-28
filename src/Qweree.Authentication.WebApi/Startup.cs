@@ -50,9 +50,18 @@ namespace Qweree.Authentication.WebApi
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("liberal", builder =>
+                {
+                    builder.AllowAnyHeader()
+                        .AllowAnyHeader()
+                        .AllowAnyOrigin();
+                });
+            });
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.TypeDown.WebApi", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Authentication.WebApi", Version = "v1"});
                 options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -153,18 +162,16 @@ namespace Qweree.Authentication.WebApi
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
-            services.AddSingleton(p =>
-            {
-                return new UserService(p.GetRequiredService<IDateTimeProvider>(),
-                    p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>());
-            });
+            services.AddSingleton(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
+                p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree OAUTH v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree OAuth2 v1 api"));
+            app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
