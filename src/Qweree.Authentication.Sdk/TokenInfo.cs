@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.WebApi.Domain.Authentication
+namespace Qweree.Authentication.Sdk
 {
     public class TokenInfo
     {

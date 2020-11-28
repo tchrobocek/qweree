@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Qweree.AspNet.Application;
+using Qweree.Authentication.Sdk;
 using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -11,6 +12,8 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.Mongo.Exception;
 using Qweree.TestUtils;
 using Xunit;
+using PasswordGrantInput = Qweree.Authentication.WebApi.Application.Authentication.PasswordGrantInput;
+using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Application.Authentication.RefreshTokenGrantInput;
 
 namespace Qweree.Authentication.WebApi.Test.Application.Authentication
 {
