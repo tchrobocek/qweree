@@ -1,4 +1,4 @@
-namespace Qweree.AspNet.Web
+﻿namespace Qweree.Sdk
 {
     public class ErrorResponseDto
     {

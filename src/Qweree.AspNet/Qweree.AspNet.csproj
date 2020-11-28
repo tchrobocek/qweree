@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Qweree.Sdk\Qweree.Sdk.csproj" />
+    </ItemGroup>
+
 </Project>

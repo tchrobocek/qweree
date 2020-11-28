@@ -7,6 +7,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.WebApi.Application.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Identity
 {
@@ -29,7 +30,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [HttpPost]
         [Authorize(Policy = "UserCreate")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUserActionAsync(UserCreateInputDto input)
         {
             var serviceInput = new UserCreateInput(input.Username ?? "", input.ContactEmail ?? "",
