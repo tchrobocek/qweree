@@ -17,6 +17,7 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.WebApi.Application.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
+using Qweree.Cdn.WebApi.Infrastructure.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Mongo;
 using Qweree.Utils;
@@ -100,6 +101,7 @@ namespace Qweree.Cdn.WebApi
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             // Session
+            services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
             services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
