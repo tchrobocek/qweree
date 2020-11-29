@@ -24,14 +24,14 @@ namespace Qweree.Cdn.WebApi.Test.Application.Storage
 
             var stream = new MemoryStream();
             const string slug = "test/object/slug";
-            var input = new StoreObjectInput(slug, MediaTypeNames.Application.Octet, stream);
+            var input = new StoreObjectInput(slug, MediaTypeNames.Application.Octet, 5, stream);
             var response = await service.StoreObjectAsync(input);
 
             Assert.Equal(ResponseStatus.Ok, response.Status);
             var storedObject = response.Payload ?? throw new ArgumentNullException();
 
             Assert.Equal(new[] {"test", "object", "slug"}, storedObject.Descriptor.Slug);
-            Assert.Equal(0, storedObject.Descriptor.Size);
+            Assert.Equal(5, storedObject.Descriptor.Size);
             Assert.Equal(MediaTypeNames.Application.Octet, storedObject.Descriptor.MediaType);
             Assert.Same(storedObject.Stream, stream);
         }

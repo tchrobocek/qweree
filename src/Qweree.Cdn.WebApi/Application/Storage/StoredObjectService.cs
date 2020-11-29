@@ -21,7 +21,7 @@ namespace Qweree.Cdn.WebApi.Application.Storage
         public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input, CancellationToken cancellationToken = new CancellationToken())
         {
             var slug = input.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
-            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Stream.Length, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
+            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Length, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             var storedObject = new StoredObject(descriptor, input.Stream);
 
