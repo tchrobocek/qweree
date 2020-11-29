@@ -9,5 +9,7 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
     {
         Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor,
             CancellationToken cancellationToken = new CancellationToken());
+        Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,
+            CancellationToken cancellationToken = new CancellationToken());
     }
 }

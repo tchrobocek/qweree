@@ -21,15 +21,19 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
         }
 
         [Fact]
-        public async Task TestStore()
+        public async Task TestStoreAndRead()
         {
             var descriptor =
                 StoredObjectDescriptorFactory.CreateDefault("test/slug/1", MediaTypeNames.Application.Octet, 0L);
 
-            await using var stream = new MemoryStream();
+            var bytes = new byte[] {0x1, 0x2, 0x3};
+            await using var stream = new MemoryStream(bytes);
             await _fileStorage.StoreAsync(stream, descriptor);
 
-            Assert.True(File.Exists(Path.Combine(_tempFolder.Path, "test", "slug", "1")));
+            await using var actualStream = await _fileStorage.ReadAsync(descriptor);
+            var actualBytes = new BinaryReader(actualStream).ReadBytes((int) actualStream.Length);
+
+            Assert.Equal(bytes, actualBytes);
         }
 
         public void Dispose()

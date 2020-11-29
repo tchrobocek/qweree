@@ -41,5 +41,17 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             await using var fileStream = File.Create(path);
             await stream.CopyToAsync(fileStream, cancellationToken);
         }
+
+        public Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var path = GetPath(descriptor);
+
+            if (!File.Exists(path))
+                throw new ArgumentException("File does not exist.");
+
+            var stream = File.OpenRead(path);
+            return Task.FromResult((Stream) stream);
+        }
     }
 }
