@@ -20,7 +20,7 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 
         public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input, CancellationToken cancellationToken = new CancellationToken())
         {
-            var slug = input.Slug.Split("/");
+            var slug = input.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
             var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Stream.Length, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             var storedObject = new StoredObject(descriptor, input.Stream);
@@ -28,6 +28,24 @@ namespace Qweree.Cdn.WebApi.Application.Storage
             try
             {
                 await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return Response.Fail<StoredObject>(e.Message);
+            }
+
+            return Response.Ok(storedObject);
+        }
+
+        public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var slug = input.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+            StoredObject storedObject;
+
+            try
+            {
+                storedObject = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
             }
             catch (Exception e)
             {
