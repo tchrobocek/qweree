@@ -8,7 +8,7 @@ using Qweree.Mongo;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
-namespace Qweree.Cdn.WebApi.Test.Infrastructure
+namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
 {
     [Collection("Database collection")]
     [Trait("Category", "Integration test")]
