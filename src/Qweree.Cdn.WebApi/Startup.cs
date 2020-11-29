@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Qweree.AspNet.Session;
 using MongoDB.HealthCheck;
 
 namespace Qweree.Cdn.WebApi
@@ -27,6 +30,7 @@ namespace Qweree.Cdn.WebApi
         {
             services.AddHealthChecks()
                 .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
+
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
@@ -46,9 +50,9 @@ namespace Qweree.Cdn.WebApi
                     {
                         Password = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri("http://localhost:8080/api/oauth2/auth", UriKind.Absolute),
-                            RefreshUrl = new Uri("http://localhost:8080/api/oauth2/auth", UriKind.Absolute),
-                            TokenUrl = new Uri("http://localhost:8080/api/oauth2/auth", UriKind.Absolute)
+                            AuthorizationUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
+                            RefreshUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
+                            TokenUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute)
                         }
                     }
                 });
@@ -83,6 +87,10 @@ namespace Qweree.Cdn.WebApi
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
+
+            services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
+            services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
+            services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
