@@ -26,6 +26,9 @@ namespace Qweree.Cdn.WebApi
 {
     public class Startup
     {
+        public const string Audience = "qweree";
+        public const string Issuer = "net.qweree";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -88,14 +91,16 @@ namespace Qweree.Cdn.WebApi
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = "localhost",
+                    ValidIssuer = Issuer,
                     ValidateAudience = true,
-                    ValidAudience = "localhost",
+                    ValidAudience = Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:AccessTokenKey"])),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
+
+            services.AddAuthorization();
 
             // _
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();

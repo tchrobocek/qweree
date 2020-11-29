@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
@@ -26,9 +27,11 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="slug">Object slug.</param>
         /// <returns></returns>
         [HttpGet("{*slug}")]
+        [Authorize]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStoredObjectActionAsync(string slug)
         {
+            slug = HttpUtility.UrlDecode(slug);
             var input = new ReadObjectInput(slug);
             var response = await _service.ReadObjectAsync(input);
 
@@ -46,6 +49,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="contentType"></param>
         /// <returns></returns>
         [HttpPost("{*slug}")]
+        [Authorize]
         [RequiresFileFromBody]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> PostStoredObjectActionAsync(string slug, [FromHeader(Name = "Content-Type")] string contentType)
