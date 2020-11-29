@@ -19,4 +19,3 @@ services:
       - "8080:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
-      Database__Database: "type_down_auth"
