@@ -17,7 +17,7 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
 {
     public class AuthenticationService
     {
-        public const string Audience = "localhost";
+        public const string Audience = "qweree";
         public const string Issuer = "net.qweree";
         private const string AccessDeniedMessage = "Access denied.";
         private const int RefreshTokenLength = 16;
