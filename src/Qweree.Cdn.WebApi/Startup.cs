@@ -9,10 +9,17 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Session;
 using MongoDB.HealthCheck;
+using Qweree.AspNet.Web.Swagger;
+using Qweree.Cdn.WebApi.Application.Storage;
+using Qweree.Cdn.WebApi.Domain.Storage;
+using Qweree.Cdn.WebApi.Infrastructure.Storage;
+using Qweree.Mongo;
+using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi
 {
@@ -39,6 +46,7 @@ namespace Qweree.Cdn.WebApi
                 });
             services.AddSwaggerGen(options =>
             {
+                options.OperationFilter<FileFromBodyOperationFilter>();
                 options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Cdn.WebApi", Version = "v1"});
                 options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
                 {
@@ -88,9 +96,32 @@ namespace Qweree.Cdn.WebApi
                 };
             });
 
+            // _
+            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+            // Session
             services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
+
+            // Database
+            services.Configure<DatabaseConfigurationDo>(Configuration.GetSection("Database"));
+            services.AddSingleton(p =>
+            {
+                var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
+                return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
+            });
+
+            // Storage
+            services.Configure<StorageConfigurationDo>(Configuration.GetSection("Storage"));
+            services.AddScoped<IStoredObjectRepository, StoredObjectRepository>();
+            services.AddScoped<IStoredObjectDescriptorRepository, StoredObjectDescriptorRepository>();
+            services.AddScoped<IObjectStorage, FileObjectStorage>(p =>
+            {
+                var config = p.GetRequiredService<IOptions<StorageConfigurationDo>>().Value;
+                return new FileObjectStorage(config.FileSystemRoot!);
+            });
+            services.AddScoped<StoredObjectService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

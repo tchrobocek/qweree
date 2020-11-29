@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mime;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -17,8 +16,6 @@ namespace Qweree.AspNet.Web.Swagger
             {
                 return;
             }
-
-            var attribute = (RequiresFileFromBodyAttribute)attributes.First();
 
             var definition = new OpenApiMediaType
             {
