@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Moq;
@@ -12,6 +14,7 @@ using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
+using Qweree.Mongo;
 using Qweree.Utils;
 using Xunit;
 
@@ -19,6 +22,21 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
 {
     public class WebApiFactory : WebApplicationFactory<Startup>
     {
+        private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            var contextService = services.FirstOrDefault(s => s.ServiceType == typeof(MongoContext));
+            services.Remove(contextService!);
+
+            services.AddSingleton(p =>
+                new MongoContext(Settings.Database.ConnectionString, Settings.Database.DatabaseName));
+        }
+
+        protected override IHostBuilder CreateHostBuilder()
+        {
+            return base.CreateHostBuilder()
+                .ConfigureServices(ConfigureServices);
+        }
+
         public async Task<HttpClient> CreateAuthenticatedClientAsync(User user, string password)
         {
             var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;

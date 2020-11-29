@@ -1,6 +1,7 @@
 using System;
 using DeepEqual.Syntax;
 using Qweree.Authentication.Sdk.Identity;
+using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
 namespace Qweree.Authentication.Sdk.Test.Identity
@@ -15,7 +16,9 @@ namespace Qweree.Authentication.Sdk.Test.Identity
             var dto = UserMapper.ToDto(expected);
             var actual = UserMapper.FromDto(dto);
 
-            actual.ShouldDeepEqual(expected);
+            actual.WithDeepEqual(expected)
+                .WithCustomComparison(new ImmutableArrayComparison())
+                .Assert();
         }
     }
 }

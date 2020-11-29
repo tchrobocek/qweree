@@ -10,6 +10,7 @@ using Microsoft.Net.Http.Headers;
 using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
+using Qweree.Mongo;
 using Qweree.TestUtils.IO;
 
 namespace Qweree.Cdn.WebApi.Test.Fixture
@@ -33,6 +34,9 @@ namespace Qweree.Cdn.WebApi.Test.Fixture
                 var tempFolder = p.GetRequiredService<TemporaryFolder>();
                 return new FileObjectStorage(tempFolder.Path);
             });
+
+            services.AddSingleton(p =>
+                new MongoContext(Settings.Database.ConnectionString, Settings.Database.DatabaseName));
         }
 
         public async Task<HttpClient> CreateAuthenticatedClientAsync(string username, string password)

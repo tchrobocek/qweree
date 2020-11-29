@@ -13,7 +13,7 @@ namespace Qweree.Cdn.WebApi.Test.Fixture.Factories
 
         public static StoredObjectDescriptor CreateDefault(string name, string mediaType, long size)
         {
-            return new StoredObjectDescriptor(Guid.NewGuid(), name.Split(", "), mediaType, size, DateTime.UtcNow,DateTime.UtcNow);
+            return new StoredObjectDescriptor(Guid.NewGuid(), name.Split("/", StringSplitOptions.RemoveEmptyEntries), mediaType, size, DateTime.UtcNow,DateTime.UtcNow);
         }
     }
 }
