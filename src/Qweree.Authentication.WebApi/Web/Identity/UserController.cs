@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -53,8 +54,8 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             return new UserDto
             {
                 Id = user.Id,
-                FullName = user.FullName,
-                Username = user.Username
+                Username = user.Username,
+                Roles = user.Roles.ToArray()
             };
         }
     }

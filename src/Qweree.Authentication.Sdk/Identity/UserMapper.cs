@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Qweree.Authentication.Sdk.Identity
 {
@@ -10,13 +11,13 @@ namespace Qweree.Authentication.Sdk.Identity
             {
                 Id = user.Id,
                 Username = user.Username,
-                FullName = user.FullName
+                Roles = user.Roles.ToArray()
             };
         }
 
         public static User FromDto(UserDto user)
         {
-            return new User(user.Id ?? Guid.Empty, user.Username ?? "", user.FullName ?? "");
+            return new User(user.Id ?? Guid.Empty, user.Username ?? "", user.Roles ?? Array.Empty<string>());
         }
     }
 }
