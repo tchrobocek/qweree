@@ -31,10 +31,11 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
         {
             var path = GetPath(descriptor);
 
-            if (File.Exists(path))
+            if (File.Exists(path) || Directory.Exists(path))
                 throw new ArgumentException("Object already exists.");
 
             var root = Path.GetDirectoryName(path);
+
             if (!Directory.Exists(root))
                 Directory.CreateDirectory(root!);
 
