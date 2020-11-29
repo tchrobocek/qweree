@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.Sdk;
 using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Utils;
