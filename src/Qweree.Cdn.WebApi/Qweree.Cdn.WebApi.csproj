@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Qweree.AspNet\Qweree.AspNet.csproj" />
+      <ProjectReference Include="..\Qweree.MongoDb\Qweree.MongoDb.csproj" />
     </ItemGroup>
 
 </Project>
