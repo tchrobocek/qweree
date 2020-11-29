@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using DeepEqual.Syntax;
@@ -27,11 +28,11 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
         }
 
         [Fact]
-        public async Task TestInsertAndGet()
+        public async Task TestInsertAndGetBySlug()
         {
-            var descriptor = StoredObjectDescriptorFactory.CreateDefault("object", MediaTypeNames.Application.Octet, 0L);
+            var descriptor = StoredObjectDescriptorFactory.CreateDefault("object/with/slug", MediaTypeNames.Application.Octet, 0L);
             await _repository.InsertAsync(descriptor);
-            var actual = await _repository.GetAsync(descriptor.Id);
+            var actual = await _repository.GetBySlugAsync(descriptor.Slug.ToArray());
 
             actual.WithDeepEqual(descriptor)
                 .WithCustomComparison(new MillisecondDateTimeComparison())
