@@ -19,6 +19,7 @@ services:
       - "8080:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
+      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
 
   qweree-cdn:
     depends_on:
@@ -31,3 +32,4 @@ services:
       - "8090:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
+      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
