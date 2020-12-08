@@ -32,6 +32,20 @@ namespace Qweree.Authentication.WebApi
 {
     public class Startup
     {
+        public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = AuthenticationService.Issuer,
+                ValidateAudience = true,
+                ValidAudience = AuthenticationService.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(1)
+            };
+        }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -98,16 +112,8 @@ namespace Qweree.Authentication.WebApi
             }).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = AuthenticationService.Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = AuthenticationService.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:AccessTokenKey"])),
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1)
-                };
+                options.TokenValidationParameters =
+                    GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
             });
             services.AddAuthorization(options =>
             {
@@ -154,7 +160,7 @@ namespace Qweree.Authentication.WebApi
                 var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
-                    config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, config.AccessTokenKey ?? "");
+                    config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "", config.FileAccessTokenValiditySeconds ?? 0);
             });
 
             // Identity

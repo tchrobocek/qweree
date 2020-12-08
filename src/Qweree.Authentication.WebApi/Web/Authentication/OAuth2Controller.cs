@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Authentication.WebApi.Application.Authentication;
@@ -17,7 +19,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
     [Route("/api/oauth2/auth")]
     public class OAuth2Controller : ControllerBase
     {
-        private static readonly ImmutableArray<string> GrantWhitelist = new[] {"password", "refresh_token"}.ToImmutableArray();
+        private static readonly ImmutableArray<string> GrantWhitelist = new[] {"password", "refresh_token", "file_access"}.ToImmutableArray();
 
         private readonly AuthenticationService _authenticationService;
         private readonly IDateTimeProvider _datetimeProvider;
@@ -31,6 +33,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
         /// <summary>
         /// Authenticate user.
         /// </summary>
+        /// <param name="accessToken">Access token.</param>
         /// <param name="grantType">Grant type, either ["password", "refresh_token"].</param>
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
@@ -43,6 +46,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             [FromForm(Name = "username")] string? username,
             [FromForm(Name = "password")] string? password,
             [FromForm(Name = "refresh_token")] string? refreshToken,
+            [FromForm(Name = "access_token")] string? accessToken,
             [Required][FromForm(Name = "grant_type")] string grantType)
         {
             if (!GrantWhitelist.Contains(grantType))
@@ -59,6 +63,17 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             {
                 var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
                 response = await _authenticationService.AuthenticateAsync(refreshTokenInput);
+            }
+            else if (grantType == "file_access")
+            {
+                FileAccessGrantInput? fileAccessInput = null;
+
+                if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    fileAccessInput = new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
+                }
+
+                response = await _authenticationService.AuthenticateAsync(fileAccessInput ?? new FileAccessGrantInput(accessToken ?? ""));
             }
             else
             {

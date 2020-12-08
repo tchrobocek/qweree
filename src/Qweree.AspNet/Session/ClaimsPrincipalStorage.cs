@@ -9,9 +9,9 @@ namespace Qweree.AspNet.Session
     {
         private static User CreateUser(ClaimsPrincipal claimsPrincipal)
         {
-            var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "id")?.Value ?? "";
+            var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? "";
             var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value ?? "anonymous";
-            var roles = claimsPrincipal.Claims.Where(c => c.Type == "username").Select(c => c.Value);
+            var roles = claimsPrincipal.Claims.Where(c => c.Type == "roles").Select(c => c.Value);
             return new User(Guid.Parse(id), username, roles);
         }
 

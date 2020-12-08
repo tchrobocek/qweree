@@ -33,7 +33,7 @@ namespace Qweree.Authentication.WebApi.Test.Application.Authentication
 
             var dateTimeProvider = new StaticDateTimeProvider();
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
-                10, 10, Settings.Authentication.AccessTokenKey);
+                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
 
             var input = new PasswordGrantInput(user.Username, UserFactory.Password);
             var response = await service.AuthenticateAsync(input);
@@ -87,7 +87,7 @@ namespace Qweree.Authentication.WebApi.Test.Application.Authentication
                 });
 
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
-                10, 10, Settings.Authentication.AccessTokenKey);
+                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
 
             TokenInfo accessToken;
 
@@ -110,6 +110,45 @@ namespace Qweree.Authentication.WebApi.Test.Application.Authentication
                 Assert.NotEmpty(tokenInfo.AccessToken);
                 Assert.NotEqual(accessToken.AccessToken, tokenInfo.AccessToken);
                 Assert.NotEmpty(tokenInfo.RefreshToken ?? "");
+                Assert.Equal(dateTimeProvider.UtcNow + TimeSpan.FromSeconds(10), tokenInfo.ExpiresAt);
+            }
+        }
+
+        [Fact]
+        public async Task TestAuthenticateFileAccessTokenAsync()
+        {
+            var user = UserFactory.CreateDefault();
+
+            var userRepositoryMock = new Mock<IUserRepository>();
+            userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(user);
+
+            var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
+
+            var dateTimeProvider = new StaticDateTimeProvider();
+            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
+                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 10);
+
+            TokenInfo accessToken;
+
+            {
+                var input = new PasswordGrantInput(user.Username, UserFactory.Password);
+                var response = await service.AuthenticateAsync(input);
+
+                Assert.Equal(ResponseStatus.Ok, response.Status);
+                accessToken = response.Payload ?? throw new ArgumentNullException();
+            }
+
+            {
+                var input = new FileAccessGrantInput(accessToken.AccessToken);
+                var response = await service.AuthenticateAsync(input);
+
+                Assert.Equal(ResponseStatus.Ok, response.Status);
+                var tokenInfo = response.Payload ?? throw new ArgumentNullException();
+
+                Assert.Null(tokenInfo.RefreshToken);
+                Assert.NotEmpty(tokenInfo.AccessToken);
+                Assert.NotEqual(accessToken.AccessToken, tokenInfo.AccessToken);
                 Assert.Equal(dateTimeProvider.UtcNow + TimeSpan.FromSeconds(10), tokenInfo.ExpiresAt);
             }
         }

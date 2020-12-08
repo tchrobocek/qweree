@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Session;
 using MongoDB.HealthCheck;
@@ -28,6 +31,21 @@ namespace Qweree.Cdn.WebApi
     {
         public const string Audience = "qweree";
         public const string Issuer = "net.qweree";
+
+        public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = Issuer,
+                ValidateAudience = true,
+                ValidAudience = Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(1)
+            };
+        }
+
 
         public Startup(IConfiguration configuration)
         {
@@ -88,15 +106,42 @@ namespace Qweree.Cdn.WebApi
             }).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+                options.Events = new JwtBearerEvents
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:AccessTokenKey"])),
-                    ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromMinutes(1)
+                    OnMessageReceived = context =>
+                    {
+                        string? token;
+
+                        if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
+                        {
+                            context.Options.TokenValidationParameters =
+                                GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+
+                            token = values.FirstOrDefault();
+
+                            if (token == null)
+                                return Task.CompletedTask;
+
+                            const string prefix = "Bearer ";
+
+                            if (token.StartsWith(prefix))
+                                token = token.Substring(prefix.Length);
+                            else
+                                token = null;
+                        }
+                        else if (context.Request.Query.TryGetValue("access_token", out values))
+                        {
+                            token = values.FirstOrDefault();
+                        }
+                        else
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        context.Token = token;
+                        return Task.CompletedTask;
+                    }
                 };
             });
 

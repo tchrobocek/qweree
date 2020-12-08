@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
+using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -26,20 +27,24 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
 
         private readonly int _accessTokenValiditySeconds;
         private readonly int _refreshTokenValiditySeconds;
+        private readonly int _fileAccessTokenValiditySeconds;
         private readonly string _accessTokenKey;
+        private readonly string _fileAccessTokenKey;
         private readonly IUserRepository _userRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IDateTimeProvider _datetimeProvider;
         private readonly Random _random;
 
         public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IDateTimeProvider datetimeProvider, Random random,
-            int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey)
+            int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey, string fileAccessTokenKey, int fileAccessTokenValiditySeconds)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
             _datetimeProvider = datetimeProvider;
             _accessTokenValiditySeconds = accessTokenValiditySeconds;
             _accessTokenKey = accessTokenKey;
+            _fileAccessTokenKey = fileAccessTokenKey;
+            _fileAccessTokenValiditySeconds = fileAccessTokenValiditySeconds;
             _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
             _random = random;
         }
@@ -65,7 +70,7 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Username, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.Roles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, cancellationToken);
@@ -97,11 +102,35 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Username, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.Roles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
             return Response.Ok(tokenInfo);
+        }
+
+        public Task<Response<TokenInfo>> AuthenticateAsync(FileAccessGrantInput input,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var validationParameters = Startup.GetValidationParameters(_fileAccessTokenKey);
+            var now = _datetimeProvider.UtcNow;
+
+            ClaimsPrincipalStorage session;
+
+            try
+            {
+                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(input.AccessToken, validationParameters, out _);
+                session = new ClaimsPrincipalStorage(claimsPrincipal);
+            }
+            catch (Exception)
+            {
+                return Task.FromResult(Response.Fail<TokenInfo>(AccessDeniedMessage));
+            }
+
+            var expiresAt = now + TimeSpan.FromSeconds(_fileAccessTokenValiditySeconds);
+            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id, session.CurrentUser.Username, session.CurrentUser.Roles, now, expiresAt));
+
+            return Task.FromResult(Response.Ok(new TokenInfo(fileAccessToken, expiresAt)));
         }
 
         private async Task<string?> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = new CancellationToken())
@@ -123,6 +152,25 @@ namespace Qweree.Authentication.WebApi.Application.Authentication
         private string EncodeAccessToken(AccessToken accessToken)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>
+            {
+                new Claim("userId", accessToken.UserId.ToString()),
+                new Claim("username", accessToken.Username),
+                new Claim("iat", accessToken.IssuedAt.Ticks.ToString()),
+                new Claim("jti", Guid.NewGuid().ToString())
+            };
+            claims.AddRange(accessToken.Roles.Select(role => new Claim("role", role)));
+
+            var token = new JwtSecurityToken(Issuer, Audience, claims,
+                expires: accessToken.ExpiresAt, signingCredentials: credentials, notBefore: _datetimeProvider.UtcNow);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string EncodeFileAccessToken(AccessToken accessToken)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_fileAccessTokenKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
