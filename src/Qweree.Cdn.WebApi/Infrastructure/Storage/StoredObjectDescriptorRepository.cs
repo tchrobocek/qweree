@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;

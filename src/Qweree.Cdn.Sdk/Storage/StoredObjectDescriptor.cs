@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Qweree.Cdn.WebApi.Domain.Storage
+namespace Qweree.Cdn.Sdk.Storage
 {
     public class StoredObjectDescriptor
     {

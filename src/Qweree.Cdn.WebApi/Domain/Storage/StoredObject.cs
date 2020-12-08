@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Qweree.Cdn.Sdk.Storage;
 
 namespace Qweree.Cdn.WebApi.Domain.Storage
 {

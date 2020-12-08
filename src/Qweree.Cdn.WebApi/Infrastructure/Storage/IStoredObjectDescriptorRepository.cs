@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Persistence;
 using Qweree.Cdn.WebApi.Domain.Storage;
 
