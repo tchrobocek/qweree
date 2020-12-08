@@ -1,5 +1,6 @@
 using System;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
 using Qweree.Validator.ModelValidation.Attributes;
@@ -9,7 +10,7 @@ namespace Qweree.Validator.Constraints
     public class EmailConstraintValidator : ConstraintValidatorBase<string, EmailConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<string> context, EmailConstraint constraint,
-            ValidationBuilder builder)
+            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             try
             {

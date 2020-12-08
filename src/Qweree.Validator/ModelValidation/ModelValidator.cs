@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Qweree.Validator.ModelValidation
@@ -35,13 +36,14 @@ namespace Qweree.Validator.ModelValidation
         /// </summary>
         /// <param name="validationContext">Validation context.</param>
         /// <param name="builder">Validation builder.</param>
-        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder)
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.Subject.GetType());
 
             foreach (var settings in modelSettings)
             {
-                await ValidateAsync(validationContext, builder, settings)
+                await ValidateAsync(validationContext, builder, settings, cancellationToken)
                     .ConfigureAwait(false);
             }
         }
@@ -58,7 +60,7 @@ namespace Qweree.Validator.ModelValidation
 
 
         private async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
-            ModelSettings settings)
+            ModelSettings settings, CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var property in settings.PropertySettings)
             {
@@ -78,7 +80,7 @@ namespace Qweree.Validator.ModelValidation
                         throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
 
                     await validator.ValidateAsync(
-                        new ValidationContext($"{validationContext.Path}.{propInfo.Name}", value, propInfo), constraint, builder)
+                        new ValidationContext($"{validationContext.Path}.{propInfo.Name}", value, propInfo), constraint, builder, cancellationToken)
                         .ConfigureAwait(false);
                 }
             }

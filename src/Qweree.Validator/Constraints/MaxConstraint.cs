@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
 using Qweree.Validator.ModelValidation.Attributes;
@@ -7,7 +8,7 @@ namespace Qweree.Validator.Constraints
     public class MaxConstraintValidator : ConstraintValidatorBase<int, MaxConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<int> context, MaxConstraint constraint,
-            ValidationBuilder builder)
+            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             if (context.Subject > constraint.Max)
                 builder.AddError(context.Path, constraint.Message);

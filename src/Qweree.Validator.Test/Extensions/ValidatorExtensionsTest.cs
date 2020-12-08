@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Qweree.Validator.Extensions;
@@ -25,7 +26,7 @@ namespace Qweree.Validator.Test.Extensions
             var validatorMock = new Mock<IValidator>();
             var validator = validatorMock.Object;
 
-            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>()))
+            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns<string, object>((path, subject) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
@@ -35,9 +36,9 @@ namespace Qweree.Validator.Test.Extensions
 
             var actualResult = await validator.ValidateManyAsync(subjects);
 
-            validatorMock.Verify(m => m.ValidateAsync("0", subjects[0]), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("1", subjects[1]), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("2", subjects[2]), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("0", subjects[0], It.IsAny<CancellationToken>()), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("1", subjects[1], It.IsAny<CancellationToken>()), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("2", subjects[2], It.IsAny<CancellationToken>()), Times.Once());
 
 
             Assert.Equal(new[] {warning, warning, warning}, actualResult.Warnings.Select(w => w.Message).ToArray());
@@ -61,7 +62,7 @@ namespace Qweree.Validator.Test.Extensions
             var validatorMock = new Mock<IValidator>();
             var validator = validatorMock.Object;
 
-            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>()))
+            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns<string, object>((path, subject) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
@@ -71,9 +72,9 @@ namespace Qweree.Validator.Test.Extensions
 
             var actualResult = await validator.ValidateManyAsync(subjects);
 
-            validatorMock.Verify(m => m.ValidateAsync("a", subjects[0].Value), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("b", subjects[1].Value), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("c", subjects[2].Value), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("a", subjects[0].Value, It.IsAny<CancellationToken>()), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("b", subjects[1].Value, It.IsAny<CancellationToken>()), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("c", subjects[2].Value, It.IsAny<CancellationToken>()), Times.Once());
 
             Assert.Equal(new[] {warning, warning, warning}, actualResult.Warnings.Select(w => w.Message).ToArray());
             Assert.Equal(new[] {"a", "b", "c"}, actualResult.Warnings.Select(w => w.Path).ToArray());

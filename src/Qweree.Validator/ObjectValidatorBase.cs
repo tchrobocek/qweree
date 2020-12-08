@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Qweree.Validator
@@ -14,14 +15,15 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="validationContext">Validation context.</param>
         /// <param name="builder">Validation builder.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <exception cref="InvalidCastException">When subject is not the right type of model.</exception>
-        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder)
+        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             if (!(validationContext.Subject is TModelType typedSubject))
                 throw new InvalidCastException(
                     @$"Subject is expected to be type of ""{typeof(TModelType)}"" but got ""{validationContext.Subject.GetType()}"".");
 
-            await ValidateAsync(new ValidationContext<TModelType>(validationContext.Path, typedSubject, validationContext.MemberInfo), builder)
+            await ValidateAsync(new ValidationContext<TModelType>(validationContext.Path, typedSubject, validationContext.MemberInfo), builder, cancellationToken)
                 .ConfigureAwait(false);
         }
 

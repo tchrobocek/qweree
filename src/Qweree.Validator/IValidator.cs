@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Qweree.Validator
@@ -11,13 +12,15 @@ namespace Qweree.Validator
         ///     Validates given subject.
         /// </summary>
         /// <param name="subject">Subject.</param>
-        Task<ValidationResult> ValidateAsync(object subject);
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<ValidationResult> ValidateAsync(object subject, CancellationToken cancellationToken = new CancellationToken());
 
         /// <summary>
         ///     Validates given subject.
         /// </summary>
         /// <param name="path">Path to subject.</param>
         /// <param name="subject">Subject.</param>
-        Task<ValidationResult> ValidateAsync(string path, object subject);
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<ValidationResult> ValidateAsync(string path, object subject, CancellationToken cancellationToken = new CancellationToken());
     }
 }

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator;
 using Qweree.Validator.ModelValidation;
@@ -11,7 +12,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
         private static readonly Regex HasUpperCaseRegex = new Regex(@"[A-Z]+");
         private static readonly Regex HasMinimum8CharsRegex = new Regex(@".{8,}");
 
-        protected override Task ValidateAsync(ValidationContext<string> validationContext, PasswordConstraint constraint, ValidationBuilder builder)
+        protected override Task ValidateAsync(ValidationContext<string> validationContext, PasswordConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             var password = validationContext.Subject;
 

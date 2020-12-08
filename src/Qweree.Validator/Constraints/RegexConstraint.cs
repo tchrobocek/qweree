@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
 using Qweree.Validator.ModelValidation.Attributes;
@@ -8,7 +9,7 @@ namespace Qweree.Validator.Constraints
     public class RegexConstraintValidator : ConstraintValidatorBase<string, RegexConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<string> context, RegexConstraint constraint,
-            ValidationBuilder builder)
+            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
         {
             if (!constraint.Regex.IsMatch(context.Subject))
                 builder.AddError(context.Path, constraint.Message);

@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Qweree.Validator.Test.ModelValidator
     {
         private class NoneValidator : IConstraintValidator
         {
-            public Task ValidateAsync(ValidationContext context, IConstraint constraint, ValidationBuilder builder)
+            public Task ValidateAsync(ValidationContext context, IConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
             {
                 return Task.CompletedTask;
             }

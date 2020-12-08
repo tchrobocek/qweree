@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -21,12 +22,12 @@ namespace Qweree.Validator.Test
 
             validatorMock1.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>()))
+            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder>((e, b) => b.AddError("", "1"));
 
             validatorMock2.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>()))
+            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder>((e, b) => b.AddError("", "2"));
 
             var result = await validator.ValidateAsync(text);
@@ -56,12 +57,12 @@ namespace Qweree.Validator.Test
 
             validatorMock1.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>()))
+            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder>((e, b) => b.AddError(e.Path, "1"));
 
             validatorMock2.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>()))
+            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder>((e, b) => b.AddError(e.Path, "2"));
 
             {

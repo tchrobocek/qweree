@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Qweree.Validator.ModelValidation
@@ -13,6 +14,7 @@ namespace Qweree.Validator.ModelValidation
         /// <param name="validationContext">Validation context.</param>
         /// <param name="constraint">Constraint with validation settings.</param>
         /// <param name="builder">Validation builder</param>
-        Task ValidateAsync(ValidationContext validationContext, IConstraint constraint, ValidationBuilder builder);
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task ValidateAsync(ValidationContext validationContext, IConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken());
     }
 }

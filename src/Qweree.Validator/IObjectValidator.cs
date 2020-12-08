@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Qweree.Validator
@@ -13,7 +14,8 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="validationContext">Validation context.</param>
         /// <param name="builder">Validation builder.</param>
-        Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder);
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken());
 
         /// <summary>
         ///     Determines whether the type is validatable by derived class.
