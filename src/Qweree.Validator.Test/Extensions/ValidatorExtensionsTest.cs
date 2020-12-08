@@ -27,7 +27,7 @@ namespace Qweree.Validator.Test.Extensions
             var validator = validatorMock.Object;
 
             validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
-                .Returns<string, object>((path, subject) =>
+                .Returns<string, object, CancellationToken>((path, subject, _) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
                         new[] {new ValidationMessage(path, warning)}, new[] {new ValidationMessage(path, error)});
@@ -63,7 +63,7 @@ namespace Qweree.Validator.Test.Extensions
             var validator = validatorMock.Object;
 
             validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
-                .Returns<string, object>((path, subject) =>
+                .Returns<string, object, CancellationToken>((path, subject, _) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
                         new[] {new ValidationMessage(path, warning)}, new[] {new ValidationMessage(path, error)});

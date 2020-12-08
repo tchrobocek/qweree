@@ -42,7 +42,8 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="validationContext">Validation context with typed model.</param>
         /// <param name="builder">Validation builder.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         protected abstract Task ValidateAsync(ValidationContext<TModelType> validationContext,
-            ValidationBuilder builder);
+            ValidationBuilder builder, CancellationToken cancellationToken);
     }
 }
