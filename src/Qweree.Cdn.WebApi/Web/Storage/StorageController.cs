@@ -27,7 +27,6 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="slug">Object slug.</param>
         /// <returns></returns>
         [HttpGet("{*slug}")]
-        [Authorize]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStoredObjectActionAsync(string slug)
         {
