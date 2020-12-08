@@ -1,7 +1,6 @@
 using System;
-using Qweree.Sdk;
 
-namespace Qweree.Authentication.Sdk.Exceptions
+namespace Qweree.Sdk.Http.Errors.Exceptions
 {
     public class ServerErrorException : HttpException
     {
