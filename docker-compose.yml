@@ -19,3 +19,15 @@ services:
       - "8080:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
+
+  qweree-cdn:
+    depends_on:
+      - qweree-db
+    build:
+      dockerfile: ./docker/Qweree.Cdn.WebApi/.Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      Database__ConnectionString: "mongodb://qweree-db:27017"
