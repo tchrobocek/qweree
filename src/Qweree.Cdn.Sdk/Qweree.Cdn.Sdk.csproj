@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Net.Http.Headers, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
+    </ItemGroup>
+
+</Project>
