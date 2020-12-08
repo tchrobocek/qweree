@@ -1,14 +1,17 @@
 version: "2"
 services:
   qweree-db:
+    container_name: qweree-db
     image: mongo:latest
     restart: always
     ports:
       - "27017:27017"
     volumes:
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - qweree-db:/data/db
 
   qweree-auth:
+    container_name: qweree-auth
     depends_on:
       - qweree-db
     build:
@@ -22,6 +25,7 @@ services:
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
 
   qweree-cdn:
+    container_name: qweree-cdn
     depends_on:
       - qweree-db
     build:
@@ -30,6 +34,15 @@ services:
     restart: always
     ports:
       - "8090:80"
+    volumes:
+      - qweree-cdn:/storage
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
+      Authentication__TokenUri: "http://qweree-auth:8080/api/oauth2/auth"
+      Storage__FileSystemRoot: "/storage"
+
+
+volumes:
+  qweree-db:
+  qweree-cdn:
