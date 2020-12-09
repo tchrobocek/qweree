@@ -38,7 +38,7 @@ namespace Qweree.Authentication.Sdk.Authentication
             var response = await _httpClient.SendAsync(request, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                await _errorResponseHandler.HandleErrorResponse(response, cancellationToken);
+                await _errorResponseHandler.HandleErrorResponseAsync(response, cancellationToken);
 
             var tokenInfoDto = await response.Content.ReadAsObjectAsync<TokenInfoDto>(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
             return TokenInfoMapper.FromDto(tokenInfoDto!);

@@ -8,7 +8,7 @@ namespace Qweree.Sdk.Http.Errors
 {
     public class QwereeErrorHandler : IErrorHandler
     {
-        public async Task HandleErrorResponse(HttpResponseMessage response, CancellationToken cancellationToken = new CancellationToken())
+        public async Task HandleErrorResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = new CancellationToken())
         {
             var errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponseDto>(cancellationToken);
 
