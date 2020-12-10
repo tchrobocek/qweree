@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Qweree.Sdk.Http.Errors.Exceptions
 {
     public class ClientErrorException : HttpException
     {
-        public ClientErrorException(int responseCode, ErrorResponseDto response) : base(responseCode, response)
+        public ClientErrorException(int responseCode, ErrorResponseDto response) : this($"{responseCode} - {string.Join(", ", response.Errors?.Select(e => e.Message) ?? ImmutableArray<string?>.Empty)}", responseCode, response)
         {
         }
 

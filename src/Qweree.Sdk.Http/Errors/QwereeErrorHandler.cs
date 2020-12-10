@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,15 @@ namespace Qweree.Sdk.Http.Errors
     {
         public async Task HandleErrorResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = new CancellationToken())
         {
-            var errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponseDto>(cancellationToken);
+            ErrorResponseDto errorResponse = new ErrorResponseDto();
+            try
+            {
+                errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponseDto>(cancellationToken) ?? errorResponse;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             if ((int)response.StatusCode >= 400 && (int)response.StatusCode < 500)
                 throw new ClientErrorException((int)response.StatusCode, errorResponse!);
