@@ -5,7 +5,6 @@ using Qweree.AspNet.Application;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Cdn.WebApi.Infrastructure;
-using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi.Application.Storage
