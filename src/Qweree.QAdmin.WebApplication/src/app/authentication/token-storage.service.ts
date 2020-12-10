@@ -6,18 +6,26 @@ import {TokenInfo} from '../model/authentication/TokenInfo';
 })
 export class TokenStorageService {
 
-  private token: TokenInfo;
-
   getTokenInfo(): TokenInfo {
-    return this.token;
+    const json = window.localStorage.getItem(`token_info`);
+    if (json === undefined || json === `` || json === null) {
+      return undefined;
+    }
+    return JSON.parse(json);
   }
 
   setTokenInfo(token: TokenInfo): void {
-    this.token = token;
+    window.localStorage.setItem(`token_info`, JSON.stringify(token));
   }
 
   isAuthenticated(): boolean {
     const token = this.getTokenInfo();
-    return token !== undefined;
+    if (token === undefined) {
+      return false;
+    }
+
+    const now = new Date();
+    const createdData = new Date(token.createdAt);
+    return (createdData.getTime() + token.expiresAt) > now.getTime();
   }
 }
