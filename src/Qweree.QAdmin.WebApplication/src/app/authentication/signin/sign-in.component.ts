@@ -1,15 +1,16 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {TokenInfo} from '../../model/authentication/TokenInfo';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TokenStorageService} from '../token-storage.service';
+import {Router} from '@angular/router';
 
 @Component({
-  selector: 'app-sign-in-page',
+  selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss']
 })
-export class SignInComponent {
+export class SignInComponent implements OnInit {
 
   public username: string;
   public password: string;
@@ -17,8 +18,15 @@ export class SignInComponent {
   constructor(
     private httpClient: HttpClient,
     private snackBar: MatSnackBar,
-    private tokenStorage: TokenStorageService
+    private tokenStorage: TokenStorageService,
+    private router: Router
   ) {
+  }
+
+  ngOnInit(): void {
+    if (this.tokenStorage.isAuthenticated()) {
+      this.router.navigate(['/']);
+    }
   }
 
   login(): void {
@@ -37,6 +45,7 @@ export class SignInComponent {
           return;
         }
         this.tokenStorage.setTokenInfo(response);
+        this.router.navigate(['/']);
       }, error => {
         if (error.status >= 400 && error.status < 500) {
           this.snackBar.open(`Bad credentials`, ``, {duration: 2000});
