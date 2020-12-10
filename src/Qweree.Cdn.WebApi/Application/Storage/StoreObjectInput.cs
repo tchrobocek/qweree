@@ -4,15 +4,15 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 {
     public class StoreObjectInput
     {
-        public StoreObjectInput(string slug, string mediaType, long length, Stream stream)
+        public StoreObjectInput(string path, string mediaType, long length, Stream stream)
         {
-            Slug = slug;
+            Path = path;
             MediaType = mediaType;
             Stream = stream;
             Length = length;
         }
 
-        public string Slug { get; }
+        public string Path { get; }
         public string MediaType { get; }
         public Stream Stream { get; }
         public long Length { get; }

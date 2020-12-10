@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
+using Qweree.Cdn.WebApi.Infrastructure;
+using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi.Application.Storage
@@ -21,7 +23,7 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 
         public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input, CancellationToken cancellationToken = new CancellationToken())
         {
-            var slug = input.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            var slug = SlugHelper.PathToSlug(input.Path);
             var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Length, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             var storedObject = new StoredObject(descriptor, input.Stream);
@@ -40,7 +42,7 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 
         public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input, CancellationToken cancellationToken = new CancellationToken())
         {
-            var slug = input.Slug.Split("/", StringSplitOptions.RemoveEmptyEntries);
+            var slug = SlugHelper.PathToSlug(input.Path);
 
             StoredObject storedObject;
 

@@ -25,14 +25,14 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <summary>
         /// Get object.
         /// </summary>
-        /// <param name="slug">Object slug.</param>
+        /// <param name="path">Object path.</param>
         /// <returns></returns>
-        [HttpGet("{*slug}")]
+        [HttpGet("{*path}")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetStoredObjectActionAsync(string slug)
+        public async Task<IActionResult> GetStoredObjectActionAsync(string path)
         {
-            slug = HttpUtility.UrlDecode(slug);
-            var input = new ReadObjectInput(slug);
+            path = HttpUtility.UrlDecode(path);
+            var input = new ReadObjectInput(path);
             var response = await _service.ReadObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)
@@ -45,23 +45,23 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <summary>
         /// Store object.
         /// </summary>
-        /// <param name="slug">Object slug.</param>
+        /// <param name="path">Object path.</param>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        [HttpPost("{*slug}")]
+        [HttpPost("{*path}")]
         [Authorize]
         [RequiresFileFromBody]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
-        public async Task<IActionResult> PostStoredObjectActionAsync(string slug, [FromHeader(Name = "Content-Type")] string contentType)
+        public async Task<IActionResult> PostStoredObjectActionAsync(string path, [FromHeader(Name = "Content-Type")] string contentType)
         {
-            slug = HttpUtility.UrlDecode(slug);
-            var input = new StoreObjectInput(slug, contentType, Request.ContentLength ?? 0, Request.Body);
+            path = HttpUtility.UrlDecode(path);
+            var input = new StoreObjectInput(path, contentType, Request.ContentLength ?? 0, Request.Body);
             var response = await _service.StoreObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)
                 return BadRequest(response.ToErrorResponseDto());
 
-            return Created($"/api/v1/storage/{slug.Trim('/')}", StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
+            return Created($"/api/v1/storage/{path.Trim('/')}", StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
         }
     }
 }

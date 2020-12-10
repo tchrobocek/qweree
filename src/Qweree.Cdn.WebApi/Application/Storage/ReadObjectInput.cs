@@ -2,11 +2,11 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 {
     public class ReadObjectInput
     {
-        public ReadObjectInput(string slug)
+        public ReadObjectInput(string path)
         {
-            Slug = slug;
+            Path = path;
         }
 
-        public string Slug { get; }
+        public string Path { get; }
     }
 }
