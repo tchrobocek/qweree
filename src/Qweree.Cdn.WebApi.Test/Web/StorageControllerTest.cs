@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Test.Fixture;
-using Qweree.Cdn.WebApi.Web.Storage;
 using Qweree.Utils;
 using Xunit;
 

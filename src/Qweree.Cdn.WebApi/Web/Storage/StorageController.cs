@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Application.Storage;
 
 namespace Qweree.Cdn.WebApi.Web.Storage
