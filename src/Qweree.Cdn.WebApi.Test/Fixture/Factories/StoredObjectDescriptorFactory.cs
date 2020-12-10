@@ -1,7 +1,6 @@
 using System;
 using System.Net.Mime;
 using Qweree.Cdn.Sdk.Storage;
-using Qweree.Cdn.WebApi.Domain.Storage;
 
 namespace Qweree.Cdn.WebApi.Test.Fixture.Factories
 {
