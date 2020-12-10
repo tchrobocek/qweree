@@ -13,11 +13,13 @@ import {MatDividerModule} from '@angular/material/divider';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SignInComponent
+    SignInComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

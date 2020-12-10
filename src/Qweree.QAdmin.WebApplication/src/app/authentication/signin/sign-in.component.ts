@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {TokenInfo} from '../../model/authentication/TokenInfo';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {TokenStorageService} from '../token-storage.service';
 
 @Component({
   selector: 'app-sign-in-page',
@@ -13,7 +14,11 @@ export class SignInComponent {
   public username: string;
   public password: string;
 
-  constructor(private httpClient: HttpClient, private snackBar: MatSnackBar) {
+  constructor(
+    private httpClient: HttpClient,
+    private snackBar: MatSnackBar,
+    private tokenStorage: TokenStorageService
+  ) {
   }
 
   login(): void {
@@ -31,9 +36,13 @@ export class SignInComponent {
         if (!response) {
           return;
         }
-        console.log(response);
-      }, () => {
-        this.snackBar.open(`Bad credentials`, ``, {duration: 3000});
+        this.tokenStorage.setTokenInfo(response);
+      }, error => {
+        if (error.status >= 400 && error.status < 500) {
+          this.snackBar.open(`Bad credentials`, ``, {duration: 2000});
+        } else {
+          this.snackBar.open(`Server unavailable.`, ``, {duration: 2000});
+        }
       });
   }
 }
