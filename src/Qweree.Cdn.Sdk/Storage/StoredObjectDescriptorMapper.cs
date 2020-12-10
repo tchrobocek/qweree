@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
-using Qweree.Cdn.Sdk.Storage;
 
-namespace Qweree.Cdn.WebApi.Web.Storage
+namespace Qweree.Cdn.Sdk.Storage
 {
-    public class StoredObjectDescriptorMapper
+    public static class StoredObjectDescriptorMapper
     {
         public static StoredObjectDescriptorDto ToDto(StoredObjectDescriptor storedObject)
         {

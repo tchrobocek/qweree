@@ -9,4 +9,12 @@
       <Reference Include="Microsoft.Net.Http.Headers, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Qweree.Sdk.Http\Qweree.Sdk.Http.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
+    </ItemGroup>
+
 </Project>

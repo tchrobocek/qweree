@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Cdn.WebApi.Web.Storage
+namespace Qweree.Cdn.Sdk.Storage
 {
     public class StoredObjectDescriptorDto
     {
