@@ -1,14 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 
 namespace Qweree.Cdn.WebApi.Infrastructure.Storage
 {
-    public class StoredObjectDescriptorRepository : MongoRepositoryBase<StoredObjectDescriptor,StoredObjectDescriptorDo>, IStoredObjectDescriptorRepository
+    public class StoredObjectDescriptorRepository :
+        MongoRepositoryBase<StoredObjectDescriptor, StoredObjectDescriptorDo>, IStoredObjectDescriptorRepository
     {
         public StoredObjectDescriptorRepository(MongoContext context) : base("stored_objects", context)
         {
@@ -24,10 +29,13 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
                 MediaType = descriptor.MediaType,
                 ModifiedAt = descriptor.ModifiedAt
             };
-        protected override Func<StoredObjectDescriptorDo, StoredObjectDescriptor> FromDocument =>
-            descriptor => new StoredObjectDescriptor(descriptor.Id, descriptor.Slug ?? ArraySegment<string>.Empty, descriptor.MediaType ?? "", descriptor.Size, descriptor.CreatedAt, descriptor.ModifiedAt);
 
-        public async Task<StoredObjectDescriptor> GetBySlugAsync(string[] slug, CancellationToken cancellationToken = new CancellationToken())
+        protected override Func<StoredObjectDescriptorDo, StoredObjectDescriptor> FromDocument =>
+            descriptor => new StoredObjectDescriptor(descriptor.Id, descriptor.Slug ?? ArraySegment<string>.Empty,
+                descriptor.MediaType ?? "", descriptor.Size, descriptor.CreatedAt, descriptor.ModifiedAt);
+
+        public async Task<StoredObjectDescriptor> GetBySlugAsync(string[] slug,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             var slugInput = string.Join(@""", """, slug);
 
@@ -41,6 +49,72 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
                 throw new DocumentNotFoundException(@$"Descriptor ""{string.Join("/", slug)}"" was not found.");
 
             return descriptor;
+        }
+
+        public async Task<IEnumerable<StoredPathDescriptorDo>> FindInSlugAsync(string[] slug, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var slugMatchInput = $@"";
+            var projectSlugInput = $@"";
+
+            for (var i = 0; i < slug.Length; i++)
+            {
+                var item = slug[i];
+                slugMatchInput += @$"""Slug.{i}"": ""{item}"",";
+                projectSlugInput += $@"{{""$arrayElemAt"": [""$Slug"", {i}]}},";
+            }
+
+            slugMatchInput += @$"""Slug.{slug.Length}"": {{""$exists"": true}},";
+            projectSlugInput += $@"{{""$arrayElemAt"": [""$Slug"", {slug.Length}]}},";
+
+            var aggregation = $@"[{{
+    ""$match"": {{
+        {slugMatchInput}
+    }}
+}},{{
+    ""$project"": {{
+        ""Slug"": [{projectSlugInput}],
+        ""MediaType"": 1,
+        ""Size"": 1,
+        ""CreatedAt"": 1,
+        ""ModifiedAt"": 1
+    }}
+}},{{
+    ""$group"": {{
+        ""_id"": ""$Slug"",
+        ""TotalCount"": {{
+            ""$sum"": 1
+        }},
+        ""TotalSize"": {{
+            ""$sum"": ""$Size""
+        }},
+        ""LastCreatedAt"": {{
+            ""$last"": ""$ModifiedAt""
+        }},
+        ""LastModifiedAt"": {{
+            ""$last"": ""$ModifiedAt""
+        }},
+        ""FirstId"": {{
+            ""$first"": ""$_id""
+        }},
+        ""FirstMediaType"": {{
+            ""$first"": ""$MediaType""
+        }},
+        ""FirstSize"": {{
+            ""$first"": ""$Size""
+        }},
+        ""FirstCreatedAt"": {{
+            ""$first"": ""$CreatedAt""
+        }},
+        ""FirstModifiedAt"": {{
+            ""$first"": ""$ModifiedAt""
+        }}
+    }}
+}}]";
+            var bsonPipeline = BsonSerializer.Deserialize<BsonArray>(aggregation);
+            var result = await Collection.AggregateAsync<StoredPathDescriptorDo>(
+                bsonPipeline.Select(d => d.AsBsonDocument).ToArray(), cancellationToken: cancellationToken);
+
+            return await result.ToListAsync(cancellationToken);
         }
     }
 }
