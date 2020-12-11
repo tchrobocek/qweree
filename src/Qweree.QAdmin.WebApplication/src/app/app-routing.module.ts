@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {SignInComponent} from './pages/auth/sign-in/sign-in.component';
-import {DashboardComponent} from './pages/dashboard/dashboard.component';
+import {SignInComponent} from './components/auth/sign-in/sign-in.component';
+import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {AuthGuardService} from './services/authentication/auth-guard.service';
 
 
