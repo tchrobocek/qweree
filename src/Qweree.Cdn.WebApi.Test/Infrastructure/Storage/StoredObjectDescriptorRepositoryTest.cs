@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -64,57 +65,62 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                 {
                     Id = new[] {"object", "a", "b"},
                     FirstId = descriptors[3].Id,
+                    FirstSlug = descriptors[3].Slug.ToArray(),
                     FirstMediaType = descriptors[3].MediaType,
                     FirstSize = descriptors[3].Size,
                     FirstCreatedAt = descriptors[3].CreatedAt,
                     FirstModifiedAt = descriptors[3].ModifiedAt,
                     TotalCount = 1,
                     TotalSize = 1,
-                    LastCreatedAt = descriptors[3].CreatedAt,
-                    LastModifiedAt = descriptors[3].ModifiedAt,
+                    MinCreatedAt = descriptors[3].CreatedAt,
+                    MaxModifiedAt = descriptors[3].ModifiedAt,
                 },
                 new StoredPathDescriptorDo
                 {
                     Id = new[] {"object", "a", "a"},
                     FirstId = descriptors.First().Id,
+                    FirstSlug = descriptors.First().Slug.ToArray(),
                     FirstMediaType = descriptors.First().MediaType,
                     FirstSize = descriptors.First().Size,
                     FirstCreatedAt = descriptors.First().CreatedAt,
                     FirstModifiedAt = descriptors.First().ModifiedAt,
                     TotalCount = 3,
                     TotalSize = 3,
-                    LastCreatedAt = descriptors.Last().CreatedAt,
-                    LastModifiedAt = descriptors.Last().ModifiedAt,
+                    MinCreatedAt = descriptors.Last().CreatedAt,
+                    MaxModifiedAt = descriptors.Last().ModifiedAt,
                 },
                 new StoredPathDescriptorDo
                 {
                     Id = new[] {"object", "a", "d"},
                     FirstId = descriptors[5].Id,
+                    FirstSlug = descriptors[5].Slug.ToArray(),
                     FirstMediaType = descriptors[5].MediaType,
                     FirstSize = descriptors[5].Size,
                     FirstCreatedAt = descriptors[5].CreatedAt,
                     FirstModifiedAt = descriptors[5].ModifiedAt,
                     TotalCount = 1,
                     TotalSize = 1,
-                    LastCreatedAt = descriptors[5].CreatedAt,
-                    LastModifiedAt = descriptors[5].ModifiedAt,
+                    MinCreatedAt = descriptors[5].CreatedAt,
+                    MaxModifiedAt = descriptors[5].ModifiedAt,
                 },
                 new StoredPathDescriptorDo
                 {
                     Id = new[] {"object", "a", "c"},
                     FirstId = descriptors[4].Id,
+                    FirstSlug = descriptors[4].Slug.ToArray(),
                     FirstMediaType = descriptors[4].MediaType,
                     FirstSize = descriptors[4].Size,
                     FirstCreatedAt = descriptors[4].CreatedAt,
                     FirstModifiedAt = descriptors[4].ModifiedAt,
                     TotalCount = 1,
                     TotalSize = 1,
-                    LastCreatedAt = descriptors[4].CreatedAt,
-                    LastModifiedAt = descriptors[4].ModifiedAt,
+                    MinCreatedAt = descriptors[4].CreatedAt,
+                    MaxModifiedAt = descriptors[4].ModifiedAt,
                 }
-            };
+            }.OrderBy(s => string.Join("/", s.FirstSlug ?? ArraySegment<string?>.Empty));
 
             var paths = await _repository.FindInSlugAsync(new[] {"object", "a"});
+            paths = paths.OrderBy(s => string.Join("/", s.FirstSlug ?? ArraySegment<string?>.Empty));
             paths.WithDeepEqual(expecting)
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .Assert();

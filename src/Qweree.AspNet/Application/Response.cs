@@ -32,6 +32,11 @@ namespace Qweree.AspNet.Application
             return new CollectionResponse<TPayloadType>(ResponseStatus.Ok, payload, System.Array.Empty<Error>());
         }
 
+        public static PaginationResponse<TPayloadType> Ok<TPayloadType>(IEnumerable<TPayloadType> payload, long documentCount) where TPayloadType : class
+        {
+            return new PaginationResponse<TPayloadType>(ResponseStatus.Ok, payload, System.Array.Empty<Error>(), documentCount);
+        }
+
         public static Response Fail(IEnumerable<Error> errors)
         {
             return new Response(ResponseStatus.Fail, null, errors);
@@ -77,6 +82,11 @@ namespace Qweree.AspNet.Application
             return new CollectionResponse<TPayloadType>(ResponseStatus.Fail, null, errors.Select(e => new Error(e)));
         }
 
+        public static PaginationResponse<TPayloadType> FailPagination<TPayloadType>(params string[] errors) where TPayloadType : class
+        {
+            return new PaginationResponse<TPayloadType>(ResponseStatus.Fail, null, errors.Select(e => new Error(e)), 0L);
+        }
+
         public Response(ResponseStatus status, object? payload, IEnumerable<Error> errors)
         {
             Status = status;
@@ -104,6 +114,16 @@ namespace Qweree.AspNet.Application
         public CollectionResponse(ResponseStatus status, IEnumerable<TPayloadType>? payload, IEnumerable<Error> errors) : base(status, payload?.ToImmutableArray(), errors)
         {
         }
+    }
+
+    public class PaginationResponse<TPayloadType> : Response<IEnumerable<TPayloadType>> where TPayloadType : class
+    {
+        public PaginationResponse(ResponseStatus status, IEnumerable<TPayloadType>? payload, IEnumerable<Error> errors, long documentCount) : base(status, payload?.ToImmutableArray(), errors)
+        {
+            DocumentCount = documentCount;
+        }
+
+        public long DocumentCount { get; }
     }
 
     public class Error

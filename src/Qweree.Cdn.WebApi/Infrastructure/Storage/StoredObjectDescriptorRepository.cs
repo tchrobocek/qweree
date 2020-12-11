@@ -72,29 +72,33 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
     }}
 }},{{
     ""$project"": {{
-        ""Slug"": [{projectSlugInput}],
+        ""SearchedSlug"": [{projectSlugInput}],
         ""MediaType"": 1,
         ""Size"": 1,
         ""CreatedAt"": 1,
-        ""ModifiedAt"": 1
+        ""ModifiedAt"": 1,
+        ""Slug"": 1
     }}
 }},{{
     ""$group"": {{
-        ""_id"": ""$Slug"",
+        ""_id"": ""$SearchedSlug"",
         ""TotalCount"": {{
             ""$sum"": 1
         }},
         ""TotalSize"": {{
             ""$sum"": ""$Size""
         }},
-        ""LastCreatedAt"": {{
-            ""$last"": ""$ModifiedAt""
+        ""MinCreatedAt"": {{
+            ""$min"": ""$ModifiedAt""
         }},
-        ""LastModifiedAt"": {{
-            ""$last"": ""$ModifiedAt""
+        ""MaxModifiedAt"": {{
+            ""$max"": ""$ModifiedAt""
         }},
         ""FirstId"": {{
             ""$first"": ""$_id""
+        }},
+        ""FirstSlug"": {{
+            ""$first"": ""$Slug""
         }},
         ""FirstMediaType"": {{
             ""$first"": ""$MediaType""
