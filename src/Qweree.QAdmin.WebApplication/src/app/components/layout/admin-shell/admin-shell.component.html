@@ -2,12 +2,15 @@
   <mat-drawer-container>
     <mat-drawer mode="side" opened class="nav-container">
       <mat-nav-list>
-        <section class="menu-link">
-          <a href="/">Dashboard</a>
-        </section>
-        <section class="menu-link">
-          <a href="#" (click)="signOut()">Sign out</a>
-        </section>
+        <h2>
+          <span class="logo-q">Q</span>weree
+        </h2>
+        <a href="/" class="menu-link">
+          Dashboard
+        </a>
+        <a href="#" (click)="signOut()" class="menu-link">
+          Sign out
+        </a>
       </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content>

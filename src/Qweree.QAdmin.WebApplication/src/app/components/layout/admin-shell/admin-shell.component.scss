@@ -1,8 +1,12 @@
+@import "./src/styles";
+$nav-menu-background: #343434;
+
 mat-drawer-container {
   height: 100%;
 }
 .nav-container {
-  width: 200px;
+  width: 300px;
+  background-color: $nav-menu-background;
 }
 .app-content {
   margin: 20px 20px;
@@ -10,11 +14,20 @@ mat-drawer-container {
 mat-nav-list {
   padding-top: 40px;
 }
-.menu-link {
-  font-size: 18px;
-  padding: 4px 0 4px 30px;
+mat-nav-list h2 {
+  padding-left: 10px;
+  color: mat-color($QAdmin-primary, text);
 }
-.menu-link a {
-  color: white;
+.menu-link {
+  font-size: 16px;
+  padding: 12px 0 12px 30px;
+  display: block;
+  color: mat-color($QAdmin-theme, text);
   text-decoration: none;
+}
+.menu-link:hover {
+  background-color: lighten($nav-menu-background, 10%);
+}
+.logo-q {
+  color: mat-color($QAdmin-primary, text);
 }
