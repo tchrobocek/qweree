@@ -1,5 +1,8 @@
-<section>
+<section class="login-form">
   <mat-card class="example-card">
+    <mat-card-title>
+      <h1>Sign in!</h1>
+    </mat-card-title>
     <mat-card-content>
       <div>
         <mat-form-field appearance="fill">
@@ -17,9 +20,11 @@
           </label>
         </mat-form-field>
       </div>
-      <div>
+      <div class="button-container">
+        <button mat-raised-button color="basic">Forgot your password?</button>
         <button mat-raised-button color="primary" (click)="login()">Login</button>
       </div>
     </mat-card-content>
+    <mat-card-footer></mat-card-footer>
   </mat-card>
 </section>

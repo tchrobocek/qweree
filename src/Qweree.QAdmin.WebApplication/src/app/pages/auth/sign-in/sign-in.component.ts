@@ -31,6 +31,10 @@ export class SignInComponent implements OnInit {
   }
 
   login(): void {
+    if (!this.username || !this.password) {
+      return;
+    }
+
     this.authenticationAdapter.login(this.username, this.password)
       .then(t => {
         this.tokenStorage.setTokenInfo(t);
