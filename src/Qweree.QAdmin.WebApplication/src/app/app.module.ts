@@ -13,8 +13,8 @@ import {MatDividerModule} from '@angular/material/divider';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { AdminShellComponent } from './components/layout/admin-shell/admin-shell.component';
+import {DashboardComponent} from './components/dashboard/dashboard.component';
+import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 
 @NgModule({
   declarations: [
