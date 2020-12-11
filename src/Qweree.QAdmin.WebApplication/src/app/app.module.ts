@@ -18,13 +18,15 @@ import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.c
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatListModule} from '@angular/material/list';
+import { NotFoundComponent } from './components/layout/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignInComponent,
     DashboardComponent,
-    AdminShellComponent
+    AdminShellComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

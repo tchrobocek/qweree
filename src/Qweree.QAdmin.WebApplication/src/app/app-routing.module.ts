@@ -4,6 +4,7 @@ import {SignInComponent} from './components/auth/sign-in/sign-in.component';
 import {AuthGuardService} from './services/authentication/auth-guard.service';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
+import {NotFoundComponent} from './components/layout/not-found/not-found.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,8 @@ const routes: Routes = [
     children: [{
         path: '', component: DashboardComponent,
         canActivate: [AuthGuardService]
+      }, {
+        path: '**', component: NotFoundComponent
       }]
   }
 ];
