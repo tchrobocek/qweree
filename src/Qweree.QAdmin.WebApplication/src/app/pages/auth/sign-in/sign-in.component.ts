@@ -36,11 +36,11 @@ export class SignInComponent implements OnInit {
     }
 
     this.authenticationAdapter.login(this.username, this.password)
-      .then(t => {
+      .subscribe(t => {
         this.tokenStorage.setTokenInfo(t);
         this.router.navigate(['/']);
-      })
-      .catch(error => {
+      }, error => {
+        this.password = '';
         if (error.status >= 400 && error.status < 500) {
           this.snackBar.open(`Bad credentials`, ``, {duration: 2000});
         } else {
