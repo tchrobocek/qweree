@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Qweree.Cdn.WebApi.Test.Application.Storage
 {
+    [Trait("Category", "Unit test")]
     public class StoredObjectServiceTest
     {
         [Fact]
