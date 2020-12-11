@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {TokenStorageService} from '../../../services/authentication/token-storage.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-admin-shell',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminShellComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private tokenStorage: TokenStorageService,
+    private router: Router
+  ) {
+
+  }
 
   ngOnInit(): void {
   }
 
+  signOut(): void {
+    this.tokenStorage.removeTokenInfo();
+    this.router.navigate([`sign-in`]);
+  }
 }

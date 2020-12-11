@@ -18,6 +18,10 @@ export class TokenStorageService {
     window.localStorage.setItem(`token_info`, JSON.stringify(token));
   }
 
+  removeTokenInfo(): void {
+    window.localStorage.removeItem(`token_info`);
+  }
+
   isAuthenticated(): boolean {
     const token = this.getTokenInfo();
     if (token === undefined) {
