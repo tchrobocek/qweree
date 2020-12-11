@@ -1,6 +1,7 @@
 using System;
 using System.Net.Mime;
 using Qweree.Cdn.Sdk.Storage;
+using Qweree.Cdn.WebApi.Infrastructure;
 
 namespace Qweree.Cdn.WebApi.Test.Fixture.Factories
 {
@@ -11,9 +12,9 @@ namespace Qweree.Cdn.WebApi.Test.Fixture.Factories
             return CreateDefault($"generated/{Guid.NewGuid()}", MediaTypeNames.Application.Octet, 0L);
         }
 
-        public static StoredObjectDescriptor CreateDefault(string name, string mediaType, long size)
+        public static StoredObjectDescriptor CreateDefault(string path, string mediaType, long size)
         {
-            return new StoredObjectDescriptor(Guid.NewGuid(), name.Split("/", StringSplitOptions.RemoveEmptyEntries), mediaType, size, DateTime.UtcNow,DateTime.UtcNow);
+            return new StoredObjectDescriptor(Guid.NewGuid(), SlugHelper.PathToSlug(path), mediaType, size, DateTime.UtcNow,DateTime.UtcNow);
         }
     }
 }
