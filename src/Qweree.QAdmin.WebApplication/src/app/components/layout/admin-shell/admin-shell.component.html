@@ -1,3 +1,19 @@
 <div class="mat-typography app-frame mat-app-background">
-  <router-outlet></router-outlet>
+  <mat-drawer-container>
+    <mat-drawer mode="side" opened class="nav-container">
+      <mat-nav-list>
+        <section class="menu-link">
+          <a href="/">Dashboard</a>
+        </section>
+        <section class="menu-link">
+          <a href="/">Sign out</a>
+        </section>
+      </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content>
+      <div class="app-content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
 </div>

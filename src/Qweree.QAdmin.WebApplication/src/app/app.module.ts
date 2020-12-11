@@ -15,6 +15,9 @@ import {HttpClientModule} from '@angular/common/http';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatListModule} from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -35,6 +38,9 @@ import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.c
     MatSnackBarModule,
     FormsModule,
     HttpClientModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    MatListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
