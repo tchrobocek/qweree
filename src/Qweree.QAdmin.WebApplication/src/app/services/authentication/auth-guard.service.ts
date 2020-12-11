@@ -3,6 +3,7 @@ import {TokenStorageService} from './token-storage.service';
 import {ActivatedRouteSnapshot, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
 
+// noinspection JSUnusedLocalSymbols
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +16,7 @@ export class AuthGuardService {
       return true;
     }
 
-    this.router.navigate(['/signin']);
+    this.router.navigate(['/sign-in']);
     return false;
   }
 }

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {TokenInfo} from '../../model/authentication/TokenInfo';
+import {TokenInfo} from '../../../model/authentication/TokenInfo';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {TokenStorageService} from '../token-storage.service';
+import {TokenStorageService} from '../../../services/authentication/token-storage.service';
 import {Router} from '@angular/router';
 import {TokenInfoDto} from './TokenInfoDto';
 
@@ -47,7 +47,7 @@ export class SignInComponent implements OnInit {
         }
 
         console.log(response);
-        const tokenInfo = new TokenInfo(response.access_token, response.refresh_token, response.expires_in, new Date());
+        const tokenInfo = new TokenInfo(response.access_token, response.refresh_token, response.expires_in, new Date().toDateString());
         this.tokenStorage.setTokenInfo(tokenInfo);
         this.router.navigate(['/']);
       }, error => {

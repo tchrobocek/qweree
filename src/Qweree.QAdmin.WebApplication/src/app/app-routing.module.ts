@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {SignInComponent} from './authentication/signin/sign-in.component';
-import {DashboardComponent} from './dashboard/dashboard/dashboard.component';
-import {AuthGuardService} from './authentication/auth-guard.service';
+import {SignInComponent} from './pages/auth/sign-in/sign-in.component';
+import {DashboardComponent} from './pages/dashboard/dashboard.component';
+import {AuthGuardService} from './services/authentication/auth-guard.service';
 
 
 const routes: Routes = [
   {
-    path: 'signin',
+    path: 'sign-in',
     component: SignInComponent
   },
   {
