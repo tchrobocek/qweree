@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {SignInComponent} from './components/auth/sign-in/sign-in.component';
-import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {AuthGuardService} from './services/authentication/auth-guard.service';
+import {DashboardComponent} from './components/dashboard/dashboard.component';
+import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 
 
 const routes: Routes = [
@@ -11,9 +12,13 @@ const routes: Routes = [
     component: SignInComponent
   },
   {
-    path: ``,
-    component: DashboardComponent,
-    canActivate: [AuthGuardService]
+    path: '',
+    component: AdminShellComponent,
+    canActivate: [AuthGuardService],
+    children: [{
+        path: '', component: DashboardComponent,
+        canActivate: [AuthGuardService]
+      }]
   }
 ];
 
