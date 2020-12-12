@@ -1,14 +1,4 @@
 <div class="path-explorer">
-  <a href="/cdn/explorer{{path}}">
-    <div class="path-explorer-item">
-      <span class="material-icons">
-        folder
-      </span>
-      <span class="object-path">
-        ./
-      </span>
-    </div>
-  </a>
   <a *ngIf="path !== '/'" href="/cdn/explorer{{path}}/..">
     <div class="path-explorer-item">
       <span class="material-icons">
@@ -16,6 +6,16 @@
       </span>
       <span class="object-path">
         ../
+      </span>
+    </div>
+  </a>
+  <a href="/cdn/explorer{{path}}">
+    <div class="path-explorer-item">
+      <span class="material-icons">
+        folder
+      </span>
+      <span class="object-path">
+        ./
       </span>
     </div>
   </a>

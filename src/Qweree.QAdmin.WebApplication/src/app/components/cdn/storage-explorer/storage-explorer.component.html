@@ -1,9 +1,14 @@
 <div class="dashboard-content">
   <mat-card>
     <mat-card-title>
-      Storage explorer {{ currentPath }}
+      Storage explorer
     </mat-card-title>
     <mat-card-content>
+      <div class="current-path">
+        <label>
+          <input [(ngModel)]="inputPath" (blur)="resetInput()" (keyup.enter)="goto()">
+        </label>
+      </div>
       <app-path-explorer path="{{ currentPath }}">
       </app-path-explorer>
     </mat-card-content>

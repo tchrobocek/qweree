@@ -12,6 +12,7 @@ export class StorageExplorerComponent implements OnInit {
 
   public currentPathObjects: ExplorerObject[];
   public currentPath: string;
+  public inputPath: string;
 
   constructor(
     private cdnAdapter: CdnAdapterService,
@@ -26,6 +27,15 @@ export class StorageExplorerComponent implements OnInit {
     if (!this.currentPath) {
       this.currentPath = '/';
     }
+
+    this.inputPath = this.currentPath.toString();
   }
 
+  resetInput(): void {
+    this.inputPath = this.currentPath;
+  }
+
+  goto(): void{
+    window.location.href = '/cdn/explorer' + this.inputPath;
+  }
 }

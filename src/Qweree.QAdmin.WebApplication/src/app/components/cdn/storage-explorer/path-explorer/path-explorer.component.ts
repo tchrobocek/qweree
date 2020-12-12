@@ -33,10 +33,6 @@ export class PathExplorerComponent implements OnInit {
             this.files.push(file);
           }
         });
-
-        console.log(objects);
-        console.log(this.directories);
-        console.log(this.files);
       });
   }
 }
