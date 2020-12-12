@@ -1,1 +1,13 @@
-<p>storage-explorer works!</p>
+<div class="dashboard-content">
+  <mat-card>
+    <mat-card-title>
+      Storage explorer {{ currentPath }}
+    </mat-card-title>
+    <mat-card-content>
+      <app-path-explorer path="{{ currentPath }}">
+      </app-path-explorer>
+    </mat-card-content>
+    <mat-card-footer>
+    </mat-card-footer>
+  </mat-card>
+</div>

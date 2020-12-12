@@ -24,6 +24,7 @@ import { ServicesOverviewComponent } from './components/dashboard/services-overv
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import { StorageExplorerComponent } from './components/cdn/storage-explorer/storage-explorer.component';
+import { PathExplorerComponent } from './components/cdn/storage-explorer/path-explorer/path-explorer.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { StorageExplorerComponent } from './components/cdn/storage-explorer/stor
     NotFoundComponent,
     ServicesOverviewComponent,
     CdnDashboardComponent,
-    StorageExplorerComponent
+    StorageExplorerComponent,
+    PathExplorerComponent
   ],
   imports: [
     BrowserModule,

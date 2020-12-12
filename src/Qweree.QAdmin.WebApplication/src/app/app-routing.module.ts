@@ -25,8 +25,11 @@ const routes: Routes = [
         path: 'cdn', component: CdnDashboardComponent,
         canActivate: [AuthGuardService]
       }, {
-        path: 'cdn/explorer', component: StorageExplorerComponent,
-        canActivate: [AuthGuardService]
+        path: 'cdn/explorer',
+        children: [{
+          path: '**', component: StorageExplorerComponent,
+          canActivate: [AuthGuardService]
+        }],
       }, {
         path: '**', component: NotFoundComponent
       }]

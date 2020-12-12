@@ -1,0 +1,66 @@
+<div class="path-explorer">
+  <a href="/cdn/explorer{{path}}">
+    <div class="path-explorer-item">
+      <span class="material-icons">
+        folder
+      </span>
+      <span class="object-path">
+        ./
+      </span>
+    </div>
+  </a>
+  <a *ngIf="path !== '/'" href="/cdn/explorer{{path}}/..">
+    <div class="path-explorer-item">
+      <span class="material-icons">
+        folder
+      </span>
+      <span class="object-path">
+        ../
+      </span>
+    </div>
+  </a>
+  <a *ngFor="let directory of this.directories" href="/cdn/explorer{{directory.path}}">
+    <div class="path-explorer-item directory">
+      <span class="material-icons">
+        folder
+      </span>
+      <span class="object-path">
+        {{ directory.path.substring(this.path.length)  }}
+      </span>
+      <span class="object-item-count">
+        {{ directory.totalCount }} items
+      </span>
+      <span class="object-item-size">
+        {{ directory.totalSize }} B
+      </span>
+      <span class="object-item-created-at">
+        {{ directory.createdAt | date:'dd.MM hh:mm:ss' }}
+      </span>
+      <span class="object-item-modified-at">
+        {{ directory.modifiedAt | date:'dd.MM hh:mm:ss' }}
+      </span>
+    </div>
+  </a>
+  <a  *ngFor="let file of this.files" href="http://localhost:8090/api/v1/storage{{file.path}}">
+    <div class="path-explorer-item file">
+      <span class="material-icons">
+        text_snippet
+      </span>
+      <span class="object-path">
+        {{ file.path.substring(this.path.length) }}
+      </span>
+      <span class="object-item-count">
+        {{ file.mediaType }}
+      </span>
+      <span class="object-item-size">
+        {{ file.size }} B
+      </span>
+      <span class="object-item-created-at">
+        {{ file.createdAt | date:'dd.MM hh:mm:ss' }}
+      </span>
+      <span class="object-item-modified-at">
+        {{ file.modifiedAt | date:'dd.MM hh:mm:ss' }}
+      </span>
+    </div>
+  </a>
+</div>

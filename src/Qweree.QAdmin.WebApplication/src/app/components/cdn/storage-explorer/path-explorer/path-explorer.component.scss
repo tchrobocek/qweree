@@ -1,0 +1,45 @@
+$nav-menu-background: #343434;
+
+.path-explorer {
+  font-size: 16px;
+}
+.path-explorer-item {
+  padding: 12px 0 12px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+a {
+  color: white;
+  text-decoration: none;
+}
+a:hover {
+  background-color: lighten($nav-menu-background, 10%);
+}
+.material-icons {
+  display: inline-block;
+  margin: 0 10px;
+}
+.object-path {
+  display: inline-block;
+  width: 400px;
+  margin: 0 10px;
+}
+.object-item-count {
+  display: inline-block;
+  width: 80px;
+  margin: 0 10px;
+}
+.object-total-size {
+  display: inline-block;
+  width: 80px;
+  margin: 0 10px;
+}
+.object-item-created-at {
+  display: inline-block;
+  width: 120px;
+  margin: 0 10px 0 30px;
+}
+.object-total-modified-at {
+  display: inline-block;
+  width: 120px;
+  margin: 0 10px;
+}
