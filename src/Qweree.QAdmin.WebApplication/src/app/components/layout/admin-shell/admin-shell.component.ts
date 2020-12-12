@@ -11,7 +11,7 @@ export class AdminShellComponent implements OnInit {
 
   constructor(
     private tokenStorage: TokenStorageService,
-    private router: Router
+    public router: Router
   ) {
 
   }

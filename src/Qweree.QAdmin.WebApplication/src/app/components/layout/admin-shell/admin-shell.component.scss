@@ -25,6 +25,9 @@ mat-nav-list h2 {
   color: mat-color($QAdmin-theme, text);
   text-decoration: none;
 }
+.menu-link.active {
+  background-color: lighten($nav-menu-background, 5%);
+}
 .menu-link:hover {
   background-color: lighten($nav-menu-background, 10%);
 }

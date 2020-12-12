@@ -5,7 +5,7 @@
         <h2>
           <span class="logo-q">Q</span>weree
         </h2>
-        <a href="/" class="menu-link">
+        <a href="/" class="menu-link {{ this.router.url === '/' ? 'active' : '' }}">
           Dashboard
         </a>
         <a href="#" (click)="signOut()" class="menu-link">
