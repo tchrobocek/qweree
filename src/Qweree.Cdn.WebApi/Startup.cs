@@ -18,9 +18,11 @@ using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Session;
 using MongoDB.HealthCheck;
 using Qweree.AspNet.Web.Swagger;
+using Qweree.Cdn.WebApi.Application.Explorer;
 using Qweree.Cdn.WebApi.Application.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Cdn.WebApi.Infrastructure.Authentication;
+using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Mongo;
 using Qweree.Utils;
@@ -65,6 +67,7 @@ namespace Qweree.Cdn.WebApi
                 {
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.Converters.Add(new ExplorerObjectConverter());
                 });
             services.AddSwaggerGen(options =>
             {
@@ -174,6 +177,7 @@ namespace Qweree.Cdn.WebApi
                 return new FileObjectStorage(config.FileSystemRoot!);
             });
             services.AddScoped<StoredObjectService>();
+            services.AddScoped<ExplorerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
