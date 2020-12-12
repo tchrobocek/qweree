@@ -25,6 +25,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import { StorageExplorerComponent } from './components/cdn/storage-explorer/storage-explorer.component';
 import { PathExplorerComponent } from './components/cdn/storage-explorer/path-explorer/path-explorer.component';
+import { MediaTypePipe } from './services/pipes/media-type.pipe';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { PathExplorerComponent } from './components/cdn/storage-explorer/path-ex
     ServicesOverviewComponent,
     CdnDashboardComponent,
     StorageExplorerComponent,
-    PathExplorerComponent
+    PathExplorerComponent,
+    MediaTypePipe
   ],
   imports: [
     BrowserModule,

@@ -50,7 +50,7 @@
         {{ file.path.substring(this.path.length) }}
       </span>
       <span class="object-item-count">
-        {{ file.mediaType }}
+        {{ file.mediaType | mediaType }}
       </span>
       <span class="object-item-size">
         {{ file.size }} B
