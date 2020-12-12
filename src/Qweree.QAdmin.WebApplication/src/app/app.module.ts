@@ -26,6 +26,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { StorageExplorerComponent } from './components/cdn/storage-explorer/storage-explorer.component';
 import { PathExplorerComponent } from './components/cdn/storage-explorer/path-explorer/path-explorer.component';
 import { MediaTypePipe } from './services/pipes/media-type.pipe';
+import { FilenamePipe } from './services/pipes/filename.pipe';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { MediaTypePipe } from './services/pipes/media-type.pipe';
     CdnDashboardComponent,
     StorageExplorerComponent,
     PathExplorerComponent,
-    MediaTypePipe
+    MediaTypePipe,
+    FilenamePipe
   ],
   imports: [
     BrowserModule,

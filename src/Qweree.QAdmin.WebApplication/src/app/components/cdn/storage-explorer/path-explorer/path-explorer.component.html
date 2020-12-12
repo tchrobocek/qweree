@@ -25,7 +25,7 @@
         folder
       </span>
       <span class="object-path">
-        {{ directory.path.substring(this.path.length)  }}
+        {{ directory.path | filename  }}
       </span>
       <span class="object-item-count">
         {{ directory.totalCount }} items
@@ -47,7 +47,7 @@
         text_snippet
       </span>
       <span class="object-path">
-        {{ file.path.substring(this.path.length) }}
+        {{ file.path | filename }}
       </span>
       <span class="object-item-count">
         {{ file.mediaType | mediaType }}
