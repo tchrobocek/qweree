@@ -9,7 +9,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Usernames</mat-label>
             <label>
-              <input matInput [(ngModel)]="username">
+              <input matInput [(ngModel)]="username" (keyup.enter)="login()">
             </label>
           </mat-form-field>
         </div>
@@ -17,7 +17,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Password</mat-label>
             <label>
-              <input type="password" matInput [(ngModel)]="password">
+              <input type="password" matInput [(ngModel)]="password" (keyup.enter)="login()">
             </label>
           </mat-form-field>
         </div>
