@@ -13,6 +13,9 @@ export class EnvironmentService {
     this.environmentConfig = {
       authentication: {
         baseUri: environment.authentication.baseUri
+      },
+      cdn: {
+        baseUri: environment.authentication.baseUri
       }
     };
   }
