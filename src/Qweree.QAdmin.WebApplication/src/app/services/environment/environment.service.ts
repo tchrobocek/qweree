@@ -15,7 +15,7 @@ export class EnvironmentService {
         baseUri: environment.authentication.baseUri
       },
       cdn: {
-        baseUri: environment.authentication.baseUri
+        baseUri: environment.cdn.baseUri
       }
     };
   }

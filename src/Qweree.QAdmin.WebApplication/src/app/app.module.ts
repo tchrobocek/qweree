@@ -19,6 +19,9 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatListModule} from '@angular/material/list';
 import { NotFoundComponent } from './components/layout/not-found/not-found.component';
+import { ServicesOverviewComponent } from './components/dashboard/services-overview/services-overview.component';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,8 @@ import { NotFoundComponent } from './components/layout/not-found/not-found.compo
     SignInComponent,
     DashboardComponent,
     AdminShellComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ServicesOverviewComponent
   ],
   imports: [
     BrowserModule,
@@ -43,6 +47,8 @@ import { NotFoundComponent } from './components/layout/not-found/not-found.compo
     MatSidenavModule,
     MatCheckboxModule,
     MatListModule,
+    MatGridListModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,20 @@
+<div>
+  <mat-grid-list cols="4" rowHeight="100px">
+    <mat-grid-tile *ngFor="let service of this.serviceReport" colspan="1" rowspan="2">
+      <mat-card>
+        <mat-card-title>
+          <span class="material-icons" style="color: {{ service.healthReport?.status === 'Healthy' ? 'lightgreen' : 'pink'}}">
+            {{ service.healthReport?.status === 'Healthy' ? 'check_circle' : 'error'}}
+          </span>
+          {{ service.name }}
+        </mat-card-title>
+        <mat-card-content>
+          <section>Uri: {{ service.uri }}</section>
+          <section>Status: {{ service.healthReport?.status }}</section>
+          <section>Version: {{ service.version }}</section>
+          <section *ngFor="let key of getEntriesKeys(service)">{{ key }}: {{ service.healthReport.entries[key]?.status }}</section>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+</mat-grid-list>
+</div>
