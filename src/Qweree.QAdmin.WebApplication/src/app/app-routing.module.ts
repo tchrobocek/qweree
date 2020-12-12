@@ -6,6 +6,7 @@ import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {DashboardComponent as CdnDashboardComponent} from './components/cdn/dashboard/dashboard.component';
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 import {NotFoundComponent} from './components/layout/not-found/not-found.component';
+import {StorageExplorerComponent} from './components/cdn/storage-explorer/storage-explorer.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,9 @@ const routes: Routes = [
         canActivate: [AuthGuardService]
       }, {
         path: 'cdn', component: CdnDashboardComponent,
+        canActivate: [AuthGuardService]
+      }, {
+        path: 'cdn/explorer', component: StorageExplorerComponent,
         canActivate: [AuthGuardService]
       }, {
         path: '**', component: NotFoundComponent

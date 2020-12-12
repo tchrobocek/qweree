@@ -25,6 +25,9 @@ mat-nav-list h2 {
   color: mat-color($QAdmin-theme, text);
   text-decoration: none;
 }
+.menu-sublink {
+  padding-left: 40px;
+}
 .menu-link.active {
   background-color: lighten($nav-menu-background, 5%);
 }

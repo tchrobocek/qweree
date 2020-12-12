@@ -23,6 +23,7 @@ import { NotFoundComponent } from './components/layout/not-found/not-found.compo
 import { ServicesOverviewComponent } from './components/dashboard/services-overview/services-overview.component';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
+import { StorageExplorerComponent } from './components/cdn/storage-explorer/storage-explorer.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {MatIconModule} from '@angular/material/icon';
     AdminShellComponent,
     NotFoundComponent,
     ServicesOverviewComponent,
-    CdnDashboardComponent
+    CdnDashboardComponent,
+    StorageExplorerComponent
   ],
   imports: [
     BrowserModule,
