@@ -31,8 +31,6 @@ export class StorageExplorerComponent implements OnChanges {
   }
 
   ngOnChanges(model: SimpleChanges): void {
-    console.log('change explorer');
-    console.log(model);
     this.currentPath = this.router.url.substring('/cdn/explorer'.length);
 
     if (!this.currentPath) {

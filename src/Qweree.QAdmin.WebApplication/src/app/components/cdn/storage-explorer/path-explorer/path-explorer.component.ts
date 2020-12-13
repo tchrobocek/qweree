@@ -21,8 +21,6 @@ export class PathExplorerComponent implements OnChanges {
   }
 
   ngOnChanges(model: SimpleChanges){
-    console.log('change path');
-    console.log(model);
     this.files = [];
     this.directories = [];
     this.reload();
