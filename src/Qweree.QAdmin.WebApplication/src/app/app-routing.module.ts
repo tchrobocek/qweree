@@ -7,7 +7,7 @@ import {DashboardComponent as CdnDashboardComponent} from './components/cdn/dash
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 import {NotFoundComponent} from './components/layout/not-found/not-found.component';
 import {StorageExplorerComponent} from './components/cdn/storage-explorer/storage-explorer.component';
-import {StorageImportComponent} from './components/storage-import/storage-import.component';
+import {StorageImportComponent} from './components/cdn/storage-import/storage-import.component';
 
 
 const routes: Routes = [

@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StorageImportComponent implements OnInit {
 
+  public path = '';
+
   constructor() { }
 
   ngOnInit(): void {
