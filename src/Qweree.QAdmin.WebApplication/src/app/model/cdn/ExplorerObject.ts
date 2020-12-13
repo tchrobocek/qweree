@@ -17,7 +17,6 @@ export class ExplorerDirectory implements ExplorerObject {
 
 export class ExplorerFile implements ExplorerObject {
   constructor(
-    public id: string,
     public filename: string,
     public path: string,
     public mediaType: string,

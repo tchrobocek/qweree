@@ -45,3 +45,14 @@ html, body, app-root, .app-frame {
   display: inline-flex;
   vertical-align: top;
 }
+.drop__zone {
+  border: 2px solid rgba(#ff5722, 0.7);
+  border-radius: 30px;
+}
+.drop__content {
+  align-items: center;
+  color: #ff5722;
+  display: flex;
+  height: 100px;
+  justify-content: center;
+}

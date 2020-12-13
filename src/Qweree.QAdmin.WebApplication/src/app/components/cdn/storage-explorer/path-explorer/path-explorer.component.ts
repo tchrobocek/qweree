@@ -64,7 +64,7 @@ export class PathExplorerComponent implements OnChanges {
             this.thisFolder.totalCount += dir.totalCount;
           }
           const file = (o as ExplorerFile);
-          if (file.id) {
+          if (file.mediaType) {
             file.filename = PathExplorerComponent.getFilename(file.path);
             this.files.push(file);
             this.thisFolder.totalSize += file.size;

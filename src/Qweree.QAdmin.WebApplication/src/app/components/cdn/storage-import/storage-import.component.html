@@ -4,15 +4,24 @@
       Storage import
     </mat-card-title>
     <mat-card-content>
-      <div>
+      <div class="input-form">
         <div class="path-input">
           <label>
             <input [(ngModel)]="path" placeholder="path">
           </label>
         </div>
-        <label>
-          <input type="file" multiple>
-        </label>
+        <div class="file-input">
+          <label>
+            <ngx-file-drop dropZoneClassName="drop__zone" contentClassName="drop__content" dropZoneLabel="Drop files here" (onFileDrop)="filesSelected($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                Browse files
+              </ng-template>
+            </ngx-file-drop>
+          </label>
+        </div>
+      </div>
+      <div class="input-review">
+        <div *ngFor="let file of filesView">{{ file.filename}}</div>
       </div>
     </mat-card-content>
   </mat-card>

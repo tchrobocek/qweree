@@ -1,3 +1,7 @@
+mat-card-content {
+  width: 80%;
+  margin: 0 auto;
+}
 .path-input input {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -5,6 +9,9 @@
   padding: 10px 10px;
   color: white;
   display: block;
-  width: 70%;
+  margin: 50px 0;
+  width: 100%;
+}
+.input-form {
   margin: 50px 0;
 }

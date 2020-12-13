@@ -32,6 +32,7 @@ import {BinarySizePipe} from './services/pipes/binary-size.pipe';
 import {MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER, MatTooltipModule} from '@angular/material/tooltip';
 import { StorageImportComponent } from './components/cdn/storage-import/storage-import.component';
 import { FileIconPipe } from './services/pipes/file-icon.pipe';
+import {NgxFileDropModule} from 'ngx-file-drop';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { FileIconPipe } from './services/pipes/file-icon.pipe';
     MatGridListModule,
     MatIconModule,
     MatTooltipModule,
+    NgxFileDropModule,
   ],
   providers: [
     MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER
