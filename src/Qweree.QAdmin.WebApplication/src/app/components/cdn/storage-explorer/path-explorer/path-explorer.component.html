@@ -20,7 +20,7 @@
       <span class="object-item-count">
         {{ thisFolder.totalCount }} items
       </span>
-      <span class="object-item-size">
+      <span class="object-item-size" matTooltip="{{ thisFolder.totalSize }} B">
         {{ thisFolder.totalSize | bytes }}
       </span>
     </div>
@@ -36,7 +36,7 @@
       <span class="object-item-count">
         {{ directory.totalCount }} items
       </span>
-      <span class="object-item-size">
+      <span class="object-item-size" matTooltip="{{ directory.totalSize }} B">
         {{ directory.totalSize | bytes }}
       </span>
       <span class="object-item-modified-at">
@@ -55,7 +55,7 @@
       <span class="object-item-count">
         {{ file.mediaType | mediaType }}
       </span>
-      <span class="object-item-size">
+      <span class="object-item-size" matTooltip="{{ file.size }} B">
         {{ file.size | bytes }}
       </span>
       <span class="object-item-modified-at">

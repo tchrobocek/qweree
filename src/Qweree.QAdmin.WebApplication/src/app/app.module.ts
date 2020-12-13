@@ -29,6 +29,7 @@ import { MediaTypePipe } from './services/pipes/media-type.pipe';
 import { FilenamePipe } from './services/pipes/filename.pipe';
 import { LinkComponent } from './components/link/link.component';
 import {BinarySizePipe} from './services/pipes/binary-size.pipe';
+import {MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER, MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -63,8 +64,11 @@ import {BinarySizePipe} from './services/pipes/binary-size.pipe';
     MatListModule,
     MatGridListModule,
     MatIconModule,
+    MatTooltipModule,
   ],
-  providers: [],
+  providers: [
+    MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
