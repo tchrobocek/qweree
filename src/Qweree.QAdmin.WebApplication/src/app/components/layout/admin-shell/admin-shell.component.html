@@ -5,17 +5,25 @@
         <h2>
           <span class="logo-q">Q</span>weree
         </h2>
-        <a href="/" class="menu-link {{ this.router.url === '/' ? 'active' : '' }}">
-          Dashboard
-        </a>
-        <a href="/cdn" class="menu-link {{ this.router.url === '/cdn' ? 'active' : '' }}">
-          Cdn
-        </a>
-        <a href="/cdn/explorer" class="menu-link menu-sublink {{ this.router.url === '/cdn/explorer' ? 'active' : '' }}">
-          Storage Explorer
-        </a>
-        <a href="#" (click)="signOut()" class="menu-link">
-          Sign out
+        <app-link href="/">
+          <div class="menu-link">
+            Dashboard
+          </div>
+        </app-link>
+        <app-link href="/cdn">
+          <div class="menu-link">
+            Cdn
+          </div>
+        </app-link>
+        <app-link href="/cdn/explorer">
+          <div class="menu-link menu-sublink">
+            Storage Explorer
+          </div>
+        </app-link>
+        <a href="#" (click)="signOut(); $event.preventDefault();">
+          <div class="menu-link">
+            Sign Out
+          </div>
         </a>
       </mat-nav-list>
     </mat-drawer>

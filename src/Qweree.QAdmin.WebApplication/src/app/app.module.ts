@@ -27,6 +27,7 @@ import { StorageExplorerComponent } from './components/cdn/storage-explorer/stor
 import { PathExplorerComponent } from './components/cdn/storage-explorer/path-explorer/path-explorer.component';
 import { MediaTypePipe } from './services/pipes/media-type.pipe';
 import { FilenamePipe } from './services/pipes/filename.pipe';
+import { LinkComponent } from './components/link/link.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { FilenamePipe } from './services/pipes/filename.pipe';
     StorageExplorerComponent,
     PathExplorerComponent,
     MediaTypePipe,
-    FilenamePipe
+    FilenamePipe,
+    LinkComponent
   ],
   imports: [
     BrowserModule,

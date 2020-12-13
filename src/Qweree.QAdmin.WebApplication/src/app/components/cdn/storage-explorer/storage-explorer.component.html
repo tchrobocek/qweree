@@ -9,7 +9,7 @@
           <input [(ngModel)]="inputPath" (blur)="resetInput()" (keyup.enter)="goto()">
         </label>
       </div>
-      <app-path-explorer path="{{ currentPath }}">
+      <app-path-explorer path="{{ currentPath }}" (pathChanged)="pathChanged($event)">
       </app-path-explorer>
     </mat-card-content>
     <mat-card-footer>

@@ -6,12 +6,10 @@ $nav-menu-background: #343434;
 .path-explorer-item {
   padding: 12px 0 12px 32px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-a {
   color: white;
   text-decoration: none;
 }
-a:hover {
+.path-explorer-item:hover {
   background-color: lighten($nav-menu-background, 10%);
 }
 .material-icons {

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {ExplorerDirectory, ExplorerFile} from '../../../../model/cdn/ExplorerObject';
 import {CdnAdapterService} from '../../../../services/cdn/cdn-adapter.service';
 
@@ -7,9 +7,9 @@ import {CdnAdapterService} from '../../../../services/cdn/cdn-adapter.service';
   templateUrl: './path-explorer.component.html',
   styleUrls: ['./path-explorer.component.scss']
 })
-export class PathExplorerComponent implements OnInit {
-
+export class PathExplorerComponent implements OnChanges {
   @Input() public path: string;
+  @Output() public pathChanged = new EventEmitter<string>();
   public directories: ExplorerDirectory[];
   public files: ExplorerFile[];
 
@@ -20,7 +20,15 @@ export class PathExplorerComponent implements OnInit {
     this.files = [];
   }
 
-  ngOnInit(): void {
+  ngOnChanges(model: SimpleChanges){
+    console.log('change path');
+    console.log(model);
+    this.files = [];
+    this.directories = [];
+    this.reload();
+  }
+
+  reload(): void {
     this.cdnAdapter.explore(this.path)
       .subscribe(objects => {
         objects.forEach(o => {
@@ -34,5 +42,17 @@ export class PathExplorerComponent implements OnInit {
           }
         });
       });
+  }
+
+  changePath(path: string): void {
+    this.pathChanged.emit(path);
+  }
+
+  getPrevPath(path: string): string {
+    if (path.endsWith('/')) {
+      path.substring(0, path.length - 1);
+    }
+
+    return path.substring(0, path.lastIndexOf('/'));
   }
 }

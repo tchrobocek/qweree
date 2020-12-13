@@ -1,5 +1,5 @@
 <div class="path-explorer">
-  <a *ngIf="path !== '/'" href="/cdn/explorer{{path}}/..">
+  <app-link (click)="changePath(getPrevPath(path))" *ngIf="path !== '/' && path !== ''" href="/cdn/explorer{{ getPrevPath(path) }}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -8,8 +8,8 @@
         ../
       </span>
     </div>
-  </a>
-  <a href="/cdn/explorer{{path}}">
+  </app-link>
+  <app-link (click)="changePath(path)" href="/cdn/explorer{{path}}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -18,8 +18,8 @@
         ./
       </span>
     </div>
-  </a>
-  <a *ngFor="let directory of this.directories" href="/cdn/explorer{{directory.path}}">
+  </app-link>
+  <app-link (click)="changePath(directory.path)" *ngFor="let directory of this.directories" href="/cdn/explorer{{directory.path}}">
     <div class="path-explorer-item directory">
       <span class="material-icons">
         folder
@@ -40,8 +40,8 @@
         {{ directory.modifiedAt | date:'dd.MM hh:mm:ss' }}
       </span>
     </div>
-  </a>
-  <a  *ngFor="let file of this.files" href="http://localhost:8090/api/v1/storage{{file.path}}">
+  </app-link>
+  <a *ngFor="let file of this.files" href="http://localhost:8090/api/v1/storage{{file.path}}">
     <div class="path-explorer-item file">
       <span class="material-icons">
         text_snippet
