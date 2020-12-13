@@ -6,22 +6,22 @@
           <span class="logo-q">Q</span>weree
         </h2>
         <app-link href="/">
-          <div class="menu-link">
+          <div class="menu-link {{ this.router.url === '/' ? 'active' : '' }}">
             Dashboard
           </div>
         </app-link>
         <app-link href="/cdn">
-          <div class="menu-link">
+          <div class="menu-link {{ this.router.url === '/cdn' ? 'active' : '' }}">
             Cdn
           </div>
         </app-link>
         <app-link href="/cdn/explorer">
-          <div class="menu-link menu-sublink">
+          <div class="menu-link menu-sublink {{ this.router.url.startsWith('/cdn/explorer') ? 'active' : '' }}">
             Storage Explorer
           </div>
         </app-link>
         <app-link href="/cdn/import">
-          <div class="menu-link menu-sublink">
+          <div class="menu-link menu-sublink {{ this.router.url === '/cdn/import' ? 'active' : '' }}">
             Storage Import
           </div>
         </app-link>
