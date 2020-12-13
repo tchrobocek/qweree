@@ -2,18 +2,34 @@
   <div class="path-explorer-item directory path-explorer-item-header">
     <span class="path-explorer-item-icon">
     </span>
-    <span class="object-path">
+    <span (click)="sortBy('filename')" class="object-path">
         Filename
-    </span>
-    <span class="object-item-count">
-        Media type
-    </span>
-    <span class="object-item-size">
-        Size
-    </span>
-    <span class="object-item-modified-at">
-        Last modification time
+      <span class="material-icons" *ngIf="orderField == 'filename'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
       </span>
+    </span>
+    <span (click)="sortBy('mediaType')" class="object-item-count">
+        Media type
+      <span class="material-icons" *ngIf="orderField == 'mediaType'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+    <span (click)="sortBy('size')" class="object-item-size">
+        Size
+      <span class="material-icons" *ngIf="orderField == 'size'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+    <span (click)="sortBy('modifiedAt')" class="object-item-modified-at">
+      Last modification time
+      <span class="material-icons" *ngIf="orderField == 'modifiedAt'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
   </div>
   <a (click)="$event.preventDefault(); changePath(this.prevPath);" *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.path }}/..">
     <div class="path-explorer-item">

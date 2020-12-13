@@ -18,10 +18,20 @@ export class PathExplorerComponent implements OnChanges {
     totalSize: 0,
     itemsInView: 0
   };
+  public orderField = 'filename';
+  public orderDir = 1;
 
   constructor(
     private cdnAdapter: CdnAdapterService,
   ) {
+  }
+
+  private static getFilename(path: string): string {
+    if (path.endsWith('/')) {
+      path = path.substr(0, path.length - 1);
+    }
+
+    return path.substr(path.lastIndexOf('/') + 1);
   }
 
   private static getPrevPath(path: string): string {
@@ -34,7 +44,7 @@ export class PathExplorerComponent implements OnChanges {
     return newPath;
   }
 
-  ngOnChanges(model: SimpleChanges){
+  ngOnChanges(model: SimpleChanges) {
     this.files = [];
     this.directories = [];
     this.thisFolder = {totalCount: 0, totalSize: 0, itemsInView: 0};
@@ -48,23 +58,57 @@ export class PathExplorerComponent implements OnChanges {
         objects.forEach(o => {
           const dir = (o as ExplorerDirectory);
           if (dir.totalCount) {
+            dir.filename = PathExplorerComponent.getFilename(dir.path);
             this.directories.push(dir);
             this.thisFolder.totalSize += dir.totalSize;
             this.thisFolder.totalCount += dir.totalCount;
           }
           const file = (o as ExplorerFile);
           if (file.id) {
+            file.filename = PathExplorerComponent.getFilename(file.path);
             this.files.push(file);
             this.thisFolder.totalSize += file.size;
-            this.thisFolder.totalCount ++;
+            this.thisFolder.totalCount++;
           }
 
-          this.thisFolder.itemsInView ++;
+          this.thisFolder.itemsInView++;
         });
+
+        this.sort();
       });
+  }
+
+  private sort(): void {
+    this.directories = this.directories.sort((a, b) => {
+      let field = this.orderField;
+
+      if (field === 'mediaType') { field = 'totalCount'; }
+      if (field === 'size') { field = 'totalSize'; }
+
+      return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
+    });
+    this.files = this.files.sort((a, b) => {
+      const field = this.orderField;
+      return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
+    });
+
+    console.log('sorted');
   }
 
   changePath(path: string): void {
     this.pathChanged.emit(path);
+  }
+
+  sortBy(field: string): void {
+    if (this.orderField === field) {
+      this.orderDir *= -1;
+      this.sort();
+      return;
+    }
+
+    this.orderField = field;
+    this.orderDir = 1;
+
+    this.sort();
   }
 }

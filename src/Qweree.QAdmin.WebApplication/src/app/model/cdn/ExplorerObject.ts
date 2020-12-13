@@ -1,9 +1,11 @@
 export interface ExplorerObject {
+  readonly filename: string;
   readonly path: string;
 }
 
 export class ExplorerDirectory implements ExplorerObject {
   constructor(
+    public filename: string,
     public path: string,
     public totalCount: number,
     public totalSize: number,
@@ -16,6 +18,7 @@ export class ExplorerDirectory implements ExplorerObject {
 export class ExplorerFile implements ExplorerObject {
   constructor(
     public id: string,
+    public filename: string,
     public path: string,
     public mediaType: string,
     public size: number,
