@@ -17,6 +17,12 @@
       <span class="object-path">
         ./
       </span>
+      <span class="object-item-count">
+        {{ thisFolder.totalCount }} items
+      </span>
+      <span class="object-item-size">
+        {{ thisFolder.totalSize | bytes }}
+      </span>
     </div>
   </app-link>
   <app-link (click)="changePath(directory.path)" *ngFor="let directory of this.directories" href="/cdn/explorer{{directory.path}}">
@@ -31,7 +37,7 @@
         {{ directory.totalCount }} items
       </span>
       <span class="object-item-size">
-        {{ directory.totalSize }} B
+        {{ directory.totalSize | bytes }}
       </span>
       <span class="object-item-modified-at">
         {{ directory.modifiedAt | date:'d/M/y hh:mm:ss' }}
@@ -50,7 +56,7 @@
         {{ file.mediaType | mediaType }}
       </span>
       <span class="object-item-size">
-        {{ file.size }} B
+        {{ file.size | bytes }}
       </span>
       <span class="object-item-modified-at">
         {{ file.modifiedAt | date:'d/M/y hh:mm:ss' }}

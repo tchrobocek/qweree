@@ -28,6 +28,7 @@ import { PathExplorerComponent } from './components/cdn/storage-explorer/path-ex
 import { MediaTypePipe } from './services/pipes/media-type.pipe';
 import { FilenamePipe } from './services/pipes/filename.pipe';
 import { LinkComponent } from './components/link/link.component';
+import {BinarySizePipe} from './services/pipes/binary-size.pipe';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { LinkComponent } from './components/link/link.component';
     PathExplorerComponent,
     MediaTypePipe,
     FilenamePipe,
+    BinarySizePipe,
     LinkComponent
   ],
   imports: [

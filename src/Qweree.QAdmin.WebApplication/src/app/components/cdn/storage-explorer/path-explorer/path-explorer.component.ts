@@ -13,6 +13,10 @@ export class PathExplorerComponent implements OnChanges {
   public directories: ExplorerDirectory[];
   public files: ExplorerFile[];
   public prevPath: string;
+  public thisFolder = {
+    totalCount: 0,
+    totalSize: 0
+  };
 
   constructor(
     private cdnAdapter: CdnAdapterService,
@@ -32,6 +36,7 @@ export class PathExplorerComponent implements OnChanges {
   ngOnChanges(model: SimpleChanges){
     this.files = [];
     this.directories = [];
+    this.thisFolder = {totalCount: 0, totalSize: 0};
     this.prevPath = PathExplorerComponent.getPrevPath(this.path);
     this.reload();
   }
@@ -43,10 +48,14 @@ export class PathExplorerComponent implements OnChanges {
           const dir = (o as ExplorerDirectory);
           if (dir.totalCount) {
             this.directories.push(dir);
+            this.thisFolder.totalSize += dir.totalSize;
+            this.thisFolder.totalCount += dir.totalCount;
           }
           const file = (o as ExplorerFile);
           if (file.id) {
             this.files.push(file);
+            this.thisFolder.totalSize += file.size;
+            this.thisFolder.totalCount ++;
           }
         });
       });
