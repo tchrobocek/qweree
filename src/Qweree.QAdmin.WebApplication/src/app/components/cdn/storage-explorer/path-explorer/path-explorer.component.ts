@@ -15,7 +15,8 @@ export class PathExplorerComponent implements OnChanges {
   public prevPath: string;
   public thisFolder = {
     totalCount: 0,
-    totalSize: 0
+    totalSize: 0,
+    itemsInView: 0
   };
 
   constructor(
@@ -36,7 +37,7 @@ export class PathExplorerComponent implements OnChanges {
   ngOnChanges(model: SimpleChanges){
     this.files = [];
     this.directories = [];
-    this.thisFolder = {totalCount: 0, totalSize: 0};
+    this.thisFolder = {totalCount: 0, totalSize: 0, itemsInView: 0};
     this.prevPath = PathExplorerComponent.getPrevPath(this.path);
     this.reload();
   }
@@ -57,6 +58,8 @@ export class PathExplorerComponent implements OnChanges {
             this.thisFolder.totalSize += file.size;
             this.thisFolder.totalCount ++;
           }
+
+          this.thisFolder.itemsInView ++;
         });
       });
   }

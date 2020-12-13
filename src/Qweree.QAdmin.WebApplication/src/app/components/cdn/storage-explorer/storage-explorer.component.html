@@ -6,10 +6,10 @@
     <mat-card-content>
       <div class="current-path">
         <label>
-          <input [(ngModel)]="inputPath" (blur)="resetInput()" (keyup.enter)="goto()">
+          <input [(ngModel)]="inputPath" (blur)="inputPath = currentPath" (keyup.enter)="goto()">
         </label>
       </div>
-      <app-path-explorer path="{{ currentPath }}" (pathChanged)="pathChanged($event)">
+      <app-path-explorer path="{{ currentPath }}" (pathChanged)="pathChangedFromPathExplorer($event)">
       </app-path-explorer>
     </mat-card-content>
     <mat-card-footer>

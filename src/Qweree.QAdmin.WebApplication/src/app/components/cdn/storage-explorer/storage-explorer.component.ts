@@ -18,15 +18,19 @@ export class StorageExplorerComponent implements OnInit {
   ) {
   }
 
-  resetInput(): void {
-    this.inputPath = this.currentPath;
+  ngOnInit(): void {
+    this.router.events.subscribe(() => {
+      this.setupCurrentPathFromRouter();
+    });
+
+    this.setupCurrentPathFromRouter();
   }
 
   goto(): void {
     this.router.navigate(['/cdn/explorer/' + this.inputPath]);
   }
 
-  pathChanged(path: string): void {
+  pathChangedFromPathExplorer(path: string): void {
     if (path === '') {
       path = '/';
     }
@@ -36,16 +40,7 @@ export class StorageExplorerComponent implements OnInit {
     this.goto();
   }
 
-  ngOnInit(): void {
-    this.router.events.subscribe(() => {
-      this.refreshPath();
-    });
-
-    this.refreshPath();
-  }
-
-  refreshPath(): void {
-
+  setupCurrentPathFromRouter(): void {
     this.currentPath = this.router.url.substring('/cdn/explorer'.length);
 
     if (!this.currentPath) {

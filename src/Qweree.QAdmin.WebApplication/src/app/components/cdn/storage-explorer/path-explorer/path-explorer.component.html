@@ -34,7 +34,7 @@
         <span  matTooltip="{{ this.path }}">./</span>
       </span>
       <span class="object-item-count">
-        {{ thisFolder.totalCount }} items
+        <span matTooltip="Items in view: {{ thisFolder.itemsInView }}">{{ thisFolder.totalCount }} items</span>
       </span>
       <span class="object-item-size">
         <span matTooltip="{{ thisFolder.totalSize }} B">{{ thisFolder.totalSize | bytes }}</span>
