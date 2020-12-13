@@ -12,6 +12,14 @@ $nav-menu-background: #343434;
 .path-explorer-item:hover {
   background-color: lighten($nav-menu-background, 10%);
 }
+.path-explorer-item-header:hover {
+  background-color: #424242;
+}
+.path-explorer-item-icon {
+  display: inline-block;
+  width: 24px;
+  margin: 0 10px;
+}
 .material-icons {
   display: inline-block;
   margin: 0 10px;

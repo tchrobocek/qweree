@@ -1,11 +1,27 @@
 <div class="path-explorer">
+  <div class="path-explorer-item directory path-explorer-item-header">
+    <span class="path-explorer-item-icon">
+    </span>
+    <span class="object-path">
+        Filename
+    </span>
+    <span class="object-item-count">
+        Media type
+    </span>
+    <span class="object-item-size">
+        Size
+    </span>
+    <span class="object-item-modified-at">
+        Last modification time
+      </span>
+  </div>
   <a (click)="$event.preventDefault(); changePath(this.prevPath);" *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.path }}/..">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
       </span>
       <span class="object-path">
-        ../
+        <span  matTooltip="{{ this.prevPath }}">../</span>
       </span>
     </div>
   </a>
@@ -15,13 +31,13 @@
         folder
       </span>
       <span class="object-path">
-        ./
+        <span  matTooltip="{{ this.path }}">./</span>
       </span>
       <span class="object-item-count">
         {{ thisFolder.totalCount }} items
       </span>
-      <span class="object-item-size" matTooltip="{{ thisFolder.totalSize }} B">
-        {{ thisFolder.totalSize | bytes }}
+      <span class="object-item-size">
+        <span matTooltip="{{ thisFolder.totalSize }} B">{{ thisFolder.totalSize | bytes }}</span>
       </span>
     </div>
   </app-link>
@@ -31,35 +47,36 @@
         folder
       </span>
       <span class="object-path">
-        {{ directory.path | filename  }}
+        <span  matTooltip="{{ directory.path }}">{{ directory.path | filename  }}</span>
       </span>
       <span class="object-item-count">
         {{ directory.totalCount }} items
       </span>
-      <span class="object-item-size" matTooltip="{{ directory.totalSize }} B">
-        {{ directory.totalSize | bytes }}
+      <span class="object-item-size">
+        <span  matTooltip="{{ directory.totalSize }} B">{{ directory.totalSize | bytes }}</span>
       </span>
       <span class="object-item-modified-at">
-        {{ directory.modifiedAt | date:'d/M/y hh:mm:ss' }}
+        <span matTooltip="Creation time: {{ directory.createdAt | date:'d/M/y hh:mm:ss' }}">{{ directory.modifiedAt | date:'d/M/y hh:mm:ss' }}</span>
       </span>
     </div>
   </app-link>
-  <a *ngFor="let file of this.files" href="http://localhost:8090/api/v1/storage{{file.path}}">
+  <a *ngFor="let file of this.files"
+     href="http://localhost:8090/api/v1/storage{{file.path}}">
     <div class="path-explorer-item file">
       <span class="material-icons">
         text_snippet
       </span>
       <span class="object-path">
-        {{ file.path | filename }}
+        <span  matTooltip="{{ file.path }}">{{ file.path | filename }}</span>
       </span>
       <span class="object-item-count">
-        {{ file.mediaType | mediaType }}
+        <span matTooltip="{{ file.mediaType }}">{{ file.mediaType | mediaType }}</span>
       </span>
-      <span class="object-item-size" matTooltip="{{ file.size }} B">
-        {{ file.size | bytes }}
+      <span class="object-item-size">
+        <span  matTooltip="{{ file.size }} B">{{ file.size | bytes }}</span>
       </span>
       <span class="object-item-modified-at">
-        {{ file.modifiedAt | date:'d/M/y hh:mm:ss' }}
+        <span matTooltip="Creation time: {{ file.createdAt | date:'d/M/y hh:mm:ss' }}">{{ file.modifiedAt | date:'d/M/y hh:mm:ss' }}</span>
       </span>
     </div>
   </a>
