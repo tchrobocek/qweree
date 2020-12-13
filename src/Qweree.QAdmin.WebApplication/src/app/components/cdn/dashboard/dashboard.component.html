@@ -1,11 +1,11 @@
 <div class="dashboard-content">
   <mat-card>
     <mat-card-title>
-      Cdn
+      Cdn Stats
     </mat-card-title>
     <mat-card-content>
+      <p>Objects: {{ totalCount }}</p>
+      <p>Total size: <span matTooltip="{{ totalSize }} B">{{ totalSize | bytes }}</span></p>
     </mat-card-content>
-    <mat-card-footer>
-    </mat-card-footer>
   </mat-card>
 </div>
