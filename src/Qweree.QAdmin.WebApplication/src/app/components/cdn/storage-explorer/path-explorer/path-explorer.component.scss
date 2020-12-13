@@ -26,15 +26,10 @@ $nav-menu-background: #343434;
   width: 80px;
   margin: 0 10px;
 }
-.object-total-size {
-  display: inline-block;
-  width: 80px;
-  margin: 0 10px;
-}
-.object-item-created-at {
+.object-total-size, .object-item-size {
   display: inline-block;
   width: 120px;
-  margin: 0 10px 0 30px;
+  margin: 0 10px;
 }
 .object-total-modified-at {
   display: inline-block;

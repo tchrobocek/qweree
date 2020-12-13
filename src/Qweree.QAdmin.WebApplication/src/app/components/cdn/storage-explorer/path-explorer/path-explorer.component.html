@@ -33,11 +33,8 @@
       <span class="object-item-size">
         {{ directory.totalSize }} B
       </span>
-      <span class="object-item-created-at">
-        {{ directory.createdAt | date:'dd.MM hh:mm:ss' }}
-      </span>
       <span class="object-item-modified-at">
-        {{ directory.modifiedAt | date:'dd.MM hh:mm:ss' }}
+        {{ directory.modifiedAt | date:'d/M/y hh:mm:ss' }}
       </span>
     </div>
   </app-link>
@@ -55,11 +52,8 @@
       <span class="object-item-size">
         {{ file.size }} B
       </span>
-      <span class="object-item-created-at">
-        {{ file.createdAt | date:'dd.MM hh:mm:ss' }}
-      </span>
       <span class="object-item-modified-at">
-        {{ file.modifiedAt | date:'dd.MM hh:mm:ss' }}
+        {{ file.modifiedAt | date:'d/M/y hh:mm:ss' }}
       </span>
     </div>
   </a>
