@@ -23,7 +23,7 @@ export class StorageExplorerComponent implements OnInit {
   }
 
   goto(): void {
-    this.currentPath = this.inputPath;
+    this.router.navigate(['/cdn/explorer/' + this.inputPath]);
   }
 
   pathChanged(path: string): void {
