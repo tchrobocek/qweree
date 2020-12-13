@@ -23,11 +23,15 @@ export class StorageExplorerComponent implements OnInit {
   }
 
   goto(): void {
-    window.location.href = '/cdn/explorer' + this.inputPath;
+    this.currentPath = this.inputPath;
   }
 
   pathChanged(path: string): void {
+    if (path === '') {
+      path = '/';
+    }
     this.currentPath = path;
+    this.inputPath = path;
   }
 
   ngOnInit(): void {
