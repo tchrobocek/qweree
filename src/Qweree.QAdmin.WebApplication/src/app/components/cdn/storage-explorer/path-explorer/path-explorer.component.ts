@@ -12,17 +12,27 @@ export class PathExplorerComponent implements OnChanges {
   @Output() public pathChanged = new EventEmitter<string>();
   public directories: ExplorerDirectory[];
   public files: ExplorerFile[];
+  public prevPath: string;
 
   constructor(
     private cdnAdapter: CdnAdapterService,
   ) {
-    this.directories = [];
-    this.files = [];
+  }
+
+  private static getPrevPath(path: string): string {
+    let newPath = path;
+    if (newPath.endsWith('/')) {
+      newPath.substring(0, newPath.length - 1);
+    }
+
+    newPath = newPath.substring(0, newPath.lastIndexOf('/')) + '/';
+    return newPath;
   }
 
   ngOnChanges(model: SimpleChanges){
     this.files = [];
     this.directories = [];
+    this.prevPath = PathExplorerComponent.getPrevPath(this.path);
     this.reload();
   }
 
@@ -44,13 +54,5 @@ export class PathExplorerComponent implements OnChanges {
 
   changePath(path: string): void {
     this.pathChanged.emit(path);
-  }
-
-  getPrevPath(path: string): string {
-    if (path.endsWith('/')) {
-      path.substring(0, path.length - 1);
-    }
-
-    return path.substring(0, path.lastIndexOf('/'));
   }
 }

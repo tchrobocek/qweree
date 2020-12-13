@@ -32,6 +32,8 @@ export class StorageExplorerComponent implements OnInit {
     }
     this.currentPath = path;
     this.inputPath = path;
+
+    this.goto();
   }
 
   ngOnInit(): void {

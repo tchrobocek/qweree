@@ -1,5 +1,5 @@
 <div class="path-explorer">
-  <app-link (click)="changePath(getPrevPath(path))" *ngIf="path !== '/' && path !== ''" href="/cdn/explorer{{ getPrevPath(path) }}">
+  <a (click)="$event.preventDefault(); changePath(this.prevPath);" *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.path }}/..">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -8,8 +8,8 @@
         ../
       </span>
     </div>
-  </app-link>
-  <app-link (click)="changePath(path)" href="/cdn/explorer{{path}}">
+  </a>
+  <app-link (click)="changePath(this.path)" href="/cdn/explorer{{this.path}}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
