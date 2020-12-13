@@ -1,4 +1,4 @@
-import {Component, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
 import {Router} from '@angular/router';
 
@@ -7,7 +7,7 @@ import {Router} from '@angular/router';
   templateUrl: './storage-explorer.component.html',
   styleUrls: ['./storage-explorer.component.scss']
 })
-export class StorageExplorerComponent implements OnChanges {
+export class StorageExplorerComponent implements OnInit {
 
   public currentPath: string;
   public inputPath: string;
@@ -30,7 +30,16 @@ export class StorageExplorerComponent implements OnChanges {
     this.currentPath = path;
   }
 
-  ngOnChanges(model: SimpleChanges): void {
+  ngOnInit(): void {
+    this.router.events.subscribe(() => {
+      this.refreshPath();
+    });
+
+    this.refreshPath();
+  }
+
+  refreshPath(): void {
+
     this.currentPath = this.router.url.substring('/cdn/explorer'.length);
 
     if (!this.currentPath) {
