@@ -80,7 +80,7 @@
      href="http://localhost:8090/api/v1/storage{{file.path}}">
     <div class="path-explorer-item file">
       <span class="material-icons">
-        text_snippet
+        {{ file.mediaType | fileIcon}}
       </span>
       <span class="object-path">
         <span  matTooltip="{{ file.path }}">{{ file.path | filename }}</span>
