@@ -12,6 +12,9 @@ $nav-menu-background: #343434;
 .path-explorer-item:hover {
   background-color: lighten($nav-menu-background, 10%);
 }
+.path-explorer-item-header span {
+  cursor: pointer;
+}
 .path-explorer-item-header:hover {
   background-color: #424242;
 }
