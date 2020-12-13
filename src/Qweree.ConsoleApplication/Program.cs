@@ -34,7 +34,7 @@ namespace Qweree.ConsoleApplication
                 var path = Path.Combine(folders[random.Next(folders.Length)],
                     folders[random.Next(folders.Length)], Guid.NewGuid().ToString());
                 image.Seek(0, SeekOrigin.Begin);
-                await storageAdapter.StoreAsync(path, "image/jpeg", image);
+                await storageAdapter.StoreAsync(path, args[1], image);
                 Console.WriteLine($@"Created object ""{path}""");
             }
 
