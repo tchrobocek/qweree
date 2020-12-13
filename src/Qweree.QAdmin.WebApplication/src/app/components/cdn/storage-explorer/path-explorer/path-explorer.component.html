@@ -72,7 +72,7 @@
         <span  matTooltip="{{ directory.totalSize }} B">{{ directory.totalSize | bytes }}</span>
       </span>
       <span class="object-item-modified-at">
-        <span matTooltip="Creation time: {{ directory.createdAt | date:'d/M/y hh:mm:ss' }}">{{ directory.modifiedAt | date:'d/M/y hh:mm:ss' }}</span>
+        <span matTooltip="Creation time: {{ directory.createdAt | date:'d/M/y HH:mm:ss' }}">{{ directory.modifiedAt | date:'d/M/y HH:mm:ss' }}</span>
       </span>
     </div>
   </app-link>
@@ -92,7 +92,7 @@
         <span  matTooltip="{{ file.size }} B">{{ file.size | bytes }}</span>
       </span>
       <span class="object-item-modified-at">
-        <span matTooltip="Creation time: {{ file.createdAt | date:'d/M/y hh:mm:ss' }}">{{ file.modifiedAt | date:'d/M/y hh:mm:ss' }}</span>
+        <span matTooltip="Creation time: {{ file.createdAt | date:'d/M/y HH:mm:ss' }}">{{ file.modifiedAt | date:'d/M/y HH:mm:ss' }}</span>
       </span>
     </div>
   </a>
