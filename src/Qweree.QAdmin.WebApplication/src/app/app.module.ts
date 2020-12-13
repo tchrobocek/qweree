@@ -30,6 +30,7 @@ import { FilenamePipe } from './services/pipes/filename.pipe';
 import { LinkComponent } from './components/link/link.component';
 import {BinarySizePipe} from './services/pipes/binary-size.pipe';
 import {MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER, MatTooltipModule} from '@angular/material/tooltip';
+import { StorageImportComponent } from './components/storage-import/storage-import.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import {MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER, MatTooltipModule} from '@a
     MediaTypePipe,
     FilenamePipe,
     BinarySizePipe,
-    LinkComponent
+    LinkComponent,
+    StorageImportComponent
   ],
   imports: [
     BrowserModule,
