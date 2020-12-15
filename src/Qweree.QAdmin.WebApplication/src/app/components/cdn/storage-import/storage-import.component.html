@@ -21,7 +21,10 @@
         </div>
       </div>
       <div class="input-review">
-        <div *ngFor="let file of filesView">{{ file.filename}}</div>
+        <div *ngFor="let file of filesView">{{ file.path }}</div>
+      </div>
+      <div class="confirm" *ngIf="filesView.length !== 0">
+        <button mat-raised-button color="primary" (click)="uploadFiles()">Upload</button>
       </div>
     </mat-card-content>
   </mat-card>

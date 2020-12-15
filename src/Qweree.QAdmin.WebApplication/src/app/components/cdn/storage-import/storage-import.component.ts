@@ -33,11 +33,13 @@ export class StorageImportComponent implements OnInit {
     const fileEntry = file as FileSystemFileEntry;
     this.files.push(fileEntry);
     fileEntry.file(f => {
-      this.filesView.push(new ExplorerFile(file.name, file.name, f.type, f.size, f.lastModified.toString(), f.lastModified.toString()));
+      // @ts-ignore
+      const fullPath = fileEntry.fullPath;
+      this.filesView.push(new ExplorerFile(file.name, fullPath, f.type, f.size, f.lastModified.toString(), f.lastModified.toString()));
     });
   }
 
-  readDirectory(directory: FileSystemEntry): FileSystemFileEntry[] {
+  private readDirectory(directory: FileSystemEntry): FileSystemFileEntry[] {
     const dir = (directory as FileSystemDirectoryEntry);
     const reader = dir.createReader();
     const result = [];
@@ -53,5 +55,9 @@ export class StorageImportComponent implements OnInit {
     });
 
     return result;
+  }
+
+  uploadFiles(): void {
+
   }
 }
