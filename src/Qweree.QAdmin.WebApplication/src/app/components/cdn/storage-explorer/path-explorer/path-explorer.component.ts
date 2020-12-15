@@ -2,7 +2,6 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 import {ExplorerDirectory, ExplorerFile} from '../../../../model/cdn/ExplorerObject';
 import {Observable} from 'rxjs';
 import {UriHelper} from '../../../../services/UriHelper';
-import {EnvironmentService} from '../../../../services/environment/environment.service';
 
 @Component({
   selector: 'app-path-explorer',
@@ -13,6 +12,9 @@ export class PathExplorerComponent implements OnInit, OnChanges {
   @Input() public path: string;
   @Input() public directoriesObservable: Observable<ExplorerDirectory[]>;
   @Input() public filesObservable: Observable<ExplorerFile[]>;
+  @Input() public noHref = false;
+  @Input() public url = '';
+  @Input() public cdnBaseUrl = '';
 
   public directoriesView: ExplorerDirectory[] = [];
   public filesView: ExplorerFile[] = [];
@@ -24,11 +26,6 @@ export class PathExplorerComponent implements OnInit, OnChanges {
   };
   public orderField = 'filename';
   public orderDir = 1;
-
-  constructor(
-    private environmentService: EnvironmentService
-  ) {
-  }
 
   private static getPrevPath(path: string): string {
     let newPath = path;
@@ -94,9 +91,27 @@ export class PathExplorerComponent implements OnInit, OnChanges {
     this.sort();
   }
 
+  getExplorerHref(path: string): string|undefined {
+    if (this.noHref) {
+      return this.url;
+    }
+
+    return UriHelper.getUri(this.url, path);
+  }
+
   getHref(path: string): string|undefined {
-    const uri = UriHelper.getUri(this.environmentService.getEnvironment().cdn.baseUri, '/api/v1/storage');
-    return UriHelper.getUri(uri, path);
+    if (this.noHref) {
+      return this.url;
+    }
+
+    return UriHelper.getUri(this.cdnBaseUrl, path);
+  }
+
+  linkClick($event): void {
+    if (this.noHref) {
+      $event.preventDefault();
+      $event.stopPropagation();
+    }
   }
 
   countThisFolder(): void {

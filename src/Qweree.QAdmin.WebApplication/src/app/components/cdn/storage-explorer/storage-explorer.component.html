@@ -16,7 +16,9 @@
       <app-path-explorer
         [filesObservable]="currentFilesObservable"
         [directoriesObservable]="currentDirectoriesObservable"
-        [path]="path">
+        [path]="path"
+        url="/cdn/explorer"
+        [cdnBaseUrl]="getCdnBaseUrl()">
       </app-path-explorer>
     </mat-card-content>
     <mat-card-footer>

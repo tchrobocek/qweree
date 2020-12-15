@@ -24,7 +24,9 @@
         <app-path-explorer
           path="/"
           [directoriesObservable]="directoriesObservable"
-          [filesObservable]="filesObservable"></app-path-explorer>
+          [filesObservable]="filesObservable"
+          [noHref]="true"
+          [url]="this.router.url"></app-path-explorer>
       </div>
       <div class="confirm" *ngIf="files.length !== 0">
         <button mat-raised-button color="primary" (click)="uploadFiles()">Upload</button>

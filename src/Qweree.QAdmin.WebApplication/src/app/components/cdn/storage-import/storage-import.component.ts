@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FileSystemDirectoryEntry, FileSystemEntry, FileSystemFileEntry, NgxFileDropEntry} from 'ngx-file-drop';
 import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
 import {Subject} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-storage-import',
@@ -20,7 +21,9 @@ export class StorageImportComponent implements OnInit {
   public files: FileSystemFileEntry[] = [];
   public filesView: ExplorerFile[] = [];
 
-  constructor() { }
+  constructor(
+    public router: Router
+  ) { }
 
   ngOnInit(): void {
   }

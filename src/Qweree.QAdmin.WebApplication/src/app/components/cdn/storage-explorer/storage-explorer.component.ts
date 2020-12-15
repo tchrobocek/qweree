@@ -3,6 +3,8 @@ import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
 import {Subject} from 'rxjs';
+import {UriHelper} from '../../../services/UriHelper';
+import {EnvironmentService} from '../../../services/environment/environment.service';
 
 @Component({
   selector: 'app-storage-explorer',
@@ -24,7 +26,8 @@ export class StorageExplorerComponent implements OnInit {
 
   constructor(
     private cdnAdapter: CdnAdapterService,
-    public router: Router
+    public router: Router,
+    private environmentService: EnvironmentService
   ) {
   }
 
@@ -100,5 +103,9 @@ export class StorageExplorerComponent implements OnInit {
     this.path = path.toString();
     this.inputPath = this.path;
     this.currentPathSubject.next(path);
+  }
+
+  getCdnBaseUrl(): string {
+    return UriHelper.getUri(this.environmentService.getEnvironment().cdn.baseUri, '/api/v1/storage');
   }
 }

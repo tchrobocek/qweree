@@ -31,7 +31,7 @@
       </span>
     </span>
   </div>
-  <app-link *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.prevPath }}">
+  <app-link (click)="linkClick($event)" *ngIf="this.path !== '/' && this.path !== ''" href="{{getExplorerHref(prevPath)}}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -41,7 +41,7 @@
       </span>
     </div>
   </app-link>
-  <app-link href="/cdn/explorer{{this.path}}">
+  <app-link (click)="linkClick($event)" href="{{getExplorerHref(this.path)}}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -57,7 +57,7 @@
       </span>
     </div>
   </app-link>
-  <app-link *ngFor="let directory of this.directoriesView" href="/cdn/explorer{{directory.path}}">
+  <app-link (click)="linkClick($event)" *ngFor="let directory of this.directoriesView" href="{{getExplorerHref(directory.path)}}">
     <div class="path-explorer-item directory">
       <span class="material-icons">
         folder
@@ -76,7 +76,7 @@
       </span>
     </div>
   </app-link>
-  <a *ngFor="let file of this.filesView"
+  <a (click)="linkClick($event)" *ngFor="let file of this.filesView"
      [href]="getHref(file.path)">
     <div class="path-explorer-item file">
       <span class="material-icons">
