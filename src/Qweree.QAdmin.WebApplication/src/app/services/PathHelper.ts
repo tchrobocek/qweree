@@ -1,5 +1,5 @@
-export class UriHelper {
-  static getUri(base: string, path: string): string {
+export class PathHelper {
+  static getPath(base: string, path: string): string {
     let uri = base;
 
     if (base.endsWith('/')) {

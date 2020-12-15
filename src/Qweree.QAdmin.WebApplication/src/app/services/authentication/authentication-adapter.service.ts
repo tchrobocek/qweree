@@ -5,7 +5,7 @@ import {TokenInfoDto} from './TokenInfoDto';
 import {catchError, map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {EnvironmentService} from '../environment/environment.service';
-import {UriHelper} from '../UriHelper';
+import {PathHelper} from '../PathHelper';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class AuthenticationAdapterService {
       headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
     };
 
-    const uri = UriHelper.getUri(this.environmentService.getEnvironment().authentication.baseUri, '/api/oauth2/auth');
+    const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/oauth2/auth');
     return this.httpClient.post<TokenInfoDto>( uri, body.toString(), options)
       .pipe(map(t => {
         return new TokenInfo(t.access_token, t.refresh_token, t.expires_in, new Date().toDateString());

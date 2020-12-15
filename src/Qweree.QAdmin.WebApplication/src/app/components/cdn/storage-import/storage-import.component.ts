@@ -3,6 +3,9 @@ import {FileSystemDirectoryEntry, FileSystemEntry, FileSystemFileEntry, NgxFileD
 import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
 import {Subject} from 'rxjs';
 import {Router} from '@angular/router';
+import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
+import {PathHelper} from '../../../services/PathHelper';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-storage-import',
@@ -17,19 +20,20 @@ export class StorageImportComponent implements OnInit {
   public directoriesObservable = this.directoriesSubject.asObservable();
   public filesObservable = this.filesSubject.asObservable();
 
-  public path = '';
+  public path = '/';
   public files: FileSystemFileEntry[] = [];
   public filesView: ExplorerFile[] = [];
 
   constructor(
-    public router: Router
+    public router: Router,
+    public cdnAdapter: CdnAdapterService,
+    public snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
   }
 
   filesSelected(files: NgxFileDropEntry[]): void {
-    console.log(files);
     files.forEach(f => {
       if (f.fileEntry.isFile) {
         this.readFile(f.fileEntry);
@@ -47,7 +51,6 @@ export class StorageImportComponent implements OnInit {
     fileEntry.file(f => {
       // @ts-ignore
       const fullPath = fileEntry.fullPath;
-      console.log(fileEntry);
       this.filesView.push(new ExplorerFile(fullPath ?? file.name, fullPath ?? file.name,
         f.type, f.size, f.lastModified.toString(), f.lastModified.toString()));
     });
@@ -72,6 +75,27 @@ export class StorageImportComponent implements OnInit {
   }
 
   uploadFiles(): void {
-
+    this.files.forEach(f => {
+      // @ts-ignore
+      const fullPath = f.fullPath ?? f.name;
+      f.file((stream: File) => {
+        console.log(stream);
+        stream.arrayBuffer().then(buffer => {
+          const uri = PathHelper.getPath(this.path, fullPath);
+          let type = stream.type;
+          if (!type || type.trim().length === 0) {
+            type = 'application/octet-stream';
+          }
+          this.cdnAdapter.store(uri, type, buffer).subscribe(() => {
+            this.snackBar.open('File "' + uri + '" uploaded.', null, {duration: 2000});
+            const index = this.filesView.findIndex(r => r.path === uri);
+            this.filesView.splice(index, 1);
+            this.filesSubject.next(this.filesView);
+          }, () => {
+            this.snackBar.open('File upload "' + uri + '" failed.', null, {duration: 2000});
+          });
+        });
+      });
+    });
   }
 }

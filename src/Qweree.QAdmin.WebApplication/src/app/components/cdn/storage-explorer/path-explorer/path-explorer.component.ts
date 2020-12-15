@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {ExplorerDirectory, ExplorerFile} from '../../../../model/cdn/ExplorerObject';
 import {Observable} from 'rxjs';
-import {UriHelper} from '../../../../services/UriHelper';
+import {PathHelper} from '../../../../services/PathHelper';
 
 @Component({
   selector: 'app-path-explorer',
@@ -96,7 +96,7 @@ export class PathExplorerComponent implements OnInit, OnChanges {
       return this.url;
     }
 
-    return UriHelper.getUri(this.url, path);
+    return PathHelper.getPath(this.url, path);
   }
 
   getHref(path: string): string|undefined {
@@ -104,7 +104,7 @@ export class PathExplorerComponent implements OnInit, OnChanges {
       return this.url;
     }
 
-    return UriHelper.getUri(this.cdnBaseUrl, path);
+    return PathHelper.getPath(this.cdnBaseUrl, path);
   }
 
   linkClick($event): void {

@@ -1,6 +1,10 @@
 mat-card-content {
-  width: 80%;
-  margin: 0 auto;
+  margin: 50px 0;
+  min-height: 500px;
+}
+.path-input {
+  padding-left: 30px;
+  padding-right: 50px;
 }
 .path-input input {
   background-color: rgba(255, 255, 255, 0.1);
@@ -9,14 +13,14 @@ mat-card-content {
   padding: 10px 10px;
   color: white;
   display: block;
-  margin: 50px 0;
+  margin: 40px 0;
   width: 100%;
 }
 .input-form {
-  margin: 50px 0;
+  margin: 40px 0;
 }
 .confirm {
-  margin: 50px 0;
+  margin: 40px 0;
 }
 mat-card-footer {
   margin-top: 50px;

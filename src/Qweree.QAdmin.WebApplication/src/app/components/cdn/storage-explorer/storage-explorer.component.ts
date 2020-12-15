@@ -3,7 +3,7 @@ import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
 import {Subject} from 'rxjs';
-import {UriHelper} from '../../../services/UriHelper';
+import {PathHelper} from '../../../services/PathHelper';
 import {EnvironmentService} from '../../../services/environment/environment.service';
 
 @Component({
@@ -106,6 +106,6 @@ export class StorageExplorerComponent implements OnInit {
   }
 
   getCdnBaseUrl(): string {
-    return UriHelper.getUri(this.environmentService.getEnvironment().cdn.baseUri, '/api/v1/storage');
+    return PathHelper.getPath(this.environmentService.getEnvironment().cdn.baseUri, '/api/v1/storage');
   }
 }
