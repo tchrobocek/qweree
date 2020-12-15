@@ -1,4 +1,4 @@
-import {Component, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
 import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
 
@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
             this.totalCount += dir.totalCount;
           }
           const file = (o as ExplorerFile);
-          if (file.id) {
+          if (file.mediaType) {
             this.totalSize += file.size;
             this.totalCount++;
           }
