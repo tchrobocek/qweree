@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FileSystemDirectoryEntry, FileSystemEntry, FileSystemFileEntry, NgxFileDropEntry} from 'ngx-file-drop';
-import {ExplorerFile} from '../../../model/cdn/ExplorerObject';
+import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'app-storage-import',
@@ -8,6 +9,12 @@ import {ExplorerFile} from '../../../model/cdn/ExplorerObject';
   styleUrls: ['./storage-import.component.scss']
 })
 export class StorageImportComponent implements OnInit {
+
+  private directoriesSubject = new Subject<ExplorerDirectory[]>();
+  private filesSubject = new Subject<ExplorerFile[]>();
+
+  public directoriesObservable = this.directoriesSubject.asObservable();
+  public filesObservable = this.filesSubject.asObservable();
 
   public path = '';
   public files: FileSystemFileEntry[] = [];
@@ -27,6 +34,8 @@ export class StorageImportComponent implements OnInit {
         this.readDirectory(f.fileEntry).forEach(e => this.readFile(e));
       }
     });
+
+    this.filesSubject.next(this.filesView);
   }
 
   readFile(file: FileSystemEntry): void {
@@ -35,7 +44,9 @@ export class StorageImportComponent implements OnInit {
     fileEntry.file(f => {
       // @ts-ignore
       const fullPath = fileEntry.fullPath;
-      this.filesView.push(new ExplorerFile(file.name, fullPath, f.type, f.size, f.lastModified.toString(), f.lastModified.toString()));
+      console.log(fileEntry);
+      this.filesView.push(new ExplorerFile(fullPath ?? file.name, fullPath ?? file.name,
+        f.type, f.size, f.lastModified.toString(), f.lastModified.toString()));
     });
   }
 
