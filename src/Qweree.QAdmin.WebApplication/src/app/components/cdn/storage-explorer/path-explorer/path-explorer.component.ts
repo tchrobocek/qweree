@@ -1,17 +1,21 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {ExplorerDirectory, ExplorerFile} from '../../../../model/cdn/ExplorerObject';
-import {CdnAdapterService} from '../../../../services/cdn/cdn-adapter.service';
+import {Observable} from 'rxjs';
+import {UriHelper} from '../../../../services/UriHelper';
+import {EnvironmentService} from '../../../../services/environment/environment.service';
 
 @Component({
   selector: 'app-path-explorer',
   templateUrl: './path-explorer.component.html',
   styleUrls: ['./path-explorer.component.scss']
 })
-export class PathExplorerComponent implements OnChanges {
+export class PathExplorerComponent implements OnInit, OnChanges {
   @Input() public path: string;
-  @Output() public pathChanged = new EventEmitter<string>();
-  public directories: ExplorerDirectory[];
-  public files: ExplorerFile[];
+  @Input() public directoriesObservable: Observable<ExplorerDirectory[]>;
+  @Input() public filesObservable: Observable<ExplorerFile[]>;
+
+  public directoriesView: ExplorerDirectory[] = [];
+  public filesView: ExplorerFile[] = [];
   public prevPath: string;
   public thisFolder = {
     totalCount: 0,
@@ -22,16 +26,8 @@ export class PathExplorerComponent implements OnChanges {
   public orderDir = 1;
 
   constructor(
-    private cdnAdapter: CdnAdapterService,
+    private environmentService: EnvironmentService
   ) {
-  }
-
-  private static getFilename(path: string): string {
-    if (path.endsWith('/')) {
-      path = path.substr(0, path.length - 1);
-    }
-
-    return path.substr(path.lastIndexOf('/') + 1);
   }
 
   private static getPrevPath(path: string): string {
@@ -44,42 +40,38 @@ export class PathExplorerComponent implements OnChanges {
     return newPath;
   }
 
-  ngOnChanges(model: SimpleChanges) {
-    this.files = [];
-    this.directories = [];
-    this.thisFolder = {totalCount: 0, totalSize: 0, itemsInView: 0};
-    this.prevPath = PathExplorerComponent.getPrevPath(this.path);
-    this.reload();
-  }
-
-  reload(): void {
-    this.cdnAdapter.explore(this.path)
-      .subscribe(objects => {
-        objects.forEach(o => {
-          const dir = (o as ExplorerDirectory);
-          if (dir.totalCount) {
-            dir.filename = PathExplorerComponent.getFilename(dir.path);
-            this.directories.push(dir);
-            this.thisFolder.totalSize += dir.totalSize;
-            this.thisFolder.totalCount += dir.totalCount;
-          }
-          const file = (o as ExplorerFile);
-          if (file.mediaType) {
-            file.filename = PathExplorerComponent.getFilename(file.path);
-            this.files.push(file);
-            this.thisFolder.totalSize += file.size;
-            this.thisFolder.totalCount++;
-          }
-
-          this.thisFolder.itemsInView++;
-        });
-
-        this.sort();
+  ngOnInit() {
+    this.filesObservable.subscribe(files => {
+      this.filesView = [];
+      this.filesView = files.sort((a, b) => {
+        const field = this.orderField;
+        return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
       });
+      this.countThisFolder();
+    });
+    this.directoriesObservable.subscribe(directories => {
+      this.directoriesView = [];
+      this.directoriesView = directories.sort((a, b) => {
+        let field = this.orderField;
+
+        if (field === 'mediaType') { field = 'totalCount'; }
+        if (field === 'size') { field = 'totalSize'; }
+
+        return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
+      });
+      this.countThisFolder();
+    });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.prevPath = PathExplorerComponent.getPrevPath(this.path);
   }
 
   private sort(): void {
-    this.directories = this.directories.sort((a, b) => {
+    this.filesView = this.filesView.sort((a, b) => {
+      const field = this.orderField;
+      return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
+    });
+    this.directoriesView = this.directoriesView.sort((a, b) => {
       let field = this.orderField;
 
       if (field === 'mediaType') { field = 'totalCount'; }
@@ -87,16 +79,6 @@ export class PathExplorerComponent implements OnChanges {
 
       return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
     });
-    this.files = this.files.sort((a, b) => {
-      const field = this.orderField;
-      return a[field] > b[field] ? this.orderDir : this.orderDir * -1;
-    });
-
-    console.log('sorted');
-  }
-
-  changePath(path: string): void {
-    this.pathChanged.emit(path);
   }
 
   sortBy(field: string): void {
@@ -110,5 +92,30 @@ export class PathExplorerComponent implements OnChanges {
     this.orderDir = 1;
 
     this.sort();
+  }
+
+  getHref(path: string): string|undefined {
+    const uri = UriHelper.getUri(this.environmentService.getEnvironment().cdn.baseUri, '/api/v1/storage');
+    return UriHelper.getUri(uri, path);
+  }
+
+  countThisFolder(): void {
+    this.thisFolder = {
+      totalCount: 0,
+      totalSize: 0,
+      itemsInView: 0
+    };
+
+    this.filesView.forEach(f => {
+      this.thisFolder.itemsInView++;
+      this.thisFolder.totalCount++;
+      this.thisFolder.totalSize += f.size;
+    });
+
+    this.directoriesView.forEach(d => {
+      this.thisFolder.itemsInView++;
+      this.thisFolder.totalCount += d.totalCount;
+      this.thisFolder.totalSize += d.totalSize;
+    });
   }
 }

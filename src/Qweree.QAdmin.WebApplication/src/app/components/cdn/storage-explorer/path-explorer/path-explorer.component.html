@@ -31,7 +31,7 @@
       </span>
     </span>
   </div>
-  <a (click)="$event.preventDefault(); changePath(this.prevPath);" *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.path }}/..">
+  <app-link *ngIf="this.path !== '/' && this.path !== ''" href="/cdn/explorer{{ this.prevPath }}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -40,8 +40,8 @@
         <span  matTooltip="{{ this.prevPath }}">../</span>
       </span>
     </div>
-  </a>
-  <app-link (click)="changePath(this.path)" href="/cdn/explorer{{this.path}}">
+  </app-link>
+  <app-link href="/cdn/explorer{{this.path}}">
     <div class="path-explorer-item">
       <span class="material-icons">
         folder
@@ -57,7 +57,7 @@
       </span>
     </div>
   </app-link>
-  <app-link (click)="changePath(directory.path)" *ngFor="let directory of this.directories" href="/cdn/explorer{{directory.path}}">
+  <app-link *ngFor="let directory of this.directoriesView" href="/cdn/explorer{{directory.path}}">
     <div class="path-explorer-item directory">
       <span class="material-icons">
         folder
@@ -76,8 +76,8 @@
       </span>
     </div>
   </app-link>
-  <a *ngFor="let file of this.files"
-     href="http://localhost:8090/api/v1/storage{{file.path}}">
+  <a *ngFor="let file of this.filesView"
+     [href]="getHref(file.path)">
     <div class="path-explorer-item file">
       <span class="material-icons">
         {{ file.mediaType | fileIcon}}

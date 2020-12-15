@@ -6,10 +6,17 @@
     <mat-card-content>
       <div class="current-path">
         <label>
-          <input [(ngModel)]="inputPath" (blur)="inputPath = currentPath" (keyup.enter)="goto()">
+          <input
+            autofocus="autofocus"
+            [(ngModel)]="inputPath"
+            (keyup.enter)="this.router.navigate(['/cdn/explorer/' + inputPath])"
+            (blur)="inputPath = path">
         </label>
       </div>
-      <app-path-explorer path="{{ currentPath }}" (pathChanged)="pathChangedFromPathExplorer($event)">
+      <app-path-explorer
+        [filesObservable]="currentFilesObservable"
+        [directoriesObservable]="currentDirectoriesObservable"
+        [path]="path">
       </app-path-explorer>
     </mat-card-content>
     <mat-card-footer>

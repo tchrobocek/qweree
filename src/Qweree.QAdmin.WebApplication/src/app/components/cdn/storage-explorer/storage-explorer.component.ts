@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {CdnAdapterService} from '../../../services/cdn/cdn-adapter.service';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
+import {ExplorerDirectory, ExplorerFile} from '../../../model/cdn/ExplorerObject';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'app-storage-explorer',
@@ -9,44 +11,94 @@ import {Router} from '@angular/router';
 })
 export class StorageExplorerComponent implements OnInit {
 
-  public currentPath: string;
+  private currentPathSubject = new Subject<string>();
+  private currentDirectoriesSubject = new Subject<ExplorerDirectory[]>();
+  private currentFilesSubject = new Subject<ExplorerFile[]>();
+
+  public currentPathObservable = this.currentPathSubject.asObservable();
+  public currentDirectoriesObservable = this.currentDirectoriesSubject.asObservable();
+  public currentFilesObservable = this.currentFilesSubject.asObservable();
+
+  public path: string;
   public inputPath: string;
 
   constructor(
     private cdnAdapter: CdnAdapterService,
-    private router: Router
+    public router: Router
   ) {
   }
 
+  private static getFilename(path: string): string {
+    if (path.endsWith('/')) {
+      path = path.substr(0, path.length - 1);
+    }
+
+    return path.substr(path.lastIndexOf('/') + 1);
+  }
+
+  private static getPathFromUri(uri: string): string {
+    let path = uri.substring('/cdn/explorer'.length);
+
+    if (!path) {
+      path = '/';
+    }
+
+    return path;
+  }
+
   ngOnInit(): void {
-    this.router.events.subscribe(() => {
-      this.setupCurrentPathFromRouter();
+    this.itemsLoader();
+    this.router.events.subscribe(e => {
+      if (e.constructor.name === 'NavigationEnd') {
+        this.updatePath(StorageExplorerComponent.getPathFromUri((e as NavigationEnd).url));
+      }
     });
-
-    this.setupCurrentPathFromRouter();
+    this.updatePath(StorageExplorerComponent.getPathFromUri(this.router.url));
   }
 
-  goto(): void {
-    this.router.navigate(['/cdn/explorer/' + this.inputPath]);
+  itemsLoader(): void {
+    this.currentPathObservable.subscribe(currentPath => {
+
+      this.currentDirectoriesSubject.next([]);
+      this.currentFilesSubject.next([]);
+      this.cdnAdapter.explore(currentPath)
+        .subscribe(objects => {
+          const files = [];
+          const directories = [];
+
+          objects.forEach(o => {
+            const dir = (o as ExplorerDirectory);
+            if (dir.totalCount) {
+              dir.filename = StorageExplorerComponent.getFilename(dir.path);
+              directories.push(dir);
+            }
+            const file = (o as ExplorerFile);
+            if (file.mediaType) {
+              file.filename = StorageExplorerComponent.getFilename(file.path);
+              files.push(file);
+            }
+          });
+
+          this.currentFilesSubject.next(files);
+          this.currentDirectoriesSubject.next(directories);
+        });
+    });
   }
 
-  pathChangedFromPathExplorer(path: string): void {
+  updatePath(path: string): void {
+    while (path.endsWith('/')) {
+      path = path.substr(0, path.length - 1);
+    }
     if (path === '') {
       path = '/';
     }
-    this.currentPath = path;
-    this.inputPath = path;
 
-    this.goto();
-  }
-
-  setupCurrentPathFromRouter(): void {
-    this.currentPath = this.router.url.substring('/cdn/explorer'.length);
-
-    if (!this.currentPath) {
-      this.currentPath = '/';
+    if (this.path === path) {
+      return;
     }
 
-    this.inputPath = this.currentPath.toString();
+    this.path = path.toString();
+    this.inputPath = this.path;
+    this.currentPathSubject.next(path);
   }
 }
