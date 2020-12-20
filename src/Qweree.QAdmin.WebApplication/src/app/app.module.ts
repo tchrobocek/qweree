@@ -35,6 +35,7 @@ import { StorageImportComponent } from './components/cdn/storage-import/storage-
 import { FileIconPipe } from './services/pipes/file-icon.pipe';
 import {NgxFileDropModule} from 'ngx-file-drop';
 import {AuthorizationInterceptor} from './services/http/authorization-interceptor.service';
+import { UsersExplorerComponent } from './components/auth/users-explorer/users-explorer.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import {AuthorizationInterceptor} from './services/http/authorization-intercepto
     BinarySizePipe,
     LinkComponent,
     StorageImportComponent,
-    FileIconPipe
+    FileIconPipe,
+    UsersExplorerComponent
   ],
   imports: [
     BrowserModule,
