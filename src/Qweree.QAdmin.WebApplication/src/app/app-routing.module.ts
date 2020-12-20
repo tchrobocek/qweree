@@ -9,6 +9,7 @@ import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.c
 import {NotFoundComponent} from './components/layout/not-found/not-found.component';
 import {StorageExplorerComponent} from './components/cdn/storage-explorer/storage-explorer.component';
 import {StorageImportComponent} from './components/cdn/storage-import/storage-import.component';
+import {UsersExplorerComponent} from './components/auth/users-explorer/users-explorer.component';
 
 
 const routes: Routes = [
@@ -37,6 +38,9 @@ const routes: Routes = [
         }],
       }, {
         path: 'auth', component: AuthDashboardComponent,
+        canActivate: [AuthGuardService]
+      }, {
+        path: 'auth/users', component: UsersExplorerComponent,
         canActivate: [AuthGuardService]
       }, {
         path: '**', component: NotFoundComponent

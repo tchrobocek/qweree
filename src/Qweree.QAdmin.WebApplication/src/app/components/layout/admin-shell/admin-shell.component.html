@@ -30,6 +30,11 @@
             Authentication service
           </div>
         </app-link>
+        <app-link href="/auth/users">
+          <div class="menu-link menu-sublink {{ this.router.url === '/auth/users' ? 'active' : '' }}">
+            Users
+          </div>
+        </app-link>
         <a href="#" (click)="signOut(); $event.preventDefault();">
           <div class="menu-link">
             Sign Out
