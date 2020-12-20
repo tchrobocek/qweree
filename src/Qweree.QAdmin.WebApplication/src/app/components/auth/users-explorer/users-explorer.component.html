@@ -1,1 +1,8 @@
-<p>users-explorer works!</p>
+<mat-card>
+  <mat-card-title>
+    Users
+  </mat-card-title>
+  <mat-card-content>
+    <div *ngFor="let user of users">{{ user.id }} - {{ user.username }} - {{ user.roles }}</div>
+  </mat-card-content>
+</mat-card>

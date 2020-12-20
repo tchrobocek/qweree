@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {IdentityAdapterService} from '../../../services/authentication/identity-adapter.service';
+import {User} from '../../../model/authentication/User';
 
 @Component({
   selector: 'app-users-explorer',
@@ -7,9 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UsersExplorerComponent implements OnInit {
 
-  constructor() { }
+  public users: User[] = [];
+
+  constructor(
+    private identityAdapter: IdentityAdapterService
+  ) { }
 
   ngOnInit(): void {
+    this.identityAdapter.getUsers(0, 20, 'Username', 1)
+      .subscribe(users => {
+        this.users = users;
+      });
   }
 
 }
