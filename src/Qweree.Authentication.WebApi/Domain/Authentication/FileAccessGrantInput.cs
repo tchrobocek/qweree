@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.WebApi.Application.Authentication
+namespace Qweree.Authentication.WebApi.Domain.Authentication
 {
     public class FileAccessGrantInput
     {
