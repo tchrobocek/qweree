@@ -35,11 +35,6 @@ namespace Qweree.Mongo
             return await DoFindAsync(null, null, null, null, cancellationToken);
         }
 
-        public async Task<long> CountAsync(CancellationToken cancellationToken = new CancellationToken())
-        {
-            return await CountAsync("{}", cancellationToken);
-        }
-
         public async Task<IEnumerable<TPublicType>> FindAsync(string query, CancellationToken cancellationToken = new CancellationToken())
         {
             return await DoFindAsync(query, null, null, null, cancellationToken);
@@ -53,6 +48,24 @@ namespace Qweree.Mongo
         public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
         {
             return await DoFindAsync(query, skip, take, sort, cancellationToken);
+        }
+
+        public async Task<Pagination<TPublicType>> PaginateAsync(string query, int skip, int take,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var documents = await FindAsync(query, skip, take, cancellationToken);
+            var count = await CountAsync(query, cancellationToken);
+
+            return new Pagination<TPublicType>(new PageInfo(skip, take), count, documents);
+        }
+
+        public async Task<Pagination<TPublicType>> PaginateAsync(string query, int skip, int take,
+            Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var documents = await FindAsync(query, skip, take, sort, cancellationToken);
+            var count = await CountAsync(query, cancellationToken);
+
+            return new Pagination<TPublicType>(new PageInfo(skip, take), count, documents);
         }
 
         private async Task<IEnumerable<TPublicType>> DoFindAsync(string? query, int? skip, int? take,
@@ -81,6 +94,11 @@ namespace Qweree.Mongo
             {
                 throw new InvalidFilterException("Invalid filter.", e);
             }
+        }
+
+        public async Task<long> CountAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await CountAsync("{}", cancellationToken);
         }
 
         public async Task<long> CountAsync(string query, CancellationToken cancellationToken = new CancellationToken())
