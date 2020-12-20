@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -69,6 +70,40 @@ namespace Qweree.Authentication.WebApi.Web.Identity
 
             var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
             return Ok(userDto);
+        }
+
+        /// <summary>
+        /// Find users
+        /// </summary>
+        /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
+        /// <param name="take">How many items should be returned. Default: 100</param>
+        /// <param name="sort">
+        /// Sorting.
+        /// Asc 1; Desc -1
+        /// sort[CreatedAt]=-1 // sort by created, desc.
+        /// </param>
+        /// <returns>Collection of users.</returns>
+        [HttpGet]
+        [Authorize(Policy = "UserRead")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> FindUsersActionAsync(
+            [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
+            [FromQuery(Name = "skip")] int skip = 0,
+            [FromQuery(Name = "take")] int take = 50
+            )
+        {
+            var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
+            var input = new FindUsersInput(skip, take, sortDictionary);
+            var usersResponse = await _userService.FindUsersAsync(input);
+
+            if (usersResponse.Status != ResponseStatus.Ok)
+            {
+                return usersResponse.ToErrorActionResult();
+            }
+
+            var usersDto = usersResponse.Payload?.Select(UserToDto);
+            return Ok(usersDto);
         }
 
         private UserDto UserToDto(User user)

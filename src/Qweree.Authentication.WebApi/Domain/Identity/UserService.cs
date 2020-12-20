@@ -62,13 +62,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(user);
         }
 
-        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input, CancellationToken cancellationToken)
+        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input, CancellationToken cancellationToken = new CancellationToken())
         {
             Pagination<User> pagination;
 
             try
             {
-                pagination = await _userRepository.PaginateAsync(input.Take, input.Skip, input.Sort, cancellationToken);
+                pagination = await _userRepository.PaginateAsync(input.Skip, input.Take, input.Sort, cancellationToken);
             }
             catch (Exception e)
             {
