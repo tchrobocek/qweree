@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Mongo;
@@ -56,7 +57,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (DocumentNotFoundException)
             {
-                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found."));
+                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found.", StatusCodes.Status404NotFound));
             }
 
             return Response.Ok(user);
