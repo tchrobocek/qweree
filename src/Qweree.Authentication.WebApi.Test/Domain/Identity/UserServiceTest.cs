@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Moq;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Identity;
-using Qweree.Authentication.WebApi.Application.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
 using Qweree.TestUtils;
@@ -14,7 +13,7 @@ using Qweree.Utils;
 using Xunit;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
-namespace Qweree.Authentication.WebApi.Test.Application.Identity
+namespace Qweree.Authentication.WebApi.Test.Domain.Identity
 {
     [Trait("Category", "Unit test")]
     public class UserServiceTest

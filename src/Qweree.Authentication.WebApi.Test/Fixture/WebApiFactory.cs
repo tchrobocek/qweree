@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Moq;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Authentication;
-using Qweree.Authentication.WebApi.Application.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
@@ -12,10 +11,10 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.Mongo.Exception;
 using Qweree.TestUtils;
 using Xunit;
-using PasswordGrantInput = Qweree.Authentication.WebApi.Application.Authentication.PasswordGrantInput;
-using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Application.Authentication.RefreshTokenGrantInput;
+using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
+using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
 
-namespace Qweree.Authentication.WebApi.Test.Application.Authentication
+namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
 {
     [Trait("Category", "Unit test")]
     public class AuthenticationServiceTest

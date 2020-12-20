@@ -10,11 +10,10 @@ using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Authentication;
-using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Utils;
 
-namespace Qweree.Authentication.WebApi.Application.Authentication
+namespace Qweree.Authentication.WebApi.Domain.Authentication
 {
     public class AuthenticationService
     {

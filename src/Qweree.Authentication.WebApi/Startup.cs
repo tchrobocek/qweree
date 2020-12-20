@@ -14,8 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.HealthCheck;
 using Qweree.AspNet.Session;
-using Qweree.Authentication.WebApi.Application.Authentication;
-using Qweree.Authentication.WebApi.Application.Identity;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure;
