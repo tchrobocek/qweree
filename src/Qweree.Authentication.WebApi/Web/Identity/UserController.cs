@@ -91,7 +91,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 50
-            )
+        )
         {
             var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
             var input = new FindUsersInput(skip, take, sortDictionary);
@@ -107,6 +107,27 @@ namespace Qweree.Authentication.WebApi.Web.Identity
 
             var usersDto = usersResponse.Payload?.Select(UserToDto);
             return Ok(usersDto);
+        }
+
+        /// <summary>
+        /// Delete user.
+        /// </summary>
+        /// <param name="id">Users identity.</param>
+        /// <returns>Empty response.</returns>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "UserDelete")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteActionAsync(Guid id)
+        {
+            var deleteResponse = await _userService.DeleteAsync(id);
+
+            if (deleteResponse.Status != ResponseStatus.Ok)
+            {
+                return deleteResponse.ToErrorActionResult();
+            }
+
+            return Ok(NoContent());
         }
 
         private UserDto UserToDto(User user)

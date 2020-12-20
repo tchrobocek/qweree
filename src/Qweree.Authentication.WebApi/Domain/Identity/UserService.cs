@@ -78,6 +78,20 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(pagination.Documents, pagination.TotalCount);
         }
 
+        public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            try
+            {
+                await _userRepository.DeleteAsync(id, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.Fail($@"Cannot delete user ""{id}"".");
+            }
+
+            return Response.Ok();
+        }
+
         private string EncryptPassword(string password)
         {
             if (password == string.Empty)

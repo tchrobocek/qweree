@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -97,6 +98,31 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 var users = userDtos!.Select(UserMapper.FromDto);
 
                 users.ShouldDeepEqual(usersList.Skip(2).Take(3));
+            }
+        }
+
+        [Fact]
+        public async Task TestDelete()
+        {
+            var adminUser = UserFactory.CreateAdmin();
+            using var client = await _webApiFactory.CreateAuthenticatedClientAsync(adminUser, UserFactory.Password);
+
+            var user = UserFactory.CreateDefault();
+            await _userRepository.InsertAsync(user);
+
+            {
+                var response = await client.GetAsync($"/api/v1/identity/users/{user!.Id}");
+                response.EnsureSuccessStatusCode();
+            }
+
+            {
+                var response = await client.DeleteAsync($"/api/v1/identity/users/{user!.Id}");
+                response.EnsureSuccessStatusCode();
+            }
+
+            {
+                var response = await client.GetAsync($"/api/v1/identity/users/{user!.Id}");
+                Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
     }
