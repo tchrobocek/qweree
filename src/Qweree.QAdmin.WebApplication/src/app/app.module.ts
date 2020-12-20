@@ -15,6 +15,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {DashboardComponent as CdnDashboardComponent} from './components/cdn/dashboard/dashboard.component';
+import {DashboardComponent as AuthDashboardComponent} from './components/auth/dashboard/dashboard.component';
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -44,6 +45,7 @@ import {AuthorizationInterceptor} from './services/http/authorization-intercepto
     NotFoundComponent,
     ServicesOverviewComponent,
     CdnDashboardComponent,
+    AuthDashboardComponent,
     StorageExplorerComponent,
     PathExplorerComponent,
     MediaTypePipe,
