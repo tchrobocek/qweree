@@ -46,7 +46,29 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             }
 
             var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
-            return Created("", userDto);
+            return Created($"/api/v1/users/{userDto.Id}", userDto);
+        }
+
+        /// <summary>
+        /// Get user by id.
+        /// </summary>
+        /// <param name="id">User id.</param>
+        /// <returns>Found user.</returns>
+        [HttpGet("{id}")]
+        [Authorize(Policy = "UserRead")]
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserActionAsync(Guid id)
+        {
+            var userResponse = await _userService.FindUserAsync(id);
+
+            if (userResponse.Status != ResponseStatus.Ok)
+            {
+                return userResponse.ToErrorActionResult();
+            }
+
+            var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
+            return Ok(userDto);
         }
 
         private UserDto UserToDto(User user)
