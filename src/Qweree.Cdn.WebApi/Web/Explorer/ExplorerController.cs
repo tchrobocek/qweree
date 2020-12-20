@@ -25,13 +25,14 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
         /// </summary>
         /// <param name="path">Object path.</param>
         /// <returns></returns>
+        [HttpGet]
         [HttpGet("{*path}")]
         [ProducesResponseType(typeof(IExplorerObjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ExplorerDirectoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ExplorerFileDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ExplorePathActionAsync(string path)
+        public async Task<IActionResult> ExplorePathActionAsync(string? path)
         {
-            path = HttpUtility.UrlDecode(path);
+            path = HttpUtility.UrlDecode(path ?? "");
             var input = new ExplorerFilter(path);
             var response = await _explorerService.ExplorePathAsync(input);
 
