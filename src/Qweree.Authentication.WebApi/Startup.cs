@@ -117,7 +117,7 @@ namespace Qweree.Authentication.WebApi
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "UserUpdate"));
+                options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_CREATE"));
             });
 
             // Validator
