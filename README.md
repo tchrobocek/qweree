@@ -38,3 +38,5 @@ Swagger: `http://localhost:8090/swagger/index.html`
 
 ### Credentials
 - Init admin user - `admin`:`password`
+
+test
