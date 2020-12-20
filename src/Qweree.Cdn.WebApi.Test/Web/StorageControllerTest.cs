@@ -51,7 +51,7 @@ namespace Qweree.Cdn.WebApi.Test.Web
                 var descriptorDto = await response.Content.ReadAsObjectAsync<StoredObjectDescriptorDto>();
                 Assert.Equal(stream.Length, descriptorDto?.Size!);
                 Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
-                Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
+                Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto.MediaType!);
 
             }
 

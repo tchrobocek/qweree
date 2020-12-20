@@ -10,7 +10,7 @@ namespace Qweree.Validator.Test.ModelValidator.Static
         public void TestAddModel()
         {
             var builder = new ValidatorSettingsBuilder();
-            builder.AddModel<ValidatorSettingsBuilder>(b => { });
+            builder.AddModel<ValidatorSettingsBuilder>(_ => { });
 
             var settings = builder.Build();
             Assert.Single(settings);
@@ -20,8 +20,8 @@ namespace Qweree.Validator.Test.ModelValidator.Static
         public void TestAddModel_Duplicate()
         {
             var builder = new ValidatorSettingsBuilder();
-            builder.AddModel<ValidatorSettingsBuilder>(b => { });
-            Assert.Throws<ArgumentException>(() => builder.AddModel<ValidatorSettingsBuilder>(b => { }));
+            builder.AddModel<ValidatorSettingsBuilder>(_ => { });
+            Assert.Throws<ArgumentException>(() => builder.AddModel<ValidatorSettingsBuilder>(_ => { }));
         }
     }
 }

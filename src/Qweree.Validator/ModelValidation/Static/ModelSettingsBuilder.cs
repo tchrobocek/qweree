@@ -35,6 +35,7 @@ namespace Qweree.Validator.ModelValidation.Static
         /// <exception cref="ArgumentException">Thrown when property is already mapped.</exception>
         public PropertySettingsBuilder AddProperty(string name)
         {
+            // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
             if (_properties.Any(p => p.PropertyName == name))
                 throw new ArgumentException("Property was already added.");
 

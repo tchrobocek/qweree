@@ -20,6 +20,7 @@ namespace Qweree.Validator.ModelValidation.Static
         public void AddModel<TModelType>(Action<ModelSettingsBuilder<TModelType>> builderAction)
             where TModelType : class
         {
+            // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
             if (_builders.Any(b => b.SubjectType == typeof(TModelType)))
                 throw new ArgumentException($@"Model of type ""{typeof(TModelType)}"" was already added.");
 

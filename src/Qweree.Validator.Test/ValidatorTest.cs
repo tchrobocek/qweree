@@ -23,12 +23,12 @@ namespace Qweree.Validator.Test
             validatorMock1.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
             validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
-                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((e, b, _) => b.AddError("", "1"));
+                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((_, b, _) => b.AddError("", "1"));
 
             validatorMock2.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
             validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
-                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((e, b, _) => b.AddError("", "2"));
+                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((_, b, _) => b.AddError("", "2"));
 
             var result = await validator.ValidateAsync(text);
 

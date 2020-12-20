@@ -27,7 +27,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
             var contextService = services.FirstOrDefault(s => s.ServiceType == typeof(MongoContext));
             services.Remove(contextService!);
 
-            services.AddSingleton(p =>
+            services.AddSingleton(_ =>
                 new MongoContext(Settings.Database.ConnectionString, Settings.Database.DatabaseName));
         }
 

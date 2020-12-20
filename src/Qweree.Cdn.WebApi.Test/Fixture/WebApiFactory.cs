@@ -35,7 +35,7 @@ namespace Qweree.Cdn.WebApi.Test.Fixture
                 return new FileObjectStorage(tempFolder.Path);
             });
 
-            services.AddSingleton(p =>
+            services.AddSingleton(_ =>
                 new MongoContext(Settings.Database.ConnectionString, Settings.Database.DatabaseName));
         }
 
