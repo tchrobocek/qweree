@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Identity;
+using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -59,6 +60,22 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
 
             return Response.Ok(user);
+        }
+
+        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input, CancellationToken cancellationToken)
+        {
+            Pagination<User> pagination;
+
+            try
+            {
+                pagination = await _userRepository.PaginateAsync(input.Take, input.Skip, input.Sort, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return Response.FailPagination<User>(e.Message);
+            }
+
+            return Response.Ok(pagination.Documents, pagination.TotalCount);
         }
 
         private string EncryptPassword(string password)
