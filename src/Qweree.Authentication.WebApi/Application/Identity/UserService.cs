@@ -27,7 +27,7 @@ namespace Qweree.Authentication.WebApi.Application.Identity
 
         public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput, CancellationToken cancellationToken = new CancellationToken())
         {
-            var validationResult = await _validator.ValidateAsync(userCreateInput);
+            var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
             if (validationResult.HasFailed)
                 return Response.Fail<User>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
 
