@@ -4,6 +4,7 @@ import {SignInComponent} from './components/auth/sign-in/sign-in.component';
 import {AuthGuardService} from './services/authentication/auth-guard.service';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {DashboardComponent as CdnDashboardComponent} from './components/cdn/dashboard/dashboard.component';
+import {DashboardComponent as AuthDashboardComponent} from './components/auth/dashboard/dashboard.component';
 import {AdminShellComponent} from './components/layout/admin-shell/admin-shell.component';
 import {NotFoundComponent} from './components/layout/not-found/not-found.component';
 import {StorageExplorerComponent} from './components/cdn/storage-explorer/storage-explorer.component';
@@ -34,6 +35,9 @@ const routes: Routes = [
           path: '**', component: StorageExplorerComponent,
           canActivate: [AuthGuardService]
         }],
+      }, {
+        path: 'auth', component: AuthDashboardComponent,
+        canActivate: [AuthGuardService]
       }, {
         path: '**', component: NotFoundComponent
       }]
