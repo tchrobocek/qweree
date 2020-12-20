@@ -45,6 +45,22 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(user);
         }
 
+        public async Task<Response<User>> FindUserAsync(Guid userId, CancellationToken cancellationToken = new CancellationToken())
+        {
+            User user;
+
+            try
+            {
+                user = await _userRepository.GetAsync(userId, cancellationToken);
+            }
+            catch (DocumentNotFoundException)
+            {
+                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found."));
+            }
+
+            return Response.Ok(user);
+        }
+
         private string EncryptPassword(string password)
         {
             if (password == string.Empty)
