@@ -19,11 +19,13 @@ export class AuthorizationInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
-    if (request.url.startsWith(this.environmentService.getEnvironment().cdn.baseUri)) {
-      if (this.tokenStorageService) {
+    if (request.url.startsWith(this.environmentService.getEnvironment().cdn.baseUri) ||
+      request.url.startsWith(this.environmentService.getEnvironment().authentication.baseUri)) {
+      const tokenInfo = this.tokenStorageService?.getTokenInfo();
+      if (tokenInfo) {
         request = request.clone({
           setHeaders: {
-            Authorization: 'Bearer ' + this.tokenStorageService.getTokenInfo().accessToken
+            Authorization: 'Bearer ' + tokenInfo.accessToken
           }
         });
       }
