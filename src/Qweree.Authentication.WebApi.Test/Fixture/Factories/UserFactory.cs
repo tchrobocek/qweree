@@ -13,7 +13,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture.Factories
 
         public static User CreateAdmin()
         {
-            return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com", BCrypt.Net.BCrypt.HashPassword(Password), new[] {"AUTH_USERS_CREATE", "AUTH_USERS_READ"}, DateTime.UtcNow, DateTime.UtcNow);
+            return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com", BCrypt.Net.BCrypt.HashPassword(Password), new[] {"AUTH_USERS_CREATE", "AUTH_USERS_READ", "AUTH_USERS_DELETE"}, DateTime.UtcNow, DateTime.UtcNow);
         }
     }
 }
