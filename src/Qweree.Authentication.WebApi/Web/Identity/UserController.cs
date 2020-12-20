@@ -102,6 +102,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
                 return usersResponse.ToErrorActionResult();
             }
 
+            var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
+            Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, usersResponse.DocumentCount);
+
             var usersDto = usersResponse.Payload?.Select(UserToDto);
             return Ok(usersDto);
         }
