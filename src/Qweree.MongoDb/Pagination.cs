@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Qweree.Mongo
 {
@@ -8,7 +9,7 @@ namespace Qweree.Mongo
         {
             PageInfo = pageInfo;
             TotalCount = totalCount;
-            Documents = documents;
+            Documents = documents.ToImmutableArray();
         }
 
         public PageInfo PageInfo { get; }
