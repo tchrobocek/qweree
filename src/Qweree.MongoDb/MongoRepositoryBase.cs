@@ -34,6 +34,14 @@ namespace Qweree.Mongo
         {
             return await DoFindAsync(null, null, null, null, cancellationToken);
         }
+        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await DoFindAsync(null, skip, take, null, cancellationToken);
+        }
+        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await DoFindAsync(null, skip, take, sort, cancellationToken);
+        }
 
         public async Task<IEnumerable<TPublicType>> FindAsync(string query, CancellationToken cancellationToken = new CancellationToken())
         {
@@ -48,6 +56,24 @@ namespace Qweree.Mongo
         public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
         {
             return await DoFindAsync(query, skip, take, sort, cancellationToken);
+        }
+
+        public async Task<Pagination<TPublicType>> PaginateAsync(int skip, int take,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var documents = await FindAsync(skip, take, cancellationToken);
+            var count = await CountAsync(cancellationToken);
+
+            return new Pagination<TPublicType>(new PageInfo(skip, take), count, documents);
+        }
+
+        public async Task<Pagination<TPublicType>> PaginateAsync(int skip, int take,
+            Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+        {
+            var documents = await FindAsync(skip, take, sort, cancellationToken);
+            var count = await CountAsync(cancellationToken);
+
+            return new Pagination<TPublicType>(new PageInfo(skip, take), count, documents);
         }
 
         public async Task<Pagination<TPublicType>> PaginateAsync(string query, int skip, int take,
