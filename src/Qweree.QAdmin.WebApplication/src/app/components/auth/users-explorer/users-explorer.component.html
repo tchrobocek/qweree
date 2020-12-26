@@ -3,6 +3,6 @@
     Users
   </mat-card-title>
   <mat-card-content>
-    <div *ngFor="let user of users">{{ user.id }} - {{ user.username }} - {{ user.roles }}</div>
+    <app-users-list [users]="users"></app-users-list>
   </mat-card-content>
 </mat-card>

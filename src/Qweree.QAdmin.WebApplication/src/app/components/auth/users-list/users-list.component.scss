@@ -1,0 +1,49 @@
+$nav-menu-background: #343434;
+
+.users-list {
+  font-size: 16px;
+}
+.users-list-item {
+  padding: 12px 0 12px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  text-decoration: none;
+}
+.users-list-item:hover {
+  background-color: lighten($nav-menu-background, 10%);
+}
+.users-list-item-header span {
+  cursor: pointer;
+}
+.users-list-item-header:hover {
+  background-color: #424242;
+}
+.users-list-item-icon {
+  display: inline-block;
+  width: 24px;
+  margin: 0 10px;
+}
+.material-icons {
+  display: inline-block;
+  margin: 0 10px;
+}
+.id {
+  display: inline-block;
+  width: 400px;
+  margin: 0 10px;
+}
+.username {
+  display: inline-block;
+  width: 140px;
+  margin: 0 10px;
+}
+.roles {
+  display: inline-block;
+  width: 140px;
+  margin: 0 10px;
+}
+.modified-at {
+  display: inline-block;
+  width: 180px;
+  margin: 0 10px;
+}
