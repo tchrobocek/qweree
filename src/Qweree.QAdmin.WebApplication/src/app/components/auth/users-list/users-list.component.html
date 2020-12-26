@@ -1,0 +1,53 @@
+<div class="users-list">
+  <div class="users-list-item users-list-item-header">
+    <span class="users-list-item-icon">
+    </span>
+    <span (click)="sortBy('filename')" class="id">
+        Id
+      <span class="material-icons" *ngIf="orderField == 'filename'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+    <span (click)="sortBy('mediaType')" class="username">
+        Username
+      <span class="material-icons" *ngIf="orderField == 'mediaType'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+    <span (click)="sortBy('size')" class="roles">
+        Roles
+      <span class="material-icons" *ngIf="orderField == 'size'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+    <span (click)="sortBy('modifiedAt')" class="modified-at">
+      Last modification time
+      <span class="material-icons" *ngIf="orderField == 'modifiedAt'">
+        <span *ngIf="orderDir == -1">keyboard_arrow_down</span>
+        <span *ngIf="orderDir == 1">keyboard_arrow_up</span>
+      </span>
+    </span>
+  </div>
+  <app-link *ngFor="let user of this.users" href="/auth/users/{{ user.id }}">
+    <div class="users-list-item directory">
+      <span class="material-icons">
+        account_circle
+      </span>
+      <span class="id">
+        <span>{{ user.id }}</span>
+      </span>
+      <span class="username">
+        {{ user.username }}
+      </span>
+      <span class="roles">
+        <span>{{ user.roles }}</span>
+      </span>
+      <span class="modified-at">
+        <span matTooltip="Creation time: {{ user.createdAt | date:'d/M/y HH:mm:ss' }}">{{ user.modifiedAt | date:'d/M/y HH:mm:ss' }}</span>
+      </span>
+    </div>
+  </app-link>
+</div>

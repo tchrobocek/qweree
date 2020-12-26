@@ -36,6 +36,9 @@ import { FileIconPipe } from './services/pipes/file-icon.pipe';
 import {NgxFileDropModule} from 'ngx-file-drop';
 import {AuthorizationInterceptor} from './services/http/authorization-interceptor.service';
 import { UsersExplorerComponent } from './components/auth/users-explorer/users-explorer.component';
+import {MatTableModule} from '@angular/material/table';
+import {CdkColumnDef} from '@angular/cdk/table';
+import { UsersListComponent } from './components/auth/users-list/users-list.component';
 
 @NgModule({
   declarations: [
@@ -55,35 +58,38 @@ import { UsersExplorerComponent } from './components/auth/users-explorer/users-e
     LinkComponent,
     StorageImportComponent,
     FileIconPipe,
-    UsersExplorerComponent
+    UsersExplorerComponent,
+    UsersListComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatSnackBarModule,
-    FormsModule,
-    HttpClientModule,
-    MatSidenavModule,
-    MatCheckboxModule,
-    MatListModule,
-    MatGridListModule,
-    MatIconModule,
-    MatTooltipModule,
-    NgxFileDropModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDividerModule,
+        MatSnackBarModule,
+        FormsModule,
+        HttpClientModule,
+        MatSidenavModule,
+        MatCheckboxModule,
+        MatListModule,
+        MatGridListModule,
+        MatIconModule,
+        MatTooltipModule,
+        NgxFileDropModule,
+        MatTableModule,
+    ],
   providers: [
     MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
     {
       provide : HTTP_INTERCEPTORS,
       useClass: AuthorizationInterceptor,
       multi   : true,
-    }
+    },
+    CdkColumnDef
   ],
   bootstrap: [AppComponent]
 })
