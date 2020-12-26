@@ -30,6 +30,11 @@
             Authentication service
           </div>
         </app-link>
+        <app-link href="/auth/users/create">
+          <div class="menu-link menu-sublink {{ this.router.url === '/auth/users/create' ? 'active' : '' }}">
+            Create user
+          </div>
+        </app-link>
         <app-link href="/auth/users">
           <div class="menu-link menu-sublink {{ this.router.url === '/auth/users' ? 'active' : '' }}">
             Users

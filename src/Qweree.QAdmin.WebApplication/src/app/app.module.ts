@@ -39,6 +39,7 @@ import { UsersExplorerComponent } from './components/auth/users-explorer/users-e
 import {MatTableModule} from '@angular/material/table';
 import {CdkColumnDef} from '@angular/cdk/table';
 import { UsersListComponent } from './components/auth/users-list/users-list.component';
+import { UserCreateComponent } from './components/auth/user-create/user-create.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { UsersListComponent } from './components/auth/users-list/users-list.comp
     StorageImportComponent,
     FileIconPipe,
     UsersExplorerComponent,
-    UsersListComponent
+    UsersListComponent,
+    UserCreateComponent
   ],
     imports: [
         BrowserModule,
