@@ -1,0 +1,6 @@
+.idea/
+.git/
+docker/
+**/bin/
+**/obj/
+**/node_modules/

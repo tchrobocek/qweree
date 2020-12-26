@@ -42,6 +42,14 @@ services:
       Authentication__TokenUri: "http://qweree-auth:8080/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
 
+  qweree-qadmin:
+    container_name: qweree-qadmin
+    build: 
+      dockerfile: ./docker/Qweree.QAdmin.WebApplication/.Dockerfile
+      context: .
+    restart: always
+    ports: 
+      - "80:80"
 
 volumes:
   qweree-db:
