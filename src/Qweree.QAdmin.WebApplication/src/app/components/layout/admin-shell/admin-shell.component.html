@@ -40,17 +40,34 @@
             Users
           </div>
         </app-link>
-        <a href="#" (click)="signOut(); $event.preventDefault();">
-          <div class="menu-link">
-            Sign Out
-          </div>
-        </a>
       </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content>
+      <div class="top-panel">
+        <div class="current-user-box" (click)="this.profileMenuVisible = !this.profileMenuVisible">
+          <div>
+          <span class="material-icons">
+            account_circle
+          </span>
+            <span class="username">
+            {{ username }}
+          </span>
+          </div>
+          <div>
+            <div class="profile-menu" [class.visible]="this.profileMenuVisible === true">
+              <app-link class="profile-menu-item" href="/profile">
+                <span>Profile</span>
+              </app-link>
+              <app-link class="profile-menu-item" (click)="signOut()">
+                <span>Sign out</span>
+              </app-link>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="app-content">
         <router-outlet></router-outlet>
       </div>
     </mat-drawer-content>
   </mat-drawer-container>
-</div>
+</div>>

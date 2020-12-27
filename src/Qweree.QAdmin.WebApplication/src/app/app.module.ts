@@ -42,6 +42,7 @@ import { UsersListComponent } from './components/auth/users-list/users-list.comp
 import { UserCreateComponent } from './components/auth/user-create/user-create.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import { UserInfoPageComponent } from './components/auth/user-info-page/user-info-page.component';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -66,28 +67,29 @@ import { UserInfoPageComponent } from './components/auth/user-info-page/user-inf
     UserCreateComponent,
     UserInfoPageComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDividerModule,
-    MatSnackBarModule,
-    FormsModule,
-    HttpClientModule,
-    MatSidenavModule,
-    MatCheckboxModule,
-    MatListModule,
-    MatGridListModule,
-    MatIconModule,
-    MatTooltipModule,
-    NgxFileDropModule,
-    MatTableModule,
-    MatTabsModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDividerModule,
+        MatSnackBarModule,
+        FormsModule,
+        HttpClientModule,
+        MatSidenavModule,
+        MatCheckboxModule,
+        MatListModule,
+        MatGridListModule,
+        MatIconModule,
+        MatTooltipModule,
+        NgxFileDropModule,
+        MatTableModule,
+        MatTabsModule,
+        MatMenuModule,
+    ],
   providers: [
     MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
     {
