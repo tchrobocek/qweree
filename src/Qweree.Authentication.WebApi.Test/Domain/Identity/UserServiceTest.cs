@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Qweree.AspNet.Application;
+using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
@@ -24,7 +25,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Identity
             var now = DateTime.UtcNow;
 
             var userRepositoryMock = new Mock<IUserRepository>();
-            var service = new UserService(new StaticDateTimeProvider(now), userRepositoryMock.Object, new EmptyValidator());
+            var service = new UserService(new StaticDateTimeProvider(now), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object);
             var input = new UserCreateInput("username", "email", "full name", "password", new[] {"Role"});
             var response = await service.CreateUserAsync(input);
             Assert.Equal(ResponseStatus.Ok, response.Status);
@@ -51,7 +52,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Identity
             userRepositoryMock.Setup(m => m.InsertAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new InsertDocumentException());
 
-            var service = new UserService(new DateTimeProvider(), userRepositoryMock.Object, new EmptyValidator());
+            var service = new UserService(new DateTimeProvider(), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object);
             var input = new UserCreateInput("username", "email", "full name", "password", Array.Empty<string>());
             var response = await service.CreateUserAsync(input);
             Assert.Equal(ResponseStatus.Fail, response.Status);

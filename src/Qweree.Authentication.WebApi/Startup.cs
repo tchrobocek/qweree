@@ -170,7 +170,8 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
             services.AddSingleton(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
-                p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>()));
+                p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
+                p.GetRequiredService<ISessionStorage>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

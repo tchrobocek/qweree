@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
+using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
@@ -17,12 +18,14 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         private readonly IDateTimeProvider _datetimeProvider;
         private readonly IUserRepository _userRepository;
         private readonly IValidator _validator;
+        private readonly ISessionStorage _sessionStorage;
 
-        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator)
+        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator, ISessionStorage sessionStorage)
         {
             _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
             _validator = validator;
+            _sessionStorage = sessionStorage;
         }
 
         public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput, CancellationToken cancellationToken = new CancellationToken())
@@ -81,6 +84,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
         public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
         {
+            if (_sessionStorage.CurrentUser.Id == id)
+            {
+                return Response.Fail("Cannot delete self.");
+            }
             try
             {
                 await _userRepository.DeleteAsync(id, cancellationToken);
