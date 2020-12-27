@@ -12,10 +12,10 @@
           <span class="title">Email:</span> {{ user.email ? user.email : '***' }}
         </div>
         <div>
-          <span class="title">Creation time:</span> {{ user.createdAt }}
+          <span class="title">Creation time:</span> {{ user.createdAt | date:'d/M/y HH:mm:ss' }}
         </div>
         <div>
-          <span class="title">Last modification time:</span> {{ user.modifiedAt }}
+          <span class="title">Last modification time:</span> {{ user.modifiedAt | date:'d/M/y HH:mm:ss' }}
         </div>
       </section>
       <section class="roles-container">
