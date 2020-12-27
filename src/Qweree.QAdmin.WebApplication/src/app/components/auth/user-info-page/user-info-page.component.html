@@ -6,22 +6,16 @@
     <mat-card-content>
       <section class="user-info-container">
         <div>
-          Id: {{ user.id }}
+          <span class="title">Full name:</span> {{ user.fullName ? user.fullName : '***' }}
         </div>
         <div>
-          Username: {{ user.username }}
+          <span class="title">Email:</span> {{ user.email ? user.email : '***' }}
         </div>
         <div>
-          Full name: {{ user.fullName ? user.fullName : '***' }}
+          <span class="title">Creation time:</span> {{ user.createdAt }}
         </div>
         <div>
-          Email: {{ user.email ? user.email : '***' }}
-        </div>
-        <div>
-          Creation time: {{ user.createdAt }}
-        </div>
-        <div>
-          Last modification time: {{ user.modifiedAt }}
+          <span class="title">Last modification time:</span> {{ user.modifiedAt }}
         </div>
       </section>
       <section class="roles-container">
