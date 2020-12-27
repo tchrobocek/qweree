@@ -118,6 +118,7 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_CREATE"));
                 options.AddPolicy("UserRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ"));
                 options.AddPolicy("UserDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_DELETE"));
+                options.AddPolicy("UserReadPersonalDetail", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ_PERSONAL_DETAIL"));
             });
 
             // Validator

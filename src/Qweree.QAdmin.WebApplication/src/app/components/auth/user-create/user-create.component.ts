@@ -20,7 +20,8 @@ export class UserCreateComponent implements OnInit {
     AUTH_USERS_CREATE: false,
     CDN_MANAGE: false,
     CDN_EXPLORE: false,
-    CDN_STORAGE_STORE: false
+    CDN_STORAGE_STORE: false,
+    AUTH_USERS_READ_PERSONAL_DETAIL: false
   };
 
   constructor(

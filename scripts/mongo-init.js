@@ -6,7 +6,7 @@ db.users.insert({
     "Password": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
     "ContactEmail": "admin@admin.com",
     "FullName": "Admin Adminowitch",
-    "Roles": ["AUTH_USERS_CREATE", "AUTH_USERS_READ", "AUTH_USERS_DELETE"],
+    "Roles": ["AUTH_USERS_CREATE", "AUTH_USERS_READ", "AUTH_USERS_DELETE", "AUTH_USERS_READ_PERSONAL_DETAIL"],
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
 });

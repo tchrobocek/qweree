@@ -11,17 +11,20 @@ namespace Qweree.Utils
         public static readonly JsonSerializerOptions CamelCaseOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            IgnoreNullValues = true
         };
         public static readonly JsonSerializerOptions SnakeCaseNamingPolicy = new JsonSerializerOptions
         {
             PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            IgnoreNullValues = true
         };
         public static readonly JsonSerializerOptions NullNamingPolicyOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = null,
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            IgnoreNullValues = true
         };
 
         public static string Serialize(object value)

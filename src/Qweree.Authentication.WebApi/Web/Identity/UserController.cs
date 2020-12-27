@@ -19,10 +19,12 @@ namespace Qweree.Authentication.WebApi.Web.Identity
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, IAuthorizationService authorizationService)
         {
             _userService = userService;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
@@ -69,6 +71,15 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             }
 
             var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
+
+            var result = await _authorizationService.AuthorizeAsync(User, null, "UserReadPersonalDetail");
+
+            if (result.Succeeded)
+            {
+                userDto.Email = userResponse.Payload.ContactEmail;
+                userDto.FullName = userResponse.Payload.FullName;
+            }
+
             return Ok(userDto);
         }
 
