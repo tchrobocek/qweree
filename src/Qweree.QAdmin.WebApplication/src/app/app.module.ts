@@ -40,6 +40,7 @@ import {MatTableModule} from '@angular/material/table';
 import {CdkColumnDef} from '@angular/cdk/table';
 import { UsersListComponent } from './components/auth/users-list/users-list.component';
 import { UserCreateComponent } from './components/auth/user-create/user-create.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -63,27 +64,28 @@ import { UserCreateComponent } from './components/auth/user-create/user-create.c
     UsersListComponent,
     UserCreateComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatDividerModule,
-        MatSnackBarModule,
-        FormsModule,
-        HttpClientModule,
-        MatSidenavModule,
-        MatCheckboxModule,
-        MatListModule,
-        MatGridListModule,
-        MatIconModule,
-        MatTooltipModule,
-        NgxFileDropModule,
-        MatTableModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatSnackBarModule,
+    FormsModule,
+    HttpClientModule,
+    MatSidenavModule,
+    MatCheckboxModule,
+    MatListModule,
+    MatGridListModule,
+    MatIconModule,
+    MatTooltipModule,
+    NgxFileDropModule,
+    MatTableModule,
+    MatTabsModule,
+  ],
   providers: [
     MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
     {
