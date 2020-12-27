@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Cdn.WebApi\Qweree.Cdn.WebApi.csproj" />
       <ProjectReference Include="..\Qweree.TestUtils\Qweree.TestUtils.csproj" />
     </ItemGroup>

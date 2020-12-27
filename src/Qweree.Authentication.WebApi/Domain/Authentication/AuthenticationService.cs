@@ -12,6 +12,7 @@ using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Utils;
+using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Authentication
 {
@@ -69,7 +70,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, cancellationToken);
@@ -101,7 +102,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
@@ -127,7 +128,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_fileAccessTokenValiditySeconds);
-            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id, session.CurrentUser.Username, session.CurrentUser.Roles, now, expiresAt));
+            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id, session.CurrentUser.Username, session.CurrentUser.FullName, session.CurrentUser.Email, session.CurrentUser.Roles, now, expiresAt));
 
             return Task.FromResult(Response.Ok(new TokenInfo(fileAccessToken, expiresAt)));
         }
@@ -156,6 +157,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             {
                 new Claim("userId", accessToken.UserId.ToString()),
                 new Claim("username", accessToken.Username),
+                new Claim("full_name", accessToken.FullName),
+                new Claim("email", accessToken.Email),
                 new Claim("iat", accessToken.IssuedAt.Ticks.ToString()),
                 new Claim("jti", Guid.NewGuid().ToString())
             };

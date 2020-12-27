@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
-using Qweree.Authentication.Sdk.Identity;
 
 namespace Qweree.AspNet.Session
 {
@@ -11,8 +10,10 @@ namespace Qweree.AspNet.Session
         {
             var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? "";
             var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value ?? "anonymous";
+            var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "full_name")?.Value ?? "anonymous";
+            var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
             var roles = claimsPrincipal.Claims.Where(c => c.Type == "roles").Select(c => c.Value);
-            return new User(Guid.Parse(id), username, roles);
+            return new User(Guid.Parse(id), username, fullName, email, roles);
         }
 
         public ClaimsPrincipalStorage(ClaimsPrincipal claimsPrincipal)
