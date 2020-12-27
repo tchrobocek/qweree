@@ -38,6 +38,8 @@ export class UserInfoPageComponent implements OnInit {
         u.roles.forEach(rr => {
           this.roles[rr] = true;
         });
+      }, () => {
+        this.router.navigate(['/auth/users']);
       });
     });
   }
