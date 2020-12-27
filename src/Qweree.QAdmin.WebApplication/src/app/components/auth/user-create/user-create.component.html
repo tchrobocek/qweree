@@ -9,17 +9,17 @@
           <div class="form-container">
             <div>
               <mat-form-field appearance="fill">
-                <mat-label>Id</mat-label>
+                <mat-label>Username</mat-label>
                 <label>
-                  <input matInput [(ngModel)]="id">
+                  <input matInput [(ngModel)]="username">
                 </label>
               </mat-form-field>
             </div>
             <div>
               <mat-form-field appearance="fill">
-                <mat-label>Username</mat-label>
+                <mat-label>Full name</mat-label>
                 <label>
-                  <input matInput [(ngModel)]="username">
+                  <input matInput [(ngModel)]="fullName">
                 </label>
               </mat-form-field>
             </div>
@@ -52,36 +52,36 @@
         <mat-tab label="Roles">
           <section class="roles-container">
             <div class="role">
-              <mat-checkbox  [checked]="roles.AUTH_MANAGE">AUTH_MANAGE</mat-checkbox>
+              <mat-checkbox  [(ngModel)]="roles.AUTH_MANAGE">AUTH_MANAGE</mat-checkbox>
               Allows to view auth management.
             </div>
             <div class="role">
-              <mat-checkbox  [checked]="roles.AUTH_USERS_READ">AUTH_USERS_READ</mat-checkbox>
+              <mat-checkbox  [(ngModel)]="roles.AUTH_USERS_READ">AUTH_USERS_READ</mat-checkbox>
               Allows to browse users.
             </div>
             <div class="role">
-              <mat-checkbox  [checked]="roles.AUTH_USERS_CREATE">AUTH_USERS_CREATE</mat-checkbox>
+              <mat-checkbox  [(ngModel)]="roles.AUTH_USERS_CREATE">AUTH_USERS_CREATE</mat-checkbox>
               Allows to create users.
             </div>
           </section>
           <section class="roles-container">
             <div class="role">
-              <mat-checkbox  [checked]="roles.CDN_MANAGE">CDN_MANAGE</mat-checkbox>
+              <mat-checkbox  [(ngModel)]="roles.CDN_MANAGE">CDN_MANAGE</mat-checkbox>
               Allows to view cdn management.
             </div>
             <div class="role">
-              <mat-checkbox [checked]="roles.CDN_EXPLORE">CDN_EXPLORE</mat-checkbox>
+              <mat-checkbox [(ngModel)]="roles.CDN_EXPLORE">CDN_EXPLORE</mat-checkbox>
               Allows to explore cdn.
             </div>
             <div class="role">
-              <mat-checkbox [checked]="roles.CDN_STORAGE_STORE">CDN_STORAGE_STORE</mat-checkbox>
+              <mat-checkbox [(ngModel)]="roles.CDN_STORAGE_STORE">CDN_STORAGE_STORE</mat-checkbox>
               Allows to store objects to store.
             </div>
           </section>
         </mat-tab>
       </mat-tab-group>
       <div class="button-container">
-        <button mat-raised-button color="primary">Create</button>
+        <button mat-raised-button color="primary" (click)="create()">Create</button>
       </div>
     </mat-card-content>
   </mat-card>
