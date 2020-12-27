@@ -54,6 +54,8 @@ namespace Qweree.Authentication.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddHealthChecks()
                 .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
             services.AddControllers()
@@ -68,7 +70,8 @@ namespace Qweree.Authentication.WebApi
                 {
                     builder.AllowAnyHeader()
                         .AllowAnyHeader()
-                        .AllowAnyOrigin();
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
                 });
             });
             services.AddSwaggerGen(options =>
@@ -165,11 +168,11 @@ namespace Qweree.Authentication.WebApi
             });
 
             // Identity
-            services.AddScoped(p => p.GetRequiredService<HttpContext>().User);
+            services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
-            services.AddSingleton(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
+            services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<ISessionStorage>()));
         }
