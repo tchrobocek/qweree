@@ -1,3 +1,4 @@
+
 # Qweree
 
 ## Docker setup
@@ -35,6 +36,9 @@ Inner oauth2 endpoint: `http://qweree-auth:80/api/oauth2/auth`
 
 #### qweree-cdn
 Swagger: `http://localhost:8090/swagger/index.html`
+
+#### qweree-qadmin
+Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost`
 
 ### Credentials
 - Init admin user - `admin`:`password`
