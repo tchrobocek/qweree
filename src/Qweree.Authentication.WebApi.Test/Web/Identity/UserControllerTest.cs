@@ -13,6 +13,7 @@ using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
+using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
 using User = Qweree.Authentication.Sdk.Identity.User;
@@ -71,7 +72,9 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 response.EnsureSuccessStatusCode();
                 var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
-                actualUser.ShouldDeepEqual(user);
+                actualUser.WithDeepEqual(user)
+                    .WithCustomComparison(new MillisecondDateTimeComparison())
+                    .Assert();
             }
         }
 

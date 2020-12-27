@@ -136,7 +136,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             {
                 Id = user.Id,
                 Username = user.Username,
-                Roles = user.Roles.ToArray()
+                Roles = user.Roles.ToArray(),
+                ModifiedAt = user.ModifiedAt,
+                CreatedAt = user.CreatedAt
             };
         }
     }
