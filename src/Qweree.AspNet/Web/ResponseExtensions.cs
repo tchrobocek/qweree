@@ -16,7 +16,12 @@ namespace Qweree.AspNet.Web
         }
         public static IActionResult ToErrorActionResult(this Response response)
         {
-            return new StatusCodeResult(response.Errors.Max(e => e.Code ?? 400));
+            var result = new ObjectResult(response.ToErrorResponseDto())
+            {
+                StatusCode = response.Errors.Max(e => e.Code ?? 400)
+            };
+
+            return result;
         }
     }
 }
