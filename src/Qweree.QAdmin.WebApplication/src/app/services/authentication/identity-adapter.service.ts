@@ -26,4 +26,21 @@ export class IdentityAdapterService {
         throw e;
       }));
   }
+
+  createUser(input: UserCreateInput): Observable<User> {
+    const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/v1/identity/users');
+    return this.httpClient.post<User>(uri, input).pipe(catchError(e => { throw e; }));
+  }
+}
+
+export class UserCreateInput {
+
+  constructor(
+    public username: string,
+    public contactEmail: string,
+    public fullName: string,
+    public password: string,
+    public roles: string[]
+  ) {
+  }
 }

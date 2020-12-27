@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {Guid} from '../../../services/Guid';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {IdentityAdapterService} from '../../../services/authentication/identity-adapter.service';
 
 @Component({
   selector: 'app-user-create',
@@ -8,8 +9,8 @@ import {Guid} from '../../../services/Guid';
 })
 export class UserCreateComponent implements OnInit {
 
-  public id = '';
   public username = '';
+  public fullName = '';
   public password = '';
   public password2 = '';
   public email = '';
@@ -22,9 +23,40 @@ export class UserCreateComponent implements OnInit {
     CDN_STORAGE_STORE: false
   };
 
-  constructor() { }
+  constructor(
+    private snackbar: MatSnackBar,
+    private identityAdapter: IdentityAdapterService
+  ) { }
 
   ngOnInit(): void {
-    this.id = Guid.newGuid();
+  }
+
+  create(): void {
+    if (this.password !== this.password2) {
+      this.snackbar.open('Passwords must match.');
+      return;
+    }
+
+    const userInput = {
+      username: this.username,
+      contactEmail: this.email,
+      fullName: this.fullName,
+      password: this.password,
+      roles: []
+    };
+
+    Object.keys(this.roles).forEach(k => {
+      if (this.roles[k]) {
+        userInput.roles.push(k);
+      }
+    });
+
+    this.identityAdapter.createUser(userInput).subscribe(r => {
+      this.snackbar.open('User "' + r.username + '" created.', 'X', { duration: 1500 });
+    }, err => {
+      err.error.errors.map(e => e.message).forEach(m => {
+        this.snackbar.open(m, 'X', { duration: 1500 });
+      });
+    });
   }
 }
