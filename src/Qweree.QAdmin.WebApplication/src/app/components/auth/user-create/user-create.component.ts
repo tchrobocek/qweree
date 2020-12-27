@@ -13,12 +13,18 @@ export class UserCreateComponent implements OnInit {
   public password = '';
   public password2 = '';
   public email = '';
-  public roles: string[] = [];
+  public roles = {
+    AUTH_MANAGE: false,
+    AUTH_USERS_READ: false,
+    AUTH_USERS_CREATE: false,
+    CDN_MANAGE: false,
+    CDN_EXPLORE: false,
+    CDN_STORAGE_STORE: false
+  };
 
   constructor() { }
 
   ngOnInit(): void {
     this.id = Guid.newGuid();
   }
-
 }
