@@ -3,7 +3,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Net.Http.Headers;
 using Qweree.Sdk.Http.Errors;
 using Qweree.Utils;
 
@@ -30,7 +29,7 @@ namespace Qweree.Cdn.Sdk.Storage
                 {
                     Headers =
                     {
-                        {HeaderNames.ContentType, mediaType}
+                        {"Content-Type", mediaType}
                     }
                 }
             };
