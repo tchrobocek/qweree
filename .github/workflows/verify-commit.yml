@@ -3,6 +3,8 @@ name: .NET
 on:
   pull_request:
     branches: [ master ]
+  push:
+    branches: [ master ]
 
 jobs:
   tests:
@@ -40,3 +42,8 @@ jobs:
         run: dotnet tool restore
       - name: Analyse
         run: dotnet jb inspectcode Qweree.sln -o=output.xml
+      - name: Upload
+        uses: actions/upload-artifact@v1
+        with:
+          name: output.xml
+          path: output.xml
