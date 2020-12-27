@@ -11,6 +11,7 @@ export class AdminShellComponent implements OnInit {
 
   public username = '';
   public profileMenuVisible = false;
+  public roles: string[] = [];
 
   constructor(
     private tokenStorage: TokenStorageService,
@@ -23,6 +24,7 @@ export class AdminShellComponent implements OnInit {
     const token = this.tokenStorage.getUserInfo();
 
     this.username = token.username;
+    this.roles = token.role;
   }
 
   signOut(): void {

@@ -10,32 +10,32 @@
             Dashboard
           </div>
         </app-link>
-        <app-link href="/cdn">
+        <app-link href="/cdn" *ngIf="roles.indexOf('CDN_MANAGE') >= 0">
           <div class="menu-link {{ this.router.url === '/cdn' ? 'active' : '' }}">
             Cdn service
           </div>
         </app-link>
-        <app-link href="/cdn/explorer">
+        <app-link href="/cdn/explorer" *ngIf="roles.indexOf('CDN_MANAGE') >= 0 && roles.indexOf('CDN_EXPLORE') >= 0">
           <div class="menu-link menu-sublink {{ this.router.url.startsWith('/cdn/explorer') ? 'active' : '' }}">
             Storage Explorer
           </div>
         </app-link>
-        <app-link href="/cdn/import">
+        <app-link href="/cdn/import" *ngIf="roles.indexOf('CDN_MANAGE') >= 0 && roles.indexOf('CDN_STORAGE_STORE') >= 0">
           <div class="menu-link menu-sublink {{ this.router.url === '/cdn/import' ? 'active' : '' }}">
             Storage Import
           </div>
         </app-link>
-        <app-link href="/auth">
+        <app-link href="/auth" *ngIf="roles.indexOf('AUTH_MANAGE') >= 0">
           <div class="menu-link {{ this.router.url === '/auth' ? 'active' : '' }}">
             Authentication service
           </div>
         </app-link>
-        <app-link href="/auth/users/create">
+        <app-link href="/auth/users/create" *ngIf="roles.indexOf('AUTH_MANAGE') >= 0 && roles.indexOf('AUTH_USERS_CREATE') >= 0">
           <div class="menu-link menu-sublink {{ this.router.url === '/auth/users/create' ? 'active' : '' }}">
             Create user
           </div>
         </app-link>
-        <app-link href="/auth/users">
+        <app-link href="/auth/users" *ngIf="roles.indexOf('AUTH_MANAGE') >= 0 && roles.indexOf('AUTH_USERS_READ') >= 0">
           <div class="menu-link menu-sublink {{ this.router.url === '/auth/users' ? 'active' : '' }}">
             Users
           </div>
