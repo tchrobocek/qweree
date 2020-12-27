@@ -8,3 +8,14 @@ export class TokenInfo {
   ) { }
 
 }
+
+export class UserInfo {
+  constructor(
+    public userId: string,
+    public username: string,
+    public fullName: string,
+    public email: string,
+    public role: string[],
+  ) {
+  }
+}

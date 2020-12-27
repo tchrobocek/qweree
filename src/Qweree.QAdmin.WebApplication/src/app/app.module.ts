@@ -43,6 +43,7 @@ import { UserCreateComponent } from './components/auth/user-create/user-create.c
 import {MatTabsModule} from '@angular/material/tabs';
 import { UserInfoPageComponent } from './components/auth/user-info-page/user-info-page.component';
 import {MatMenuModule} from '@angular/material/menu';
+import { ProfileMainPageComponent } from './components/profile/profile-main-page/profile-main-page.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import {MatMenuModule} from '@angular/material/menu';
     UsersExplorerComponent,
     UsersListComponent,
     UserCreateComponent,
-    UserInfoPageComponent
+    UserInfoPageComponent,
+    ProfileMainPageComponent
   ],
     imports: [
         BrowserModule,

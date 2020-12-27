@@ -1,10 +1,16 @@
 import {Injectable} from '@angular/core';
-import {TokenInfo} from '../../model/authentication/TokenInfo';
+import {TokenInfo, UserInfo} from '../../model/authentication/TokenInfo';
+import jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenStorageService {
+
+  getUserInfo(): UserInfo {
+    const tokenInfo = this.getTokenInfo();
+    return jwt_decode(tokenInfo.accessToken) as UserInfo;
+  }
 
   getTokenInfo(): TokenInfo {
     const json = window.localStorage.getItem(`token_info`);

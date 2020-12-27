@@ -12,6 +12,7 @@ import {StorageImportComponent} from './components/cdn/storage-import/storage-im
 import {UsersExplorerComponent} from './components/auth/users-explorer/users-explorer.component';
 import {UserCreateComponent} from './components/auth/user-create/user-create.component';
 import {UserInfoPageComponent} from './components/auth/user-info-page/user-info-page.component';
+import {ProfileMainPageComponent} from './components/profile/profile-main-page/profile-main-page.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,9 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     children: [{
         path: '', component: DashboardComponent,
+        canActivate: [AuthGuardService]
+      }, {
+        path: 'profile', component: ProfileMainPageComponent,
         canActivate: [AuthGuardService]
       }, {
         path: 'cdn', component: CdnDashboardComponent,
