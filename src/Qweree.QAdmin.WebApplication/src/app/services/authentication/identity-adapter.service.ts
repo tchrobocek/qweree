@@ -36,6 +36,11 @@ export class IdentityAdapterService {
     const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/v1/identity/users/' + id);
     return this.httpClient.get<User>(uri).pipe(catchError(e => { throw e; }));
   }
+
+  deleteUser(id: string): Observable<boolean> {
+    const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/v1/identity/users/' + id);
+    return this.httpClient.delete(uri).pipe(map(() => true), catchError(e => { throw e; }));
+  }
 }
 
 export class UserCreateInput {

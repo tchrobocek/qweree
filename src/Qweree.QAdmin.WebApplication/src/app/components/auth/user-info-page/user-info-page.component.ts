@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {IdentityAdapterService} from '../../../services/authentication/identity-adapter.service';
 import {User} from '../../../model/authentication/User';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-info-page',
@@ -23,7 +24,9 @@ export class UserInfoPageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private identityAdapter: IdentityAdapterService
+    private identityAdapter: IdentityAdapterService,
+    private router: Router,
+    private snackbar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -39,4 +42,22 @@ export class UserInfoPageComponent implements OnInit {
     });
   }
 
+  delete(): void {
+    const res = confirm('Do you really want to delete user "' + this.user.username + '"?');
+
+    if (res) {
+      this.identityAdapter.deleteUser(this.user.id).subscribe(r => {
+        if (r) {
+          this.router.navigate(['/auth/users']);
+        }
+        else {
+          this.snackbar.open('User deletion failed,', 'X', {duration: 1500});
+        }
+      }, e => {
+        e.error.errors.map(err => err.message).forEach(m => {
+          this.snackbar.open(m, 'X', {duration: 1500});
+        });
+      });
+    }
+  }
 }
