@@ -11,6 +11,7 @@ import {StorageExplorerComponent} from './components/cdn/storage-explorer/storag
 import {StorageImportComponent} from './components/cdn/storage-import/storage-import.component';
 import {UsersExplorerComponent} from './components/auth/users-explorer/users-explorer.component';
 import {UserCreateComponent} from './components/auth/user-create/user-create.component';
+import {UserInfoPageComponent} from './components/auth/user-info-page/user-info-page.component';
 
 
 const routes: Routes = [
@@ -45,6 +46,9 @@ const routes: Routes = [
         canActivate: [AuthGuardService]
       }, {
         path: 'auth/users/create', component: UserCreateComponent,
+        canActivate: [AuthGuardService]
+      }, {
+        path: 'auth/users/:id', component: UserInfoPageComponent,
         canActivate: [AuthGuardService]
       }, {
         path: '**', component: NotFoundComponent

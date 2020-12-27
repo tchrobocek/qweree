@@ -31,6 +31,11 @@ export class IdentityAdapterService {
     const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/v1/identity/users');
     return this.httpClient.post<User>(uri, input).pipe(catchError(e => { throw e; }));
   }
+
+  getUser(id: string): Observable<User> {
+    const uri = PathHelper.getPath(this.environmentService.getEnvironment().authentication.baseUri, '/api/v1/identity/users/' + id);
+    return this.httpClient.get<User>(uri).pipe(catchError(e => { throw e; }));
+  }
 }
 
 export class UserCreateInput {

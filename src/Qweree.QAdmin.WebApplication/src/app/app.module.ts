@@ -41,6 +41,7 @@ import {CdkColumnDef} from '@angular/cdk/table';
 import { UsersListComponent } from './components/auth/users-list/users-list.component';
 import { UserCreateComponent } from './components/auth/user-create/user-create.component';
 import {MatTabsModule} from '@angular/material/tabs';
+import { UserInfoPageComponent } from './components/auth/user-info-page/user-info-page.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     FileIconPipe,
     UsersExplorerComponent,
     UsersListComponent,
-    UserCreateComponent
+    UserCreateComponent,
+    UserInfoPageComponent
   ],
   imports: [
     BrowserModule,

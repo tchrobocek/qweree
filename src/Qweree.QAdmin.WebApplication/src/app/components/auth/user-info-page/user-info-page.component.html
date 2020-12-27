@@ -1,0 +1,61 @@
+<div>
+  <mat-card *ngIf="user">
+    <mat-card-title>
+      {{ user.username }} <span class="id">{{ user.id }}</span>
+    </mat-card-title>
+    <mat-card-content>
+      <section class="user-info-container">
+        <div>
+          Id: {{ user.id }}
+        </div>
+        <div>
+          Username: {{ user.username }}
+        </div>
+        <div>
+          Full name: {{ user.fullName ? user.fullName : '***' }}
+        </div>
+        <div>
+          Email: {{ user.email ? user.email : '***' }}
+        </div>
+        <div>
+          Creation time: {{ user.createdAt }}
+        </div>
+        <div>
+          Last modification time: {{ user.modifiedAt }}
+        </div>
+      </section>
+      <section class="roles-container">
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.AUTH_MANAGE">AUTH_MANAGE</mat-checkbox>
+          Allows to view auth management.
+        </div>
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.AUTH_USERS_READ">AUTH_USERS_READ</mat-checkbox>
+          Allows to browse users.
+        </div>
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.AUTH_USERS_CREATE">AUTH_USERS_CREATE</mat-checkbox>
+          Allows to create users.
+        </div>
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.AUTH_USERS_READ_PERSONAL_DETAIL">AUTH_USERS_READ_PERSONAL_DETAIL</mat-checkbox>
+          Allows to see user personal detail like full name and email.
+        </div>
+      </section>
+      <section class="roles-container">
+        <div class="role">
+          <mat-checkbox disabled  [(ngModel)]="roles.CDN_MANAGE">CDN_MANAGE</mat-checkbox>
+          Allows to view cdn management.
+        </div>
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.CDN_EXPLORE">CDN_EXPLORE</mat-checkbox>
+          Allows to explore cdn.
+        </div>
+        <div class="role">
+          <mat-checkbox disabled [(ngModel)]="roles.CDN_STORAGE_STORE">CDN_STORAGE_STORE</mat-checkbox>
+          Allows to store objects to store.
+        </div>
+      </section>
+    </mat-card-content>
+  </mat-card>
+</div>
