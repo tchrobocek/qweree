@@ -19,7 +19,7 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
             _messageHandler = new HttpClientHandler();
         }
 
-        public string AuthenticationApiUri => "http://localhost:8080";
+        public string AuthenticationApiUri => "http://localhost:10001";
 
         public Task<HttpClient> CreateHttpClientAsync(
             CancellationToken cancellationToken = new CancellationToken())

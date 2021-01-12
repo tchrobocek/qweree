@@ -13,8 +13,8 @@ namespace Qweree.ConsoleApplication
         static async Task<int> Main(string[] args)
         {
             using var httpClient = new HttpClient();
-            var authUri = new Uri("http://localhost:8080/api/oauth2/auth");
-            var cdnUri = new Uri("http://localhost:8090/api/v1/storage");
+            var authUri = new Uri("http://localhost:10001/api/oauth2/auth");
+            var cdnUri = new Uri("http://localhost:10002/api/v1/storage");
             var authenticationAdapter = new OAuth2Adapter(authUri, httpClient);
             var tokenInfo = await authenticationAdapter.SignInAsync(new PasswordGrantInput("admin", "password"));
 
