@@ -5,10 +5,10 @@
 export const environment = {
   production: false,
   authentication: {
-    baseUri: 'http://localhost:8080/'
+    baseUri: 'http://localhost:10001/'
   },
   cdn: {
-    baseUri: 'http://localhost:8090/'
+    baseUri: 'http://localhost:10002/'
   }
 };
 

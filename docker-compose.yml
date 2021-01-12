@@ -19,7 +19,7 @@ services:
       context: .
     restart: always
     ports:
-      - "8080:80"
+      - "10001:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
@@ -33,13 +33,13 @@ services:
       context: .
     restart: always
     ports:
-      - "8090:80"
+      - "10002:80"
     volumes:
       - qweree-cdn:/storage
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Authentication__TokenUri: "http://qweree-auth:8080/api/oauth2/auth"
+      Authentication__TokenUri: "http://qweree-auth:10001/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
 
   qweree-qadmin:
@@ -49,7 +49,7 @@ services:
       context: .
     restart: always
     ports: 
-      - "80:80"
+      - "11001:80"
 
 volumes:
   qweree-db:

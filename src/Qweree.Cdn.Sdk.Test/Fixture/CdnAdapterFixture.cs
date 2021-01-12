@@ -19,8 +19,8 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
             _messageHandler = new HttpClientHandler();
         }
 
-        public string CdnApiUri => "http://localhost:8090";
-        public string AuthenticationApiUri => "http://localhost:8080";
+        public string CdnApiUri => "http://localhost:10002";
+        public string AuthenticationApiUri => "http://localhost:10001";
 
         public Task<HttpClient> CreateHttpClientAsync(
             CancellationToken cancellationToken = new CancellationToken())
