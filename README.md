@@ -20,7 +20,10 @@ Start chosen services by listing them.
 
 ### Services
 
+
 #### qweree-db
+Mongo db
+
 Connection string: `mongodb://localhost:27017`.
 
 Inner connection string: `mongodb://qweree-db:27017`.
@@ -28,17 +31,27 @@ Inner connection string: `mongodb://qweree-db:27017`.
 Use for example `mongo compass` application to explore database.
 
 #### qweree-auth
-Swagger: `http://localhost:8080/swagger/index.html`
+Auth api
 
-OAuth2 endpoint: `http://localhost:8080/api/oauth2/auth`
+Swagger: `http://localhost:10001/swagger/index.html`
 
-Inner oauth2 endpoint: `http://qweree-auth:80/api/oauth2/auth`
+OAuth2 endpoint: `http://localhost:10001/api/oauth2/auth`
 
 #### qweree-cdn
-Swagger: `http://localhost:8090/swagger/index.html`
+Cdn api
+
+Swagger: `http://localhost:10002/swagger/index.html`
+
+#### qweree-qwill
+An api for qwill application.
+
+Swagger: `http://localhost:10002/swagger/index.html`
 
 #### qweree-qadmin
-Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost`
+Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost:11001`
+
+#### qweree-qwill-app
+Angular qwill application. Available at `http://localhost:11000`
 
 ### Credentials
 - Init admin user - `admin`:`password`
