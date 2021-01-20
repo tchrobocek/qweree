@@ -50,8 +50,5 @@ Swagger: `http://localhost:10003/swagger/index.html`
 #### qweree-qadmin
 Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost:11001`
 
-#### qweree-qwill-app
-Angular qwill application. Available at `http://localhost:11000`
-
 ### Credentials
 - Init admin user - `admin`:`password`
