@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "qweree-qwill": {
+    "qwill": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/qweree-qwill",
+            "outputPath": "dist/qwill",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -66,18 +66,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "qweree-qwill:build"
+            "browserTarget": "qwill:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "qweree-qwill:build:production"
+              "browserTarget": "qwill:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "qweree-qwill:build"
+            "browserTarget": "qwill:build"
           }
         },
         "test": {
@@ -114,15 +114,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "qweree-qwill:serve"
+            "devServerTarget": "qwill:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "qweree-qwill:serve:production"
+              "devServerTarget": "qwill:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "qweree-qwill"
+  "defaultProject": "qwill"
 }
