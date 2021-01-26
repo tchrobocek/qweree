@@ -19,7 +19,9 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Mongo;
+using Qweree.Qwill.WebApi.Domain.Stories;
 using Qweree.Qwill.WebApi.Infrastructure.Authentication;
+using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
 using Qweree.Utils;
 
 namespace Qweree.Qwill.WebApi
@@ -161,6 +163,7 @@ namespace Qweree.Qwill.WebApi
 
             // Session
             services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(p =>
                 p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
@@ -173,6 +176,10 @@ namespace Qweree.Qwill.WebApi
                 var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
                 return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
             });
+
+            // Qwill
+            services.AddSingleton<IPublicationRepository, PublicationRepository>();
+            services.AddScoped<PublicationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
