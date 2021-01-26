@@ -26,7 +26,8 @@ namespace Qweree.Validator.Test.Extensions
             var validatorMock = new Mock<IValidator>();
             var validator = validatorMock.Object;
 
-            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            validatorMock.Setup(m =>
+                    m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns<string, object, CancellationToken>((path, _, _) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
@@ -46,6 +47,7 @@ namespace Qweree.Validator.Test.Extensions
             Assert.Equal(new[] {error, error, error}, actualResult.Errors.Select(e => e.Message).ToArray());
             Assert.Equal(new[] {"0", "1", "2"}, actualResult.Errors.Select(e => e.Path).ToArray());
         }
+
         [Fact]
         public async Task TestValidate_KeyValuePairs()
         {
@@ -62,7 +64,8 @@ namespace Qweree.Validator.Test.Extensions
             var validatorMock = new Mock<IValidator>();
             var validator = validatorMock.Object;
 
-            validatorMock.Setup(m => m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            validatorMock.Setup(m =>
+                    m.ValidateAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .Returns<string, object, CancellationToken>((path, _, _) =>
                 {
                     var result = new ValidationResult(ValidationStatus.Failed,
@@ -72,9 +75,12 @@ namespace Qweree.Validator.Test.Extensions
 
             var actualResult = await validator.ValidateManyAsync(subjects);
 
-            validatorMock.Verify(m => m.ValidateAsync("a", subjects[0].Value, It.IsAny<CancellationToken>()), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("b", subjects[1].Value, It.IsAny<CancellationToken>()), Times.Once());
-            validatorMock.Verify(m => m.ValidateAsync("c", subjects[2].Value, It.IsAny<CancellationToken>()), Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("a", subjects[0].Value, It.IsAny<CancellationToken>()),
+                Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("b", subjects[1].Value, It.IsAny<CancellationToken>()),
+                Times.Once());
+            validatorMock.Verify(m => m.ValidateAsync("c", subjects[2].Value, It.IsAny<CancellationToken>()),
+                Times.Once());
 
             Assert.Equal(new[] {warning, warning, warning}, actualResult.Warnings.Select(w => w.Message).ToArray());
             Assert.Equal(new[] {"a", "b", "c"}, actualResult.Warnings.Select(w => w.Path).ToArray());

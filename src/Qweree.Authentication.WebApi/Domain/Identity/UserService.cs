@@ -33,7 +33,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         }
 
         public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
             if (validationResult.HasFailed)
@@ -56,8 +56,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(user);
         }
 
-        public async Task<Response<User>> FindUserAsync(Guid userId,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<User>> FindUserAsync(Guid userId, CancellationToken cancellationToken = new())
         {
             User user;
 
@@ -75,7 +74,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         }
 
         public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             Pagination<User> pagination;
 
@@ -91,7 +90,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(pagination.Documents, pagination.TotalCount);
         }
 
-        public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             if (_sessionStorage.CurrentUser.Id == id)
             {

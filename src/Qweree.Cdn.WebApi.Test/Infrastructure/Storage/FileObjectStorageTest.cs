@@ -11,13 +11,18 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
 {
     public class FileObjectStorageTest : IDisposable
     {
-        private readonly TemporaryFolder _tempFolder;
         private readonly FileObjectStorage _fileStorage;
+        private readonly TemporaryFolder _tempFolder;
 
         public FileObjectStorageTest()
         {
             _tempFolder = new TemporaryFolder();
             _fileStorage = new FileObjectStorage(_tempFolder.Path);
+        }
+
+        public void Dispose()
+        {
+            _tempFolder.Dispose();
         }
 
         [Fact]
@@ -34,11 +39,6 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
             var actualBytes = new BinaryReader(actualStream).ReadBytes((int) actualStream.Length);
 
             Assert.Equal(bytes, actualBytes);
-        }
-
-        public void Dispose()
-        {
-            _tempFolder.Dispose();
         }
     }
 }

@@ -7,7 +7,6 @@ namespace Qweree.TestUtils
     {
         public StaticDateTimeProvider() : this(DateTime.UtcNow)
         {
-
         }
 
         public StaticDateTimeProvider(DateTime dateTime)

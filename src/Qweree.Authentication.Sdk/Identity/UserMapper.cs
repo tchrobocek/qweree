@@ -7,7 +7,7 @@ namespace Qweree.Authentication.Sdk.Identity
     {
         public static UserDto ToDto(User user)
         {
-            return new UserDto
+            return new()
             {
                 Id = user.Id,
                 Username = user.Username,
@@ -17,7 +17,7 @@ namespace Qweree.Authentication.Sdk.Identity
 
         public static User FromDto(UserDto user)
         {
-            return new User(user.Id ?? Guid.Empty, user.Username ?? "", user.Roles ?? Array.Empty<string>());
+            return new(user.Id ?? Guid.Empty, user.Username ?? "", user.Roles ?? Array.Empty<string>());
         }
     }
 }

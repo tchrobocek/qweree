@@ -6,7 +6,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authentication
     {
         public static RefreshTokenDo ToDo(RefreshToken refreshToken)
         {
-            return new RefreshTokenDo
+            return new()
             {
                 Id = refreshToken.Id,
                 Token = refreshToken.Token,
@@ -15,9 +15,10 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authentication
                 UserId = refreshToken.UserId
             };
         }
+
         public static RefreshToken FromDo(RefreshTokenDo refreshToken)
         {
-            return new RefreshToken(refreshToken.Id, refreshToken.Token ?? "", refreshToken.UserId, refreshToken.ExpiresAt,
+            return new(refreshToken.Id, refreshToken.Token ?? "", refreshToken.UserId, refreshToken.ExpiresAt,
                 refreshToken.CreatedAt);
         }
     }

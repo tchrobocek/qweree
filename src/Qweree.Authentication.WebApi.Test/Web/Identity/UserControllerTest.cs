@@ -26,15 +26,15 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
     [Trait("Category", "Web api test")]
     public class UserControllerTest : IClassFixture<WebApiFactory>
     {
-        private readonly WebApiFactory _webApiFactory;
         private readonly UserRepository _userRepository;
+        private readonly WebApiFactory _webApiFactory;
 
         public UserControllerTest(WebApiFactory webApiFactory)
         {
             _webApiFactory = webApiFactory;
 
             using var scope = webApiFactory.Services.CreateScope();
-            _userRepository = (UserRepository)scope.ServiceProvider.GetRequiredService<IUserRepository>();
+            _userRepository = (UserRepository) scope.ServiceProvider.GetRequiredService<IUserRepository>();
             _userRepository.DeleteAllAsync()
                 .GetAwaiter()
                 .GetResult();
@@ -58,7 +58,8 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             {
                 var json = JsonUtils.Serialize(input);
-                var response = await client.PostAsync("/api/v1/identity/users", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json));
+                var response = await client.PostAsync("/api/v1/identity/users",
+                    new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json));
                 response.EnsureSuccessStatusCode();
                 user = await response.Content.ReadAsObjectAsync<UserDto>() ?? throw new ArgumentNullException();
 
@@ -92,10 +93,11 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             usersList = usersList.OrderBy(u => u.Username).ToList();
 
-            using var client = await _webApiFactory.CreateAuthenticatedClientAsync(UserFactory.CreateAdmin(), UserFactory.Password);
+            using var client =
+                await _webApiFactory.CreateAuthenticatedClientAsync(UserFactory.CreateAdmin(), UserFactory.Password);
 
             {
-                var response = await client.GetAsync($"/api/v1/identity/users?sort[Username]=1&skip=2&take=3");
+                var response = await client.GetAsync("/api/v1/identity/users?sort[Username]=1&skip=2&take=3");
                 response.EnsureSuccessStatusCode();
                 var userDtos = await response.Content.ReadAsObjectAsync<UserDto[]>();
                 var users = userDtos!.Select(UserMapper.FromDto);

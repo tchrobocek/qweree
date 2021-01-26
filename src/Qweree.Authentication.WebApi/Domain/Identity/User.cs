@@ -6,7 +6,8 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 {
     public class User
     {
-        public User(Guid id, string username, string fullName, string contactEmail, string password, IEnumerable<string> roles, DateTime createdAt, DateTime modifiedAt)
+        public User(Guid id, string username, string fullName, string contactEmail, string password,
+            IEnumerable<string> roles, DateTime createdAt, DateTime modifiedAt)
         {
             Id = id;
             Username = username;

@@ -11,7 +11,7 @@ namespace Qweree.Validator.ModelValidation.Static
     /// </summary>
     public class ModelSettingsBuilder
     {
-        private readonly List<PropertySettingsBuilder> _properties = new List<PropertySettingsBuilder>();
+        private readonly List<PropertySettingsBuilder> _properties = new();
 
         /// <summary>
         ///     Ctor.
@@ -51,7 +51,7 @@ namespace Qweree.Validator.ModelValidation.Static
         /// <returns>Built settings.</returns>
         public ModelSettings Build()
         {
-            return new ModelSettings(SubjectType, _properties.Select(p => p.Build()));
+            return new(SubjectType, _properties.Select(p => p.Build()));
         }
     }
 

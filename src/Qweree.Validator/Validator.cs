@@ -1,7 +1,7 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
- using System.Threading;
- using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Qweree.Validator
 {
@@ -10,7 +10,7 @@ namespace Qweree.Validator
     /// </summary>
     public class Validator : IValidator
     {
-        private readonly List<IObjectValidator> _validators = new List<IObjectValidator>();
+        private readonly List<IObjectValidator> _validators = new();
 
         /// <summary>
         ///     Ctor.
@@ -28,7 +28,7 @@ namespace Qweree.Validator
         /// </summary>
         /// <param name="subject">Subject.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task<ValidationResult> ValidateAsync(object subject, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ValidationResult> ValidateAsync(object subject, CancellationToken cancellationToken = new())
         {
             return await ValidateAsync("", subject, cancellationToken);
         }
@@ -39,7 +39,8 @@ namespace Qweree.Validator
         /// <param name="path">Path to subject.</param>
         /// <param name="subject">Subject.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task<ValidationResult> ValidateAsync(string path, object subject, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ValidationResult> ValidateAsync(string path, object subject,
+            CancellationToken cancellationToken = new())
         {
             var builder = new ValidationBuilder();
 
@@ -50,17 +51,16 @@ namespace Qweree.Validator
             return result;
         }
 
-        private async Task ValidateModelAsync(string path, object subject, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+        private async Task ValidateModelAsync(string path, object subject, ValidationBuilder builder,
+            CancellationToken cancellationToken = new())
         {
             var type = subject.GetType();
 
             var matching = _validators.Where(v => v.Supports(type));
 
             foreach (var validator in matching)
-            {
                 await validator.ValidateAsync(new ValidationContext(path, subject, null), builder, cancellationToken)
                     .ConfigureAwait(false);
-            }
         }
     }
 }

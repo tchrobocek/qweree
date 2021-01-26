@@ -9,10 +9,9 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
         {
             if (explorerObject is ExplorerFile file)
                 return ToDto(file);
-            else if (explorerObject is ExplorerDirectory directory)
+            if (explorerObject is ExplorerDirectory directory)
                 return ToDto(directory);
-            else
-                throw new ArgumentException($"Mapper for type {explorerObject.GetType()} is not implemented.");
+            throw new ArgumentException($"Mapper for type {explorerObject.GetType()} is not implemented.");
         }
 
         public static IExplorerObjectDto ToDto(ExplorerDirectory explorerDirectory)

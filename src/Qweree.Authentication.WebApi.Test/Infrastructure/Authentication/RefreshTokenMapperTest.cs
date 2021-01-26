@@ -12,7 +12,8 @@ namespace Qweree.Authentication.WebApi.Test.Infrastructure.Authentication
         [Fact]
         public void TestToAndFromDo()
         {
-            var refreshToken = new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
+            var refreshToken =
+                new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
             var refreshTokenDo = RefreshTokenMapper.ToDo(refreshToken);
             var actualRefreshToken = RefreshTokenMapper.FromDo(refreshTokenDo);
 

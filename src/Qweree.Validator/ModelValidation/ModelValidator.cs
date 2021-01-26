@@ -11,8 +11,8 @@ namespace Qweree.Validator.ModelValidation
     /// </summary>
     public class ModelValidator : IObjectValidator
     {
-        private readonly List<IConstraintValidator> _constraintValidators = new List<IConstraintValidator>();
-        private readonly List<ModelSettings> _modelSettings = new List<ModelSettings>();
+        private readonly List<IConstraintValidator> _constraintValidators = new();
+        private readonly List<ModelSettings> _modelSettings = new();
 
         /// <summary>
         ///     Ctor.
@@ -37,15 +37,14 @@ namespace Qweree.Validator.ModelValidation
         /// <param name="validationContext">Validation context.</param>
         /// <param name="builder">Validation builder.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
+            CancellationToken cancellationToken = new())
         {
             var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.Subject.GetType());
 
             foreach (var settings in modelSettings)
-            {
                 await ValidateAsync(validationContext, builder, settings, cancellationToken)
                     .ConfigureAwait(false);
-            }
         }
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace Qweree.Validator.ModelValidation
 
 
         private async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
-            ModelSettings settings, CancellationToken cancellationToken = new CancellationToken())
+            ModelSettings settings, CancellationToken cancellationToken = new())
         {
             foreach (var property in settings.PropertySettings)
             {
@@ -80,7 +79,8 @@ namespace Qweree.Validator.ModelValidation
                         throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
 
                     await validator.ValidateAsync(
-                        new ValidationContext($"{validationContext.Path}.{propInfo.Name}", value, propInfo), constraint, builder, cancellationToken)
+                            new ValidationContext($"{validationContext.Path}.{propInfo.Name}", value, propInfo),
+                            constraint, builder, cancellationToken)
                         .ConfigureAwait(false);
                 }
             }

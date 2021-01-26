@@ -10,7 +10,8 @@ namespace Qweree.Mongo.Exception
         {
         }
 
-        public DocumentNotFoundException(string? message, System.Exception? innerException) : base(message, innerException)
+        public DocumentNotFoundException(string? message, System.Exception? innerException) : base(message,
+            innerException)
         {
         }
     }

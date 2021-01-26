@@ -6,7 +6,8 @@ namespace Qweree.Cdn.Sdk.Storage
 {
     public class StoredObjectDescriptor
     {
-        public StoredObjectDescriptor(Guid id, IEnumerable<string> slug, string mediaType, long size, DateTime createdAt, DateTime modifiedAt)
+        public StoredObjectDescriptor(Guid id, IEnumerable<string> slug, string mediaType, long size,
+            DateTime createdAt, DateTime modifiedAt)
         {
             Id = id;
             Slug = slug.ToImmutableArray();

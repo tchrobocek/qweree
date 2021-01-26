@@ -10,18 +10,16 @@ namespace Qweree.TestUtils.DeepEqual
     {
         public bool CanCompare(Type type1, Type type2)
         {
-            if (typeof(IEnumerable<object>).IsAssignableFrom(type1) && typeof(IEnumerable<object>).IsAssignableFrom(type2))
-            {
+            if (typeof(IEnumerable<object>).IsAssignableFrom(type1) &&
+                typeof(IEnumerable<object>).IsAssignableFrom(type2))
                 if (type1.Name == "ImmutableArray`1" || type2.Name == "ImmutableArray`1")
-                {
                     return true;
-                }
-            }
 
             return false;
         }
 
-        public (ComparisonResult result, IComparisonContext context) Compare(IComparisonContext context, object value1, object value2)
+        public (ComparisonResult result, IComparisonContext context) Compare(IComparisonContext context, object value1,
+            object value2)
         {
             var array1 = ((IEnumerable<object>) value1).ToArray();
             var array2 = ((IEnumerable<object>) value2).ToArray();

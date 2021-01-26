@@ -11,7 +11,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
     public class FeedController : ControllerBase
     {
         /// <summary>
-        /// Load home feed.
+        ///     Load home feed.
         /// </summary>
         /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
         /// <param name="take">How many items should be returned. Default: 100</param>
@@ -23,17 +23,12 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         public IActionResult HomeFeedAction(
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 10
-            )
+        )
         {
             var stories = new List<StoryDto>();
-            for (var i = 0; i < take; i++)
-            {
-                stories.Add(StoryMockFactory.CreateStory());
-            }
+            for (var i = 0; i < take; i++) stories.Add(StoryMockFactory.CreateStory());
 
             return Ok(stories);
         }
-
-
     }
 }

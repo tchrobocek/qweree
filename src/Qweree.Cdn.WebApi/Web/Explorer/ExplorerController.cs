@@ -21,7 +21,7 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
         }
 
         /// <summary>
-        /// Get explorer object.
+        ///     Get explorer object.
         /// </summary>
         /// <param name="path">Object path.</param>
         /// <returns></returns>
@@ -41,6 +41,5 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
 
             return Ok(response.Payload?.Select(ExplorerObjectMapper.ToDto));
         }
-
     }
 }

@@ -4,7 +4,6 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authentication
 {
     public class RefreshTokenDo
     {
-
         public Guid Id { get; set; }
         public string? Token { get; set; }
         public Guid UserId { get; set; }

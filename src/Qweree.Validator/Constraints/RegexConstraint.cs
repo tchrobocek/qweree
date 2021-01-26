@@ -9,7 +9,7 @@ namespace Qweree.Validator.Constraints
     public class RegexConstraintValidator : ConstraintValidatorBase<string, RegexConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<string> context, RegexConstraint constraint,
-            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+            ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             if (!constraint.Regex.IsMatch(context.Subject))
                 builder.AddError(context.Path, constraint.Message);

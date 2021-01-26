@@ -6,7 +6,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 {
     public class AccessToken
     {
-        public AccessToken(Guid userId, string username, string fullName, string email, IEnumerable<string> roles, DateTime issuedAt, DateTime expiresAt)
+        public AccessToken(Guid userId, string username, string fullName, string email, IEnumerable<string> roles,
+            DateTime issuedAt, DateTime expiresAt)
         {
             UserId = userId;
             Username = username;

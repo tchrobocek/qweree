@@ -8,7 +8,7 @@ namespace Qweree.Validator.Constraints
     public class MinConstraintValidator : ConstraintValidatorBase<int, MinConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<int> context, MinConstraint constraint,
-            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+            ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             if (context.Subject < constraint.Min)
                 builder.AddError(context.Path, constraint.Message);

@@ -12,10 +12,7 @@ namespace Qweree.AspNet.Web.Swagger
         {
             var attributes = context.MethodInfo.GetCustomAttributes(typeof(RequiresFileFromBodyAttribute), true);
 
-            if (!(attributes is RequiresFileFromBodyAttribute[]) || attributes.Length == 0)
-            {
-                return;
-            }
+            if (!(attributes is RequiresFileFromBodyAttribute[]) || attributes.Length == 0) return;
 
             var definition = new OpenApiMediaType
             {
@@ -72,6 +69,5 @@ namespace Qweree.AspNet.Web.Swagger
     [AttributeUsage(AttributeTargets.Method)]
     public class RequiresFileFromBodyAttribute : Attribute
     {
-
     }
 }

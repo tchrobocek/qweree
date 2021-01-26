@@ -15,10 +15,10 @@ namespace Qweree.Cdn.WebApi.Application.Explorer
         }
 
         public Guid Id { get; }
-        public string Path { get; }
         public string MediaType { get; }
         public long Size { get; }
         public DateTime ModifiedAt { get; }
         public DateTime CreatedAt { get; }
+        public string Path { get; }
     }
 }

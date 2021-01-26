@@ -18,7 +18,7 @@ namespace Qweree.Cdn.WebApi.Web.System
         }
 
         /// <summary>
-        /// Get Version.
+        ///     Get Version.
         /// </summary>
         /// <returns>Returns current project assembly version.</returns>
         [HttpGet("version")]
@@ -26,25 +26,22 @@ namespace Qweree.Cdn.WebApi.Web.System
         public IActionResult GetVersionAction()
         {
             var version = GetType().Assembly.GetName().Version?.ToString();
-            return Ok(new VersionDto{Version = version});
+            return Ok(new VersionDto {Version = version});
         }
 
         /// <summary>
-        /// Get Health.
+        ///     Get Health.
         /// </summary>
         /// <returns>Returns health of the application.</returns>
         [HttpGet("health")]
         [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status503ServiceUnavailable)]
-        public async Task<IActionResult> GetHealthActionAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IActionResult> GetHealthActionAsync(CancellationToken cancellationToken = new())
         {
             var report = await _healthCheckService.CheckHealthAsync(cancellationToken);
             var reportDto = HealthReportMapper.ToDto(report);
 
-            if (report.Status == HealthStatus.Healthy)
-            {
-                return Ok(reportDto);
-            }
+            if (report.Status == HealthStatus.Healthy) return Ok(reportDto);
 
             return StatusCode(StatusCodes.Status503ServiceUnavailable, reportDto);
         }

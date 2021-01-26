@@ -25,10 +25,16 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
             _client = webApiFactory.CreateClient();
             _scope = webApiFactory.Services.CreateScope();
 
-            _userRepository = (UserRepository)_scope.ServiceProvider.GetRequiredService<IUserRepository>();
+            _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
             _userRepository.DeleteAllAsync()
                 .GetAwaiter()
                 .GetResult();
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
+            _scope.Dispose();
         }
 
         [Fact]
@@ -48,12 +54,5 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
             var response = await _client.PostAsync("/api/oauth2/auth", request);
             response.EnsureSuccessStatusCode();
         }
-
-        public void Dispose()
-        {
-            _client.Dispose();
-            _scope.Dispose();
-        }
     }
-
 }

@@ -11,8 +11,8 @@ namespace Qweree.Authentication.Sdk.Authentication
     public class OAuth2Adapter
     {
         private readonly Uri _authUri;
-        private readonly HttpClient _httpClient;
         private readonly IErrorHandler _errorResponseHandler = new QwereeErrorHandler();
+        private readonly HttpClient _httpClient;
 
         public OAuth2Adapter(Uri authUri, HttpClient httpClient)
         {
@@ -20,7 +20,8 @@ namespace Qweree.Authentication.Sdk.Authentication
             _httpClient = httpClient;
         }
 
-        public async Task<TokenInfo> SignInAsync(PasswordGrantInput grantInput, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<TokenInfo> SignInAsync(PasswordGrantInput grantInput,
+            CancellationToken cancellationToken = new())
         {
             var form = new[]
             {
@@ -40,7 +41,9 @@ namespace Qweree.Authentication.Sdk.Authentication
             if (!response.IsSuccessStatusCode)
                 await _errorResponseHandler.HandleErrorResponseAsync(response, cancellationToken);
 
-            var tokenInfoDto = await response.Content.ReadAsObjectAsync<TokenInfoDto>(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
+            var tokenInfoDto =
+                await response.Content.ReadAsObjectAsync<TokenInfoDto>(JsonUtils.SnakeCaseNamingPolicy,
+                    cancellationToken);
             return TokenInfoMapper.FromDto(tokenInfoDto!);
         }
     }

@@ -32,9 +32,16 @@ namespace Qweree.Authentication.WebApi
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
         {
-            return new TokenValidationParameters
+            return new()
             {
                 ValidateIssuer = true,
                 ValidIssuer = AuthenticationService.Issuer,
@@ -45,13 +52,6 @@ namespace Qweree.Authentication.WebApi
                 ClockSkew = TimeSpan.FromMinutes(1)
             };
         }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -97,14 +97,17 @@ namespace Qweree.Authentication.WebApi
                 });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    {new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2_password"
-                        }
-                    }, new List<string>()}
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2_password"
+                            }
+                        },
+                        new List<string>()
+                    }
                 });
             });
 
@@ -123,7 +126,8 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_CREATE"));
                 options.AddPolicy("UserRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ"));
                 options.AddPolicy("UserDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_DELETE"));
-                options.AddPolicy("UserReadPersonalDetail", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ_PERSONAL_DETAIL"));
+                options.AddPolicy("UserReadPersonalDetail",
+                    policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ_PERSONAL_DETAIL"));
             });
 
             // Validator
@@ -166,11 +170,14 @@ namespace Qweree.Authentication.WebApi
                 var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
-                    config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "", config.FileAccessTokenValiditySeconds ?? 0);
+                    config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
+                    config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "",
+                    config.FileAccessTokenValiditySeconds ?? 0);
             });
 
             // Identity
-            services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
+            services.AddScoped(p =>
+                p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();

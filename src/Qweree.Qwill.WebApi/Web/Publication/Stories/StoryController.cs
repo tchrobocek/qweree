@@ -11,7 +11,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
     public class StoryController : ControllerBase
     {
         /// <summary>
-        /// Create story.
+        ///     Create story.
         /// </summary>
         /// <param name="input">Story input.</param>
         /// <returns>Returns created story.</returns>
@@ -24,7 +24,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         }
 
         /// <summary>
-        /// Get story.
+        ///     Get story.
         /// </summary>
         /// <param name="id">Id.</param>
         /// <returns>Returns story.</returns>

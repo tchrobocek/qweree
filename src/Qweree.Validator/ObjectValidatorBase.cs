@@ -17,13 +17,16 @@ namespace Qweree.Validator
         /// <param name="builder">Validation builder.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <exception cref="InvalidCastException">When subject is not the right type of model.</exception>
-        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
+            CancellationToken cancellationToken = new())
         {
             if (!(validationContext.Subject is TModelType typedSubject))
                 throw new InvalidCastException(
                     @$"Subject is expected to be type of ""{typeof(TModelType)}"" but got ""{validationContext.Subject.GetType()}"".");
 
-            await ValidateAsync(new ValidationContext<TModelType>(validationContext.Path, typedSubject, validationContext.MemberInfo), builder, cancellationToken)
+            await ValidateAsync(
+                    new ValidationContext<TModelType>(validationContext.Path, typedSubject,
+                        validationContext.MemberInfo), builder, cancellationToken)
                 .ConfigureAwait(false);
         }
 

@@ -16,7 +16,8 @@ namespace Qweree.Sdk.Http.Errors.Exceptions
             Response = response;
         }
 
-        public HttpException(string? message, Exception? innerException, int responseCode, ErrorResponseDto response) : base(message, innerException)
+        public HttpException(string? message, Exception? innerException, int responseCode, ErrorResponseDto response) :
+            base(message, innerException)
         {
             ResponseCode = responseCode;
             Response = response;

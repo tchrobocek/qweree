@@ -11,7 +11,8 @@ namespace Qweree.Authentication.Sdk.Test.Identity
         [Fact]
         public void TestMapper()
         {
-            var expected = new UserCreateInput("username", "contact email", "full name", "password", new []{"role1", "role2"});
+            var expected = new UserCreateInput("username", "contact email", "full name", "password",
+                new[] {"role1", "role2"});
             var dto = UserCreateInputMapper.ToDto(expected);
             var actual = UserCreateInputMapper.FromDto(dto);
 

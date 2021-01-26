@@ -20,10 +20,12 @@ namespace Qweree.Cdn.WebApi.Application.Storage
             _storedObjectRepository = storedObjectRepository;
         }
 
-        public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input,
+            CancellationToken cancellationToken = new())
         {
             var slug = SlugHelper.PathToSlug(input.Path);
-            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Length, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
+            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Length,
+                _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             var storedObject = new StoredObject(descriptor, input.Stream);
 
@@ -39,7 +41,8 @@ namespace Qweree.Cdn.WebApi.Application.Storage
             return Response.Ok(storedObject);
         }
 
-        public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input,
+            CancellationToken cancellationToken = new())
         {
             var slug = SlugHelper.PathToSlug(input.Path);
 

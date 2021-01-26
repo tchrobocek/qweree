@@ -5,9 +5,9 @@ namespace Qweree.Validator
 {
     public class ValidatorBuilder
     {
-        private readonly List<IObjectValidator> _objectValidators = new List<IObjectValidator>();
-        private readonly List<IConstraintValidator> _constraintValidators = new List<IConstraintValidator>();
-        private readonly List<ModelSettings> _modelSettings = new List<ModelSettings>();
+        private readonly List<IConstraintValidator> _constraintValidators = new();
+        private readonly List<ModelSettings> _modelSettings = new();
+        private readonly List<IObjectValidator> _objectValidators = new();
 
         private bool _withModelValidator;
 

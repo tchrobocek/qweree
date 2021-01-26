@@ -12,7 +12,8 @@ namespace Qweree.Validator.Test.Constraints
         {
             var validator = new RegexConstraintValidator();
             var builder = new ValidationBuilder();
-            await validator.ValidateAsync(new ValidationContext("b", "", null), new RegexConstraint(new Regex("/a/"), ""),
+            await validator.ValidateAsync(new ValidationContext("b", "", null),
+                new RegexConstraint(new Regex("/a/"), ""),
                 builder);
 
             Assert.Single(builder.Build().Errors);

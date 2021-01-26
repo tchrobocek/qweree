@@ -9,8 +9,6 @@ namespace Qweree.TestUtils.IO
         {
         }
 
-        public string Path { get; }
-
         public TemporaryFolder(string path)
         {
             Path = path;
@@ -20,6 +18,8 @@ namespace Qweree.TestUtils.IO
 
             Directory.CreateDirectory(path);
         }
+
+        public string Path { get; }
 
         public void Dispose()
         {

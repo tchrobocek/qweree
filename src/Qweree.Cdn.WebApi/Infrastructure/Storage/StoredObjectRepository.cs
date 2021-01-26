@@ -17,7 +17,7 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             _objectStorage = objectStorage;
         }
 
-        public async Task StoreAsync(StoredObject storedObject, CancellationToken cancellationToken = new CancellationToken())
+        public async Task StoreAsync(StoredObject storedObject, CancellationToken cancellationToken = new())
         {
             await _descriptorRepository.InsertAsync(storedObject.Descriptor, cancellationToken);
 
@@ -32,7 +32,7 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             }
         }
 
-        public async Task<StoredObject> ReadAsync(string[] slug, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<StoredObject> ReadAsync(string[] slug, CancellationToken cancellationToken = new())
         {
             var descriptor = await _descriptorRepository.GetBySlugAsync(slug, cancellationToken);
             var stream = await _objectStorage.ReadAsync(descriptor, cancellationToken);

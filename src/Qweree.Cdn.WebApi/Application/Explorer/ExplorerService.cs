@@ -16,7 +16,8 @@ namespace Qweree.Cdn.WebApi.Application.Explorer
             _descriptorRepository = descriptorRepository;
         }
 
-        public async Task<PaginationResponse<IExplorerObject>> ExplorePathAsync(ExplorerFilter filter, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<PaginationResponse<IExplorerObject>> ExplorePathAsync(ExplorerFilter filter,
+            CancellationToken cancellationToken = new())
         {
             var slug = SlugHelper.PathToSlug(filter.Path);
             var explorerObjects = (await _descriptorRepository.FindInSlugAsync(slug, cancellationToken))

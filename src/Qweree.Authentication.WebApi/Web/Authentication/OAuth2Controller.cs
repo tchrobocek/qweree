@@ -19,7 +19,8 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
     [Route("/api/oauth2/auth")]
     public class OAuth2Controller : ControllerBase
     {
-        private static readonly ImmutableArray<string> GrantWhitelist = new[] {"password", "refresh_token", "file_access"}.ToImmutableArray();
+        private static readonly ImmutableArray<string> GrantWhitelist =
+            new[] {"password", "refresh_token", "file_access"}.ToImmutableArray();
 
         private readonly AuthenticationService _authenticationService;
         private readonly IDateTimeProvider _datetimeProvider;
@@ -31,7 +32,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
         }
 
         /// <summary>
-        /// Authenticate user.
+        ///     Authenticate user.
         /// </summary>
         /// <param name="accessToken">Access token.</param>
         /// <param name="grantType">Grant type, either ["password", "refresh_token"].</param>
@@ -47,7 +48,8 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             [FromForm(Name = "password")] string? password,
             [FromForm(Name = "refresh_token")] string? refreshToken,
             [FromForm(Name = "access_token")] string? accessToken,
-            [Required][FromForm(Name = "grant_type")] string grantType)
+            [Required] [FromForm(Name = "grant_type")]
+            string grantType)
         {
             if (!GrantWhitelist.Contains(grantType))
                 return Unauthorized();
@@ -69,11 +71,11 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
                 FileAccessGrantInput? fileAccessInput = null;
 
                 if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    fileAccessInput = new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
-                }
+                    fileAccessInput =
+                        new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
 
-                response = await _authenticationService.AuthenticateAsync(fileAccessInput ?? new FileAccessGrantInput(accessToken ?? ""));
+                response = await _authenticationService.AuthenticateAsync(fileAccessInput ??
+                                                                          new FileAccessGrantInput(accessToken ?? ""));
             }
             else
             {
@@ -87,13 +89,12 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
 
             var refreshTokenJson = "";
             if (response.Payload?.RefreshToken != null)
-            {
                 refreshTokenJson = @$", ""refresh_token"": ""{response.Payload.RefreshToken}""";
-            }
 
-            var json = $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{expiresIn?.TotalSeconds}""}}";
+            var json =
+                $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{expiresIn?.TotalSeconds}""}}";
 
             return Ok(json);
         }
-        }
+    }
 }

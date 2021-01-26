@@ -18,8 +18,8 @@ namespace Qweree.Authentication.WebApi.Web.Identity
     [Route("/api/v1/identity/users")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly UserService _userService;
 
         public UserController(UserService userService, IAuthorizationService authorizationService)
         {
@@ -28,7 +28,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         }
 
         /// <summary>
-        /// Create user.
+        ///     Create user.
         /// </summary>
         /// <param name="input">Create user input.</param>
         /// <returns>Created user.</returns>
@@ -43,17 +43,14 @@ namespace Qweree.Authentication.WebApi.Web.Identity
 
             var userResponse = await _userService.CreateUserAsync(serviceInput);
 
-            if (userResponse.Status != ResponseStatus.Ok)
-            {
-                return BadRequest(userResponse.ToErrorResponseDto());
-            }
+            if (userResponse.Status != ResponseStatus.Ok) return BadRequest(userResponse.ToErrorResponseDto());
 
             var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
             return Created($"/api/v1/users/{userDto.Id}", userDto);
         }
 
         /// <summary>
-        /// Get user by id.
+        ///     Get user by id.
         /// </summary>
         /// <param name="id">User id.</param>
         /// <returns>Found user.</returns>
@@ -65,10 +62,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         {
             var userResponse = await _userService.FindUserAsync(id);
 
-            if (userResponse.Status != ResponseStatus.Ok)
-            {
-                return userResponse.ToErrorActionResult();
-            }
+            if (userResponse.Status != ResponseStatus.Ok) return userResponse.ToErrorActionResult();
 
             var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
 
@@ -84,14 +78,14 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         }
 
         /// <summary>
-        /// Find users
+        ///     Find users
         /// </summary>
         /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
         /// <param name="take">How many items should be returned. Default: 100</param>
         /// <param name="sort">
-        /// Sorting.
-        /// Asc 1; Desc -1
-        /// sort[CreatedAt]=-1 // sort by created, desc.
+        ///     Sorting.
+        ///     Asc 1; Desc -1
+        ///     sort[CreatedAt]=-1 // sort by created, desc.
         /// </param>
         /// <returns>Collection of users.</returns>
         [HttpGet]
@@ -108,10 +102,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             var input = new FindUsersInput(skip, take, sortDictionary);
             var usersResponse = await _userService.FindUsersAsync(input);
 
-            if (usersResponse.Status != ResponseStatus.Ok)
-            {
-                return usersResponse.ToErrorActionResult();
-            }
+            if (usersResponse.Status != ResponseStatus.Ok) return usersResponse.ToErrorActionResult();
 
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
             Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, usersResponse.DocumentCount);
@@ -121,7 +112,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         }
 
         /// <summary>
-        /// Delete user.
+        ///     Delete user.
         /// </summary>
         /// <param name="id">Users identity.</param>
         /// <returns>Empty response.</returns>
@@ -133,17 +124,14 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         {
             var deleteResponse = await _userService.DeleteAsync(id);
 
-            if (deleteResponse.Status != ResponseStatus.Ok)
-            {
-                return deleteResponse.ToErrorActionResult();
-            }
+            if (deleteResponse.Status != ResponseStatus.Ok) return deleteResponse.ToErrorActionResult();
 
             return Ok(NoContent());
         }
 
         private UserDto UserToDto(User user)
         {
-            return new UserDto
+            return new()
             {
                 Id = user.Id,
                 Username = user.Username,

@@ -15,8 +15,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using Qweree.AspNet.Session;
 using MongoDB.HealthCheck;
+using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.WebApi.Application.Explorer;
 using Qweree.Cdn.WebApi.Application.Storage;
@@ -34,9 +34,17 @@ namespace Qweree.Cdn.WebApi
         public const string Audience = "qweree";
         public const string Issuer = "net.qweree";
 
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
         {
-            return new TokenValidationParameters
+            return new()
             {
                 ValidateIssuer = true,
                 ValidIssuer = Issuer,
@@ -47,14 +55,6 @@ namespace Qweree.Cdn.WebApi
                 ClockSkew = TimeSpan.FromMinutes(1)
             };
         }
-
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -100,14 +100,17 @@ namespace Qweree.Cdn.WebApi
                 });
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    {new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2_password"
-                        }
-                    }, new List<string>()}
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2_password"
+                            }
+                        },
+                        new List<string>()
+                    }
                 });
             });
 
@@ -118,7 +121,8 @@ namespace Qweree.Cdn.WebApi
             }).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
-                options.TokenValidationParameters = GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+                options.TokenValidationParameters =
+                    GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -164,7 +168,8 @@ namespace Qweree.Cdn.WebApi
 
             // Session
             services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
-            services.AddScoped(p => p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
+            services.AddScoped(p =>
+                p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
 

@@ -16,18 +16,8 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             _rootPath = rootPath;
         }
 
-        private string GetPath(StoredObjectDescriptor descriptor)
-        {
-            var parts = new List<string>
-            {
-                _rootPath
-            };
-            parts.AddRange(descriptor.Slug);
-
-            return Path.Combine(parts.ToArray());
-        }
-
-        public async Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor, CancellationToken cancellationToken = new CancellationToken())
+        public async Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor,
+            CancellationToken cancellationToken = new())
         {
             var path = GetPath(descriptor);
 
@@ -44,7 +34,7 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
         }
 
         public Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var path = GetPath(descriptor);
 
@@ -53,6 +43,17 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
 
             var stream = File.OpenRead(path);
             return Task.FromResult((Stream) stream);
+        }
+
+        private string GetPath(StoredObjectDescriptor descriptor)
+        {
+            var parts = new List<string>
+            {
+                _rootPath
+            };
+            parts.AddRange(descriptor.Slug);
+
+            return Path.Combine(parts.ToArray());
         }
     }
 }

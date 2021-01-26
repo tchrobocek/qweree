@@ -6,6 +6,15 @@ namespace Qweree.AspNet.Session
 {
     public class ClaimsPrincipalStorage : ISessionStorage
     {
+        public ClaimsPrincipalStorage(ClaimsPrincipal claimsPrincipal)
+        {
+            ClaimsPrincipal = claimsPrincipal;
+            CurrentUser = CreateUser(claimsPrincipal);
+        }
+
+        public ClaimsPrincipal ClaimsPrincipal { get; }
+        public User CurrentUser { get; }
+
         private static User CreateUser(ClaimsPrincipal claimsPrincipal)
         {
             var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? "";
@@ -15,14 +24,5 @@ namespace Qweree.AspNet.Session
             var roles = claimsPrincipal.Claims.Where(c => c.Type == "roles").Select(c => c.Value);
             return new User(Guid.Parse(id), username, fullName, email, roles);
         }
-
-        public ClaimsPrincipalStorage(ClaimsPrincipal claimsPrincipal)
-        {
-            ClaimsPrincipal = claimsPrincipal;
-            CurrentUser = CreateUser(claimsPrincipal);
-        }
-
-        public ClaimsPrincipal ClaimsPrincipal { get; }
-        public User CurrentUser { get; }
     }
 }
