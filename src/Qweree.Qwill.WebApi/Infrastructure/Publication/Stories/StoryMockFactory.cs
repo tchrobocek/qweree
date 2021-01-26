@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Qweree.Qwill.WebApi.Web.Publication.Publisher;
+using Qweree.Qwill.WebApi.Web.Publication.Publishers;
 using Qweree.Qwill.WebApi.Web.Publication.Stories;
 
 namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
