@@ -1,8 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Qweree.Qwill.WebApi.Domain.Stories;
+using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
 
 namespace Qweree.Qwill.WebApi.Web.System
 {
@@ -11,10 +14,12 @@ namespace Qweree.Qwill.WebApi.Web.System
     public class SystemController : ControllerBase
     {
         private readonly HealthCheckService _healthCheckService;
+        private readonly IPublicationRepository _publicationRepository;
 
-        public SystemController(HealthCheckService healthCheckService)
+        public SystemController(HealthCheckService healthCheckService, IPublicationRepository publicationRepository)
         {
             _healthCheckService = healthCheckService;
+            _publicationRepository = publicationRepository;
         }
 
         /// <summary>
@@ -44,6 +49,31 @@ namespace Qweree.Qwill.WebApi.Web.System
             if (report.Status == HealthStatus.Healthy) return Ok(reportDto);
 
             return StatusCode(StatusCodes.Status503ServiceUnavailable, reportDto);
+        }
+
+        /// <summary>
+        ///     Will generate and persist up to 100 stories.
+        /// </summary>
+        /// <returns>Returns health of the application.</returns>
+        [HttpGet("mock-stories")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> MockStoriesAction(
+                [FromQuery(Name = "number")] int number = 10
+            )
+        {
+            if (number > 100)
+            {
+                number = 100;
+            }
+
+            for (var i = 0; i < number; i++)
+            {
+                var publication = PublicationMockFactory.CreatePublication();
+                await _publicationRepository.InsertAsync(publication);
+            }
+
+            return NoContent();
         }
     }
 }

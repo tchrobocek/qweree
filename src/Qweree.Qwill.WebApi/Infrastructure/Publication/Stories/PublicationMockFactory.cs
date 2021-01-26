@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Qweree.Qwill.WebApi.Web.Publication.Publishers;
-using Qweree.Qwill.WebApi.Web.Publication.Stories;
+using System.Collections.Immutable;
+using Qweree.Qwill.WebApi.Domain.Stories;
 
 namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
 {
-    public class StoryMockFactory
+    public class PublicationMockFactory
     {
         private static readonly string[] Images =
         {
@@ -13,6 +13,20 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
             "https://i.picsum.photos/id/1004/5616/3744.jpg",
             "https://i.picsum.photos/id/1015/6000/4000.jpg",
             "https://i.picsum.photos/id/1024/1920/1280.jpg"
+        };
+
+        private static readonly string[] Languages =
+        {
+            "en",
+            "de",
+            "cz"
+        };
+
+        private static readonly string[] Titles =
+        {
+            "Donec tincidunt mi vel sapien ornare congue",
+            "Sed at magna vitae orci molestie ",
+            "Donec pulvinar porttitor ultrices."
         };
 
         private static readonly string[] Paragraphs =
@@ -24,28 +38,41 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
 
         private static readonly Random Random = new();
 
-        public static StoryDto CreateStory()
+        public static Domain.Stories.Publication CreatePublication()
         {
             var pages = new List<string>();
             for (var i = 0; i < Random.Next(5) + 1; i++) pages.Add(Paragraphs[Random.Next(Paragraphs.Length)]);
 
-            return new StoryDto
-            {
-                Id = Guid.NewGuid(),
-                Title = "Article Title",
-                LeadImage = Images[Random.Next(Images.Length)],
-                LeadParagraph = Paragraphs[Random.Next(Paragraphs.Length)],
-                Pages = pages,
-                Language = "dog-latin",
-                Author = new AuthorDto
+            var language0 = Languages[Random.Next(Languages.Length)];
+            var language1 = Languages[Random.Next(Languages.Length)];
+
+            return new Domain.Stories.Publication(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1),
+                new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1),
+                new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1),
+                new List<PublicationTranslation>
                 {
-                    Id = Guid.NewGuid(),
-                    Name = "Admin Adminowitch",
-                    ChannelId = Guid.NewGuid(),
-                    ChannelName = "Admin Adminowitch"
-                },
-                PublishedAt = new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1)
-            };
+                    new(
+                        language0,
+                        Titles[Random.Next(Titles.Length)],
+                        Paragraphs[Random.Next(Paragraphs.Length)],
+                        Images[Random.Next(Images.Length)],
+                        pages.ToImmutableArray(),
+                        new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1),
+                        new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1)),
+
+                    new(
+                        language1,
+                        Titles[Random.Next(Titles.Length)],
+                        Paragraphs[Random.Next(Paragraphs.Length)],
+                        Images[Random.Next(Images.Length)],
+                        pages.ToImmutableArray(),
+                        new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1),
+                        new DateTime(2010 + Random.Next(10), Random.Next(12) + 1, Random.Next(28) + 1))
+                }.ToImmutableArray());
         }
     }
 }
