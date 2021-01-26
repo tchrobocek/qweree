@@ -10,6 +10,19 @@ namespace Qweree.Validator.Test.ModelValidator.Attributes
 {
     public class AttributesSettingsTest
     {
+        [Fact]
+        public void TestCreate()
+        {
+            var settings = new[] {AttributesSettings.Create(typeof(Model))};
+
+            Assert.Single((IEnumerable) settings);
+            Assert.Equal(typeof(Model), settings.First().SubjectType);
+            Assert.Single((IEnumerable) settings.First().PropertySettings);
+            Assert.Equal("Number", settings.First().PropertySettings.First().PropertyName);
+            Assert.Single((IEnumerable) settings.First().PropertySettings.First().Constraints);
+            Assert.IsType<MinConstraint>(settings.First().PropertySettings.First().Constraints.First());
+        }
+
         private class MinConstraintAttribute : ConstraintAttribute
         {
             private readonly int _min;
@@ -38,7 +51,7 @@ namespace Qweree.Validator.Test.ModelValidator.Attributes
         private class MinConstraintValidator : ConstraintValidatorBase<int, MinConstraint>
         {
             protected override Task ValidateAsync(ValidationContext<int> context, MinConstraint constraint,
-                ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+                ValidationBuilder builder, CancellationToken cancellationToken = new())
             {
                 if (context.Subject < constraint.Min)
                     builder.AddError(context.Path, "error");
@@ -57,19 +70,6 @@ namespace Qweree.Validator.Test.ModelValidator.Attributes
             [MinConstraint(4)]
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public int Number { get; }
-        }
-
-        [Fact]
-        public void TestCreate()
-        {
-            var settings = new[] {AttributesSettings.Create(typeof(Model))};
-
-            Assert.Single((IEnumerable) settings);
-            Assert.Equal(typeof(Model), settings.First().SubjectType);
-            Assert.Single((IEnumerable) settings.First().PropertySettings);
-            Assert.Equal("Number", settings.First().PropertySettings.First().PropertyName);
-            Assert.Single((IEnumerable) settings.First().PropertySettings.First().Constraints);
-            Assert.IsType<MinConstraint>(settings.First().PropertySettings.First().Constraints.First());
         }
     }
 }

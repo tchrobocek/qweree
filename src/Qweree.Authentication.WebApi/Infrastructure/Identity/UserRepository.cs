@@ -6,11 +6,11 @@ using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
-using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
 {
-    public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository, IUniqueConstraintValidatorRepository
+    public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository,
+        IUniqueConstraintValidatorRepository
     {
         public UserRepository(MongoContext context) : base("users", context)
         {
@@ -19,7 +19,15 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
         protected override Func<User, UserDo> ToDocument => UserMapper.ToDo;
         protected override Func<UserDo, User> FromDocument => UserMapper.FromDo;
 
-        public async Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
+        {
+            var user = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
+                .FirstOrDefault();
+
+            return user != null;
+        }
+
+        public async Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = new())
         {
             var user = (await FindAsync($@"{{""Username"": ""{username}""}}", 0, 1, cancellationToken))
                 .FirstOrDefault();
@@ -28,14 +36,6 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
                 throw new DocumentNotFoundException(@$"User ""{username}"" was not found.");
 
             return user;
-        }
-
-        public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new CancellationToken())
-        {
-            var user = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
-                .FirstOrDefault();
-
-            return user != null;
         }
     }
 }

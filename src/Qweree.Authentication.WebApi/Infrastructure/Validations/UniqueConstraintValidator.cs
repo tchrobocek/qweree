@@ -17,14 +17,16 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             _repositories = repositories;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<string> validationContext, UniqueConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+        protected override async Task ValidateAsync(ValidationContext<string> validationContext,
+            UniqueConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             var repository = _repositories.FirstOrDefault(r => constraint.RepositoryType == r.GetType());
 
             if (repository == null)
                 throw new ArgumentException(@$"Repository of type ""{constraint.RepositoryType}"" is not registered.");
 
-            var isExisting = await repository.IsExistingAsync(validationContext.MemberInfo?.Name!, validationContext.Subject, cancellationToken);
+            var isExisting = await repository.IsExistingAsync(validationContext.MemberInfo?.Name!,
+                validationContext.Subject, cancellationToken);
 
             if (isExisting)
                 builder.AddError(validationContext.Path, $@"Entity ""{validationContext.Subject}"" already exists.");
@@ -43,6 +45,6 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 
     public interface IUniqueConstraintValidatorRepository
     {
-        Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new CancellationToken());
+        Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new());
     }
 }

@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 namespace Qweree.Validator.Extensions
 {
     /// <summary>
-    /// Validation extensions
+    ///     Validation extensions
     /// </summary>
     public static class ValidatorExtensions
     {
         /// <summary>
-        /// Validates all given subjects and aggregates them into one result.
+        ///     Validates all given subjects and aggregates them into one result.
         /// </summary>
         /// <param name="this">Validator.</param>
         /// <param name="subjects">Subjects.</param>
@@ -22,12 +22,13 @@ namespace Qweree.Validator.Extensions
         }
 
         /// <summary>
-        /// Validates all given subjects and aggregates them into one result.
+        ///     Validates all given subjects and aggregates them into one result.
         /// </summary>
         /// <param name="this">Validator.</param>
         /// <param name="subjects">Subjects.</param>
         /// <returns>Aggregated result.</returns>
-        public static async Task<ValidationResult> ValidateManyAsync(this IValidator @this, IEnumerable<KeyValuePair<string, object>> subjects)
+        public static async Task<ValidationResult> ValidateManyAsync(this IValidator @this,
+            IEnumerable<KeyValuePair<string, object>> subjects)
         {
             var validationBuilder = new ValidationBuilder();
 

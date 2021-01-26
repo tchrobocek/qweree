@@ -7,7 +7,7 @@ namespace Qweree.Validator.ModelValidation.Static
     /// </summary>
     public class PropertySettingsBuilder
     {
-        private readonly List<IConstraint> _constraints = new List<IConstraint>();
+        private readonly List<IConstraint> _constraints = new();
 
         /// <summary>
         ///     Ctor.
@@ -40,7 +40,7 @@ namespace Qweree.Validator.ModelValidation.Static
         /// <returns>Built settings.</returns>
         public PropertySettings Build()
         {
-            return new PropertySettings(PropertyName, _constraints);
+            return new(PropertyName, _constraints);
         }
     }
 }

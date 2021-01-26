@@ -17,7 +17,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authentication
         protected override Func<RefreshToken, RefreshTokenDo> ToDocument => RefreshTokenMapper.ToDo;
         protected override Func<RefreshTokenDo, RefreshToken> FromDocument => RefreshTokenMapper.FromDo;
 
-        public async Task<RefreshToken> GetByTokenAsync(string token, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<RefreshToken> GetByTokenAsync(string token, CancellationToken cancellationToken = new())
         {
             var refreshToken = (await FindAsync($@"{{""Token"": ""{token}""}}", 0, 1, cancellationToken))
                 .FirstOrDefault();

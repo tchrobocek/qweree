@@ -11,7 +11,8 @@ namespace Qweree.Validator.Test.Constraints
         {
             var validator = new MaxLengthConstraintValidator();
             var builder = new ValidationBuilder();
-            await validator.ValidateAsync(new ValidationContext("", "a", null), new MaxLengthConstraint(0, ""), builder);
+            await validator.ValidateAsync(new ValidationContext("", "a", null), new MaxLengthConstraint(0, ""),
+                builder);
 
             Assert.Single(builder.Build().Errors);
         }

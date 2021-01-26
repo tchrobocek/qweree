@@ -10,7 +10,7 @@ namespace Qweree.Validator.Constraints
     public class EmailConstraintValidator : ConstraintValidatorBase<string, EmailConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<string> context, EmailConstraint constraint,
-            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+            ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             try
             {

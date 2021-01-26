@@ -45,11 +45,14 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
                 .ReturnsAsync(user);
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
-            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "", authConfig?.FileAccessTokenKey ?? "", 0);
+            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
+                new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
+                authConfig?.FileAccessTokenKey ?? "", 0);
             var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, password));
 
             Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);
-            client.DefaultRequestHeaders.Add(HeaderNames.Authorization, $"Bearer {tokenInfoResponse.Payload?.AccessToken ?? ""}");
+            client.DefaultRequestHeaders.Add(HeaderNames.Authorization,
+                $"Bearer {tokenInfoResponse.Payload?.AccessToken ?? ""}");
 
             return client;
         }

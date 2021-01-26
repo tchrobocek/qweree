@@ -12,6 +12,7 @@ namespace Qweree.Validator.Test
             var result = new ValidationResult(validationStatus, new ValidationMessage[0], new ValidationMessage[0]);
             Assert.Equal(expectedValue, result.HasSucceeded);
         }
+
         [Theory]
         [InlineData(ValidationStatus.Failed, true)]
         [InlineData(ValidationStatus.Succeeded, false)]

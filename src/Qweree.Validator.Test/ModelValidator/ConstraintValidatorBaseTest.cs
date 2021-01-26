@@ -20,7 +20,8 @@ namespace Qweree.Validator.Test.ModelValidator
             var mock = new Mock<ConstraintValidatorBase<int, IConstraint>>();
 
             var validator = mock.Object;
-            await validator.ValidateAsync(new ValidationContext("", subject, null), constraint, new ValidationBuilder());
+            await validator.ValidateAsync(new ValidationContext("", subject, null), constraint,
+                new ValidationBuilder());
         }
 
         [Fact]
@@ -35,7 +36,8 @@ namespace Qweree.Validator.Test.ModelValidator
 
             var validator = mock.Object;
             await Assert.ThrowsAsync<InvalidCastException>(async () =>
-                await validator.ValidateAsync(new ValidationContext("", subject, null), constraint, new ValidationBuilder()));
+                await validator.ValidateAsync(new ValidationContext("", subject, null), constraint,
+                    new ValidationBuilder()));
         }
 
         [Fact]
@@ -50,7 +52,8 @@ namespace Qweree.Validator.Test.ModelValidator
 
             var validator = mock.Object;
             await Assert.ThrowsAsync<InvalidCastException>(async () =>
-                await validator.ValidateAsync(new ValidationContext("", subject, null), constraint, new ValidationBuilder()));
+                await validator.ValidateAsync(new ValidationContext("", subject, null), constraint,
+                    new ValidationBuilder()));
         }
     }
 }

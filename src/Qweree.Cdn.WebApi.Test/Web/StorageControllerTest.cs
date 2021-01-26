@@ -27,6 +27,12 @@ namespace Qweree.Cdn.WebApi.Test.Web
             _scope = factory.Services.CreateScope();
         }
 
+        public void Dispose()
+        {
+            _factory.Dispose();
+            _scope.Dispose();
+        }
+
         [Fact]
         public async Task TestStoreAndRead()
         {
@@ -52,7 +58,6 @@ namespace Qweree.Cdn.WebApi.Test.Web
                 Assert.Equal(stream.Length, descriptorDto?.Size!);
                 Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
                 Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto.MediaType!);
-
             }
 
             {
@@ -61,12 +66,6 @@ namespace Qweree.Cdn.WebApi.Test.Web
                 Assert.Equal(MediaTypeNames.Text.Plain, response.Content.Headers.ContentType?.MediaType);
                 Assert.Equal(text, await response.Content.ReadAsStringAsync());
             }
-        }
-
-        public void Dispose()
-        {
-            _factory.Dispose();
-            _scope.Dispose();
         }
     }
 }

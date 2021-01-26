@@ -10,7 +10,8 @@ namespace Qweree.Mongo.Exception
         {
         }
 
-        public InsertDocumentException(string? message, System.Exception? innerException) : base(message, innerException)
+        public InsertDocumentException(string? message, System.Exception? innerException) : base(message,
+            innerException)
         {
         }
     }

@@ -6,6 +6,6 @@ namespace Qweree.Sdk.Http.Errors
 {
     public interface IErrorHandler
     {
-        Task HandleErrorResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = new CancellationToken());
+        Task HandleErrorResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = new());
     }
 }

@@ -12,7 +12,7 @@ namespace Qweree.Validator.Extensions
         {
             @this.WithModelValidator();
 
-            @this.WithModelSettings(new []{AttributesSettings.Create(type)});
+            @this.WithModelSettings(new[] {AttributesSettings.Create(type)});
         }
 
         public static void WithAttributeModelSettings(this ValidatorBuilder @this, Assembly assembly)
@@ -22,7 +22,8 @@ namespace Qweree.Validator.Extensions
             @this.WithModelSettings(AttributesSettings.Create(assembly));
         }
 
-        public static void WithStaticModelSettings(this ValidatorBuilder @this, Action<ValidatorSettingsBuilder> configurationAction)
+        public static void WithStaticModelSettings(this ValidatorBuilder @this,
+            Action<ValidatorSettingsBuilder> configurationAction)
         {
             @this.WithModelValidator();
 

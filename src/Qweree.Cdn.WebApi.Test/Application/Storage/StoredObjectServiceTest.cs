@@ -36,6 +36,7 @@ namespace Qweree.Cdn.WebApi.Test.Application.Storage
             Assert.Equal(MediaTypeNames.Application.Octet, storedObject.Descriptor.MediaType);
             Assert.Same(storedObject.Stream, stream);
         }
+
         [Fact]
         public async Task TestReadAsync()
         {
@@ -43,9 +44,10 @@ namespace Qweree.Cdn.WebApi.Test.Application.Storage
             var storedObjectRepositoryMock = new Mock<IStoredObjectRepository>();
             var service = new StoredObjectService(dateTimeProvider, storedObjectRepositoryMock.Object);
 
-            using var storedObject = new StoredObject(StoredObjectDescriptorFactory.CreateDefault(), new MemoryStream());
+            using var storedObject =
+                new StoredObject(StoredObjectDescriptorFactory.CreateDefault(), new MemoryStream());
             storedObjectRepositoryMock.Setup(m =>
-                m.ReadAsync(new[] {"test", "object", "slug"}, It.IsAny<CancellationToken>()))
+                    m.ReadAsync(new[] {"test", "object", "slug"}, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(storedObject);
 
             var input = new ReadObjectInput("/test/object/slug");

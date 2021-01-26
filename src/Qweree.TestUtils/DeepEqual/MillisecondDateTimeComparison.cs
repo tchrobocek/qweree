@@ -17,7 +17,8 @@ namespace Qweree.TestUtils.DeepEqual
             return type1 == typeof(DateTime) && type2 == typeof(DateTime);
         }
 
-        public (ComparisonResult result, IComparisonContext context) Compare(IComparisonContext context, object value1, object value2)
+        public (ComparisonResult result, IComparisonContext context) Compare(IComparisonContext context, object value1,
+            object value2)
         {
             var dateTime1 = (DateTime) value1;
             var dateTime2 = (DateTime) value2;

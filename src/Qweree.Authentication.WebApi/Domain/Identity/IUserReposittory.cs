@@ -6,7 +6,6 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = new CancellationToken());
+        Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = new());
     }
-
 }

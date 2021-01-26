@@ -8,14 +8,15 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
     {
         public static User FromDo(UserDo databaseObject)
         {
-            return new User(databaseObject.Id, databaseObject.Username ?? "", databaseObject.FullName ?? "",
-                databaseObject.ContactEmail ?? "", databaseObject.Password ?? "", databaseObject.Roles ?? Array.Empty<string>(),
+            return new(databaseObject.Id, databaseObject.Username ?? "", databaseObject.FullName ?? "",
+                databaseObject.ContactEmail ?? "", databaseObject.Password ?? "",
+                databaseObject.Roles ?? Array.Empty<string>(),
                 databaseObject.CreatedAt, databaseObject.ModifiedAt);
         }
 
         public static UserDo ToDo(User user)
         {
-            return new UserDo
+            return new()
             {
                 Id = user.Id,
                 Username = user.Username,

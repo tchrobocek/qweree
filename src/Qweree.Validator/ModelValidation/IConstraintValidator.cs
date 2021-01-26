@@ -15,6 +15,7 @@ namespace Qweree.Validator.ModelValidation
         /// <param name="constraint">Constraint with validation settings.</param>
         /// <param name="builder">Validation builder</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task ValidateAsync(ValidationContext validationContext, IConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken());
+        Task ValidateAsync(ValidationContext validationContext, IConstraint constraint, ValidationBuilder builder,
+            CancellationToken cancellationToken = new());
     }
 }

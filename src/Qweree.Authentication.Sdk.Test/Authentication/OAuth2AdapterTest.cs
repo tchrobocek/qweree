@@ -15,7 +15,8 @@ namespace Qweree.Authentication.Sdk.Test.Authentication
         public OAuth2AdapterTest(AuthenticationAdapterFixture authFixture)
         {
             var uri = new Uri(authFixture.AuthenticationApiUri);
-            _oAuth2Adapter = new OAuth2Adapter(new Uri(uri, "/api/oauth2/auth"), authFixture.CreateHttpClientAsync().GetAwaiter().GetResult());
+            _oAuth2Adapter = new OAuth2Adapter(new Uri(uri, "/api/oauth2/auth"),
+                authFixture.CreateHttpClientAsync().GetAwaiter().GetResult());
         }
 
         [Fact]

@@ -20,14 +20,15 @@ namespace Qweree.Validator.ModelValidation
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <exception cref="InvalidCastException">Thrown when subject or constraint does not match given generic types.</exception>
         public Task ValidateAsync(ValidationContext validationContext, IConstraint constraint,
-            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+            ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             if (!(validationContext.Subject is TSubjectType typedValue))
                 throw new InvalidCastException(@$"The value should be type of ""{typeof(TSubjectType)}"".");
             if (!(constraint is TConstraintType typedConstraint))
                 throw new InvalidCastException(@$"The constraint should be type of ""{typeof(TConstraintType)}"".");
 
-            return ValidateAsync(new ValidationContext<TSubjectType>(validationContext.Path, typedValue, validationContext.MemberInfo),
+            return ValidateAsync(
+                new ValidationContext<TSubjectType>(validationContext.Path, typedValue, validationContext.MemberInfo),
                 typedConstraint, builder, cancellationToken);
         }
 
@@ -40,6 +41,6 @@ namespace Qweree.Validator.ModelValidation
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Task.</returns>
         protected abstract Task ValidateAsync(ValidationContext<TSubjectType> validationContext,
-            TConstraintType constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken());
+            TConstraintType constraint, ValidationBuilder builder, CancellationToken cancellationToken = new());
     }
 }

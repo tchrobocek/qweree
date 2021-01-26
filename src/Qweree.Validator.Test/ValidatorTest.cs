@@ -22,12 +22,14 @@ namespace Qweree.Validator.Test
 
             validatorMock1.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
+            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(),
+                    It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder, CancellationToken>((_, b, _) => b.AddError("", "1"));
 
             validatorMock2.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
+            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(),
+                    It.IsAny<CancellationToken>()))
                 .Callback<ValidationContext, ValidationBuilder, CancellationToken>((_, b, _) => b.AddError("", "2"));
 
             var result = await validator.ValidateAsync(text);
@@ -57,13 +59,17 @@ namespace Qweree.Validator.Test
 
             validatorMock1.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
-                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((e, b, _) => b.AddError(e.Path, "1"));
+            validatorMock1.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<ValidationContext, ValidationBuilder, CancellationToken
+                >((e, b, _) => b.AddError(e.Path, "1"));
 
             validatorMock2.Setup(m => m.Supports(typeof(string)))
                 .Returns(true);
-            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(), It.IsAny<CancellationToken>()))
-                .Callback<ValidationContext, ValidationBuilder, CancellationToken>((e, b, _) => b.AddError(e.Path, "2"));
+            validatorMock2.Setup(m => m.ValidateAsync(It.IsAny<ValidationContext>(), It.IsAny<ValidationBuilder>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<ValidationContext, ValidationBuilder, CancellationToken
+                >((e, b, _) => b.AddError(e.Path, "2"));
 
             {
                 var result = await validator.ValidateAsync(path, text);

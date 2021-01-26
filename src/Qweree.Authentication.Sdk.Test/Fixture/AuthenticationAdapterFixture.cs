@@ -21,8 +21,13 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
 
         public string AuthenticationApiUri => "http://localhost:10001";
 
+        public void Dispose()
+        {
+            _messageHandler.Dispose();
+        }
+
         public Task<HttpClient> CreateHttpClientAsync(
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             return Task.FromResult(new HttpClient(_messageHandler));
         }
@@ -30,7 +35,7 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
 
         public async Task<HttpClient> CreateAuthenticatedHttpClientAsync(
             PasswordGrantInput passwordGrantInput,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var client = await CreateHttpClientAsync(cancellationToken);
             var authAdapter = new OAuth2Adapter(new Uri(AuthenticationApiUri), client);
@@ -38,11 +43,6 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
             client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token.AccessToken}");
 
             return client;
-        }
-
-        public void Dispose()
-        {
-            _messageHandler.Dispose();
         }
     }
 }

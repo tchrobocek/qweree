@@ -9,7 +9,7 @@ namespace Qweree.Validator.ModelValidation.Static
     /// </summary>
     public class ValidatorSettingsBuilder
     {
-        private readonly List<ModelSettingsBuilder> _builders = new List<ModelSettingsBuilder>();
+        private readonly List<ModelSettingsBuilder> _builders = new();
 
         /// <summary>
         ///     Adds model to settings collection.

@@ -30,36 +30,42 @@ namespace Qweree.Mongo
         protected abstract Func<TPublicType, TDocumentType> ToDocument { get; }
         protected abstract Func<TDocumentType, TPublicType> FromDocument { get; }
 
-        public async Task<IEnumerable<TPublicType>> FindAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IEnumerable<TPublicType>> FindAsync(CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(null, null, null, null, cancellationToken);
         }
-        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take, CancellationToken cancellationToken = new CancellationToken())
+
+        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take,
+            CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(null, skip, take, null, cancellationToken);
         }
-        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+
+        public async Task<IEnumerable<TPublicType>> FindAsync(int skip, int take, Dictionary<string, int> sort,
+            CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(null, skip, take, sort, cancellationToken);
         }
 
-        public async Task<IEnumerable<TPublicType>> FindAsync(string query, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IEnumerable<TPublicType>> FindAsync(string query, CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(query, null, null, null, cancellationToken);
         }
 
-        public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take,
+            CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(query, skip, take, null, cancellationToken);
         }
 
-        public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IEnumerable<TPublicType>> FindAsync(string query, int skip, int take,
+            Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             return await DoFindAsync(query, skip, take, sort, cancellationToken);
         }
 
         public async Task<Pagination<TPublicType>> PaginateAsync(int skip, int take,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var documents = await FindAsync(skip, take, cancellationToken);
             var count = await CountAsync(cancellationToken);
@@ -68,7 +74,7 @@ namespace Qweree.Mongo
         }
 
         public async Task<Pagination<TPublicType>> PaginateAsync(int skip, int take,
-            Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+            Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var documents = await FindAsync(skip, take, sort, cancellationToken);
             var count = await CountAsync(cancellationToken);
@@ -77,7 +83,7 @@ namespace Qweree.Mongo
         }
 
         public async Task<Pagination<TPublicType>> PaginateAsync(string query, int skip, int take,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var documents = await FindAsync(query, skip, take, cancellationToken);
             var count = await CountAsync(query, cancellationToken);
@@ -86,7 +92,7 @@ namespace Qweree.Mongo
         }
 
         public async Task<Pagination<TPublicType>> PaginateAsync(string query, int skip, int take,
-            Dictionary<string, int> sort, CancellationToken cancellationToken = new CancellationToken())
+            Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var documents = await FindAsync(query, skip, take, sort, cancellationToken);
             var count = await CountAsync(query, cancellationToken);
@@ -95,7 +101,7 @@ namespace Qweree.Mongo
         }
 
         private async Task<IEnumerable<TPublicType>> DoFindAsync(string? query, int? skip, int? take,
-            Dictionary<string, int>? sort, CancellationToken cancellationToken = new CancellationToken())
+            Dictionary<string, int>? sort, CancellationToken cancellationToken = new())
         {
             var findOptions = new FindOptions<TDocumentType>();
 
@@ -116,37 +122,36 @@ namespace Qweree.Mongo
                     .ToListAsync(cancellationToken);
                 return list.Select(e => FromDocument(e));
             }
-            catch (System.Exception e) when(e is MongoCommandException || e is FormatException)
+            catch (System.Exception e) when (e is MongoCommandException || e is FormatException)
             {
                 throw new InvalidFilterException("Invalid filter.", e);
             }
         }
 
-        public async Task<long> CountAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task<long> CountAsync(CancellationToken cancellationToken = new())
         {
             return await CountAsync("{}", cancellationToken);
         }
 
-        public async Task<long> CountAsync(string query, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<long> CountAsync(string query, CancellationToken cancellationToken = new())
         {
-
             try
             {
                 return await Collection.CountDocumentsAsync(query, cancellationToken: cancellationToken);
             }
-            catch (System.Exception e) when(e is MongoCommandException || e is FormatException)
+            catch (System.Exception e) when (e is MongoCommandException || e is FormatException)
             {
                 throw new InvalidFilterException("Invalid filter.", e);
             }
         }
 
-        public async Task<TPublicType> GetAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<TPublicType> GetAsync(Guid id, CancellationToken cancellationToken = new())
         {
             var result = await FindAsync($@"{{""_id"": UUID(""{id}"")}}", cancellationToken);
             return result.FirstOrDefault() ?? throw new DocumentNotFoundException($@"Document ""{id}"" was not found.");
         }
 
-        public async Task InsertAsync(TPublicType document, CancellationToken cancellationToken = new CancellationToken())
+        public async Task InsertAsync(TPublicType document, CancellationToken cancellationToken = new())
         {
             try
             {
@@ -158,12 +163,12 @@ namespace Qweree.Mongo
             }
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             await Collection.DeleteOneAsync($@"{{""_id"": UUID(""{id}"")}}", cancellationToken);
         }
 
-        public async Task DeleteAllAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task DeleteAllAsync(CancellationToken cancellationToken = new())
         {
             await Collection.DeleteManyAsync(d => true, cancellationToken);
         }

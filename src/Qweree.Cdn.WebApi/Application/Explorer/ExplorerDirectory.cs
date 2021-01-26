@@ -13,10 +13,11 @@ namespace Qweree.Cdn.WebApi.Application.Explorer
             ModifiedAt = modifiedAt;
         }
 
-        public string Path { get; }
         public long TotalCount { get; }
         public long TotalSize { get; }
         public DateTime CreatedAt { get; }
         public DateTime ModifiedAt { get; }
+
+        public string Path { get; }
     }
 }

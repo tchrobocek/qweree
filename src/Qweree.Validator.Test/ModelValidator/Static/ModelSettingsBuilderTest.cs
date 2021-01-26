@@ -6,12 +6,6 @@ namespace Qweree.Validator.Test.ModelValidator.Static
 {
     public class ModelSettingsBuilderTest
     {
-        private class Model
-        {
-            // ReSharper disable once UnusedMember.Local
-            public object Foo { get; set; } = new object();
-        }
-
         [Fact]
         public void TestAddProperty()
         {
@@ -35,6 +29,12 @@ namespace Qweree.Validator.Test.ModelValidator.Static
         {
             var builder = new ModelSettingsBuilder<Model>();
             Assert.Throws<ArgumentException>(() => builder.AddProperty(m => GetType()));
+        }
+
+        private class Model
+        {
+            // ReSharper disable once UnusedMember.Local
+            public object Foo { get; set; } = new();
         }
     }
 }

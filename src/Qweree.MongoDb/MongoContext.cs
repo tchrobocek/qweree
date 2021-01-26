@@ -8,6 +8,8 @@ namespace Qweree.Mongo
 {
     public class MongoContext
     {
+        private readonly IMongoDatabase _database;
+
         static MongoContext()
         {
 #pragma warning disable 618
@@ -15,8 +17,6 @@ namespace Qweree.Mongo
 #pragma warning restore 618
             BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(GuidRepresentation.Standard));
         }
-
-        private readonly IMongoDatabase _database;
 
         public MongoContext(string connectionString, string databaseName)
         {

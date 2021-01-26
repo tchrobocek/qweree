@@ -12,7 +12,7 @@ namespace Qweree.Authentication.Sdk.Test.Identity
         [Fact]
         public void TestMapper()
         {
-            var expected = new User(Guid.NewGuid(), "username", new []{"role0", "role1"});
+            var expected = new User(Guid.NewGuid(), "username", new[] {"role0", "role1"});
             var dto = UserMapper.ToDto(expected);
             var actual = UserMapper.FromDto(dto);
 

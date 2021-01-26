@@ -23,7 +23,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         }
 
         /// <summary>
-        /// Get object.
+        ///     Get object.
         /// </summary>
         /// <param name="path">Object path.</param>
         /// <returns></returns>
@@ -43,7 +43,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
 
 
         /// <summary>
-        /// Store object.
+        ///     Store object.
         /// </summary>
         /// <param name="path">Object path.</param>
         /// <param name="contentType"></param>
@@ -52,7 +52,8 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         [Authorize]
         [RequiresFileFromBody]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
-        public async Task<IActionResult> PostStoredObjectActionAsync(string path, [FromHeader(Name = "Content-Type")] string contentType)
+        public async Task<IActionResult> PostStoredObjectActionAsync(string path,
+            [FromHeader(Name = "Content-Type")] string contentType)
         {
             path = HttpUtility.UrlDecode(path);
             var input = new StoreObjectInput(path, contentType, Request.ContentLength ?? 0, Request.Body);
@@ -61,7 +62,8 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             if (response.Status == ResponseStatus.Fail)
                 return BadRequest(response.ToErrorResponseDto());
 
-            return Created($"/api/v1/storage/{path.Trim('/')}", StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
+            return Created($"/api/v1/storage/{path.Trim('/')}",
+                StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
         }
     }
 }

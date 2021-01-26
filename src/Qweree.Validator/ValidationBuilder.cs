@@ -8,8 +8,8 @@ namespace Qweree.Validator
     /// </summary>
     public class ValidationBuilder
     {
-        private readonly List<ValidationMessage> _errors = new List<ValidationMessage>();
-        private readonly List<ValidationMessage> _warnings = new List<ValidationMessage>();
+        private readonly List<ValidationMessage> _errors = new();
+        private readonly List<ValidationMessage> _warnings = new();
 
         /// <summary>
         ///     Adds error to validation result.

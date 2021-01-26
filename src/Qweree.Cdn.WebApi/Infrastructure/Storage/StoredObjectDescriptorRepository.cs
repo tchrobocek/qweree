@@ -35,7 +35,7 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
                 descriptor.MediaType ?? "", descriptor.Size, descriptor.CreatedAt, descriptor.ModifiedAt);
 
         public async Task<StoredObjectDescriptor> GetBySlugAsync(string[] slug,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var slugInput = string.Join(@""", """, slug);
 
@@ -51,10 +51,11 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             return descriptor;
         }
 
-        public async Task<IEnumerable<StoredPathDescriptorDo>> FindInSlugAsync(string[] slug, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<IEnumerable<StoredPathDescriptorDo>> FindInSlugAsync(string[] slug,
+            CancellationToken cancellationToken = new())
         {
-            var slugMatchInput = $@"";
-            var projectSlugInput = $@"";
+            var slugMatchInput = @"";
+            var projectSlugInput = @"";
 
             for (var i = 0; i < slug.Length; i++)
             {

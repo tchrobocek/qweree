@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace Qweree.Authentication.Sdk.Identity
@@ -6,7 +7,7 @@ namespace Qweree.Authentication.Sdk.Identity
     {
         public static UserCreateInputDto ToDto(UserCreateInput userCreateInput)
         {
-            return new UserCreateInputDto
+            return new()
             {
                 Password = userCreateInput.Password,
                 Roles = userCreateInput.Roles.ToArray(),
@@ -18,9 +19,9 @@ namespace Qweree.Authentication.Sdk.Identity
 
         public static UserCreateInput FromDto(UserCreateInputDto userCreateInput)
         {
-            return new UserCreateInput(userCreateInput.Username ?? "", userCreateInput.ContactEmail ?? "",
+            return new(userCreateInput.Username ?? "", userCreateInput.ContactEmail ?? "",
                 userCreateInput.FullName ?? "", userCreateInput.Password ?? "",
-                userCreateInput.Roles ?? System.Array.Empty<string>());
+                userCreateInput.Roles ?? Array.Empty<string>());
         }
     }
 }

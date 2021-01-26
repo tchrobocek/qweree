@@ -14,6 +14,7 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
             "https://i.picsum.photos/id/1015/6000/4000.jpg",
             "https://i.picsum.photos/id/1024/1920/1280.jpg"
         };
+
         private static readonly string[] Paragraphs =
         {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt mi vel sapien ornare congue. Aenean venenatis sed neque non porttitor. Vivamus porttitor, risus id sodales posuere, nisl dolor bibendum est, in luctus urna nunc non nunc. Integer in odio aliquet, sollicitudin neque ac, convallis dui. Aliquam erat volutpat. Phasellus cursus metus efficitur, sodales ante a, blandit tortor. Nullam ut pellentesque purus. Cras lacinia pellentesque erat non vulputate. Cras sed orci ac lacus varius finibus sit amet eu mi. Pellentesque tortor sapien, porttitor at ante vel, faucibus sodales eros. Suspendisse fermentum consequat varius. Fusce ornare ipsum arcu, eget ultricies sem ullamcorper quis.",
@@ -26,10 +27,7 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
         public static StoryDto CreateStory()
         {
             var pages = new List<string>();
-            for (var i = 0; i < Random.Next(5) + 1; i++)
-            {
-                pages.Add(Paragraphs[Random.Next(Paragraphs.Length)]);
-            }
+            for (var i = 0; i < Random.Next(5) + 1; i++) pages.Add(Paragraphs[Random.Next(Paragraphs.Length)]);
 
             return new StoryDto
             {

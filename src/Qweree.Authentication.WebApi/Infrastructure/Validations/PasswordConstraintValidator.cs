@@ -8,11 +8,12 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 {
     public class PasswordConstraintValidator : ConstraintValidatorBase<string, PasswordConstraint>
     {
-        private static readonly Regex HasNumberRegex = new Regex(@"[0-9]+");
-        private static readonly Regex HasUpperCaseRegex = new Regex(@"[A-Z]+");
-        private static readonly Regex HasMinimum8CharsRegex = new Regex(@".{8,}");
+        private static readonly Regex HasNumberRegex = new(@"[0-9]+");
+        private static readonly Regex HasUpperCaseRegex = new(@"[A-Z]+");
+        private static readonly Regex HasMinimum8CharsRegex = new(@".{8,}");
 
-        protected override Task ValidateAsync(ValidationContext<string> validationContext, PasswordConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+        protected override Task ValidateAsync(ValidationContext<string> validationContext,
+            PasswordConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             var password = validationContext.Subject;
 
@@ -28,8 +29,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             return Task.CompletedTask;
         }
     }
+
     public class PasswordConstraint : Constraint<PasswordConstraintValidator>
     {
-
     }
 }

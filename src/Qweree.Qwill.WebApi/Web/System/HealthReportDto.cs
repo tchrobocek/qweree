@@ -6,6 +6,7 @@ namespace Qweree.Qwill.WebApi.Web.System
     {
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string? Status { get; set; }
+
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public Dictionary<string, HealthReportEntryDto>? Entries { get; set; }
     }

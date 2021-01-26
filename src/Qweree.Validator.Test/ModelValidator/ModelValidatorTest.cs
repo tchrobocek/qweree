@@ -9,39 +9,6 @@ namespace Qweree.Validator.Test.ModelValidator
 {
     public class ModelValidatorTest
     {
-        private class MinConstraint : Constraint<MinConstraintValidator>
-        {
-            public MinConstraint(int min)
-            {
-                Min = min;
-            }
-
-            public int Min { get; }
-        }
-
-        private class MinConstraintValidator : ConstraintValidatorBase<int, MinConstraint>
-        {
-            protected override Task ValidateAsync(ValidationContext<int> context, MinConstraint constraint,
-                ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
-            {
-                if (context.Subject < constraint.Min)
-                    builder.AddError(context.Path, "error");
-
-                return Task.CompletedTask;
-            }
-        }
-
-        private class Model
-        {
-            public Model(int number)
-            {
-                Number = number;
-            }
-
-            // ReSharper disable once UnusedMember.Local
-            public int Number { get; }
-        }
-
         [Fact]
         public async Task TestModelValidator()
         {
@@ -102,6 +69,39 @@ namespace Qweree.Validator.Test.ModelValidator
             var builder = new ValidationBuilder();
             await Assert.ThrowsAsync<ArgumentException>(async () =>
                 await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder));
+        }
+
+        private class MinConstraint : Constraint<MinConstraintValidator>
+        {
+            public MinConstraint(int min)
+            {
+                Min = min;
+            }
+
+            public int Min { get; }
+        }
+
+        private class MinConstraintValidator : ConstraintValidatorBase<int, MinConstraint>
+        {
+            protected override Task ValidateAsync(ValidationContext<int> context, MinConstraint constraint,
+                ValidationBuilder builder, CancellationToken cancellationToken = new())
+            {
+                if (context.Subject < constraint.Min)
+                    builder.AddError(context.Path, "error");
+
+                return Task.CompletedTask;
+            }
+        }
+
+        private class Model
+        {
+            public Model(int number)
+            {
+                Number = number;
+            }
+
+            // ReSharper disable once UnusedMember.Local
+            public int Number { get; }
         }
     }
 }

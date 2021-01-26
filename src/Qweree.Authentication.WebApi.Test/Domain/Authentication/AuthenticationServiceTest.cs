@@ -31,7 +31,8 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
             var dateTimeProvider = new StaticDateTimeProvider();
-            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
+            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
+                dateTimeProvider, new Random(),
                 10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
 
             var input = new PasswordGrantInput(user.Username, UserFactory.Password);
@@ -61,7 +62,8 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
             RefreshToken? refreshToken = null;
 
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
-            refreshTokenRepositoryMock.Setup(m => m.InsertAsync(It.IsAny<RefreshToken>(), It.IsAny<CancellationToken>()))
+            refreshTokenRepositoryMock
+                .Setup(m => m.InsertAsync(It.IsAny<RefreshToken>(), It.IsAny<CancellationToken>()))
                 .Returns<RefreshToken, CancellationToken>((rt, _) =>
                 {
                     Assert.Equal(user.Id, rt.UserId);
@@ -85,7 +87,8 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
                     return Task.FromResult(refreshToken);
                 });
 
-            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
+            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
+                dateTimeProvider, new Random(),
                 10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
 
             TokenInfo accessToken;
@@ -125,7 +128,8 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
             var dateTimeProvider = new StaticDateTimeProvider();
-            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object, dateTimeProvider, new Random(),
+            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
+                dateTimeProvider, new Random(),
                 10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 10);
 
             TokenInfo accessToken;

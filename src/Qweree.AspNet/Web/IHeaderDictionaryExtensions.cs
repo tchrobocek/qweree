@@ -6,7 +6,8 @@ namespace Qweree.AspNet.Web
     // ReSharper disable once InconsistentNaming
     public static class IHeaderDictionaryExtensions
     {
-        public static void AddLinkHeaders(this IHeaderDictionary headers, string baseUri, int skip, int take, long total)
+        public static void AddLinkHeaders(this IHeaderDictionary headers, string baseUri, int skip, int take,
+            long total)
         {
             var headerValues = new List<string>();
 

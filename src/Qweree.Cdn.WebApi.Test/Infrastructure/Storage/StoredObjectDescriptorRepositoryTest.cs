@@ -31,7 +31,8 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
         [Fact]
         public async Task TestInsertAndGetBySlug()
         {
-            var descriptor = StoredObjectDescriptorFactory.CreateDefault("object/with/slug", MediaTypeNames.Application.Octet, 0L);
+            var descriptor =
+                StoredObjectDescriptorFactory.CreateDefault("object/with/slug", MediaTypeNames.Application.Octet, 0L);
             await _repository.InsertAsync(descriptor);
             var actual = await _repository.GetBySlugAsync(descriptor.Slug.ToArray());
 
@@ -51,13 +52,10 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                 StoredObjectDescriptorFactory.CreateDefault("/object/a/a/c", MediaTypeNames.Application.Octet, 1L),
                 StoredObjectDescriptorFactory.CreateDefault("/object/a/b", MediaTypeNames.Application.Octet, 1L),
                 StoredObjectDescriptorFactory.CreateDefault("/object/a/c", MediaTypeNames.Application.Octet, 1L),
-                StoredObjectDescriptorFactory.CreateDefault("/object/a/d", MediaTypeNames.Application.Octet, 1L),
+                StoredObjectDescriptorFactory.CreateDefault("/object/a/d", MediaTypeNames.Application.Octet, 1L)
             };
 
-            foreach (var descriptor in descriptors)
-            {
-                await _repository.InsertAsync(descriptor);
-            }
+            foreach (var descriptor in descriptors) await _repository.InsertAsync(descriptor);
 
             var expecting = new[]
             {
@@ -73,7 +71,7 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                     TotalCount = 1,
                     TotalSize = 1,
                     MinCreatedAt = descriptors[3].CreatedAt,
-                    MaxModifiedAt = descriptors[3].ModifiedAt,
+                    MaxModifiedAt = descriptors[3].ModifiedAt
                 },
                 new StoredPathDescriptorDo
                 {
@@ -87,7 +85,7 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                     TotalCount = 3,
                     TotalSize = 3,
                     MinCreatedAt = descriptors.Last().CreatedAt,
-                    MaxModifiedAt = descriptors.Last().ModifiedAt,
+                    MaxModifiedAt = descriptors.Last().ModifiedAt
                 },
                 new StoredPathDescriptorDo
                 {
@@ -101,7 +99,7 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                     TotalCount = 1,
                     TotalSize = 1,
                     MinCreatedAt = descriptors[5].CreatedAt,
-                    MaxModifiedAt = descriptors[5].ModifiedAt,
+                    MaxModifiedAt = descriptors[5].ModifiedAt
                 },
                 new StoredPathDescriptorDo
                 {
@@ -115,7 +113,7 @@ namespace Qweree.Cdn.WebApi.Test.Infrastructure.Storage
                     TotalCount = 1,
                     TotalSize = 1,
                     MinCreatedAt = descriptors[4].CreatedAt,
-                    MaxModifiedAt = descriptors[4].ModifiedAt,
+                    MaxModifiedAt = descriptors[4].ModifiedAt
                 }
             }.OrderBy(s => string.Join("/", s.FirstSlug ?? ArraySegment<string?>.Empty));
 

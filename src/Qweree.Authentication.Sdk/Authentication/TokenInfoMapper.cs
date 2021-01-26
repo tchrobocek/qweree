@@ -6,7 +6,7 @@ namespace Qweree.Authentication.Sdk.Authentication
     {
         public static TokenInfoDto ToDto(TokenInfo tokenInfo)
         {
-            return new TokenInfoDto
+            return new()
             {
                 AccessToken = tokenInfo.AccessToken,
                 ExpiresAt = tokenInfo.ExpiresAt,
@@ -16,7 +16,8 @@ namespace Qweree.Authentication.Sdk.Authentication
 
         public static TokenInfo FromDto(TokenInfoDto tokenInfoDto)
         {
-            return new TokenInfo(tokenInfoDto.AccessToken ?? "", tokenInfoDto.RefreshToken, tokenInfoDto.ExpiresAt ?? DateTime.MinValue);
+            return new(tokenInfoDto.AccessToken ?? "", tokenInfoDto.RefreshToken,
+                tokenInfoDto.ExpiresAt ?? DateTime.MinValue);
         }
     }
 }

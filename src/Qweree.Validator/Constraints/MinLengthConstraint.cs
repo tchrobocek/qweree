@@ -8,7 +8,7 @@ namespace Qweree.Validator.Constraints
     public class MinLengthConstraintValidator : ConstraintValidatorBase<string, MinLengthConstraint>
     {
         protected override Task ValidateAsync(ValidationContext<string> context, MinLengthConstraint constraint,
-            ValidationBuilder builder, CancellationToken cancellationToken = new CancellationToken())
+            ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
             if (context.Subject.Length < constraint.MinLength)
                 builder.AddError(context.Path, constraint.Message);

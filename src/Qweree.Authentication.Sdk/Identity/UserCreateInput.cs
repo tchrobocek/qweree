@@ -5,7 +5,8 @@ namespace Qweree.Authentication.Sdk.Identity
 {
     public class UserCreateInput
     {
-        public UserCreateInput(string username, string contactEmail, string fullName, string password, IEnumerable<string> roles)
+        public UserCreateInput(string username, string contactEmail, string fullName, string password,
+            IEnumerable<string> roles)
         {
             Username = username;
             ContactEmail = contactEmail;

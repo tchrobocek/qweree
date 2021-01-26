@@ -11,8 +11,8 @@ namespace Qweree.Cdn.Sdk.Storage
     public class StorageAdapter
     {
         private readonly Uri _cdnUri;
-        private readonly HttpClient _httpClient;
         private readonly IErrorHandler _errorHandler = new QwereeErrorHandler();
+        private readonly HttpClient _httpClient;
 
         public StorageAdapter(Uri cdnUri, HttpClient httpClient)
         {
@@ -20,7 +20,8 @@ namespace Qweree.Cdn.Sdk.Storage
             _httpClient = httpClient;
         }
 
-        public async Task<StoredObjectDescriptor> StoreAsync(string path, string mediaType, Stream stream, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<StoredObjectDescriptor> StoreAsync(string path, string mediaType, Stream stream,
+            CancellationToken cancellationToken = new())
         {
             var uri = new Uri(_cdnUri + $"/{path.Trim('/')}");
             var request = new HttpRequestMessage(HttpMethod.Post, uri)
@@ -43,7 +44,7 @@ namespace Qweree.Cdn.Sdk.Storage
             return StoredObjectDescriptorMapper.FromDto(descriptor ?? throw new ArgumentException("Invalid response."));
         }
 
-        public async Task<Stream> RetrieveAsync(string path, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Stream> RetrieveAsync(string path, CancellationToken cancellationToken = new())
         {
             var uri = new Uri(_cdnUri + $"/{path.Trim('/')}");
             var response = await _httpClient.GetAsync(uri, cancellationToken);

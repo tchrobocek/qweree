@@ -22,21 +22,23 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         public const string Issuer = "net.qweree";
         private const string AccessDeniedMessage = "Access denied.";
         private const int RefreshTokenLength = 16;
+        private readonly string _accessTokenKey;
+
+        private readonly int _accessTokenValiditySeconds;
+        private readonly IDateTimeProvider _datetimeProvider;
+        private readonly string _fileAccessTokenKey;
+        private readonly int _fileAccessTokenValiditySeconds;
+        private readonly Random _random;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly int _refreshTokenValiditySeconds;
+        private readonly IUserRepository _userRepository;
 
         private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
-        private readonly int _accessTokenValiditySeconds;
-        private readonly int _refreshTokenValiditySeconds;
-        private readonly int _fileAccessTokenValiditySeconds;
-        private readonly string _accessTokenKey;
-        private readonly string _fileAccessTokenKey;
-        private readonly IUserRepository _userRepository;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
-        private readonly IDateTimeProvider _datetimeProvider;
-        private readonly Random _random;
-
-        public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IDateTimeProvider datetimeProvider, Random random,
-            int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey, string fileAccessTokenKey, int fileAccessTokenValiditySeconds)
+        public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository,
+            IDateTimeProvider datetimeProvider, Random random,
+            int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey,
+            string fileAccessTokenKey, int fileAccessTokenValiditySeconds)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -49,7 +51,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             _random = random;
         }
 
-        public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input,
+            CancellationToken cancellationToken = new())
         {
             var now = _datetimeProvider.UtcNow;
 
@@ -64,13 +67,11 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
-            if (!ValidatePassword(input.Password, user.Password))
-            {
-                return Response.Fail<TokenInfo>(AccessDeniedMessage);
-            }
+            if (!ValidatePassword(input.Password, user.Password)) return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now,
+                expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, cancellationToken);
@@ -79,7 +80,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             return Response.Ok(tokenInfo);
         }
 
-        public async Task<Response<TokenInfo>> AuthenticateAsync(RefreshTokenGrantInput input, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<TokenInfo>> AuthenticateAsync(RefreshTokenGrantInput input,
+            CancellationToken cancellationToken = new())
         {
             var now = _datetimeProvider.UtcNow;
 
@@ -96,13 +98,11 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
-            if (token.ExpiresAt < now)
-            {
-                return Response.Fail<TokenInfo>(AccessDeniedMessage);
-            }
+            if (token.ExpiresAt < now) return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now, expiresAt);
+            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now,
+                expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
@@ -110,7 +110,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         }
 
         public Task<Response<TokenInfo>> AuthenticateAsync(FileAccessGrantInput input,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = new())
         {
             var validationParameters = Startup.GetValidationParameters(_fileAccessTokenKey);
             var now = _datetimeProvider.UtcNow;
@@ -119,7 +119,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 
             try
             {
-                var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(input.AccessToken, validationParameters, out _);
+                var claimsPrincipal =
+                    new JwtSecurityTokenHandler().ValidateToken(input.AccessToken, validationParameters, out _);
                 session = new ClaimsPrincipalStorage(claimsPrincipal);
             }
             catch (Exception)
@@ -128,18 +129,18 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_fileAccessTokenValiditySeconds);
-            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id, session.CurrentUser.Username, session.CurrentUser.FullName, session.CurrentUser.Email, session.CurrentUser.Roles, now, expiresAt));
+            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id,
+                session.CurrentUser.Username, session.CurrentUser.FullName, session.CurrentUser.Email,
+                session.CurrentUser.Roles, now, expiresAt));
 
             return Task.FromResult(Response.Ok(new TokenInfo(fileAccessToken, expiresAt)));
         }
 
-        private async Task<string?> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = new CancellationToken())
+        private async Task<string?> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = new())
         {
             var token = "";
             for (var i = 0; i < RefreshTokenLength; i++)
-            {
                 token += RefreshTokenChars[_random.Next(RefreshTokenChars.Length)];
-            }
 
             var expiresAt = _datetimeProvider.UtcNow + TimeSpan.FromSeconds(_refreshTokenValiditySeconds);
             var refreshToken = new RefreshToken(Guid.NewGuid(), token, user.Id, expiresAt, _datetimeProvider.UtcNow);
@@ -155,12 +156,12 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new Claim("userId", accessToken.UserId.ToString()),
-                new Claim("username", accessToken.Username),
-                new Claim("full_name", accessToken.FullName),
-                new Claim("email", accessToken.Email),
-                new Claim("iat", accessToken.IssuedAt.Ticks.ToString()),
-                new Claim("jti", Guid.NewGuid().ToString())
+                new("userId", accessToken.UserId.ToString()),
+                new("username", accessToken.Username),
+                new("full_name", accessToken.FullName),
+                new("email", accessToken.Email),
+                new("iat", accessToken.IssuedAt.Ticks.ToString()),
+                new("jti", Guid.NewGuid().ToString())
             };
             claims.AddRange(accessToken.Roles.Select(role => new Claim("role", role)));
 
@@ -176,9 +177,9 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new Claim("username", accessToken.Username),
-                new Claim("iat", accessToken.IssuedAt.Ticks.ToString()),
-                new Claim("jti", Guid.NewGuid().ToString())
+                new("username", accessToken.Username),
+                new("iat", accessToken.IssuedAt.Ticks.ToString()),
+                new("jti", Guid.NewGuid().ToString())
             };
             claims.AddRange(accessToken.Roles.Select(role => new Claim("role", role)));
 
