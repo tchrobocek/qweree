@@ -44,7 +44,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
 
             try
             {
-                story = await ToStoryAsync(publication, cancellationToken);
+                story = ToStory(publication);
             }
             catch (Exception e)
             {
@@ -63,7 +63,32 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             return Response.Ok(story);
         }
 
-        public async Task<Story> ToStoryAsync(Publication publication, CancellationToken cancellationToken = new())
+        public async Task<Response<Story>> GetStoryAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            Publication publication;
+            try
+            {
+                publication = await _publicationRepository.GetAsync(id, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.Fail<Story>(new Error("Story was not found.", 404));
+            }
+
+            Story story;
+            try
+            {
+                story = ToStory(publication);
+            }
+            catch (Exception e)
+            {
+                return Response.Fail<Story>(e.Message);
+            }
+
+            return Response.Ok(story);
+        }
+
+        public Story ToStory(Publication publication)
         {
             var translation = publication.Translations.FirstOrDefault(t => t.Language == "en");
 

@@ -49,9 +49,13 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(StoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public IActionResult GetArticleActionAsync(Guid id)
+        public async Task<IActionResult> StoryGetActionAsync(Guid id)
         {
-            return Ok(StoryMockFactory.CreateStory());
+            var response = await _publicationService.GetStoryAsync(id);
+            if (response.Status != ResponseStatus.Ok) return BadRequest(response.ToErrorResponseDto());
+
+            var storyDto = StoryMapper.ToDto(response.Payload ?? throw new InvalidOperationException("Empty payload."));
+            return Created($"/api/v1/publication/stories/{storyDto.Id}", storyDto);
         }
     }
 }
