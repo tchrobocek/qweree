@@ -33,8 +33,8 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Stories
             {
                 Id = Guid.NewGuid(),
                 Title = "Article Title",
-                LeadingImage = Images[Random.Next(Images.Length)],
-                LeadingText = Paragraphs[Random.Next(Paragraphs.Length)],
+                LeadImage = Images[Random.Next(Images.Length)],
+                LeadParagraph = Paragraphs[Random.Next(Paragraphs.Length)],
                 Pages = pages,
                 Language = "dog-latin",
                 Author = new AuthorDto

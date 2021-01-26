@@ -8,8 +8,8 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
     {
         public Guid? Id { get; set; }
         public string? Title { get; set; }
-        public string? LeadingText { get; set; }
-        public string? LeadingImage { get; set; }
+        public string? LeadParagraph { get; set; }
+        public string? LeadImage { get; set; }
         public List<string> Pages { get; set; } = new();
         public string? Language { get; set; }
         public AuthorDto? Author { get; set; }
