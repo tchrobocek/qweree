@@ -104,8 +104,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
                 }
             }
 
-            var user = _sessionStorage.CurrentUser;
-            var author = new Author(user.Id, user.FullName, user.Id, user.Username);
+            var author = new Author(publication.UserId, "user", publication.ChannelId, "channel");
 
             var publicationDate = publication.PublicationDate;
 
