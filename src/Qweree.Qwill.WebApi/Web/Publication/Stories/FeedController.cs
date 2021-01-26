@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
+using Qweree.Qwill.WebApi.Domain.Stories;
 using Qweree.Sdk;
 
 namespace Qweree.Qwill.WebApi.Web.Publication.Stories
@@ -10,6 +12,13 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
     [Route("/api/v1/feed")]
     public class FeedController : ControllerBase
     {
+        private readonly FeedService _feedService;
+
+        public FeedController(FeedService feedService)
+        {
+            _feedService = feedService;
+        }
+
         /// <summary>
         ///     Load home feed.
         /// </summary>
@@ -20,15 +29,13 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         [Route("home")]
         [ProducesResponseType(typeof(StoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public IActionResult HomeFeedAction(
+        public async Task<IActionResult> HomeFeedAction(
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 10
         )
         {
-            var stories = new List<StoryDto>();
-            for (var i = 0; i < take; i++) stories.Add(StoryMockFactory.CreateStory());
-
-            return Ok(stories);
+            var stories = await _feedService.GetHomeFeedAsync(skip, take);
+            return Ok(stories.Payload?.Select(StoryMapper.ToDto) ?? new List<StoryDto>());
         }
     }
 }
