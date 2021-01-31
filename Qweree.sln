@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Qwill.WebApi", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Qwill.WebApi.Test", "src\Qweree.Qwill.WebApi.Test\Qweree.Qwill.WebApi.Test.csproj", "{59C21E6B-1123-411A-B46E-4E0A499FC939}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.CommandLine", "src\Qweree.CommandLine\Qweree.CommandLine.csproj", "{F8B7018C-0D59-4A07-A288-4DC388695DB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,5 +122,9 @@ Global
 		{59C21E6B-1123-411A-B46E-4E0A499FC939}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59C21E6B-1123-411A-B46E-4E0A499FC939}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59C21E6B-1123-411A-B46E-4E0A499FC939}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
