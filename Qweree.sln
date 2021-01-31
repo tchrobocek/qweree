@@ -32,7 +32,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Sdk.Http", "src\Qwer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Cdn.Sdk.Test", "src\Qweree.Cdn.Sdk.Test\Qweree.Cdn.Sdk.Test.csproj", "{BD0A0E87-A7DB-4DF4-915F-E3F551934C98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.ConsoleApplication", "src\Qweree.ConsoleApplication\Qweree.ConsoleApplication.csproj", "{BF1D7B35-8440-4C88-9D56-333A41E03FDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.QAdmin.ConsoleApplication", "src\Qweree.QAdmin.ConsoleApplication\Qweree.QAdmin.ConsoleApplication.csproj", "{BF1D7B35-8440-4C88-9D56-333A41E03FDB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Qwill.WebApi", "src\Qweree.Qwill.WebApi\Qweree.Qwill.WebApi.csproj", "{AF93245D-6CA5-4D0D-9C37-155425304B2B}"
 EndProject
