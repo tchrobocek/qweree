@@ -49,16 +49,8 @@ namespace Qweree.CommandLine.AspNet.Extensions
                 scope = _serviceProvider.CreateScope();
                 next = buildAppFunc(scope.ServiceProvider);
 
-                try
-                {
-                    await next(context, cancellationToken);
-                    scope.Dispose();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return -1;
-                }
+                await next(context, cancellationToken);
+                scope.Dispose();
             }
         }
     }
