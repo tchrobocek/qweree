@@ -16,7 +16,7 @@ namespace Qweree.ConsoleApplication
         {
         }
 
-        public static async Task<int> Listen(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
+        public static async Task<int> RunApplicationAsync(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
         {
             while (true)
             {

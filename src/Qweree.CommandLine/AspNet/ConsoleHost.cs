@@ -12,13 +12,12 @@ namespace Qweree.CommandLine.AspNet
         public ConsoleHost()
         {
             _serviceCollection = new ServiceCollection();
-            ConsoleListenerAction = DefaultConsoleListenAction;
+            RunApplicationAction = DefaultConsoleListenAction;
         }
 
         public Action<IServiceCollection>? ConfigureServicesAction { get; init; }
         public Action<ConsoleApplicationBuilder>? ConfigureAction { get; init; }
-        public Func<string[], RequestDelegate, CancellationToken, Task<int>> ConsoleListenerAction { get; init; }
-
+        public Func<string[], RequestDelegate, CancellationToken, Task<int>> RunApplicationAction { get; init; }
 
         private async Task<int> DefaultConsoleListenAction(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
         {
@@ -27,7 +26,7 @@ namespace Qweree.CommandLine.AspNet
                 Args = args
             };
 
-            await next(context);
+            await next(context, cancellationToken);
             return context.ReturnCode;
         }
 
@@ -42,7 +41,7 @@ namespace Qweree.CommandLine.AspNet
             ConfigureAction?.Invoke(builder);
 
             var applicationAction = builder.Build();
-            return await ConsoleListenerAction(args, applicationAction, new CancellationToken());
+            return await RunApplicationAction(args, applicationAction, new CancellationToken());
         }
     }
 }

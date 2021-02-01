@@ -7,29 +7,6 @@ namespace Qweree.CommandLine.AspNet
 {
     public delegate Task RequestDelegate(ConsoleContext context, CancellationToken cancellationToken = new());
 
-    public class ConsoleContext
-    {
-        public string[] Args { get; set; } = Array.Empty<string>();
-        public int ReturnCode { get; set; } = 0;
-    }
-    public interface IMiddleware
-    {
-        Task NextAsync(ConsoleContext context, RequestDelegate? next, CancellationToken cancellationToken = new());
-    }
-
-    public static class ConsoleApplicationBuilderExtensions
-    {
-        public static void UseMiddleware(this ConsoleApplicationBuilder app, IMiddleware middleware)
-        {
-            app.Use(next =>
-            {
-                return async (context, token) =>
-                {
-                    await middleware.NextAsync(context, next, token);
-                };
-            });
-        }
-    }
 
     public class ConsoleApplicationBuilder
     {
