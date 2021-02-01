@@ -70,7 +70,8 @@ namespace Qweree.Qwill.WebApi
                 {
                     builder.AllowAnyHeader()
                         .AllowAnyHeader()
-                        .AllowAnyOrigin();
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
                 });
             });
             services.AddSwaggerGen(options =>
