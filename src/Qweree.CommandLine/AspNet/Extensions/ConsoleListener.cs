@@ -22,6 +22,7 @@ namespace Qweree.CommandLine.AspNet.Extensions
         {
             var next = buildAppFunc();
             await next(new ConsoleContext{Args = _args}, cancellationToken);
+
             while (true)
             {
                 Console.Write("$ ");

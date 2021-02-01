@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.CommandLine.AspNet;
+using Qweree.CommandLine.AspNet.CommandRouter;
 using Qweree.CommandLine.AspNet.Extensions;
 using Qweree.ConsoleApplication.Infrastructure.ErrorHandling;
 
@@ -13,12 +14,16 @@ namespace Qweree.ConsoleApplication
     {
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddCommandRouter();
+            services.AddSingleton<ErrorHandlerMiddleware>();
+            services.AddSingleton<HelloWorldMiddleware>();
         }
 
         public static void Configure(ConsoleApplicationBuilder app)
         {
-            app.UseMiddleware(new ErrorHandlerMiddleware());
-            app.UseMiddleware(new HelloWorldMiddleware());
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseCommandRouter();
+            app.UseMiddleware<HelloWorldMiddleware>();
         }
     }
 
