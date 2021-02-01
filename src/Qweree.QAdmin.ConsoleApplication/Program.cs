@@ -14,7 +14,8 @@ namespace Qweree.ConsoleApplication
                 ConfigureAction = Startup.Configure
             };
 
-            return await host.UseConsoleListener(new ConsoleListener(args))
+            return await host.Build()
+                .UseConsoleListener(new ConsoleListener(args, host.ServiceProvider))
                 .RunAsync(args);
         }
     }

@@ -1,27 +1,32 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Qweree.CommandLine.AspNet.Extensions
 {
     public interface IConsoleListener
     {
-        Task<int> RunAsync(Func<RequestDelegate> buildAppFunc, CancellationToken cancellationToken);
+        Task<int> RunAsync(Func<IServiceProvider, RequestDelegate> buildAppFunc, CancellationToken cancellationToken);
     }
 
     public class ConsoleListener : IConsoleListener
     {
         private readonly string[] _args;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ConsoleListener(string[] args)
+        public ConsoleListener(string[] args, IServiceProvider serviceProvider)
         {
             _args = args;
+            _serviceProvider = serviceProvider;
         }
 
-        public async Task<int> RunAsync(Func<RequestDelegate> buildAppFunc, CancellationToken cancellationToken)
+        public async Task<int> RunAsync(Func<IServiceProvider, RequestDelegate> buildAppFunc, CancellationToken cancellationToken)
         {
-            var next = buildAppFunc();
+            var scope = _serviceProvider.CreateScope();
+            var next = buildAppFunc(scope.ServiceProvider);
             await next(new ConsoleContext{Args = _args}, cancellationToken);
+            scope.Dispose();
 
             while (true)
             {
@@ -41,14 +46,17 @@ namespace Qweree.CommandLine.AspNet.Extensions
                     ReturnCode = 0
                 };
 
-                next = buildAppFunc();
+                scope = _serviceProvider.CreateScope();
+                next = buildAppFunc(scope.ServiceProvider);
 
                 try
                 {
                     await next(context, cancellationToken);
+                    scope.Dispose();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.WriteLine(e);
                     return -1;
                 }
             }
