@@ -1,7 +1,4 @@
 #nullable enable
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.CommandLine.AspNet;
 using Qweree.CommandLine.AspNet.CommandRouter;
@@ -24,16 +21,6 @@ namespace Qweree.ConsoleApplication
         {
             app.UseMiddleware<ErrorHandlerMiddleware>();
             app.UseCommandRouter();
-        }
-    }
-
-    public class HelloWorldMiddleware : IMiddleware
-    {
-        public Task NextAsync(ConsoleContext context, RequestDelegate? next,
-            CancellationToken cancellationToken = new())
-        {
-            Console.WriteLine("This is error test.");
-            throw new Exception("Hello world!");
         }
     }
 }
