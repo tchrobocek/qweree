@@ -1,8 +1,10 @@
+#nullable enable
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.CommandLine.AspNet;
+using Qweree.CommandLine.AspNet.Extensions;
 
 namespace Qweree.ConsoleApplication
 {
@@ -14,35 +16,18 @@ namespace Qweree.ConsoleApplication
 
         public static void Configure(ConsoleApplicationBuilder app)
         {
+            app.UseMiddleware(new HelloWorldMiddleware());
         }
+    }
 
-        public static async Task<int> RunApplicationAsync(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
+    public class HelloWorldMiddleware : IMiddleware
+    {
+        public Task NextAsync(ConsoleContext context, RequestDelegate? next,
+            CancellationToken cancellationToken = new())
         {
-            while (true)
-            {
-                var line = Console.ReadLine();
-
-                if (line == null || line == "exit")
-                {
-                    return 0;
-                }
-
-                try
-                {
-                    var context = new ConsoleContext
-                    {
-                        Args = args,
-                        ReturnCode = 0
-                    };
-
-                    await next(context, cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
-
+            Console.WriteLine("Hello world!");
+            Console.WriteLine(string.Join(" ", context.Args));
+            return Task.CompletedTask;
         }
     }
 }
