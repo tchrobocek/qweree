@@ -12,36 +12,47 @@ namespace Qweree.CommandLine.AspNet
         public ConsoleHost()
         {
             _serviceCollection = new ServiceCollection();
-            RunApplicationAction = DefaultConsoleListenAction;
+            ConfigureAction = DefaultConfigureAction;
+            ConfigureServicesAction = DefaultConfigureServicesAction;
+            RunApplicationAction = DefaultRunApplicationAction;
         }
 
-        public Action<IServiceCollection>? ConfigureServicesAction { get; set; }
-        public Action<ConsoleApplicationBuilder>? ConfigureAction { get; set; }
-        public Func<string[], RequestDelegate, CancellationToken, Task<int>> RunApplicationAction { get; set; }
+        public Action<IServiceCollection> ConfigureServicesAction { get; set; }
+        public Action<ConsoleApplicationBuilder> ConfigureAction { get; set; }
+        public Func<string[], Func<RequestDelegate>, CancellationToken, Task<int>> RunApplicationAction { get; set; }
 
-        private async Task<int> DefaultConsoleListenAction(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
+        private void DefaultConfigureServicesAction(IServiceCollection obj)
         {
+        }
+
+        private void DefaultConfigureAction(ConsoleApplicationBuilder obj)
+        {
+        }
+
+        private async Task<int> DefaultRunApplicationAction(string[] args, Func<RequestDelegate> buildApplicationFunction, CancellationToken cancellationToken = new())
+        {
+            var next = buildApplicationFunction();
             var context = new ConsoleContext
             {
                 Args = args
             };
-
             await next(context, cancellationToken);
             return context.ReturnCode;
         }
 
         public async Task<int> RunAsync(string[] args)
         {
-            ConfigureServicesAction?.Invoke(_serviceCollection);
+            ConfigureServicesAction.Invoke(_serviceCollection);
+            return await RunApplicationAction(args, BuildApplication, new CancellationToken());
+        }
 
-            await using var provider = _serviceCollection.BuildServiceProvider();
+        private RequestDelegate BuildApplication()
+        {
+            var provider = _serviceCollection.BuildServiceProvider();
             using var scope = provider.CreateScope();
-
             var builder = new ConsoleApplicationBuilder(scope.ServiceProvider);
-            ConfigureAction?.Invoke(builder);
-
-            var applicationAction = builder.Build();
-            return await RunApplicationAction(args, applicationAction, new CancellationToken());
+            ConfigureAction.Invoke(builder);
+            return builder.Build();
         }
     }
 }

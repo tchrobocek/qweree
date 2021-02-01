@@ -6,7 +6,7 @@ namespace Qweree.CommandLine.AspNet.Extensions
 {
     public interface IConsoleListener
     {
-        Task<int> RunAsync(RequestDelegate next, CancellationToken cancellationToken);
+        Task<int> RunAsync(Func<RequestDelegate> buildAppFunc, CancellationToken cancellationToken);
     }
 
     public class ConsoleListener : IConsoleListener
@@ -18,8 +18,9 @@ namespace Qweree.CommandLine.AspNet.Extensions
             _args = args;
         }
 
-        public async Task<int> RunAsync(RequestDelegate next, CancellationToken cancellationToken)
+        public async Task<int> RunAsync(Func<RequestDelegate> buildAppFunc, CancellationToken cancellationToken)
         {
+            var next = buildAppFunc();
             await next(new ConsoleContext{Args = _args}, cancellationToken);
             while (true)
             {
@@ -38,6 +39,8 @@ namespace Qweree.CommandLine.AspNet.Extensions
                     Args = args,
                     ReturnCode = 0
                 };
+
+                next = buildAppFunc();
 
                 try
                 {
