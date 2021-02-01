@@ -4,8 +4,10 @@ namespace Qweree.CommandLine.AspNet.Extensions
     {
         public static ConsoleHost UseConsoleListener(this ConsoleHost host, IConsoleListener listener)
         {
-            host.RunApplicationAction = async (_, next, cancellationToken) =>
-                await listener.RunAsync(next, cancellationToken);
+            host.RunApplicationAction = async (_, buildAppFunc, cancellationToken) =>
+            {
+                return await listener.RunAsync(buildAppFunc, cancellationToken);
+            };
 
             return host;
         }
