@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.CommandLine.AspNet;
 using Qweree.CommandLine.AspNet.Extensions;
+using Qweree.ConsoleApplication.Infrastructure.ErrorHandling;
 
 namespace Qweree.ConsoleApplication
 {
@@ -16,6 +17,7 @@ namespace Qweree.ConsoleApplication
 
         public static void Configure(ConsoleApplicationBuilder app)
         {
+            app.UseMiddleware(new ErrorHandlerMiddleware());
             app.UseMiddleware(new HelloWorldMiddleware());
         }
     }
@@ -25,9 +27,8 @@ namespace Qweree.ConsoleApplication
         public Task NextAsync(ConsoleContext context, RequestDelegate? next,
             CancellationToken cancellationToken = new())
         {
-            Console.WriteLine("Hello world!");
-            Console.WriteLine(string.Join(" ", context.Args));
-            return Task.CompletedTask;
+            Console.WriteLine("This is error test.");
+            throw new Exception("Hello world!");
         }
     }
 }
