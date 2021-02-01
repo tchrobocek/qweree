@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,19 @@ namespace Qweree.CommandLine.AspNet.CommandRouter
     {
         public static void AddCommandRouter(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped(_ => new CommandLine.CommandRouter.CommandRouter(new Command[0]));
+            serviceCollection.AddScoped(p =>
+            {
+                var commands = p.GetServices<ICommand>();
+                return new CommandLine.CommandRouter.CommandRouter(commands.Select(c =>
+                {
+                    var builder = new ConfigurationBuilder();
+                    c.Configure(builder);
+                    var configuration = builder.Build();
+
+                    return new Command(configuration.Name, configuration.Description, c.ExecuteAsync);
+                }));
+            });
+
             serviceCollection.AddScoped<CommandRouterMiddleware>();
         }
 
