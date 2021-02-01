@@ -10,7 +10,8 @@ namespace Qweree.ConsoleApplication
             var host = new ConsoleHost
             {
                 ConfigureServicesAction = Startup.ConfigureServices,
-                ConfigureAction = Startup.Configure
+                ConfigureAction = Startup.Configure,
+                ConsoleListenerAction = Startup.Listen
             };
 
             return await host.RunAsync(args);

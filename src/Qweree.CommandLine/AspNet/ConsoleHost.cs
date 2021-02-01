@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +12,24 @@ namespace Qweree.CommandLine.AspNet
         public ConsoleHost()
         {
             _serviceCollection = new ServiceCollection();
+            ConsoleListenerAction = DefaultConsoleListenAction;
         }
 
         public Action<IServiceCollection>? ConfigureServicesAction { get; init; }
         public Action<ConsoleApplicationBuilder>? ConfigureAction { get; init; }
+        public Func<string[], RequestDelegate, CancellationToken, Task<int>> ConsoleListenerAction { get; init; }
+
+
+        private async Task<int> DefaultConsoleListenAction(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
+        {
+            var context = new ConsoleContext
+            {
+                Args = args
+            };
+
+            await next(context);
+            return context.ReturnCode;
+        }
 
         public async Task<int> RunAsync(string[] args)
         {
@@ -27,10 +42,7 @@ namespace Qweree.CommandLine.AspNet
             ConfigureAction?.Invoke(builder);
 
             var applicationAction = builder.Build();
-            var context = new ConsoleContext {Args = args};
-            await applicationAction(context);
-
-            return context.ReturnCode;
+            return await ConsoleListenerAction(args, applicationAction, new CancellationToken());
         }
     }
 }
