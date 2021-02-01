@@ -19,8 +19,8 @@ export class ServicesOverviewComponent implements OnInit {
     private httpClient: HttpClient
   ) {
     this.services = [{
-      baseUri: '',
-      name: `service1`
+      baseUri: 'http://localhost:10003/',
+      name: `Qwill`
     }, {
       baseUri: environmentService.getEnvironment().authentication.baseUri,
       name: `OAuth`
