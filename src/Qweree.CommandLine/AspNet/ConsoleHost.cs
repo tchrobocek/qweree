@@ -7,11 +7,10 @@ namespace Qweree.CommandLine.AspNet
 {
     public class ConsoleHost
     {
-        private readonly IServiceCollection _serviceCollection;
+        private ServiceProvider? _serviceProvider;
 
         public ConsoleHost()
         {
-            _serviceCollection = new ServiceCollection();
             ConfigureAction = DefaultConfigureAction;
             ConfigureServicesAction = DefaultConfigureServicesAction;
             RunApplicationAction = DefaultRunApplicationAction;
@@ -19,7 +18,9 @@ namespace Qweree.CommandLine.AspNet
 
         public Action<IServiceCollection> ConfigureServicesAction { get; set; }
         public Action<ConsoleApplicationBuilder> ConfigureAction { get; set; }
-        public Func<string[], Func<RequestDelegate>, CancellationToken, Task<int>> RunApplicationAction { get; set; }
+        public Func<string[], Func<IServiceProvider, RequestDelegate>, CancellationToken, Task<int>> RunApplicationAction { get; set; }
+
+        public ServiceProvider ServiceProvider => _serviceProvider ?? throw new InvalidOperationException("host is not built yet.");
 
         private void DefaultConfigureServicesAction(IServiceCollection obj)
         {
@@ -29,9 +30,10 @@ namespace Qweree.CommandLine.AspNet
         {
         }
 
-        private async Task<int> DefaultRunApplicationAction(string[] args, Func<RequestDelegate> buildApplicationFunction, CancellationToken cancellationToken = new())
+        private async Task<int> DefaultRunApplicationAction(string[] args, Func<IServiceProvider, RequestDelegate> buildApplicationFunction, CancellationToken cancellationToken = new())
         {
-            var next = buildApplicationFunction();
+            using var scope = ServiceProvider.CreateScope();
+            var next = buildApplicationFunction(scope.ServiceProvider);
             var context = new ConsoleContext
             {
                 Args = args
@@ -40,17 +42,25 @@ namespace Qweree.CommandLine.AspNet
             return context.ReturnCode;
         }
 
-        public async Task<int> RunAsync(string[] args)
+        public ConsoleHost Build()
         {
-            ConfigureServicesAction.Invoke(_serviceCollection);
-            return await RunApplicationAction(args, BuildApplication, new CancellationToken());
+            var collection = new ServiceCollection();
+            ConfigureServicesAction(collection);
+            _serviceProvider = collection.BuildServiceProvider();
+            return this;
         }
 
-        private RequestDelegate BuildApplication()
+        public async Task<int> RunAsync(string[] args)
         {
-            var provider = _serviceCollection.BuildServiceProvider();
-            using var scope = provider.CreateScope();
-            var builder = new ConsoleApplicationBuilder(scope.ServiceProvider);
+            var result = await RunApplicationAction(args, BuildApplication, new CancellationToken());
+            if (_serviceProvider != null)
+                await _serviceProvider.DisposeAsync();
+            return result;
+        }
+
+        private RequestDelegate BuildApplication(IServiceProvider serviceProvider)
+        {
+            var builder = new ConsoleApplicationBuilder(serviceProvider);
             ConfigureAction.Invoke(builder);
             return builder.Build();
         }
