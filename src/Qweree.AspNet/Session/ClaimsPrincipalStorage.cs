@@ -17,7 +17,7 @@ namespace Qweree.AspNet.Session
 
         private static User CreateUser(ClaimsPrincipal claimsPrincipal)
         {
-            var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? "";
+            var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? Guid.Empty.ToString();
             var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value ?? "anonymous";
             var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "full_name")?.Value ?? "anonymous";
             var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
