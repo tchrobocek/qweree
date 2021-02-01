@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Qweree.CommandLine.AspNet;
+using Qweree.CommandLine.AspNet.Extensions;
 
 namespace Qweree.ConsoleApplication
 {
@@ -10,11 +11,11 @@ namespace Qweree.ConsoleApplication
             var host = new ConsoleHost
             {
                 ConfigureServicesAction = Startup.ConfigureServices,
-                ConfigureAction = Startup.Configure,
-                RunApplicationAction = Startup.RunApplicationAsync
+                ConfigureAction = Startup.Configure
             };
 
-            return await host.RunAsync(args);
+            return await host.UseConsoleListener(new ConsoleListener(args))
+                .RunAsync(args);
         }
     }
 }

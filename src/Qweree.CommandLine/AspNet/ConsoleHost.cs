@@ -15,9 +15,9 @@ namespace Qweree.CommandLine.AspNet
             RunApplicationAction = DefaultConsoleListenAction;
         }
 
-        public Action<IServiceCollection>? ConfigureServicesAction { get; init; }
-        public Action<ConsoleApplicationBuilder>? ConfigureAction { get; init; }
-        public Func<string[], RequestDelegate, CancellationToken, Task<int>> RunApplicationAction { get; init; }
+        public Action<IServiceCollection>? ConfigureServicesAction { get; set; }
+        public Action<ConsoleApplicationBuilder>? ConfigureAction { get; set; }
+        public Func<string[], RequestDelegate, CancellationToken, Task<int>> RunApplicationAction { get; set; }
 
         private async Task<int> DefaultConsoleListenAction(string[] args, RequestDelegate next, CancellationToken cancellationToken = new())
         {
