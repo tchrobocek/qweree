@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.CommandLine.AspNet.CommandRouter;
-using Qweree.CommandLine.CommandRouter;
+using Qweree.CommandLine.AspNet.Commands;
+using Qweree.CommandLine.Commands;
 
 namespace Qweree.ConsoleApplication.Commands
 {

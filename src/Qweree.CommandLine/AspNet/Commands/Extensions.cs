@@ -4,14 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.CommandLine.AspNet.Extensions;
-using Qweree.CommandLine.CommandRouter;
+using Qweree.CommandLine.Commands;
 
-namespace Qweree.CommandLine.AspNet.CommandRouter
+namespace Qweree.CommandLine.AspNet.Commands
 {
     public class CommandRouterMiddleware : IMiddleware
     {
-        private readonly CommandLine.CommandRouter.CommandRouter _commandRouter;
-        public CommandRouterMiddleware(CommandLine.CommandRouter.CommandRouter commandRouter)
+        private readonly CommandRouter _commandRouter;
+        public CommandRouterMiddleware(CommandRouter commandRouter)
         {
             _commandRouter = commandRouter;
         }
@@ -34,7 +34,7 @@ namespace Qweree.CommandLine.AspNet.CommandRouter
             serviceCollection.AddScoped(p =>
             {
                 var commands = p.GetServices<ICommand>();
-                return new CommandLine.CommandRouter.CommandRouter(commands.Select(c =>
+                return new CommandRouter(commands.Select(c =>
                 {
                     var builder = new ConfigurationBuilder();
                     c.Configure(builder);
