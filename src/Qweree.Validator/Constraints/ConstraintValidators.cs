@@ -15,7 +15,8 @@ namespace Qweree.Validator.Constraints
             new MinConstraintValidator(),
             new MaxLengthConstraintValidator(),
             new MinLengthConstraintValidator(),
-            new RegexConstraintValidator()
+            new RegexConstraintValidator(),
+            new OneOfConstraintValidator()
         };
 
         /// <summary>
