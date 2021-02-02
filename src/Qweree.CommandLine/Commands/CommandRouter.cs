@@ -28,7 +28,8 @@ namespace Qweree.CommandLine.Commands
                 return -1;
             }
 
-            return await command.AsyncCommandFunc(new CommandRequest(), cancellationToken);
+            var request = CommandRequestFactory.FromArgs(args, command.Arguments, command.Options);
+            return await command.AsyncCommandFunc(request, cancellationToken);
         }
     }
 }
