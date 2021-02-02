@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -7,6 +8,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Qwill.WebApi.Domain.Publishers;
 using Qweree.Utils;
+using Qweree.Validator;
 
 namespace Qweree.Qwill.WebApi.Domain.Stories
 {
@@ -15,13 +17,15 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
         private readonly IPublicationRepository _publicationRepository;
         private readonly ISessionStorage _sessionStorage;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator _validator;
 
         public PublicationService(IPublicationRepository publicationRepository,
-            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider)
+            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IValidator validator)
         {
             _publicationRepository = publicationRepository;
             _sessionStorage = sessionStorage;
             _dateTimeProvider = dateTimeProvider;
+            _validator = validator;
         }
 
         private PublicationTranslation CreatePublicationTranslation(PublicationTranslationInput input)
@@ -35,10 +39,18 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
         {
             var user = _sessionStorage.CurrentUser;
 
-            var translations = input.Translations.Select(CreatePublicationTranslation);
+            var translations = input.Translations.Select(CreatePublicationTranslation)
+                .ToArray();
             var publication = new Publication(Guid.NewGuid(), input.ChannelId, user.Id, input.PublicationDate,
-                _dateTimeProvider.UtcNow,
-                _dateTimeProvider.UtcNow, translations.ToImmutableArray());
+                _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow, translations.ToImmutableArray());
+
+            var validationList = new List<object>(input.Translations) {input};
+            var result = await _validator.ValidateAsync(validationList, cancellationToken);
+
+            if (result.HasFailed)
+            {
+                return Response.Fail<Story>(result.Errors.Select(e => $"{e.Path} - {e.Message}"));
+            }
 
             Story story;
 
