@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
@@ -5,12 +7,12 @@ using Qweree.Validator.ModelValidation.Attributes;
 
 namespace Qweree.Validator.Constraints
 {
-    public class MaxLengthConstraintValidator : ConstraintValidatorBase<string, MaxLengthConstraint>
+    public class MaxLengthConstraintValidator : ConstraintValidatorBase<IEnumerable, MaxLengthConstraint>
     {
-        protected override Task ValidateAsync(ValidationContext<string> context, MaxLengthConstraint constraint,
+        protected override Task ValidateAsync(ValidationContext<IEnumerable> context, MaxLengthConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
-            if (context.Subject.Length > constraint.MaxLength)
+            if (context.Subject.Cast<object>().Count() > constraint.MaxLength)
                 builder.AddError(context.Path, constraint.Message);
 
             return Task.CompletedTask;

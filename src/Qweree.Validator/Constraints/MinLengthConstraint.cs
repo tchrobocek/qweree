@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Validator.ModelValidation;
@@ -5,12 +7,12 @@ using Qweree.Validator.ModelValidation.Attributes;
 
 namespace Qweree.Validator.Constraints
 {
-    public class MinLengthConstraintValidator : ConstraintValidatorBase<string, MinLengthConstraint>
+    public class MinLengthConstraintValidator : ConstraintValidatorBase<IEnumerable, MinLengthConstraint>
     {
-        protected override Task ValidateAsync(ValidationContext<string> context, MinLengthConstraint constraint,
+        protected override Task ValidateAsync(ValidationContext<IEnumerable> context, MinLengthConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
-            if (context.Subject.Length < constraint.MinLength)
+            if (context.Subject.Cast<object>().Count() < constraint.MinLength)
                 builder.AddError(context.Path, constraint.Message);
 
             return Task.CompletedTask;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,5 +23,19 @@ namespace Qweree.Validator
         /// <param name="subject">Subject.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         Task<ValidationResult> ValidateAsync(string path, object subject, CancellationToken cancellationToken = new());
+
+        /// <summary>
+        ///     Validates given subjects.
+        /// </summary>
+        /// <param name="subjects">Subjects.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<ValidationResult> ValidateAsync(IEnumerable<object> subjects, CancellationToken cancellationToken = new());
+
+        /// <summary>
+        ///     Validates given subjects.
+        /// </summary>
+        /// <param name="subjects">Subjects.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<ValidationResult> ValidateAsync(Dictionary<string, object> subjects, CancellationToken cancellationToken = new());
     }
 }

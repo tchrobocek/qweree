@@ -34,7 +34,7 @@ namespace Qweree.Validator
         }
 
         /// <summary>
-        ///     Validates given subjects.
+        ///     Validates given subject.
         /// </summary>
         /// <param name="path">Path to subject.</param>
         /// <param name="subject">Subject.</param>
@@ -46,6 +46,46 @@ namespace Qweree.Validator
 
             await ValidateModelAsync(path, subject, builder, cancellationToken)
                 .ConfigureAwait(false);
+
+            var result = builder.Build();
+            return result;
+        }
+
+        /// <summary>
+        ///     Validates given subjects.
+        /// </summary>
+        /// <param name="subjects">Subject.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public async Task<ValidationResult> ValidateAsync(IEnumerable<object> subjects,
+            CancellationToken cancellationToken = new())
+        {
+            var builder = new ValidationBuilder();
+
+            foreach (var subject in subjects)
+            {
+                await ValidateModelAsync("", subject, builder, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            var result = builder.Build();
+            return result;
+        }
+
+        /// <summary>
+        ///     Validates given subjects.
+        /// </summary>
+        /// <param name="subjects">Subject.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public async Task<ValidationResult> ValidateAsync(Dictionary<string, object> subjects,
+            CancellationToken cancellationToken = new())
+        {
+            var builder = new ValidationBuilder();
+
+            foreach (var subject in subjects)
+            {
+                await ValidateModelAsync(subject.Key, subject.Value, builder, cancellationToken)
+                    .ConfigureAwait(false);
+            }
 
             var result = builder.Build();
             return result;
