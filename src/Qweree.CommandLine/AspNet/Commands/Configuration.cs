@@ -1,10 +1,10 @@
 using System.Collections.Immutable;
 
-namespace Qweree.CommandLine.AspNet.CommandRouter
+namespace Qweree.CommandLine.AspNet.Commands
 {
-    public class CommandConfiguration
+    public class Configuration
     {
-        public CommandConfiguration(string name, string description, ImmutableArray<ArgumentConfiguration> arguments, ImmutableArray<OptionConfiguration> options)
+        public Configuration(string name, string description, ImmutableArray<ArgumentConfiguration> arguments, ImmutableArray<OptionConfiguration> options)
         {
             Name = name;
             Description = description;

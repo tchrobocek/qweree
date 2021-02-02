@@ -1,4 +1,4 @@
-namespace Qweree.CommandLine.CommandRouter
+namespace Qweree.CommandLine.Commands
 {
     public class Argument
     {

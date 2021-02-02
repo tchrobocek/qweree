@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Qweree.CommandLine.AspNet.CommandRouter
+namespace Qweree.CommandLine.AspNet.Commands
 {
     public class ConfigurationBuilder
     {
@@ -14,7 +14,7 @@ namespace Qweree.CommandLine.AspNet.CommandRouter
         public ImmutableArray<OptionConfigurationBuilder> Options { get; set; } =
             ImmutableArray<OptionConfigurationBuilder>.Empty;
 
-        public CommandConfiguration Build()
+        public Configuration Build()
         {
             return new(Name, Description, Arguments.Select(a => a.Build()).ToImmutableArray(),
                 Options.Select(o => o.Build()).ToImmutableArray());
