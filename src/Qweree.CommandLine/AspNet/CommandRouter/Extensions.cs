@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +40,9 @@ namespace Qweree.CommandLine.AspNet.CommandRouter
                     c.Configure(builder);
                     var configuration = builder.Build();
 
-                    return new Command(configuration.Name, configuration.Description, c.ExecuteAsync);
+                    var arguments = configuration.Arguments.Select(a => new Argument(a.Name, a.Order));
+                    var options = configuration.Options.Select(o => new Option(o.Name, o.ShortName));
+                    return new Command(configuration.Name, arguments.ToImmutableArray(), options.ToImmutableArray(), c.ExecuteAsync);
                 }));
             });
 
