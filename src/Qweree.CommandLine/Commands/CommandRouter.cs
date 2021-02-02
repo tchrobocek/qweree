@@ -24,8 +24,7 @@ namespace Qweree.CommandLine.Commands
 
             if (command == null)
             {
-                Console.WriteLine("Command not found.");
-                return -1;
+                throw new ArgumentException("Command was not found.");
             }
 
             var request = CommandRequestFactory.FromArgs(args, command.Arguments, command.Options);
