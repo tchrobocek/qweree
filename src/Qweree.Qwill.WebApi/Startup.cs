@@ -20,9 +20,13 @@ using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Mongo;
 using Qweree.Qwill.WebApi.Domain.Stories;
+using Qweree.Qwill.WebApi.Infrastructure;
 using Qweree.Qwill.WebApi.Infrastructure.Authentication;
 using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
 using Qweree.Utils;
+using Qweree.Validator;
+using Qweree.Validator.Extensions;
+using Qweree.Validator.ModelValidation;
 
 namespace Qweree.Qwill.WebApi
 {
@@ -158,6 +162,22 @@ namespace Qweree.Qwill.WebApi
             });
 
             services.AddAuthorization();
+
+            // Validator
+            services.AddSingleton<IValidator>(p =>
+            {
+                var validatorBuilder = new ValidatorBuilder();
+                validatorBuilder.WithModelValidator();
+                validatorBuilder.WithStaticModelSettings(ValidationMap.ConfigureValidator);
+                validatorBuilder.WithAttributeModelSettings(typeof(Program).Assembly);
+                validatorBuilder.WithDefaultConstraints();
+
+                var validators = p.GetServices<IConstraintValidator>();
+                foreach (var validator in validators)
+                    validatorBuilder.WithConstraintValidator(validator);
+
+                return validatorBuilder.Build();
+            });
 
             // _
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
