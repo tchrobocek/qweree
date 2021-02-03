@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
@@ -19,23 +20,28 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         private readonly IUserRepository _userRepository;
         private readonly IValidator _validator;
         private readonly ISessionStorage _sessionStorage;
+        private readonly IPasswordEncoder _passwordEncoder;
 
-        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator, ISessionStorage sessionStorage)
+        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator,
+            ISessionStorage sessionStorage, IPasswordEncoder passwordEncoder)
         {
             _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
             _validator = validator;
             _sessionStorage = sessionStorage;
+            _passwordEncoder = passwordEncoder;
         }
 
-        public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
             if (validationResult.HasFailed)
                 return Response.Fail<User>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
 
-            var password = EncryptPassword(userCreateInput.Password);
-            var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName, userCreateInput.ContactEmail,
+            var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
+            var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName,
+                userCreateInput.ContactEmail,
                 password, userCreateInput.Roles, _datetimeProvider.UtcNow, _datetimeProvider.UtcNow);
 
             try
@@ -50,7 +56,8 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(user);
         }
 
-        public async Task<Response<User>> FindUserAsync(Guid userId, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<Response<User>> FindUserAsync(Guid userId,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             User user;
 
@@ -60,13 +67,15 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (DocumentNotFoundException)
             {
-                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found.", StatusCodes.Status404NotFound));
+                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found.",
+                    StatusCodes.Status404NotFound));
             }
 
             return Response.Ok(user);
         }
 
-        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             Pagination<User> pagination;
 
@@ -88,6 +97,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             {
                 return Response.Fail("Cannot delete self.");
             }
+
             try
             {
                 await _userRepository.DeleteAsync(id, cancellationToken);
@@ -98,16 +108,6 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
 
             return Response.Ok();
-        }
-
-        private string EncryptPassword(string password)
-        {
-            if (password == string.Empty)
-            {
-                return string.Empty;
-            }
-
-            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }
