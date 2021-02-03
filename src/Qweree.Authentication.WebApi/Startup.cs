@@ -16,9 +16,11 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
+using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Utils;
@@ -174,7 +176,10 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<ISessionStorage>()));
+                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>()));
+
+            // Security
+            services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
