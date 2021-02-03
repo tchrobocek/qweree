@@ -8,7 +8,7 @@ using Qweree.Mongo;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
-namespace Qweree.Authentication.WebApi.Test.Infrastructure.Infrastructure.Authentication
+namespace Qweree.Authentication.WebApi.Test.Infrastructure.Authentication
 {
     [Collection("Database collection")]
     [Trait("Category", "Integration test")]

@@ -4,7 +4,7 @@ using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Xunit;
 
-namespace Qweree.Authentication.WebApi.Test.Infrastructure.Infrastructure.Authentication
+namespace Qweree.Authentication.WebApi.Test.Infrastructure.Authentication
 {
     [Trait("Category", "Unit test")]
     public class RefreshTokenMapperTest
