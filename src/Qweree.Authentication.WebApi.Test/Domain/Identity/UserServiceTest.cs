@@ -7,6 +7,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.TestUtils;
 using Qweree.TestUtils.Qweree.Validator;
@@ -25,7 +26,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Identity
             var now = DateTime.UtcNow;
 
             var userRepositoryMock = new Mock<IUserRepository>();
-            var service = new UserService(new StaticDateTimeProvider(now), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object);
+            var service = new UserService(new StaticDateTimeProvider(now), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object, new NilPasswordEncoder());
             var input = new UserCreateInput("username", "email", "full name", "password", new[] {"Role"});
             var response = await service.CreateUserAsync(input);
             Assert.Equal(ResponseStatus.Ok, response.Status);
@@ -35,8 +36,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Identity
             Assert.Equal("username", user?.Username);
             Assert.Equal("email", user?.ContactEmail);
             Assert.Equal("full name", user?.FullName);
-            Assert.NotEmpty(user?.Password ?? "");
-            Assert.NotEqual("password", user?.Password);
+            Assert.Equal("password", user?.Password);
             Assert.NotEqual(Guid.Empty, user?.Id);
             Assert.Equal(now, user?.CreatedAt);
             Assert.Equal(now, user?.ModifiedAt);
@@ -52,12 +52,25 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Identity
             userRepositoryMock.Setup(m => m.InsertAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
                 .Callback(() => throw new InsertDocumentException());
 
-            var service = new UserService(new DateTimeProvider(), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object);
+            var service = new UserService(new DateTimeProvider(), userRepositoryMock.Object, new EmptyValidator(), new Mock<ISessionStorage>().Object, new NilPasswordEncoder());
             var input = new UserCreateInput("username", "email", "full name", "password", Array.Empty<string>());
             var response = await service.CreateUserAsync(input);
             Assert.Equal(ResponseStatus.Fail, response.Status);
             Assert.Null(response.Payload);
             Assert.Single(response.Errors);
+        }
+
+        private class NilPasswordEncoder : IPasswordEncoder
+        {
+            public string EncodePassword(string password)
+            {
+                return password;
+            }
+
+            public bool VerifyPassword(string hash, string raw)
+            {
+                return hash == raw;
+            }
         }
     }
 }
