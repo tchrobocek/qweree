@@ -203,6 +203,7 @@ namespace Qweree.Qwill.WebApi
             // Qwill
             services.AddSingleton<IChannelRepository, ChannelRepository>();
             services.AddSingleton<IPublicationRepository, PublicationRepository>();
+            services.AddScoped<ChannelService>();
             services.AddScoped<PublicationService>();
             services.AddScoped<FeedService>();
         }
