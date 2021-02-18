@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Qweree.Mongo;
 using Qweree.Qwill.WebApi.Domain.Publishers;
 
@@ -26,5 +29,11 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Publishers
             channel.Id ?? Guid.Empty, channel.ChannelName ?? "", channel.Authors.ToImmutableArray(),
             channel.OwnerId ?? Guid.Empty, channel.CreationDate ?? DateTime.MinValue,
             channel.LastModificationDate ?? DateTime.MinValue);
+
+        public Task<IEnumerable<Channel>> FindUserAuthorAsync(Guid userId, CancellationToken cancellationToken = new())
+        {
+            var query = $@"{{""Authors"": {{""$in"": [UUID(""{userId}"")]}}}}";
+            return FindAsync(query, cancellationToken);
+        }
     }
 }
