@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
@@ -12,6 +13,7 @@ using Qweree.Sdk;
 namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
 {
     [ApiController]
+    [Authorize]
     [Route("/api/v1/publication/channels")]
     public class ChannelController : ControllerBase
     {
