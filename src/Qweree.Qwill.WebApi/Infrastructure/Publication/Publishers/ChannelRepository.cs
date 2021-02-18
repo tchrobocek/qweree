@@ -6,7 +6,7 @@ using Qweree.Qwill.WebApi.Domain.Publishers;
 
 namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Publishers
 {
-    public class ChannelRepository : MongoRepositoryBase<Channel, ChannelDo>
+    public class ChannelRepository : MongoRepositoryBase<Channel, ChannelDo>, IChannelRepository
     {
         public ChannelRepository(MongoContext context) : base("channels", context)
         {
