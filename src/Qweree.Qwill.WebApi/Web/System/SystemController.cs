@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Qweree.Qwill.WebApi.Domain.Publishers;
 using Qweree.Qwill.WebApi.Domain.Stories;
+using Qweree.Qwill.WebApi.Infrastructure.Publication.Publishers;
 using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
 
 namespace Qweree.Qwill.WebApi.Web.System
@@ -15,11 +17,13 @@ namespace Qweree.Qwill.WebApi.Web.System
     {
         private readonly HealthCheckService _healthCheckService;
         private readonly IPublicationRepository _publicationRepository;
+        private readonly IChannelRepository _channelRepository;
 
-        public SystemController(HealthCheckService healthCheckService, IPublicationRepository publicationRepository)
+        public SystemController(HealthCheckService healthCheckService, IPublicationRepository publicationRepository, IChannelRepository channelRepository)
         {
             _healthCheckService = healthCheckService;
             _publicationRepository = publicationRepository;
+            _channelRepository = channelRepository;
         }
 
         /// <summary>
@@ -67,9 +71,13 @@ namespace Qweree.Qwill.WebApi.Web.System
                 number = 100;
             }
 
+            var channel = ChannelMockFactory.CreateChannel();
+            await _channelRepository.InsertAsync(channel);
+
             for (var i = 0; i < number; i++)
             {
-                var publication = PublicationMockFactory.CreatePublication();
+
+                var publication = PublicationMockFactory.CreatePublication(channel.Id);
                 await _publicationRepository.InsertAsync(publication);
             }
 
