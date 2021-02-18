@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
         /// </summary>
         /// <returns>Channel collection.</returns>
         [HttpGet]
+        [Route("own")]
         [ProducesResponseType(typeof(List<ChannelDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetOwnChannelsActionAsyncAsync()
@@ -36,6 +38,24 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
                 return BadRequest(response.ToErrorResponseDto());
 
             return Ok(response.Payload?.Select(ChannelMapper.ToDto));
+        }
+
+        /// <summary>
+        ///    Creates channel and sets current user as owner.
+        /// </summary>
+        /// <returns>Created channel.</returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(ChannelDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ChannelCreateActionAsync(ChannelInputDto inputDto)
+        {
+            var input = new ChannelCreateInput(inputDto.ChannelName ?? string.Empty);
+            var response = await _channelService.CreateAsync(input);
+
+            if (response.Status != ResponseStatus.Ok)
+                return BadRequest(response.ToErrorResponseDto());
+
+            return Created($"/api/v1/publication/channels/{response.Payload?.Id}", ChannelMapper.ToDto(response.Payload ?? throw new ArgumentNullException(nameof(response.Payload))));
         }
     }
 }
