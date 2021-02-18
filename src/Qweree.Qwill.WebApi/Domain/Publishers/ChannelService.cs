@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
+using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
 
@@ -48,6 +49,20 @@ namespace Qweree.Qwill.WebApi.Domain.Publishers
                 _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
             await _channelRepository.InsertAsync(channel, cancellationToken);
             return Response.Ok(channel);
+        }
+
+        public async Task<Response<Channel>> GetAsync(Guid id,
+            CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                var channel = await _channelRepository.GetAsync(id, cancellationToken);
+                return Response.Ok(channel);
+            }
+            catch (DocumentNotFoundException)
+            {
+                return Response.Fail<Channel>(new Error("Channel was not found.", 404));
+            }
         }
     }
 }

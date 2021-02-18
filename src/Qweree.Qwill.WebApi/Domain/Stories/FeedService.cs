@@ -39,5 +39,28 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
 
             return Response.Ok((IEnumerable<Story>)stories);
         }
+
+        public async Task<CollectionResponse<Story>> GetChannelFeedAsync(Guid channelId, int skip, int take, CancellationToken cancellationToken = new())
+        {
+            IEnumerable<Publication> publications;
+
+            try
+            {
+                publications = await _publicationRepository.FindForChannelAsync(channelId, skip, take, new Dictionary<string, int>{{"CreationDate", -1}}, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.FailCollection<Story>("Failed to load feed.");
+            }
+
+            var stories = new List<Story>();
+
+            foreach (var publication in publications)
+            {
+                stories.Add(await _publicationService.ToStoryAsync(publication, cancellationToken));
+            }
+
+            return Response.Ok((IEnumerable<Story>)stories);
+        }
     }
 }
