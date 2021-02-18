@@ -19,9 +19,11 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Mongo;
+using Qweree.Qwill.WebApi.Domain.Publishers;
 using Qweree.Qwill.WebApi.Domain.Stories;
 using Qweree.Qwill.WebApi.Infrastructure;
 using Qweree.Qwill.WebApi.Infrastructure.Authentication;
+using Qweree.Qwill.WebApi.Infrastructure.Publication.Publishers;
 using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -199,6 +201,7 @@ namespace Qweree.Qwill.WebApi
             });
 
             // Qwill
+            services.AddSingleton<IChannelRepository, ChannelRepository>();
             services.AddSingleton<IPublicationRepository, PublicationRepository>();
             services.AddScoped<PublicationService>();
             services.AddScoped<FeedService>();

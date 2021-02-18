@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 
@@ -17,20 +17,27 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             _publicationService = publicationService;
         }
 
-        public async Task<CollectionResponse<Story>> GetHomeFeedAsync(int skip, int take)
+        public async Task<CollectionResponse<Story>> GetHomeFeedAsync(int skip, int take, CancellationToken cancellationToken = new())
         {
             IEnumerable<Publication> publications;
 
             try
             {
-                publications = await _publicationRepository.FindAsync(skip, take, new Dictionary<string, int>{{"CreationDate", -1}});
+                publications = await _publicationRepository.FindAsync(skip, take, new Dictionary<string, int>{{"CreationDate", -1}}, cancellationToken);
             }
             catch (Exception)
             {
                 return Response.FailCollection<Story>("Failed to load feed.");
             }
 
-            return Response.Ok(publications.Select(_publicationService.ToStory));
+            var stories = new List<Story>();
+
+            foreach (var publication in publications)
+            {
+                stories.Add(await _publicationService.ToStoryAsync(publication, cancellationToken));
+            }
+
+            return Response.Ok((IEnumerable<Story>)stories);
         }
     }
 }

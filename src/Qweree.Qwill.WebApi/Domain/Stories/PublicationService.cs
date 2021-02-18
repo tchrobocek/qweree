@@ -18,14 +18,16 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
         private readonly ISessionStorage _sessionStorage;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IValidator _validator;
+        private readonly IChannelRepository _channelRepository;
 
         public PublicationService(IPublicationRepository publicationRepository,
-            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IValidator validator)
+            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IValidator validator, IChannelRepository channelRepository)
         {
             _publicationRepository = publicationRepository;
             _sessionStorage = sessionStorage;
             _dateTimeProvider = dateTimeProvider;
             _validator = validator;
+            _channelRepository = channelRepository;
         }
 
         private PublicationTranslation CreatePublicationTranslation(PublicationTranslationInput input)
@@ -56,7 +58,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
 
             try
             {
-                story = ToStory(publication);
+                story = await ToStoryAsync(publication, cancellationToken);
             }
             catch (Exception e)
             {
@@ -90,7 +92,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             Story story;
             try
             {
-                story = ToStory(publication);
+                story = await ToStoryAsync(publication, cancellationToken);
             }
             catch (Exception e)
             {
@@ -100,8 +102,19 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             return Response.Ok(story);
         }
 
-        public Story ToStory(Publication publication)
+        public async Task<Story> ToStoryAsync(Publication publication, CancellationToken cancellationToken = new())
         {
+            Channel channel;
+
+            try
+            {
+                channel = await _channelRepository.GetAsync(publication.ChannelId, cancellationToken);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException($@"Channel ""{publication.ChannelId}"" was not found.");
+            }
+
             var translation = publication.Translations.FirstOrDefault(t => t.Language == "en");
 
             if (translation == null)
@@ -116,7 +129,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
                 }
             }
 
-            var author = new Author(publication.UserId, "user", publication.ChannelId, "channel");
+            var author = new Author(publication.UserId, "user", publication.ChannelId, channel.ChannelName);
 
             var publicationDate = publication.PublicationDate;
 
