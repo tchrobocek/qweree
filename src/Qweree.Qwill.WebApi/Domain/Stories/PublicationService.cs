@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
+using Qweree.Qwill.WebApi.Domain.Commentary;
 using Qweree.Qwill.WebApi.Domain.Publishers;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -19,15 +20,18 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IValidator _validator;
         private readonly IChannelRepository _channelRepository;
+        private readonly ICommentRepository _commentRepository;
 
         public PublicationService(IPublicationRepository publicationRepository,
-            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IValidator validator, IChannelRepository channelRepository)
+            ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IValidator validator,
+            IChannelRepository channelRepository, ICommentRepository commentRepository)
         {
             _publicationRepository = publicationRepository;
             _sessionStorage = sessionStorage;
             _dateTimeProvider = dateTimeProvider;
             _validator = validator;
             _channelRepository = channelRepository;
+            _commentRepository = commentRepository;
         }
 
         private PublicationTranslation CreatePublicationTranslation(PublicationTranslationInput input)
@@ -136,7 +140,28 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             if (publicationDate == DateTime.MinValue)
                 publicationDate = publication.CreationDate;
 
-            return new(publication.Id, translation.Title, translation.LeadParagraph, translation.HeaderImageSlug, translation.Language, author, publicationDate, translation.Pages);
+            return new(publication.Id, translation.Title, translation.LeadParagraph, translation.HeaderImageSlug,
+                translation.Language, author, publicationDate, translation.Pages);
+        }
+
+        public async Task<Response> AddCommentAsync(Guid id, CommentInput input,
+            CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                await _publicationRepository.GetAsync(id, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.Fail<Story>(new Error("Story was not found.", 404));
+            }
+
+            var comment = new Comment(Guid.NewGuid(), id, _sessionStorage.CurrentUser.Id, CommentSubjectType.Story,
+                input.Text, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
+
+            await _commentRepository.InsertAsync(comment, cancellationToken);
+
+            return Response.Ok();
         }
     }
 }
