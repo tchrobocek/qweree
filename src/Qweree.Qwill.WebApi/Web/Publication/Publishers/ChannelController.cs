@@ -13,7 +13,6 @@ using Qweree.Sdk;
 namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
 {
     [ApiController]
-    [Authorize]
     [Route("/api/v1/publication/channels")]
     public class ChannelController : ControllerBase
     {
@@ -25,9 +24,29 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
         }
 
         /// <summary>
+        ///    Returns channel
+        /// </summary>
+        /// <returns>Channel collection.</returns>
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(typeof(ChannelDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetChannelAsync(Guid id)
+        {
+            var response = await _channelService.GetChannelAsync(id);
+
+            if (response.Status != ResponseStatus.Ok)
+                return response.ToErrorActionResult();
+
+            return Ok(ChannelMapper.ToDto(response.Payload!));
+        }
+
+        /// <summary>
         ///    Returns channels collection where current user is author.
         /// </summary>
         /// <returns>Channel collection.</returns>
+        [Authorize]
         [HttpGet]
         [Route("own")]
         [ProducesResponseType(typeof(List<ChannelDto>), StatusCodes.Status200OK)]
@@ -46,6 +65,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Publishers
         ///    Creates channel and sets current user as owner.
         /// </summary>
         /// <returns>Created channel.</returns>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(ChannelDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]

@@ -34,6 +34,19 @@ namespace Qweree.Qwill.WebApi.Domain.Publishers
             return Response.Ok(channels);
         }
 
+        public async Task<Response<Channel>> GetChannelAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                var channel = await _channelRepository.GetAsync(id, cancellationToken);
+                return Response.Ok(channel);
+            }
+            catch (DocumentNotFoundException)
+            {
+                return Response.Fail<Channel>(new Error("Channel not found.", 404));
+            }
+        }
+
         public async Task<Response<Channel>> CreateAsync(ChannelCreateInput input,
             CancellationToken cancellationToken = new())
         {
