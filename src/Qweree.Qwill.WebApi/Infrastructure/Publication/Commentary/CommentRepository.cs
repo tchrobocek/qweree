@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Qweree.Mongo;
 using Qweree.Qwill.WebApi.Domain.Commentary;
 
@@ -29,5 +31,11 @@ namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Commentary
             document.Text ?? "",
             document.CreationDate ?? DateTime.MinValue,
             document.ModificationDate ?? DateTime.MinValue);
+
+        public async Task<Pagination<Comment>> PaginateBySubjectAsync(Guid subjectId, int skip, int take, CancellationToken cancellationToken)
+        {
+            var query = @$"{{""SubjectId"": UUID(""{subjectId}"")}}";
+            return await PaginateAsync(query, skip, take, cancellationToken);
+        }
     }
 }

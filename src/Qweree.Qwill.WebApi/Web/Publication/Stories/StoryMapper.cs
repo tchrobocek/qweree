@@ -12,24 +12,13 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
             return new StoryDto
             {
                 Id = story.Id,
-                Author = ToDto(story.Author),
+                Author = AuthorMapper.ToDto(story.Author),
                 Language = story.Language,
                 Pages = story.Pages.ToList(),
                 Title = story.Title,
                 LeadImage = story.LeadImage,
                 LeadParagraph = story.LeadParagraph,
                 PublishedAt = story.PublishedAt
-            };
-        }
-
-        private static AuthorDto ToDto(Author author)
-        {
-            return new()
-            {
-                Id = author.Id,
-                Name = author.Name,
-                ChannelId = author.ChannelId,
-                ChannelName = author.ChannelName
             };
         }
     }
