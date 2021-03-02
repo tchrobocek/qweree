@@ -25,6 +25,12 @@ namespace Qweree.Qwill.WebApi.Infrastructure
                 model.AddProperty(p => p.ChannelName)
                     .AddConstraint(new MinLengthConstraint(3, "Channel name has to be at least 3 chars long."));
             });
+
+            builder.AddModel<CommentInput>(model =>
+            {
+                model.AddProperty(p => p.Text)
+                    .AddConstraint(new MinLengthConstraint(1, "Comment cannot be empty."));
+            });
         }
     }
 }

@@ -69,13 +69,14 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         [Authorize]
         [HttpPost("{id}/commentary")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> StoryPostCommentActionAsync(Guid id, CommentInputDto input)
         {
             var response = await _publicationService.AddCommentAsync(id, new CommentInput(input.Text ?? string.Empty));
 
             if (response.Status != ResponseStatus.Ok)
-                return BadRequest(response.ToErrorResponseDto());
+                response.ToErrorActionResult();
 
             return NoContent();
         }
@@ -87,7 +88,8 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
         /// <param name="take">How many items should be returned. Default: 10</param>
         [HttpGet("{id}/commentary")]
-        [ProducesResponseType(typeof(Comment[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CommentSubjectType[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> StoryGetCommentsActionAsync(Guid id,
             [FromQuery(Name = "skip")] int skip = 0,
@@ -96,7 +98,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
             var response = await _publicationService.PaginateCommentsAsync(id, skip, take);
 
             if (response.Status != ResponseStatus.Ok)
-                return BadRequest(response.ToErrorResponseDto());
+                return response.ToErrorActionResult();
 
             return Ok(response.Payload?.Select(SubjectCommentMapper.ToDto) ?? throw new ArgumentNullException());
         }
