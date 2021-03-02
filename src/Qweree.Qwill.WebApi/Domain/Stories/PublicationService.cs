@@ -156,6 +156,14 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
                 return Response.Fail(new Error("Story was not found.", 404));
             }
 
+            var result = await _validator.ValidateAsync(input, cancellationToken);
+
+            if (result.HasFailed)
+            {
+                return Response.Fail(result.Errors.Select(e => $"{e.Path} - {e.Message}"));
+            }
+
+
             var comment = new Comment(Guid.NewGuid(), id, _sessionStorage.CurrentUser.Id, CommentSubjectType.Story,
                 input.Text, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
