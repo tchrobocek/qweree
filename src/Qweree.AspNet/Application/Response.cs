@@ -102,6 +102,30 @@ namespace Qweree.AspNet.Application
         {
             return new(ResponseStatus.Fail, null, errors.Select(e => new Error(e)), 0L);
         }
+
+        public static CollectionResponse<TPayloadType> FailCollection<TPayloadType>(IEnumerable<string> errors)
+            where TPayloadType : class
+        {
+            return new(ResponseStatus.Fail, null, errors.Select(e => new Error(e)));
+        }
+
+        public static PaginationResponse<TPayloadType> FailPagination<TPayloadType>(IEnumerable<string> errors)
+            where TPayloadType : class
+        {
+            return new(ResponseStatus.Fail, null, errors.Select(e => new Error(e)), 0L);
+        }
+
+        public static CollectionResponse<TPayloadType> FailCollection<TPayloadType>(params Error[] errors)
+            where TPayloadType : class
+        {
+            return new(ResponseStatus.Fail, null, errors);
+        }
+
+        public static PaginationResponse<TPayloadType> FailPagination<TPayloadType>(params Error[] errors)
+            where TPayloadType : class
+        {
+            return new(ResponseStatus.Fail, null, errors, 0L);
+        }
     }
 
     public class Response<TPayloadType> : Response where TPayloadType : class

@@ -29,7 +29,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         ///     Load home feed.
         /// </summary>
         /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
-        /// <param name="take">How many items should be returned. Default: 100</param>
+        /// <param name="take">How many items should be returned. Default: 10</param>
         /// <returns>Returns story feed.</returns>
         [HttpGet]
         [Route("home")]

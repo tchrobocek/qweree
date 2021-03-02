@@ -1,12 +1,15 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
+using Qweree.Qwill.WebApi.Domain.Commentary;
 using Qweree.Qwill.WebApi.Domain.Stories;
 using Qweree.Qwill.WebApi.Infrastructure.Publication.Stories;
+using Qweree.Qwill.WebApi.Web.Publication.Commentary;
 using Qweree.Sdk;
 
 namespace Qweree.Qwill.WebApi.Web.Publication.Stories
@@ -63,6 +66,7 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
         /// </summary>
         /// <param name="id">Id.</param>
         /// <param name="input">Comment input</param>
+        [Authorize]
         [HttpPost("{id}/commentary")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
@@ -74,6 +78,27 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
                 return BadRequest(response.ToErrorResponseDto());
 
             return NoContent();
+        }
+
+        /// <summary>
+        ///     Paginate commentary.
+        /// </summary>
+        /// <param name="id">Id.</param>
+        /// <param name="skip">How many items should lookup to database skip. Default: 0</param>
+        /// <param name="take">How many items should be returned. Default: 10</param>
+        [HttpGet("{id}/commentary")]
+        [ProducesResponseType(typeof(Comment[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> StoryGetCommentsActionAsync(Guid id,
+            [FromQuery(Name = "skip")] int skip = 0,
+            [FromQuery(Name = "take")] int take = 10)
+        {
+            var response = await _publicationService.PaginateCommentsAsync(id, skip, take);
+
+            if (response.Status != ResponseStatus.Ok)
+                return BadRequest(response.ToErrorResponseDto());
+
+            return Ok(response.Payload?.Select(SubjectCommentMapper.ToDto) ?? throw new ArgumentNullException());
         }
     }
 }

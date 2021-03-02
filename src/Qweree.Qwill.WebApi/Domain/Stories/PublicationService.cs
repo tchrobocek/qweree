@@ -153,7 +153,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             }
             catch (Exception)
             {
-                return Response.Fail<Story>(new Error("Story was not found.", 404));
+                return Response.Fail(new Error("Story was not found.", 404));
             }
 
             var comment = new Comment(Guid.NewGuid(), id, _sessionStorage.CurrentUser.Id, CommentSubjectType.Story,
@@ -162,6 +162,35 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             await _commentRepository.InsertAsync(comment, cancellationToken);
 
             return Response.Ok();
+        }
+
+        public async Task<PaginationResponse<SubjectComment>> PaginateCommentsAsync(Guid id, int skip, int take,
+            CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                await _publicationRepository.GetAsync(id, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.FailPagination<SubjectComment>(new Error("Story was not found.", 404));
+            }
+
+            var result = await _commentRepository.PaginateBySubjectAsync(id, skip, take, cancellationToken);
+            var comments = new List<SubjectComment>();
+            foreach (var comment in result.Documents)
+            {
+                comments.Add(await ToSubjectCommentAsync(comment, cancellationToken));
+            }
+            return Response.Ok(comments, result.TotalCount);
+        }
+
+        private Task<SubjectComment> ToSubjectCommentAsync(Comment comment, CancellationToken cancellationToken = new())
+        {
+            var channelId = Guid.Empty;
+            var channelName = string.Empty;
+            var author = new Author(comment.UserId, "inkognito", channelId, channelName);
+            return Task.FromResult(new SubjectComment(comment.Id, author, comment.Text, comment.CreationDate));
         }
     }
 }
