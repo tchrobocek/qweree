@@ -1,13 +1,12 @@
 using System;
 using Qweree.Mongo;
 using Qweree.Qwill.WebApi.Domain.Commentary;
-using Qweree.Qwill.WebApi.Domain.Persistence;
 
 namespace Qweree.Qwill.WebApi.Infrastructure.Publication.Commentary
 {
     public class CommentRepository : MongoRepositoryBase<Comment, CommentDo>, ICommentRepository
     {
-        public CommentRepository(string collectionName, MongoContext context) : base(collectionName, context)
+        public CommentRepository(MongoContext context) : base("comments", context)
         {
         }
 

@@ -57,5 +57,23 @@ namespace Qweree.Qwill.WebApi.Web.Publication.Stories
             var storyDto = StoryMapper.ToDto(response.Payload ?? throw new InvalidOperationException("Empty payload."));
             return Created($"/api/v1/publication/stories/{storyDto.Id}", storyDto);
         }
+
+        /// <summary>
+        ///     Add commentary.
+        /// </summary>
+        /// <param name="id">Id.</param>
+        /// <param name="input">Comment input</param>
+        [HttpPost("{id}/commentary")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> StoryPostCommentActionAsync(Guid id, CommentInputDto input)
+        {
+            var response = await _publicationService.AddCommentAsync(id, new CommentInput(input.Text ?? string.Empty));
+
+            if (response.Status != ResponseStatus.Ok)
+                return BadRequest(response.ToErrorResponseDto());
+
+            return NoContent();
+        }
     }
 }
