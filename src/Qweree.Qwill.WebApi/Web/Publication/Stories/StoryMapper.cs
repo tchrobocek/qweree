@@ -1,5 +1,4 @@
 using System.Linq;
-using Qweree.Qwill.WebApi.Domain.Publishers;
 using Qweree.Qwill.WebApi.Domain.Stories;
 using Qweree.Qwill.WebApi.Web.Publication.Publishers;
 

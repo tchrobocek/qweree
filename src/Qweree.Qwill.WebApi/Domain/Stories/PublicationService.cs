@@ -193,6 +193,7 @@ namespace Qweree.Qwill.WebApi.Domain.Stories
             return Response.Ok(comments, result.TotalCount);
         }
 
+        // ReSharper disable once UnusedParameter.Local
         private Task<SubjectComment> ToSubjectCommentAsync(Comment comment, CancellationToken cancellationToken = new())
         {
             var channelId = Guid.Empty;
