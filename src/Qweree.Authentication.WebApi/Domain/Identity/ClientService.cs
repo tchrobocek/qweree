@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,30 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
 
             return Response.Ok(client);
+        }
+
+        public async Task<Response<Client>> GetClientAsync(Guid id,
+            CancellationToken cancellationToken = new())
+        {
+            Client client;
+
+            try
+            {
+                client = await _clientRepository.GetAsync(id, cancellationToken);
+            }
+            catch (DocumentNotFoundException)
+            {
+                return Response.Fail<Client>(new Error("Client was not found", 404));
+            }
+
+            return Response.Ok(client);
+        }
+
+        public async Task<PaginationResponse<Client>> PaginateClients(int skip, int take, Dictionary<string, int> sort,
+            CancellationToken cancellationToken = new())
+        {
+            var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
+            return Response.Ok(pagination.Documents, pagination.TotalCount);
         }
     }
 }
