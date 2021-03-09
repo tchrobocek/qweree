@@ -20,7 +20,8 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IClientRepository _clientRepository;
 
-        public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, ISessionStorage sessionStorage, IDateTimeProvider dateTimeProvider, IClientRepository clientRepository)
+        public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, ISessionStorage sessionStorage,
+            IDateTimeProvider dateTimeProvider, IClientRepository clientRepository)
         {
             _validator = validator;
             _passwordEncoder = passwordEncoder;
@@ -37,7 +38,9 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<Client>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
 
             var secret = _passwordEncoder.EncodePassword(clientCreateInput.ClientSecret);
-            var client = new Client(Guid.NewGuid(), clientCreateInput.ClientId, secret, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow, _sessionStorage.CurrentUser.Id);
+            var client = new Client(Guid.NewGuid(), clientCreateInput.ClientId, secret,
+                clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+                _sessionStorage.CurrentUser.Id);
 
             try
             {
