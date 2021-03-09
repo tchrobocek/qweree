@@ -128,6 +128,9 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("UserDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_DELETE"));
                 options.AddPolicy("UserReadPersonalDetail",
                     policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ_PERSONAL_DETAIL"));
+                options.AddPolicy("ClientCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_CREATE"));
+                options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_READ"));
+                options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_DELETE"));
             });
 
             // Validator
@@ -180,11 +183,14 @@ namespace Qweree.Authentication.WebApi
                 p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IClientRepository, ClientRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>()));
-
+            services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
+                p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<ISessionStorage>(),
+                p.GetRequiredService<IDateTimeProvider>(), p.GetRequiredService<IClientRepository>()));
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
         }
