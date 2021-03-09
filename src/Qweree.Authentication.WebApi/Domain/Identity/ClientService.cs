@@ -48,10 +48,12 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (InsertDocumentException)
             {
-                return Response.Fail<Client>("Client is duplicate.s");
+                return Response.Fail<Client>("Client is a duplicate.");
             }
 
-            return Response.Ok(client);
+            return Response.Ok(new Client(client.Id, clientCreateInput.ClientId, clientCreateInput.ClientSecret,
+                    clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+                    _sessionStorage.CurrentUser.Id));
         }
 
         public async Task<Response<Client>> GetClientAsync(Guid id,
