@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
-using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
+using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity
 {
@@ -21,23 +22,25 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         private readonly IValidator _validator;
         private readonly ISessionStorage _sessionStorage;
         private readonly IPasswordEncoder _passwordEncoder;
+        private readonly SdkMapperService _sdkMapperService;
 
         public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator,
-            ISessionStorage sessionStorage, IPasswordEncoder passwordEncoder)
+            ISessionStorage sessionStorage, IPasswordEncoder passwordEncoder, SdkMapperService sdkMapperService)
         {
             _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
             _validator = validator;
             _sessionStorage = sessionStorage;
             _passwordEncoder = passwordEncoder;
+            _sdkMapperService = sdkMapperService;
         }
 
-        public async Task<Response<User>> CreateUserAsync(UserCreateInput userCreateInput,
+        public async Task<Response<SdkUser>> CreateUserAsync(UserCreateInput userCreateInput,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<User>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
+                return Response.Fail<SdkUser>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
 
             var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
             var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName,
@@ -50,13 +53,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (InsertDocumentException)
             {
-                return Response.Fail<User>("User is duplicate.s");
+                return Response.Fail<SdkUser>("User is duplicate.");
             }
 
-            return Response.Ok(user);
+            return Response.Ok(_sdkMapperService.MapUser(user));
         }
 
-        public async Task<Response<User>> FindUserAsync(Guid userId, CancellationToken cancellationToken = new())
+        public async Task<Response<SdkUser>> GetUserAsync(Guid userId, CancellationToken cancellationToken = new())
         {
             User user;
 
@@ -66,14 +69,14 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (DocumentNotFoundException)
             {
-                return Response.Fail<User>(new Error($@"User ""{userId}"" was not found.",
+                return Response.Fail<SdkUser>(new Error($@"User ""{userId}"" was not found.",
                     StatusCodes.Status404NotFound));
             }
 
-            return Response.Ok(user);
+            return Response.Ok(_sdkMapperService.MapUser(user));
         }
 
-        public async Task<PaginationResponse<User>> FindUsersAsync(FindUsersInput input,
+        public async Task<PaginationResponse<SdkUser>> FindUsersAsync(FindUsersInput input,
             CancellationToken cancellationToken = new())
         {
             Pagination<User> pagination;
@@ -84,10 +87,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
             catch (Exception e)
             {
-                return Response.FailPagination<User>(e.Message);
+                return Response.FailPagination<SdkUser>(e.Message);
             }
 
-            return Response.Ok(pagination.Documents, pagination.TotalCount);
+            return Response.Ok(pagination.Documents.Select(_sdkMapperService.MapUser), pagination.TotalCount);
         }
 
         public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new())

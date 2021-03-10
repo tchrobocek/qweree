@@ -8,7 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
-using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
@@ -16,8 +17,8 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
-using User = Qweree.Authentication.Sdk.Identity.User;
-using UserMapper = Qweree.Authentication.Sdk.Identity.UserMapper;
+using User = Qweree.Authentication.AdminSdk.Identity.Users.User;
+using UserMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserMapper;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity
 {
@@ -27,6 +28,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
     public class UserControllerTest : IClassFixture<WebApiFactory>
     {
         private readonly UserRepository _userRepository;
+        private readonly SdkMapperService _sdkMapperService;
         private readonly WebApiFactory _webApiFactory;
 
         public UserControllerTest(WebApiFactory webApiFactory)
@@ -34,6 +36,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             _webApiFactory = webApiFactory;
 
             using var scope = webApiFactory.Services.CreateScope();
+            _sdkMapperService = scope.ServiceProvider.GetRequiredService<SdkMapperService>();
             _userRepository = (UserRepository) scope.ServiceProvider.GetRequiredService<IUserRepository>();
             _userRepository.DeleteAllAsync()
                 .GetAwaiter()
@@ -58,7 +61,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             {
                 var json = JsonUtils.Serialize(input);
-                var response = await client.PostAsync("/api/v1/identity/users",
+                var response = await client.PostAsync("/api/admin/identity/users",
                     new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json));
                 response.EnsureSuccessStatusCode();
                 user = await response.Content.ReadAsObjectAsync<UserDto>() ?? throw new ArgumentNullException();
@@ -69,7 +72,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             }
 
             {
-                var response = await client.GetAsync($"/api/v1/identity/users/{user!.Id}");
+                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
                 var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
@@ -87,7 +90,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             for (var i = 0; i < 10; i++)
             {
                 var user = UserFactory.CreateDefault($"{i}user");
-                usersList.Add(new User(user.Id, user.Username, user.Roles));
+                usersList.Add(_sdkMapperService.MapUser(user));
                 await _userRepository.InsertAsync(user);
             }
 
@@ -97,12 +100,14 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 await _webApiFactory.CreateAuthenticatedClientAsync(UserFactory.CreateAdmin(), UserFactory.Password);
 
             {
-                var response = await client.GetAsync("/api/v1/identity/users?sort[Username]=1&skip=2&take=3");
+                var response = await client.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
                 response.EnsureSuccessStatusCode();
                 var userDtos = await response.Content.ReadAsObjectAsync<UserDto[]>();
                 var users = userDtos!.Select(UserMapper.FromDto);
 
-                users.ShouldDeepEqual(usersList.Skip(2).Take(3));
+                users.WithDeepEqual(usersList.Skip(2).Take(3))
+                    .WithCustomComparison(new MillisecondDateTimeComparison())
+                    .Assert();
             }
         }
 
@@ -116,17 +121,17 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             await _userRepository.InsertAsync(user);
 
             {
-                var response = await client.GetAsync($"/api/v1/identity/users/{user!.Id}");
+                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await client.DeleteAsync($"/api/v1/identity/users/{user!.Id}");
+                var response = await client.DeleteAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await client.GetAsync($"/api/v1/identity/users/{user!.Id}");
+                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }

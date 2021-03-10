@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Qweree.Authentication.Sdk.Authentication;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.Sdk.Test.Fixture;
 using Xunit;

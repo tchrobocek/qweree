@@ -1,4 +1,4 @@
-using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Validator.Constraints;

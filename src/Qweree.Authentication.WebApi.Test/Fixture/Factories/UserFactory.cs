@@ -17,7 +17,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture.Factories
         {
             return new(Guid.NewGuid(), "user", "User Userov", "user@example.com",
                 BCrypt.Net.BCrypt.HashPassword(Password),
-                new[] {"AUTH_USERS_CREATE", "AUTH_USERS_READ", "AUTH_USERS_DELETE"}, DateTime.UtcNow, DateTime.UtcNow);
+                new[] {"AUTH_USERS_CREATE", "AUTH_USERS_READ", "AUTH_USERS_DELETE", "AUTH_USERS_READ_PERSONAL_DETAIL", "AUTH_CLIENTS_CREATE", "AUTH_CLIENTS_READ", "AUTH_CLIENTS_DELETE", }, DateTime.UtcNow, DateTime.UtcNow);
         }
     }
 }

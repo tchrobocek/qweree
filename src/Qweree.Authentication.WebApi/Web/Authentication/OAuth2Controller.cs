@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.Sdk.Authentication;
+using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Utils;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;

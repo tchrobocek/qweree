@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.HealthCheck;
 using Qweree.AspNet.Session;
+using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
@@ -185,12 +186,13 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IClientRepository, ClientRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
+            services.AddSingleton<SdkMapperService, SdkMapperService>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>()));
+                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<SdkMapperService>()));
             services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<IPasswordEncoder>(),
-                p.GetRequiredService<IDateTimeProvider>(), p.GetRequiredService<IClientRepository>()));
+                p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
+                p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>()));
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
         }
