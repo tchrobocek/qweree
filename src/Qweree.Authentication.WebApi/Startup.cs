@@ -189,7 +189,7 @@ namespace Qweree.Authentication.WebApi
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>()));
             services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<ISessionStorage>(),
+                p.GetRequiredService<IPasswordEncoder>(),
                 p.GetRequiredService<IDateTimeProvider>(), p.GetRequiredService<IClientRepository>()));
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();

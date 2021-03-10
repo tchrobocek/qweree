@@ -11,5 +11,6 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public Guid? OwnerId { get; set; }
+        public string? Origin { get; set; }
     }
 }

@@ -33,8 +33,8 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateClientActionAsync(ClientCreateInputDto input)
         {
-            var serviceInput = new ClientCreateInput(input.ClientId ?? string.Empty, input.ClientSecret ?? string.Empty,
-                input.ApplicationName ?? string.Empty);
+            var serviceInput = new ClientCreateInput(input.Id ?? Guid.NewGuid(), input.ClientId ?? string.Empty, input.ClientSecret ?? string.Empty,
+                input.ApplicationName ?? string.Empty, input.Origin ?? string.Empty, input.OwnerId ?? Guid.Empty);
 
             var clientResponse = await _clientService.CreateClientAsync(serviceInput);
 

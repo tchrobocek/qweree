@@ -10,7 +10,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
             return new(document.Id ?? Guid.Empty,
                 document.ClientId ?? string.Empty, document.ClientSecret ?? string.Empty, document.ApplicationName ?? string.Empty,
                 document.CreatedAt ?? DateTime.MinValue, document.ModifiedAt ?? DateTime.MinValue,
-                document.OwnerId ?? Guid.Empty);
+                document.OwnerId ?? Guid.Empty, document.Origin ?? String.Empty);
         }
 
         public static ClientDo ToDo(Client client)
@@ -23,7 +23,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
                 ApplicationName = client.ApplicationName,
                 CreatedAt = client.CreatedAt,
                 ModifiedAt = client.ModifiedAt,
-                OwnerId = client.OwnerId
+                OwnerId = client.OwnerId,
+                Origin = client.Origin
             };
         }
     }
