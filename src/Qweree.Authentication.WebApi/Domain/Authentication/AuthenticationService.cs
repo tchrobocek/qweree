@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
-using Qweree.Authentication.Sdk.Authentication;
+using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Utils;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;

@@ -7,15 +7,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Sdk;
-using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Web.Identity
 {
     [ApiController]
-    [Route("/api/v1/identity/users")]
+    [Route("/api/admin/identity/users")]
     public class UserController : ControllerBase
     {
         private readonly IAuthorizationService _authorizationService;
@@ -43,9 +42,10 @@ namespace Qweree.Authentication.WebApi.Web.Identity
 
             var userResponse = await _userService.CreateUserAsync(serviceInput);
 
-            if (userResponse.Status != ResponseStatus.Ok) return BadRequest(userResponse.ToErrorResponseDto());
+            if (userResponse.Status != ResponseStatus.Ok)
+                return BadRequest(userResponse.ToErrorResponseDto());
 
-            var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
+            var userDto = UserMapper.ToDto(userResponse.Payload!);
             return Created($"/api/v1/users/{userDto.Id}", userDto);
         }
 
@@ -60,18 +60,19 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserActionAsync(Guid id)
         {
-            var userResponse = await _userService.FindUserAsync(id);
+            var userResponse = await _userService.GetUserAsync(id);
 
-            if (userResponse.Status != ResponseStatus.Ok) return userResponse.ToErrorActionResult();
+            if (userResponse.Status != ResponseStatus.Ok)
+                return userResponse.ToErrorActionResult();
 
-            var userDto = UserToDto(userResponse.Payload ?? throw new InvalidOperationException("Empty payload."));
+            var userDto = UserMapper.ToDto(userResponse.Payload!);
 
             var result = await _authorizationService.AuthorizeAsync(User, null, "UserReadPersonalDetail");
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                userDto.Email = userResponse.Payload.ContactEmail;
-                userDto.FullName = userResponse.Payload.FullName;
+                userDto.ContactEmail = "***";
+                userDto.FullName = "***";
             }
 
             return Ok(userDto);
@@ -90,7 +91,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         /// <returns>Collection of users.</returns>
         [HttpGet]
         [Authorize(Policy = "UserRead")]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> FindUsersActionAsync(
             [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
@@ -102,12 +103,13 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             var input = new FindUsersInput(skip, take, sortDictionary);
             var usersResponse = await _userService.FindUsersAsync(input);
 
-            if (usersResponse.Status != ResponseStatus.Ok) return usersResponse.ToErrorActionResult();
+            if (usersResponse.Status != ResponseStatus.Ok)
+                return usersResponse.ToErrorActionResult();
 
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
             Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, usersResponse.DocumentCount);
 
-            var usersDto = usersResponse.Payload?.Select(UserToDto);
+            var usersDto = usersResponse.Payload?.Select(UserMapper.ToDto);
             return Ok(usersDto);
         }
 
@@ -124,21 +126,10 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         {
             var deleteResponse = await _userService.DeleteAsync(id);
 
-            if (deleteResponse.Status != ResponseStatus.Ok) return deleteResponse.ToErrorActionResult();
+            if (deleteResponse.Status != ResponseStatus.Ok)
+                return deleteResponse.ToErrorActionResult();
 
             return Ok(NoContent());
-        }
-
-        private UserDto UserToDto(User user)
-        {
-            return new()
-            {
-                Id = user.Id,
-                Username = user.Username,
-                Roles = user.Roles.ToArray(),
-                ModifiedAt = user.ModifiedAt,
-                CreatedAt = user.CreatedAt
-            };
         }
     }
 }

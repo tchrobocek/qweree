@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Qweree.Authentication.Sdk.Authentication;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.WebApi.Infrastructure.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Mongo;
