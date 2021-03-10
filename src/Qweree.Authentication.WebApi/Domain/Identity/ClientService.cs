@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
-using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
@@ -16,16 +15,14 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
     {
         private readonly IValidator _validator;
         private readonly IPasswordEncoder _passwordEncoder;
-        private readonly ISessionStorage _sessionStorage;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IClientRepository _clientRepository;
 
-        public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, ISessionStorage sessionStorage,
-            IDateTimeProvider dateTimeProvider, IClientRepository clientRepository)
+        public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
+            IClientRepository clientRepository)
         {
             _validator = validator;
             _passwordEncoder = passwordEncoder;
-            _sessionStorage = sessionStorage;
             _dateTimeProvider = dateTimeProvider;
             _clientRepository = clientRepository;
         }
@@ -38,9 +35,9 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<Client>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
 
             var secret = _passwordEncoder.EncodePassword(clientCreateInput.ClientSecret);
-            var client = new Client(Guid.NewGuid(), clientCreateInput.ClientId, secret,
+            var client = new Client(clientCreateInput.Id, clientCreateInput.ClientId, secret,
                 clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
-                _sessionStorage.CurrentUser.Id);
+                clientCreateInput.OwnerId, clientCreateInput.Origin);
 
             try
             {
@@ -53,7 +50,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
             return Response.Ok(new Client(client.Id, clientCreateInput.ClientId, clientCreateInput.ClientSecret,
                     clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
-                    _sessionStorage.CurrentUser.Id));
+                    clientCreateInput.OwnerId, clientCreateInput.Origin));
         }
 
         public async Task<Response<Client>> GetClientAsync(Guid id,
