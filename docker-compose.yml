@@ -42,21 +42,6 @@ services:
       Authentication__TokenUri: "http://qweree-auth:10001/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
 
-  qweree-qwill:
-    container_name: qweree-qwill
-    depends_on:
-      - qweree-db
-    build:
-      dockerfile: ./docker/Qweree.Qwill.WebApi/.Dockerfile
-      context: .
-    restart: always
-    ports:
-      - "10003:80"
-    environment:
-      Database__ConnectionString: "mongodb://qweree-db:27017"
-      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Authentication__TokenUri: "http://qweree-auth:10001/api/oauth2/auth"
-
   qweree-qadmin:
     container_name: qweree-qadmin
     build: 

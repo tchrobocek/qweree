@@ -42,11 +42,6 @@ Cdn api
 
 Swagger: `http://localhost:10002/swagger/index.html`
 
-#### qweree-qwill
-An api for qwill application.
-
-Swagger: `http://localhost:10003/swagger/index.html`
-
 #### qweree-qadmin
 Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost:11001`
 
