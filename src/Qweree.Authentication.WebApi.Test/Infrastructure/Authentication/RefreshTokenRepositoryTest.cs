@@ -30,7 +30,7 @@ namespace Qweree.Authentication.WebApi.Test.Infrastructure.Authentication
         public async Task TestGetByToken()
         {
             var expectedToken =
-                new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
+                new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
             await _repository.InsertAsync(expectedToken);
 
             var actualToken = await _repository.GetByTokenAsync(expectedToken.Token);

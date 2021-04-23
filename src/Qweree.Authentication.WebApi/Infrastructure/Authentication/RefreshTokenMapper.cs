@@ -12,13 +12,14 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authentication
                 Token = refreshToken.Token,
                 CreatedAt = refreshToken.CreatedAt,
                 ExpiresAt = refreshToken.ExpiresAt,
-                UserId = refreshToken.UserId
+                UserId = refreshToken.UserId,
+                ClientId = refreshToken.ClientId
             };
         }
 
         public static RefreshToken FromDo(RefreshTokenDo refreshToken)
         {
-            return new(refreshToken.Id, refreshToken.Token ?? "", refreshToken.UserId, refreshToken.ExpiresAt,
+            return new(refreshToken.Id, refreshToken.Token ?? "", refreshToken.ClientId, refreshToken.UserId, refreshToken.ExpiresAt,
                 refreshToken.CreatedAt);
         }
     }

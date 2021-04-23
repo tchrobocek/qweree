@@ -21,14 +21,16 @@ namespace Qweree.Authentication.Sdk.OAuth2
             _httpClient = httpClient;
         }
 
-        public async Task<TokenInfo> SignInAsync(PasswordGrantInput grantInput,
+        public async Task<TokenInfo> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
             CancellationToken cancellationToken = new())
         {
             var form = new[]
             {
                 new KeyValuePair<string?, string?>("grant_type", "password"),
                 new KeyValuePair<string?, string?>("username", grantInput.Username),
-                new KeyValuePair<string?, string?>("password", grantInput.Password)
+                new KeyValuePair<string?, string?>("password", grantInput.Password),
+                new KeyValuePair<string?, string?>("client_id", clientCredentials.ClientId),
+                new KeyValuePair<string?, string?>("client_secret", clientCredentials.ClientSecret)
             };
 
             var content = new FormUrlEncodedContent(form);

@@ -24,7 +24,9 @@ namespace Qweree.Authentication.Sdk.Test.OAuth2
         {
             var input = new PasswordGrantInput(AuthenticationAdapterFixture.TestAdminUsername,
                 AuthenticationAdapterFixture.TestAdminPassword);
-            var tokenInfo = await _oAuth2Adapter.SignInAsync(input);
+            var clientCredentials = new ClientCredentials(AuthenticationAdapterFixture.TestClientId,
+                AuthenticationAdapterFixture.TestClientSecret);
+            var tokenInfo = await _oAuth2Adapter.SignInAsync(input, clientCredentials);
 
             Assert.NotEmpty(tokenInfo.AccessToken);
             Assert.NotEmpty(tokenInfo.RefreshToken ?? "");

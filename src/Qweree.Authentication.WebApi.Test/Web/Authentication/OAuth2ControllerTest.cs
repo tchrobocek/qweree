@@ -19,6 +19,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
         private readonly HttpClient _client;
         private readonly IServiceScope _scope;
         private readonly UserRepository _userRepository;
+        private readonly ClientRepository _clientRepository;
 
         public OAuth2ControllerTest(WebApiFactory webApiFactory)
         {
@@ -27,6 +28,10 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
 
             _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
             _userRepository.DeleteAllAsync()
+                .GetAwaiter()
+                .GetResult();
+            _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
+            _clientRepository.DeleteAllAsync()
                 .GetAwaiter()
                 .GetResult();
         }
@@ -42,12 +47,16 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
         {
             var user = UserFactory.CreateDefault();
             await _userRepository.InsertAsync(user);
+            var client = ClientFactory.CreateDefault(user.Id);
+            await _clientRepository.InsertAsync(client);
 
             var input = new[]
             {
                 new KeyValuePair<string?, string?>("grant_type", "password"),
                 new KeyValuePair<string?, string?>("username", user.Username),
-                new KeyValuePair<string?, string?>("password", UserFactory.Password)
+                new KeyValuePair<string?, string?>("password", user.Password),
+                new KeyValuePair<string?, string?>("client_id", client.ClientId),
+                new KeyValuePair<string?, string?>("client_secret", client.ClientSecret)
             };
             var request = new FormUrlEncodedContent(input);
 

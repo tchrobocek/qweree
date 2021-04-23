@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -11,6 +12,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Utils;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
@@ -32,13 +34,16 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly int _refreshTokenValiditySeconds;
         private readonly IUserRepository _userRepository;
+        private readonly IClientRepository _clientRepository;
+        private readonly IPasswordEncoder _passwordEncoder;
 
         private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
         public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository,
             IDateTimeProvider datetimeProvider, Random random,
             int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey,
-            string fileAccessTokenKey, int fileAccessTokenValiditySeconds)
+            string fileAccessTokenKey, int fileAccessTokenValiditySeconds, IPasswordEncoder passwordEncoder,
+            IClientRepository clientRepository)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -47,41 +52,45 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             _accessTokenKey = accessTokenKey;
             _fileAccessTokenKey = fileAccessTokenKey;
             _fileAccessTokenValiditySeconds = fileAccessTokenValiditySeconds;
+            _passwordEncoder = passwordEncoder;
+            _clientRepository = clientRepository;
             _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
             _random = random;
         }
 
         public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input,
+            ClientCredentials clientCredentials,
             CancellationToken cancellationToken = new())
         {
             var now = _datetimeProvider.UtcNow;
 
             User user;
+            Client client;
 
             try
             {
-                user = await _userRepository.GetByUsernameAsync(input.Username, cancellationToken);
+                user = await AuthenticateUserAsync(input, cancellationToken);
+                client = await AuthenticateClientAsync(clientCredentials, cancellationToken);
             }
             catch (Exception)
             {
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
-            if (!ValidatePassword(input.Password, user.Password)) return Response.Fail<TokenInfo>(AccessDeniedMessage);
-
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now,
+            var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
+                user.ContactEmail, user.Roles, now,
                 expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
-            var refreshToken = await GenerateRefreshTokenAsync(user, cancellationToken);
+            var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
 
             var tokenInfo = new TokenInfo(jwt, refreshToken, expiresAt);
             return Response.Ok(tokenInfo);
         }
 
         public async Task<Response<TokenInfo>> AuthenticateAsync(RefreshTokenGrantInput input,
-            CancellationToken cancellationToken = new())
+            ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
         {
             var now = _datetimeProvider.UtcNow;
 
@@ -92,25 +101,27 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             {
                 token = await _refreshTokenRepository.GetByTokenAsync(input.RefreshToken, cancellationToken);
                 user = await _userRepository.GetAsync(token.UserId, cancellationToken);
+                await AuthenticateClientAsync(clientCredentials, cancellationToken);
             }
             catch (Exception)
             {
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
-            if (token.ExpiresAt < now) return Response.Fail<TokenInfo>(AccessDeniedMessage);
+            if (token.ExpiresAt < now)
+                return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, now,
-                expiresAt);
+            var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
+                user.ContactEmail, user.Roles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
             return Response.Ok(tokenInfo);
         }
 
-        public Task<Response<TokenInfo>> AuthenticateAsync(FileAccessGrantInput input,
-            CancellationToken cancellationToken = new())
+        public async Task<Response<TokenInfo>> AuthenticateAsync(FileAccessGrantInput input,
+            ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
         {
             var validationParameters = Startup.GetValidationParameters(_fileAccessTokenKey);
             var now = _datetimeProvider.UtcNow;
@@ -119,31 +130,34 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 
             try
             {
+                await AuthenticateClientAsync(clientCredentials, cancellationToken);
                 var claimsPrincipal =
                     new JwtSecurityTokenHandler().ValidateToken(input.AccessToken, validationParameters, out _);
                 session = new ClaimsPrincipalStorage(claimsPrincipal);
             }
             catch (Exception)
             {
-                return Task.FromResult(Response.Fail<TokenInfo>(AccessDeniedMessage));
+                return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
             var expiresAt = now + TimeSpan.FromSeconds(_fileAccessTokenValiditySeconds);
-            var fileAccessToken = EncodeFileAccessToken(new AccessToken(session.CurrentUser.Id,
+            var fileAccessToken = EncodeFileAccessToken(new AccessToken(clientCredentials.ClientId,
+                session.CurrentUser.Id,
                 session.CurrentUser.Username, session.CurrentUser.FullName, session.CurrentUser.Email,
                 session.CurrentUser.Roles, now, expiresAt));
 
-            return Task.FromResult(Response.Ok(new TokenInfo(fileAccessToken, expiresAt)));
+            return Response.Ok(new TokenInfo(fileAccessToken, expiresAt));
         }
 
-        private async Task<string?> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken = new())
+        private async Task<string?> GenerateRefreshTokenAsync(User user, Client client,
+            CancellationToken cancellationToken = new())
         {
             var token = "";
             for (var i = 0; i < RefreshTokenLength; i++)
                 token += RefreshTokenChars[_random.Next(RefreshTokenChars.Length)];
 
             var expiresAt = _datetimeProvider.UtcNow + TimeSpan.FromSeconds(_refreshTokenValiditySeconds);
-            var refreshToken = new RefreshToken(Guid.NewGuid(), token, user.Id, expiresAt, _datetimeProvider.UtcNow);
+            var refreshToken = new RefreshToken(Guid.NewGuid(), token, client.Id, user.Id, expiresAt, _datetimeProvider.UtcNow);
 
             await _refreshTokenRepository.InsertAsync(refreshToken, cancellationToken);
 
@@ -189,9 +203,24 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private bool ValidatePassword(string password, string hashed)
+        private async Task<User> AuthenticateUserAsync(PasswordGrantInput passwordGrantInput,
+            CancellationToken cancellationToken = new())
         {
-            return BCrypt.Net.BCrypt.Verify(password, hashed);
+            var user = await _userRepository.GetByUsernameAsync(passwordGrantInput.Username, cancellationToken);
+            if (!_passwordEncoder.VerifyPassword(user.Password, passwordGrantInput.Password))
+                throw new AuthenticationException();
+
+            return user;
+        }
+
+        private async Task<Client> AuthenticateClientAsync(ClientCredentials clientCredentials,
+            CancellationToken cancellationToken = new())
+        {
+            var client = await _clientRepository.GetByClientIdAsync(clientCredentials.ClientId, cancellationToken);
+            if (!_passwordEncoder.VerifyPassword(client.ClientSecret, clientCredentials.ClientSecret ?? ""))
+                throw new AuthenticationException();
+
+            return client;
         }
     }
 }

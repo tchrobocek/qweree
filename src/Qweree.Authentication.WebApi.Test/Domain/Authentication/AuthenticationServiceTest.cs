@@ -23,20 +23,26 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
         public async Task TestAuthenticatePasswordAsync()
         {
             var user = UserFactory.CreateDefault();
+            var client = ClientFactory.CreateDefault(user.Id);
 
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
 
+            var clientRepositoryMock = new Mock<IClientRepository>();
+            clientRepositoryMock.Setup(m => m.GetByClientIdAsync(client.ClientId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
+
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
             var dateTimeProvider = new StaticDateTimeProvider();
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
-                dateTimeProvider, new Random(),
-                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
+                dateTimeProvider, new Random(), 10, 10, Settings.Authentication.AccessTokenKey,
+                Settings.Authentication.FileAccessTokenKey, 0, new NonePasswordEncoder(), clientRepositoryMock.Object);
 
-            var input = new PasswordGrantInput(user.Username, UserFactory.Password);
-            var response = await service.AuthenticateAsync(input);
+            var input = new PasswordGrantInput(user.Username, user.Password);
+            var clientCredentials = new ClientCredentials(client.ClientId, client.ClientSecret);
+            var response = await service.AuthenticateAsync(input, clientCredentials);
 
             Assert.Equal(ResponseStatus.Ok, response.Status);
             var tokenInfo = response.Payload ?? throw new ArgumentNullException();
@@ -52,12 +58,18 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
             var dateTimeProvider = new StaticDateTimeProvider();
 
             var user = UserFactory.CreateDefault();
+            var client = ClientFactory.CreateDefault(user.Id);
 
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
             userRepositoryMock.Setup(m => m.GetAsync(user.Id, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+
+            var clientRepositoryMock = new Mock<IClientRepository>();
+            clientRepositoryMock.Setup(m => m.GetByClientIdAsync(client.ClientId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
+
 
             RefreshToken? refreshToken = null;
 
@@ -88,14 +100,14 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
                 });
 
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
-                dateTimeProvider, new Random(),
-                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0);
+                dateTimeProvider, new Random(), 10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 0, new NonePasswordEncoder(), clientRepositoryMock.Object);
 
             TokenInfo accessToken;
 
+            var clientCredentials = new ClientCredentials(client.ClientId, client.ClientSecret);
             {
-                var input = new PasswordGrantInput(user.Username, UserFactory.Password);
-                var response = await service.AuthenticateAsync(input);
+                var input = new PasswordGrantInput(user.Username, user.Password);
+                var response = await service.AuthenticateAsync(input, clientCredentials);
 
                 Assert.Equal(ResponseStatus.Ok, response.Status);
                 accessToken = response.Payload ?? throw new ArgumentNullException();
@@ -103,7 +115,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
 
             {
                 var input = new RefreshTokenGrantInput(accessToken.RefreshToken ?? "");
-                var response = await service.AuthenticateAsync(input);
+                var response = await service.AuthenticateAsync(input, clientCredentials);
                 var tokenInfo = response.Payload ?? throw new ArgumentNullException();
 
                 Assert.Equal(ResponseStatus.Ok, response.Status);
@@ -120,23 +132,29 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
         public async Task TestAuthenticateFileAccessTokenAsync()
         {
             var user = UserFactory.CreateDefault();
+            var client = ClientFactory.CreateDefault(user.Id);
 
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
+
+            var clientRepositoryMock = new Mock<IClientRepository>();
+            clientRepositoryMock.Setup(m => m.GetByClientIdAsync(client.ClientId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(client);
 
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
             var dateTimeProvider = new StaticDateTimeProvider();
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
                 dateTimeProvider, new Random(),
-                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 10);
+                10, 10, Settings.Authentication.AccessTokenKey, Settings.Authentication.FileAccessTokenKey, 10, new NonePasswordEncoder(), clientRepositoryMock.Object);
 
             TokenInfo accessToken;
 
+            var clientCredentials = new ClientCredentials(client.ClientId, client.ClientSecret);
             {
-                var input = new PasswordGrantInput(user.Username, UserFactory.Password);
-                var response = await service.AuthenticateAsync(input);
+                var input = new PasswordGrantInput(user.Username, user.Password);
+                var response = await service.AuthenticateAsync(input, clientCredentials);
 
                 Assert.Equal(ResponseStatus.Ok, response.Status);
                 accessToken = response.Payload ?? throw new ArgumentNullException();
@@ -144,7 +162,7 @@ namespace Qweree.Authentication.WebApi.Test.Domain.Authentication
 
             {
                 var input = new FileAccessGrantInput(accessToken.AccessToken);
-                var response = await service.AuthenticateAsync(input);
+                var response = await service.AuthenticateAsync(input, clientCredentials);
 
                 Assert.Equal(ResponseStatus.Ok, response.Status);
                 var tokenInfo = response.Payload ?? throw new ArgumentNullException();

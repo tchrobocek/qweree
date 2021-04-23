@@ -21,7 +21,8 @@ namespace Qweree.Cdn.Sdk.Test.Storage
             _cdnAdapter = new StorageAdapter(new Uri(uri, "/api/v1/storage"),
                 cdnAdapterFixture
                     .CreateAuthenticatedHttpClientAsync(new PasswordGrantInput(CdnAdapterFixture.TestAdminUsername,
-                        CdnAdapterFixture.TestAdminPassword)).GetAwaiter().GetResult());
+                        CdnAdapterFixture.TestAdminPassword), new ClientCredentials(CdnAdapterFixture.TestClientId,
+                        CdnAdapterFixture.TestClientSecret)).GetAwaiter().GetResult());
         }
 
         [Fact]
