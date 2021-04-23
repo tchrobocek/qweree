@@ -11,6 +11,8 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
     {
         public const string TestAdminUsername = "admin";
         public const string TestAdminPassword = "password";
+        public const string TestClientId = "tests";
+        public const string TestClientSecret = "password";
 
         private readonly HttpMessageHandler _messageHandler;
 
@@ -36,11 +38,12 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
 
         public async Task<HttpClient> CreateAuthenticatedHttpClientAsync(
             PasswordGrantInput passwordGrantInput,
+            ClientCredentials clientCredentials,
             CancellationToken cancellationToken = new())
         {
             var client = await CreateHttpClientAsync(cancellationToken);
             var authAdapter = new OAuth2Adapter(new Uri(new Uri(AuthenticationApiUri), "/api/oauth2/auth"), client);
-            var token = await authAdapter.SignInAsync(passwordGrantInput, cancellationToken);
+            var token = await authAdapter.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
             client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token.AccessToken}");
 
             return client;

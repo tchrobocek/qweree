@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Test.Fixture;
 using Qweree.Utils;
@@ -36,7 +37,9 @@ namespace Qweree.Cdn.WebApi.Test.Web
         [Fact]
         public async Task TestStoreAndRead()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync("admin", "password");
+            var passwordInput = new PasswordGrantInput("admin", "password");
+            var clientCredentials = new ClientCredentials("tests", "password");
+            var client = await _factory.CreateAuthenticatedClientAsync(passwordInput, clientCredentials);
             const string text = "Ahoj!";
 
             {

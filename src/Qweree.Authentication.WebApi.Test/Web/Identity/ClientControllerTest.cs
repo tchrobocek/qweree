@@ -56,7 +56,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             await _userRepository.InsertAsync(user);
 
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(user, UserFactory.Password);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, user);
             {
                 var input = new ClientCreateInput(client.Id, client.ClientId, client.ClientSecret,
                     client.ApplicationName, client.Origin, user.Id);
@@ -126,8 +126,11 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
 
+            var adminUser = UserFactory.CreateAdmin();
+            var adminClient = ClientFactory.CreateDefault(adminUser.Id);
+
             using var httpClient =
-                await _webApiFactory.CreateAuthenticatedClientAsync(UserFactory.CreateAdmin(), UserFactory.Password);
+                await _webApiFactory.CreateAuthenticatedClientAsync(adminClient, adminUser);
 
             {
                 var response = await httpClient.GetAsync("/api/admin/identity/clients?sort[ClientId]=1&skip=2&take=3");

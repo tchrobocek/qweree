@@ -47,7 +47,9 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
         public async Task TestCreateAndGetUser()
         {
             var adminUser = UserFactory.CreateAdmin();
-            using var client = await _webApiFactory.CreateAuthenticatedClientAsync(adminUser, UserFactory.Password);
+            var client = ClientFactory.CreateDefault(adminUser.Id);
+
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, adminUser);
             var input = new UserCreateInputDto
             {
                 Username = "user",
@@ -61,7 +63,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             {
                 var json = JsonUtils.Serialize(input);
-                var response = await client.PostAsync("/api/admin/identity/users",
+                var response = await httpClient.PostAsync("/api/admin/identity/users",
                     new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json));
                 response.EnsureSuccessStatusCode();
                 user = await response.Content.ReadAsObjectAsync<UserDto>() ?? throw new ArgumentNullException();
@@ -72,7 +74,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             }
 
             {
-                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
                 var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
@@ -95,12 +97,13 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             }
 
             usersList = usersList.OrderBy(u => u.Username).ToList();
+            var admin = UserFactory.CreateAdmin();
+            var client = ClientFactory.CreateDefault(admin.Id);
 
-            using var client =
-                await _webApiFactory.CreateAuthenticatedClientAsync(UserFactory.CreateAdmin(), UserFactory.Password);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, admin);
 
             {
-                var response = await client.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
+                var response = await httpClient.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
                 response.EnsureSuccessStatusCode();
                 var userDtos = await response.Content.ReadAsObjectAsync<UserDto[]>();
                 var users = userDtos!.Select(UserMapper.FromDto);
@@ -115,23 +118,24 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
         public async Task TestDelete()
         {
             var adminUser = UserFactory.CreateAdmin();
-            using var client = await _webApiFactory.CreateAuthenticatedClientAsync(adminUser, UserFactory.Password);
+            var client = ClientFactory.CreateDefault(adminUser.Id);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, adminUser);
 
             var user = UserFactory.CreateDefault();
             await _userRepository.InsertAsync(user);
 
             {
-                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await client.DeleteAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.DeleteAsync($"/api/admin/identity/users/{user!.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await client.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }

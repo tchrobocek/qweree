@@ -35,10 +35,12 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
         ///     Authenticate user.
         /// </summary>
         /// <param name="accessToken">Access token.</param>
+        /// <param name="clientSecret">Client secret</param>
         /// <param name="grantType">Grant type, either ["password", "refresh_token"].</param>
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         /// <param name="refreshToken">Refresh token.</param>
+        /// <param name="clientId">Client id</param>
         /// <returns>Created user.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(TokenInfoDto), StatusCodes.Status200OK)]
@@ -48,6 +50,8 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             [FromForm(Name = "password")] string? password,
             [FromForm(Name = "refresh_token")] string? refreshToken,
             [FromForm(Name = "access_token")] string? accessToken,
+            [FromForm(Name = "client_id")] string? clientId,
+            [FromForm(Name = "client_secret")] string? clientSecret,
             [Required] [FromForm(Name = "grant_type")]
             string grantType)
         {
@@ -56,26 +60,27 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
 
             Response<TokenInfo> response;
 
+            var clientCredentials = new ClientCredentials(clientId ?? "", clientSecret);
             if (grantType == "password")
             {
                 var passwordInput = new PasswordGrantInput(username ?? "", password ?? "");
-                response = await _authenticationService.AuthenticateAsync(passwordInput);
+                response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials);
             }
             else if (grantType == "refresh_token")
             {
                 var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
-                response = await _authenticationService.AuthenticateAsync(refreshTokenInput);
+                response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
             }
             else if (grantType == "file_access")
             {
-                FileAccessGrantInput? fileAccessInput = null;
+                FileAccessGrantInput fileAccessInput;
 
                 if (User.Identity?.IsAuthenticated ?? false)
-                    fileAccessInput =
-                        new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
+                    fileAccessInput = new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
+                else
+                    fileAccessInput = new FileAccessGrantInput(accessToken ?? "");
 
-                response = await _authenticationService.AuthenticateAsync(fileAccessInput ??
-                                                                          new FileAccessGrantInput(accessToken ?? ""));
+                response = await _authenticationService.AuthenticateAsync(fileAccessInput, clientCredentials);
             }
             else
             {

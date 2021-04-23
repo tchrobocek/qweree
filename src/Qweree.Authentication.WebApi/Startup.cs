@@ -172,11 +172,13 @@ namespace Qweree.Authentication.WebApi
                 var refreshTokenRepository = p.GetRequiredService<IRefreshTokenRepository>();
                 var dateTimeProvider = p.GetRequiredService<IDateTimeProvider>();
                 var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+                var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
+                var clientRepository = p.GetRequiredService<IClientRepository>();
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
                     config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "",
-                    config.FileAccessTokenValiditySeconds ?? 0);
+                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository);
             });
 
             // Identity
