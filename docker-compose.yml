@@ -15,7 +15,7 @@ services:
     depends_on:
       - qweree-db
     build:
-      dockerfile: ./docker/Qweree.Authentication.WebApi/.Dockerfile
+      dockerfile: ./docker/Qweree.Authentication.WebApi.Dockerfile
       context: .
     restart: always
     ports:
@@ -29,7 +29,7 @@ services:
     depends_on:
       - qweree-db
     build:
-      dockerfile: ./docker/Qweree.Cdn.WebApi/.Dockerfile
+      dockerfile: ./docker/Qweree.Cdn.WebApi.Dockerfile
       context: .
     restart: always
     ports:
@@ -45,7 +45,7 @@ services:
   qweree-qadmin:
     container_name: qweree-qadmin
     build: 
-      dockerfile: ./docker/Qweree.QAdmin.WebApplication/.Dockerfile
+      dockerfile: ./docker/Qweree.QAdmin.WebApplication.Dockerfile
       context: .
     restart: always
     ports: 
