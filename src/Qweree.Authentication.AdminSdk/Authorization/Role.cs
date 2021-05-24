@@ -5,7 +5,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization
 {
     public class UserRole
     {
-        public UserRole(Guid id, string key, string label, string description, ImmutableArray<UserRole> items, bool isGroup, DateTime createdAt, DateTime modifiedAt, ImmutableArray<UserRole> effectiveRoles)
+        public UserRole(Guid id, string key, string label, string description, ImmutableArray<UserRole> items, bool isGroup, DateTime createdAt, DateTime modifiedAt, ImmutableArray<string> effectiveRoles)
         {
             Id = id;
             Key = key;
@@ -26,12 +26,12 @@ namespace Qweree.Authentication.AdminSdk.Authorization
         public bool IsGroup { get; }
         public DateTime CreatedAt { get; }
         public DateTime ModifiedAt { get; }
-        public ImmutableArray<UserRole> EffectiveRoles { get; }
+        public ImmutableArray<string> EffectiveRoles { get; }
     }
 
     public class ClientRole
     {
-        public ClientRole(Guid id, string key, string label, string description, ImmutableArray<ClientRole> items, bool isGroup, DateTime createdAt, DateTime modifiedAt, ImmutableArray<ClientRole> effectiveRoles)
+        public ClientRole(Guid id, string key, string label, string description, ImmutableArray<ClientRole> items, bool isGroup, DateTime createdAt, DateTime modifiedAt, ImmutableArray<string> effectiveRoles)
         {
             Id = id;
             Key = key;
@@ -52,6 +52,6 @@ namespace Qweree.Authentication.AdminSdk.Authorization
         public bool IsGroup { get; }
         public DateTime CreatedAt { get; }
         public DateTime ModifiedAt { get; }
-        public ImmutableArray<ClientRole> EffectiveRoles { get; }
+        public ImmutableArray<string> EffectiveRoles { get; }
     }
 }

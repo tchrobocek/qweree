@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
@@ -42,27 +43,12 @@ namespace Qweree.Authentication.WebApi.Domain
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
             return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, MapUser(owner), client.CreatedAt, client.ModifiedAt);
         }
-
-        public async Task<SdkUserRole> MapUserRoleAsync(UserRole role, CancellationToken cancellationToken = new())
+        public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role, CancellationToken cancellationToken = new())
         {
-            var items = new List<SdkUserRole>();
-
-            if (role.IsGroup)
-            {
-                foreach (var itemId in role.Items)
-                {
-                    var item = await _userRoleRepository.GetAsync(itemId, cancellationToken);
-                    var sdkItem = await MapUserRoleAsync(item, cancellationToken);
-
-                    items.Add(sdkItem);
-                }
-            }
-
-            return new SdkUserRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(),
-                role.IsGroup, role.CreatedAt, role.ModifiedAt, ImmutableArray<SdkUserRole>.Empty);
+            return await DoMapClientRoleAsync(0, role, cancellationToken);
         }
 
-        public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role, CancellationToken cancellationToken = new())
+        private async Task<SdkClientRole> DoMapClientRoleAsync(int level, ClientRole role, CancellationToken cancellationToken = new())
         {
             var items = new List<SdkClientRole>();
 
@@ -71,14 +57,82 @@ namespace Qweree.Authentication.WebApi.Domain
                 foreach (var itemId in role.Items)
                 {
                     var item = await _clientRoleRepository.GetAsync(itemId, cancellationToken);
-                    var sdkItem = await MapClientRoleAsync(item, cancellationToken);
-
+                    var sdkItem = await DoMapClientRoleAsync(level + 1, item, cancellationToken);
                     items.Add(sdkItem);
                 }
             }
 
+            var effectiveRoles = ImmutableArray<string>.Empty;
+
+            if (level == 0)
+            {
+                var sdkRole = new SdkClientRole(role.Id, role.Key, role.Label,
+                    role.Description, items.ToImmutableArray(), role.IsGroup, role.CreatedAt, role.ModifiedAt,
+                    effectiveRoles);
+                effectiveRoles = ComputeEffectiveRoles(sdkRole)
+                    .Distinct()
+                    .ToImmutableArray();
+            }
+
             return new SdkClientRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(),
-                role.IsGroup, role.CreatedAt, role.ModifiedAt, ImmutableArray<SdkClientRole>.Empty);
+                role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles);
+        }
+
+        private IEnumerable<string> ComputeEffectiveRoles(SdkClientRole clientRole)
+        {
+            if (clientRole.IsGroup)
+            {
+                foreach (var item in clientRole.Items.SelectMany(ComputeEffectiveRoles))
+                    yield return item;
+            }
+
+            yield return clientRole.Key;
+        }
+
+        public async Task<SdkUserRole> MapUserRoleAsync(UserRole role, CancellationToken cancellationToken = new())
+        {
+            return await DoMapUserRoleAsync(0, role, cancellationToken);
+        }
+
+        private async Task<SdkUserRole> DoMapUserRoleAsync(int level, UserRole role, CancellationToken cancellationToken = new())
+        {
+            var items = new List<SdkUserRole>();
+
+            if (role.IsGroup)
+            {
+                foreach (var itemId in role.Items)
+                {
+                    var item = await _userRoleRepository.GetAsync(itemId, cancellationToken);
+                    var sdkItem = await DoMapUserRoleAsync(level + 1, item, cancellationToken);
+                    items.Add(sdkItem);
+                }
+            }
+
+            var effectiveRoles = ImmutableArray<string>.Empty;
+
+            if (level == 0)
+            {
+                var sdkRole = new SdkUserRole(role.Id, role.Key, role.Label,
+                    role.Description, items.ToImmutableArray(), role.IsGroup, role.CreatedAt, role.ModifiedAt,
+                    effectiveRoles);
+                effectiveRoles = ComputeEffectiveRoles(sdkRole)
+                    .Distinct()
+                    .ToImmutableArray();
+            }
+
+            return new SdkUserRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(),
+                role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles);
+        }
+
+        private IEnumerable<string> ComputeEffectiveRoles(SdkUserRole userRole)
+        {
+            if (userRole.IsGroup)
+            {
+                foreach (var item in userRole.Items.SelectMany(ComputeEffectiveRoles))
+                    yield return item;
+            }
+
+            yield return userRole.Key;
         }
     }
 }
