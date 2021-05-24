@@ -17,5 +17,6 @@ namespace Qweree.Authentication.WebApi.Domain.Persistence
         Task<TEntityType> GetAsync(Guid id, CancellationToken cancellationToken = new());
         Task InsertAsync(TEntityType document, CancellationToken cancellationToken = new());
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = new());
+        Task UpdateAsync(string id, TEntityType document, CancellationToken cancellationToken = new());
     }
 }
