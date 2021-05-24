@@ -163,6 +163,18 @@ namespace Qweree.Mongo
             }
         }
 
+        public async Task UpdateAsync(string id, TPublicType document, CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                await Collection.UpdateOneAsync($@"{{""_id"": UUID(""{id}"")}}",new ObjectUpdateDefinition<TDocumentType>(ToDocument(document)), cancellationToken: cancellationToken);
+            }
+            catch (MongoWriteException e)
+            {
+                throw new InsertDocumentException("Cannot insert document.", e);
+            }
+        }
+
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             await Collection.DeleteOneAsync($@"{{""_id"": UUID(""{id}"")}}", cancellationToken);
