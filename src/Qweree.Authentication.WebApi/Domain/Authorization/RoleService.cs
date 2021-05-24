@@ -4,6 +4,8 @@ using Qweree.AspNet.Application;
 using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
+using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.UserRole;
+using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.ClientRole;
 
 namespace Qweree.Authentication.WebApi.Domain.Authorization
 {
@@ -12,13 +14,15 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IClientRoleRepository _clientRoleRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly SdkMapperService _sdkMapperService;
 
         public RoleService(IUserRoleRepository userRoleRepository, IClientRoleRepository clientRoleRepository,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider, SdkMapperService sdkMapperService)
         {
             _userRoleRepository = userRoleRepository;
             _clientRoleRepository = clientRoleRepository;
             _dateTimeProvider = dateTimeProvider;
+            _sdkMapperService = sdkMapperService;
         }
 
         public async Task<CollectionResponse<UserRole>> FindUserRolesAsync(CancellationToken cancellationToken = new())
@@ -32,7 +36,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
             return Response.Ok(await _clientRoleRepository.FindAsync(cancellationToken));
         }
 
-        public async Task<Response<UserRole>> CreateUserRoleAsync(CreateUserRoleInput input,
+        public async Task<Response<SdkUserRole>> CreateUserRoleAsync(CreateUserRoleInput input,
             CancellationToken cancellationToken = new())
         {
             var role = new UserRole(input.Id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
@@ -44,13 +48,13 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
             }
             catch (InsertDocumentException e)
             {
-                return Response.Fail<UserRole>(e.Message);
+                return Response.Fail<SdkUserRole>(e.Message);
             }
 
-            return Response.Ok(role);
+            return Response.Ok(await _sdkMapperService.MapUserRoleAsync(role, cancellationToken));
         }
 
-        public async Task<Response<ClientRole>> CreateClientRoleAsync(CreateClientRoleInput input,
+        public async Task<Response<SdkClientRole>> CreateClientRoleAsync(CreateClientRoleInput input,
             CancellationToken cancellationToken = new())
         {
             var role = new ClientRole(input.Id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
@@ -62,10 +66,10 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
             }
             catch (InsertDocumentException e)
             {
-                return Response.Fail<ClientRole>(e.Message);
+                return Response.Fail<SdkClientRole>(e.Message);
             }
 
-            return Response.Ok(role);
+            return Response.Ok(await _sdkMapperService.MapClientRoleAsync(role, cancellationToken));
         }
     }
 }
