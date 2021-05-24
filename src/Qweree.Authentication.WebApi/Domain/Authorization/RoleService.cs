@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
@@ -68,6 +71,66 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
             {
                 return Response.Fail<SdkClientRole>(e.Message);
             }
+
+            return Response.Ok(await _sdkMapperService.MapClientRoleAsync(role, cancellationToken));
+        }
+
+        public async Task<Response> DeleteUserRoleAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            await _userRoleRepository.DeleteAsync(id, cancellationToken);
+            return Response.Ok();
+        }
+
+        public async Task<Response> DeleteClientRoleAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            await _clientRoleRepository.DeleteAsync(id, cancellationToken);
+            return Response.Ok();
+        }
+
+        public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(ModifyUserRoleInput input,
+            CancellationToken cancellationToken = new())
+        {
+            UserRole role;
+
+            try
+            {
+                role = await _userRoleRepository.GetAsync(input.Id, cancellationToken);
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return Response.Fail<SdkUserRole>(e.Message);
+            }
+
+            var items = new List<Guid>();
+            items.AddRange(input.IsGroup ?? role.IsGroup ? (input.Items ?? ImmutableArray<Guid>.Empty) : role.Items);
+            role = new UserRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(), role.IsGroup,
+                role.CreatedAt, role.ModifiedAt);
+
+            await _userRoleRepository.UpdateAsync(role.Id.ToString(), role, cancellationToken);
+
+            return Response.Ok(await _sdkMapperService.MapUserRoleAsync(role, cancellationToken));
+        }
+
+        public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(ModifyClientRoleInput input,
+            CancellationToken cancellationToken = new())
+        {
+            ClientRole role;
+
+            try
+            {
+                role = await _clientRoleRepository.GetAsync(input.Id, cancellationToken);
+            }
+            catch (DocumentNotFoundException e)
+            {
+                return Response.Fail<SdkClientRole>(e.Message);
+            }
+
+            var items = new List<Guid>();
+            items.AddRange(input.IsGroup ?? role.IsGroup ? (input.Items ?? ImmutableArray<Guid>.Empty) : role.Items);
+            role = new ClientRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(), role.IsGroup,
+                role.CreatedAt, role.ModifiedAt);
+
+            await _clientRoleRepository.UpdateAsync(role.Id.ToString(), role, cancellationToken);
 
             return Response.Ok(await _sdkMapperService.MapClientRoleAsync(role, cancellationToken));
         }
