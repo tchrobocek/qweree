@@ -18,10 +18,12 @@ using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
+using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
@@ -136,6 +138,10 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("ClientCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_CREATE"));
                 options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_READ"));
                 options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_DELETE"));
+                options.AddPolicy("RoleCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_CREATE"));
+                options.AddPolicy("RoleRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_READ"));
+                options.AddPolicy("RoleDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_DELETE"));
+                options.AddPolicy("RoleModify", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_MODIFY"));
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -204,6 +210,12 @@ namespace Qweree.Authentication.WebApi
             services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>()));
+
+            // Authorization
+            services.AddSingleton<IUserRoleRepository, UserRoleRepository>();
+            services.AddSingleton<IClientRoleRepository, ClientRoleRepository>();
+            services.AddSingleton<RoleService, RoleService>();
+
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
         }
