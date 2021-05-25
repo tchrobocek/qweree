@@ -1,8 +1,8 @@
 using System;
-using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Mongo;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Authorization
+namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 {
     public class ClientRoleRepository : MongoRepositoryBase<ClientRole, ClientRoleDo>, IClientRoleRepository
     {

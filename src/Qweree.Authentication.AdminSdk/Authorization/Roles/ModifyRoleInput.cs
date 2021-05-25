@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Authorization
+namespace Qweree.Authentication.AdminSdk.Authorization.Roles
 {
     public class ModifyClientRoleInput
     {

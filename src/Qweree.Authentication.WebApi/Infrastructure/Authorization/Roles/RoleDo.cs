@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Authorization
+namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 {
     public class UserRoleDo
     {
