@@ -115,8 +115,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
 
             var items = new List<Guid>();
             items.AddRange(input.IsGroup ?? role.IsGroup ? (input.Items ?? ImmutableArray<Guid>.Empty) : role.Items);
-            role = new UserRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(), role.IsGroup,
-                role.CreatedAt, role.ModifiedAt);
+            role = new UserRole(role.Id, role.Key, input.Label ?? role.Label, input.Description ?? role.Description, items.ToImmutableArray(), input.IsGroup ?? role.IsGroup,
+                role.CreatedAt, _dateTimeProvider.UtcNow);
 
             await _userRoleRepository.ReplaceAsync(role.Id.ToString(), role, cancellationToken);
 
@@ -139,8 +139,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
 
             var items = new List<Guid>();
             items.AddRange(input.IsGroup ?? role.IsGroup ? (input.Items ?? ImmutableArray<Guid>.Empty) : role.Items);
-            role = new ClientRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(), role.IsGroup,
-                role.CreatedAt, role.ModifiedAt);
+            role = new ClientRole(role.Id, role.Key, input.Label ?? role.Label, input.Description ?? role.Description, items.ToImmutableArray(), input.IsGroup ?? role.IsGroup,
+                role.CreatedAt, _dateTimeProvider.UtcNow);
 
             await _clientRoleRepository.ReplaceAsync(role.Id.ToString(), role, cancellationToken);
 
