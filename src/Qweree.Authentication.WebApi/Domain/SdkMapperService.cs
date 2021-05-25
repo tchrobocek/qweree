@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Mongo.Exception;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
@@ -27,21 +28,31 @@ namespace Qweree.Authentication.WebApi.Domain
             _clientRoleRepository = clientRoleRepository;
         }
 
-        public SdkUser MapUser(User user)
+        public async Task<SdkUser> MapUserAsync(User user, CancellationToken cancellationToken = new())
         {
-            return new(user.Id, user.Username, user.FullName, user.ContactEmail, user.Roles, user.CreatedAt, user.ModifiedAt);
+            var roles = new List<UserRole>();
+            foreach (var role in user.Roles)
+            {
+                try
+                {
+                    roles.Add(await _userRoleRepository.GetAsync(role, cancellationToken));
+                }
+                catch (DocumentNotFoundException)
+                {}
+            }
+            return new(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(r=>r.Key).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
         }
 
         public async Task<SdkClient> MapClientAsync(Client client, CancellationToken cancellationToken = new())
         {
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, MapUser(owner), client.CreatedAt, client.ModifiedAt);
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), client.CreatedAt, client.ModifiedAt);
         }
 
         public async Task<CreatedClient> MapToCreatedClientAsync(Client client, CancellationToken cancellationToken = new())
         {
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, MapUser(owner), client.CreatedAt, client.ModifiedAt);
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), client.CreatedAt, client.ModifiedAt);
         }
         public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role, CancellationToken cancellationToken = new())
         {

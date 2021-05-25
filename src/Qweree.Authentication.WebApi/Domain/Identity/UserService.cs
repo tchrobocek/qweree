@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,8 +45,8 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
             var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
             var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName,
-                userCreateInput.ContactEmail,
-                password, userCreateInput.Roles, _datetimeProvider.UtcNow, _datetimeProvider.UtcNow);
+                userCreateInput.ContactEmail, password, userCreateInput.Roles, _datetimeProvider.UtcNow,
+                _datetimeProvider.UtcNow);
 
             try
             {
@@ -56,7 +57,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<SdkUser>("User is duplicate.");
             }
 
-            return Response.Ok(_sdkMapperService.MapUser(user));
+            return Response.Ok(await _sdkMapperService.MapUserAsync(user, cancellationToken));
         }
 
         public async Task<Response<SdkUser>> GetUserAsync(Guid userId, CancellationToken cancellationToken = new())
@@ -73,7 +74,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                     StatusCodes.Status404NotFound));
             }
 
-            return Response.Ok(_sdkMapperService.MapUser(user));
+            return Response.Ok(await _sdkMapperService.MapUserAsync(user, cancellationToken));
         }
 
         public async Task<PaginationResponse<SdkUser>> FindUsersAsync(FindUsersInput input,
@@ -90,7 +91,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.FailPagination<SdkUser>(e.Message);
             }
 
-            return Response.Ok(pagination.Documents.Select(_sdkMapperService.MapUser), pagination.TotalCount);
+            var users = new List<SdkUser>();
+            foreach (var document in pagination.Documents)
+            {
+                users.Add(await _sdkMapperService.MapUserAsync(document, cancellationToken));
+            }
+
+            return Response.Ok(users, pagination.TotalCount);
         }
 
         public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new())

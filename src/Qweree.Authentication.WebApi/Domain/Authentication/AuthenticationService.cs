@@ -11,8 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
@@ -36,6 +38,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         private readonly IUserRepository _userRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IPasswordEncoder _passwordEncoder;
+        private readonly IUserRoleRepository _userRoleRepository;
 
         private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -43,7 +46,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             IDateTimeProvider datetimeProvider, Random random,
             int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey,
             string fileAccessTokenKey, int fileAccessTokenValiditySeconds, IPasswordEncoder passwordEncoder,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository, IUserRoleRepository userRoleRepository)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -54,13 +57,13 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             _fileAccessTokenValiditySeconds = fileAccessTokenValiditySeconds;
             _passwordEncoder = passwordEncoder;
             _clientRepository = clientRepository;
+            _userRoleRepository = userRoleRepository;
             _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
             _random = random;
         }
 
         public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input,
-            ClientCredentials clientCredentials,
-            CancellationToken cancellationToken = new())
+            ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
         {
             var now = _datetimeProvider.UtcNow;
 
@@ -77,10 +80,21 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
+            var roles = new List<UserRole>();
+            foreach (var guid in user.Roles)
+            {
+                try
+                {
+                    var role = await _userRoleRepository.GetAsync(guid, cancellationToken);
+                    roles.Add(role);
+                }
+                catch (DocumentNotFoundException)
+                {}
+            }
+
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
-                user.ContactEmail, user.Roles, now,
-                expiresAt);
+                user.ContactEmail, roles.Select(r => r.Key), now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
@@ -111,9 +125,21 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             if (token.ExpiresAt < now)
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
+            var roles = new List<UserRole>();
+            foreach (var guid in user.Roles)
+            {
+                try
+                {
+                    var role = await _userRoleRepository.GetAsync(guid, cancellationToken);
+                    roles.Add(role);
+                }
+                catch (DocumentNotFoundException)
+                {}
+            }
+
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
-                user.ContactEmail, user.Roles, now, expiresAt);
+                user.ContactEmail, roles.Select(r => r.Key), now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);

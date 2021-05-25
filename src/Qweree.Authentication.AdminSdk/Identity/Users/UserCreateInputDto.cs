@@ -1,3 +1,5 @@
+using System;
+
 namespace Qweree.Authentication.AdminSdk.Identity.Users
 {
     public class UserCreateInputDto
@@ -6,6 +8,6 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
         public string? ContactEmail { get; set; }
         public string? FullName { get; set; }
         public string? Password { get; set; }
-        public string[]? Roles { get; set; }
+        public Guid[]? Roles { get; set; }
     }
 }

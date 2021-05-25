@@ -51,6 +51,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
         public async Task<HttpClient> CreateAuthenticatedClientAsync(Client client, User user)
         {
             var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+            var userRoleRepository = new UserRoleRepositoryMock();
             var httpClient = CreateClient();
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
@@ -64,7 +65,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
 
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
                 new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
-                authConfig?.FileAccessTokenKey ?? "", 0, new NonePasswordEncoder(), clientRepositoryMock.Object);
+                authConfig?.FileAccessTokenKey ?? "", 0, new NonePasswordEncoder(), clientRepositoryMock.Object, userRoleRepository);
             var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password), new ClientCredentials(client.ClientId, client.ClientSecret));
 
             Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);

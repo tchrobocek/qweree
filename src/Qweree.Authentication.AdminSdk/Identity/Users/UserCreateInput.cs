@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -6,7 +7,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
     public class UserCreateInput
     {
         public UserCreateInput(string username, string contactEmail, string fullName, string password,
-            IEnumerable<string> roles)
+            IEnumerable<Guid> roles)
         {
             Username = username;
             ContactEmail = contactEmail;
@@ -19,6 +20,6 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
         public string ContactEmail { get; }
         public string FullName { get; }
         public string Password { get; }
-        public ImmutableArray<string> Roles { get; }
+        public ImmutableArray<Guid> Roles { get; }
     }
 }

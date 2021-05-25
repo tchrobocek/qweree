@@ -54,7 +54,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             {
                 Username = "user",
                 Password = "Password1",
-                Roles = new[] {"role1"},
+                Roles = Array.Empty<Guid>(),
                 ContactEmail = "user@example.com",
                 FullName = "User Userov"
             };
@@ -70,7 +70,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 Assert.NotNull(user);
                 Assert.Equal(input.Username, user.Username);
-                Assert.Equal(input.Roles, user.Roles);
+                Assert.Empty(user.Roles ?? Array.Empty<string>());
             }
 
             {
@@ -92,7 +92,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             for (var i = 0; i < 10; i++)
             {
                 var user = UserFactory.CreateDefault($"{i}user");
-                usersList.Add(_sdkMapperService.MapUser(user));
+                usersList.Add(await _sdkMapperService.MapUserAsync(user));
                 await _userRepository.InsertAsync(user);
             }
 

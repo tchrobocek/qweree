@@ -7,7 +7,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
     public class User
     {
         public User(Guid id, string username, string fullName, string contactEmail, string password,
-            IEnumerable<string> roles, DateTime createdAt, DateTime modifiedAt)
+            IEnumerable<Guid> roles, DateTime createdAt, DateTime modifiedAt)
         {
             Id = id;
             Username = username;
@@ -24,7 +24,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         public string FullName { get; }
         public string ContactEmail { get; }
         public string Password { get; }
-        public ImmutableArray<string> Roles { get; }
+        public ImmutableArray<Guid> Roles { get; }
         public DateTime CreatedAt { get; }
         public DateTime ModifiedAt { get; }
     }
