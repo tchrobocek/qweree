@@ -49,7 +49,10 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
                 Items = input.Items.Select(ToDto).ToArray(),
                 Key = input.Key,
                 IsGroup = input.IsGroup,
-                Label = input.Label
+                Label = input.Label,
+                CreatedAt = input.CreatedAt,
+                EffectiveRoles = input.EffectiveRoles.ToArray(),
+                ModifiedAt = input.ModifiedAt
             };
         }
 
@@ -107,7 +110,10 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
                 Items = input.Items.Select(ToDto).ToArray(),
                 Key = input.Key,
                 IsGroup = input.IsGroup,
-                Label = input.Label
+                Label = input.Label,
+                CreatedAt = input.CreatedAt,
+                EffectiveRoles = input.EffectiveRoles.ToArray(),
+                ModifiedAt = input.ModifiedAt
             };
         }
 

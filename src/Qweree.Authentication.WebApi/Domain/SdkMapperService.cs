@@ -81,6 +81,7 @@ namespace Qweree.Authentication.WebApi.Domain
                     role.Description, items.ToImmutableArray(), role.IsGroup, role.CreatedAt, role.ModifiedAt,
                     effectiveRoles);
                 effectiveRoles = ComputeEffectiveRoles(sdkRole)
+                    .Concat(new[] {role.Key})
                     .Distinct()
                     .ToImmutableArray();
             }
