@@ -30,4 +30,8 @@
       <ProjectReference Include="..\Qweree.TestUtils\Qweree.TestUtils.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Domain" />
+    </ItemGroup>
+
 </Project>

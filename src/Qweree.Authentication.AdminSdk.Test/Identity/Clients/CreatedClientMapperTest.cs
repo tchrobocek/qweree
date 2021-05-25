@@ -1,7 +1,8 @@
+using System.Linq;
 using DeepEqual.Syntax;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.AdminSdk.Test.TestUtils;
-using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
 namespace Qweree.Authentication.AdminSdk.Test.Identity.Clients
@@ -17,8 +18,10 @@ namespace Qweree.Authentication.AdminSdk.Test.Identity.Clients
             var actual = CreatedClientMapper.FromDto(dto);
 
             actual.WithDeepEqual(expected)
-                .WithCustomComparison(new ImmutableArrayComparison())
+                .IgnoreProperty(p => p.DeclaringType == typeof(User) && p.Name == nameof(User.Roles))
                 .Assert();
+
+            Assert.Equal(expected.Owner.Roles.ToArray(), actual.Owner.Roles.ToArray());
         }
     }
 }

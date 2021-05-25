@@ -69,8 +69,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 var createdClientDto = await response.Content.ReadAsObjectAsync<CreatedClientDto>();
 
-                var createdClient = CreatedClientMapper.FromDto(createdClientDto!);
-                createdClient.WithDeepEqual(await _sdkMapperService.MapToCreatedClientAsync(client))
+                createdClientDto.WithDeepEqual(CreatedClientMapper.ToDto(await _sdkMapperService.MapToCreatedClientAsync(client)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
                     .IgnoreProperty(p => p.Name == "CreatedAt" || p.Name == "ModifiedAt")
@@ -84,11 +83,10 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 var clientDto = await response.Content.ReadAsObjectAsync<ClientDto>();
 
-                var createdClient = ClientMapper.FromDto(clientDto!);
-                createdClient.WithDeepEqual(await _sdkMapperService.MapClientAsync(client))
+                clientDto.WithDeepEqual(ClientMapper.ToDto(await _sdkMapperService.MapClientAsync(client)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
-                    .IgnoreProperty(p => p.Name == "CreatedAt" || p.Name == "ModifiedAt")
+                    .IgnoreProperty(p => p.Name is "CreatedAt" or "ModifiedAt")
                     .Assert();
             }
 
@@ -136,9 +134,8 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 var response = await httpClient.GetAsync("/api/admin/identity/clients?sort[ClientId]=1&skip=2&take=3");
                 response.EnsureSuccessStatusCode();
                 var clientDtos = await response.Content.ReadAsObjectAsync<ClientDto[]>();
-                var clients = clientDtos!.Select(ClientMapper.FromDto);
 
-                clients.WithDeepEqual(clientsList.Skip(2).Take(3))
+                clientDtos.WithDeepEqual(clientsList.Skip(2).Take(3).Select(ClientMapper.ToDto))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
                     .Assert();

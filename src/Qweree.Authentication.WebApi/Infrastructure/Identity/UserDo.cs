@@ -9,7 +9,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
         public string? FullName { get; set; }
         public string? ContactEmail { get; set; }
         public string? Password { get; set; }
-        public string[]? Roles { get; set; }
+        public Guid[]? Roles { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
     }

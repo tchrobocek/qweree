@@ -26,7 +26,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
                 user.Username ?? string.Empty,
                 user.FullName ?? string.Empty,
                 user.ContactEmail ?? string.Empty,
-                user.Roles.ToImmutableArray(),
+                user.Roles?.ToImmutableArray() ?? ImmutableArray<string>.Empty,
                 user.CreatedAt ?? DateTime.MinValue,
                 user.ModifiedAt ?? DateTime.MinValue);
         }

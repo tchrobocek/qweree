@@ -38,7 +38,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         public async Task<IActionResult> CreateUserActionAsync(UserCreateInputDto input)
         {
             var serviceInput = new UserCreateInput(input.Username ?? "", input.ContactEmail ?? "",
-                input.FullName ?? "", input.Password ?? "", input.Roles ?? Array.Empty<string>());
+                input.FullName ?? "", input.Password ?? "", input.Roles ?? Array.Empty<Guid>());
 
             var userResponse = await _userService.CreateUserAsync(serviceInput);
 

@@ -10,7 +10,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
         {
             return new(databaseObject.Id, databaseObject.Username ?? "", databaseObject.FullName ?? "",
                 databaseObject.ContactEmail ?? "", databaseObject.Password ?? "",
-                databaseObject.Roles ?? Array.Empty<string>(),
+                databaseObject.Roles ?? Array.Empty<Guid>(),
                 databaseObject.CreatedAt, databaseObject.ModifiedAt);
         }
 
