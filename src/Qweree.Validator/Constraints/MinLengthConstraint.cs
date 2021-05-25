@@ -12,7 +12,9 @@ namespace Qweree.Validator.Constraints
         protected override Task ValidateAsync(ValidationContext<IEnumerable> context, MinLengthConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
-            if (context.Subject.Cast<object>().Count() < constraint.MinLength)
+            var count = context.Subject.Cast<object>().Count();
+
+            if (count != 0 && count < constraint.MinLength)
                 builder.AddError(context.Path, constraint.Message);
 
             return Task.CompletedTask;
