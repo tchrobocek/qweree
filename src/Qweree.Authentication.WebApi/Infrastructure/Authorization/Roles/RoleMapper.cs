@@ -1,9 +1,9 @@
 using System;
-using System.Linq;
 using System.Collections.Immutable;
-using Qweree.Authentication.WebApi.Domain.Authorization;
+using System.Linq;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Authorization
+namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 {
     public static class UserRoleMapper
     {

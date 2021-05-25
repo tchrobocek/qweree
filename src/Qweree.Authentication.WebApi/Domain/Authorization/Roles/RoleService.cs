@@ -4,13 +4,13 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.AdminSdk.Authorization;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
-using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.UserRole;
-using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.ClientRole;
+using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
+using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
 
-namespace Qweree.Authentication.WebApi.Domain.Authorization
+namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
 {
     public class RoleService
     {

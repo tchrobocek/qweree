@@ -1,6 +1,6 @@
 using Qweree.Authentication.WebApi.Domain.Persistence;
 
-namespace Qweree.Authentication.WebApi.Domain.Authorization
+namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
 {
     public interface IUserRoleRepository : IRepository<UserRole>
     {

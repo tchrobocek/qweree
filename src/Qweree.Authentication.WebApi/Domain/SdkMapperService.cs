@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
-using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
-using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.UserRole;
-using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.ClientRole;
+using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
+using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
 
 namespace Qweree.Authentication.WebApi.Domain
 {
