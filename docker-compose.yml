@@ -1,5 +1,14 @@
 version: "2"
 services:
+  qweree-proxy:
+    container_name: qweree-proxy
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./src/Qweree.ReverseProxy/config/nginx.conf:/etc/nginx/nginx.conf
+
   qweree-db:
     container_name: qweree-db
     image: mongo:latest
@@ -23,6 +32,7 @@ services:
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
+      Routing__PathBase: "/auth"
 
   qweree-cdn:
     container_name: qweree-cdn
@@ -39,8 +49,10 @@ services:
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Authentication__TokenUri: "http://qweree-auth:10001/api/oauth2/auth"
+      Authentication__TokenUri: "http://localhost/auth/api/oauth2/auth"
+      Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
+      Routing__PathBase: "/cdn"
 
   qweree-qadmin:
     container_name: qweree-qadmin
