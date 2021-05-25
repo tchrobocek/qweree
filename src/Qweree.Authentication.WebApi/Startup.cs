@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MongoDB.HealthCheck;
+using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Authentication;
@@ -77,6 +79,8 @@ namespace Qweree.Authentication.WebApi
                         .AllowAnyMethod();
                 });
             });
+
+            var pathBase = Configuration["Routing:PathBase"];
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Authentication.WebApi", Version = "v1"});
@@ -90,9 +94,9 @@ namespace Qweree.Authentication.WebApi
                     {
                         Password = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri("/api/oauth2/auth", UriKind.Relative),
-                            RefreshUrl = new Uri("/api/oauth2/auth", UriKind.Relative),
-                            TokenUrl = new Uri("/api/oauth2/auth", UriKind.Relative)
+                            AuthorizationUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative),
+                            RefreshUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative),
+                            TokenUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative)
                         }
                     }
                 });
@@ -133,6 +137,10 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_READ"));
                 options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_DELETE"));
             });
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
             // Validator
             services.AddSingleton<IConstraintValidator, PasswordConstraintValidator>();
@@ -153,6 +161,7 @@ namespace Qweree.Authentication.WebApi
             });
 
             // _
+            services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             // Database
@@ -200,10 +209,17 @@ namespace Qweree.Authentication.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
         {
+            var pathBase = routingConfiguration.Value.PathBase;
+
+            if (pathBase != null)
+            {
+                app.UsePathBase(pathBase);
+            }
+            app.UseForwardedHeaders();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree OAuth2 v1 api"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree OAuth2 v1 api"));
             app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();

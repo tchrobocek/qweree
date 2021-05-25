@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using MongoDB.HealthCheck;
+using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.WebApi.Application.Explorer;
@@ -160,10 +162,15 @@ namespace Qweree.Cdn.WebApi
                     }
                 };
             });
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
 
             services.AddAuthorization();
 
             // _
+            services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             // Session
@@ -195,10 +202,17 @@ namespace Qweree.Cdn.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
         {
+            var pathBase = routingConfiguration.Value.PathBase;
+
+            if (pathBase != null)
+            {
+                app.UsePathBase(pathBase);
+            }
+            app.UseForwardedHeaders();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree Cdn v1 api"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Cdn v1 api"));
             app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
