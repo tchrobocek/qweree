@@ -163,11 +163,11 @@ namespace Qweree.Mongo
             }
         }
 
-        public async Task UpdateAsync(string id, TPublicType document, CancellationToken cancellationToken = new())
+        public async Task ReplaceAsync(string id, TPublicType document, CancellationToken cancellationToken = new())
         {
             try
             {
-                await Collection.UpdateOneAsync($@"{{""_id"": UUID(""{id}"")}}",new ObjectUpdateDefinition<TDocumentType>(ToDocument(document)), cancellationToken: cancellationToken);
+                await Collection.ReplaceOneAsync($@"{{""_id"": UUID(""{id}"")}}", ToDocument(document), cancellationToken: cancellationToken);
             }
             catch (MongoWriteException e)
             {
