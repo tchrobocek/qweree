@@ -110,6 +110,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 users.WithDeepEqual(usersList.Skip(2).Take(3))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
+                    .IgnoreProperty(p => p.Name == nameof(User.Roles))
                     .Assert();
             }
         }
