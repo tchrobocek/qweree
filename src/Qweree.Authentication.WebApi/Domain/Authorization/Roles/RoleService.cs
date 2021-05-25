@@ -54,7 +54,12 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkUserRole>> CreateUserRoleAsync(CreateUserRoleInput input,
             CancellationToken cancellationToken = new())
         {
-            var role = new UserRole(input.Id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
+            var id = input.Id;
+
+            if (id == Guid.Empty)
+                id = Guid.NewGuid();
+
+            var role = new UserRole(id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
                 _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             try
@@ -72,7 +77,12 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkClientRole>> CreateClientRoleAsync(CreateClientRoleInput input,
             CancellationToken cancellationToken = new())
         {
-            var role = new ClientRole(input.Id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
+            var id = input.Id;
+
+            if (id == Guid.Empty)
+                id = Guid.NewGuid();
+
+            var role = new ClientRole(id, input.Key, input.Label, input.Description, input.Items, input.IsGroup,
                 _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
             try
