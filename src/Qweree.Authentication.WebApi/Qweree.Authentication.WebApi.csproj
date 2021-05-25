@@ -15,10 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Web" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Qweree.AspNet\Qweree.AspNet.csproj" />
       <ProjectReference Include="..\Qweree.Authentication.AdminSdk\Qweree.Authentication.AdminSdk.csproj" />
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
