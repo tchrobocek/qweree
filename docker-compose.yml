@@ -53,16 +53,6 @@ services:
       Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
       Routing__PathBase: "/cdn"
-
-  qweree-qadmin:
-    container_name: qweree-qadmin
-    build: 
-      dockerfile: ./docker/Qweree.QAdmin.WebApplication.Dockerfile
-      context: .
-    restart: always
-    ports: 
-      - "11001:80"
-
 volumes:
   qweree-db:
   qweree-cdn:
