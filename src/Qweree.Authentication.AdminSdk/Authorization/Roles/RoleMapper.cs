@@ -15,7 +15,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
 
         public static ModifyUserRoleInput FromDto(ModifyUserRoleInputDto dto)
         {
-            return new(dto.Id ?? Guid.Empty, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
+            return new(dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
         }
 
         public static UserRole FromDto(UserRoleDto dto)
@@ -57,7 +57,6 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
         {
             return new()
             {
-                Id = input.Id,
                 Description = input.Description,
                 Items = input.Items?.ToArray(),
                 IsGroup = input.IsGroup,
@@ -74,7 +73,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
 
         public static ModifyClientRoleInput FromDto(ModifyClientRoleInputDto dto)
         {
-            return new(dto.Id ?? Guid.Empty, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
+            return new(dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
         }
 
         public static ClientRole FromDto(ClientRoleDto dto)
@@ -116,7 +115,6 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
         {
             return new()
             {
-                Id = input.Id,
                 Description = input.Description,
                 Items = input.Items?.ToArray(),
                 IsGroup = input.IsGroup,

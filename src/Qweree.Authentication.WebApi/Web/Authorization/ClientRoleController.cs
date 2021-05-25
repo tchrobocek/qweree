@@ -59,7 +59,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         {
             var serviceInput = RoleMapper.FromDto(input);
 
-            var response = await _roleService.ModifyClientRoleAsync(serviceInput);
+            var response = await _roleService.ModifyClientRoleAsync(id, serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();

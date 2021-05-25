@@ -99,14 +99,14 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok();
         }
 
-        public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(ModifyUserRoleInput input,
+        public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(Guid id, ModifyUserRoleInput input,
             CancellationToken cancellationToken = new())
         {
             UserRole role;
 
             try
             {
-                role = await _userRoleRepository.GetAsync(input.Id, cancellationToken);
+                role = await _userRoleRepository.GetAsync(id, cancellationToken);
             }
             catch (DocumentNotFoundException e)
             {
@@ -123,14 +123,14 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok(await _sdkMapperService.MapUserRoleAsync(role, cancellationToken));
         }
 
-        public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(ModifyClientRoleInput input,
+        public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(Guid id, ModifyClientRoleInput input,
             CancellationToken cancellationToken = new())
         {
             ClientRole role;
 
             try
             {
-                role = await _clientRoleRepository.GetAsync(input.Id, cancellationToken);
+                role = await _clientRoleRepository.GetAsync(id, cancellationToken);
             }
             catch (DocumentNotFoundException e)
             {
