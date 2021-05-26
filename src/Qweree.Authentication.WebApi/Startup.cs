@@ -204,6 +204,8 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IClientRepository, ClientRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
+            services.AddSingleton<IUniqueConstraintValidatorRepository, UserRoleRepository>();
+            services.AddSingleton<IUniqueConstraintValidatorRepository, ClientRoleRepository>();
             services.AddSingleton<SdkMapperService, SdkMapperService>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
