@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
+using Qweree.Validator;
 using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
 using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
 
@@ -18,14 +20,16 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         private readonly IClientRoleRepository _clientRoleRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly SdkMapperService _sdkMapperService;
+        private readonly IValidator _validator;
 
         public RoleService(IUserRoleRepository userRoleRepository, IClientRoleRepository clientRoleRepository,
-            IDateTimeProvider dateTimeProvider, SdkMapperService sdkMapperService)
+            IDateTimeProvider dateTimeProvider, SdkMapperService sdkMapperService, IValidator validator)
         {
             _userRoleRepository = userRoleRepository;
             _clientRoleRepository = clientRoleRepository;
             _dateTimeProvider = dateTimeProvider;
             _sdkMapperService = sdkMapperService;
+            _validator = validator;
         }
 
         public async Task<CollectionResponse<SdkUserRole>> FindUserRolesAsync(CancellationToken cancellationToken = new())
@@ -54,6 +58,10 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkUserRole>> CreateUserRoleAsync(CreateUserRoleInput input,
             CancellationToken cancellationToken = new())
         {
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (validationResult.HasFailed)
+                return Response.Fail<SdkUserRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+
             var id = input.Id;
 
             if (id == Guid.Empty)
@@ -77,6 +85,10 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkClientRole>> CreateClientRoleAsync(CreateClientRoleInput input,
             CancellationToken cancellationToken = new())
         {
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (validationResult.HasFailed)
+                return Response.Fail<SdkClientRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+
             var id = input.Id;
 
             if (id == Guid.Empty)
@@ -112,6 +124,10 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(Guid id, ModifyUserRoleInput input,
             CancellationToken cancellationToken = new())
         {
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (validationResult.HasFailed)
+                return Response.Fail<SdkUserRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+
             UserRole role;
 
             try
@@ -136,6 +152,10 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(Guid id, ModifyClientRoleInput input,
             CancellationToken cancellationToken = new())
         {
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (validationResult.HasFailed)
+                return Response.Fail<SdkClientRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+
             ClientRole role;
 
             try
