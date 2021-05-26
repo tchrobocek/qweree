@@ -48,6 +48,18 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
             });
+
+            builder.AddModel<ModifyUserRoleInput>(c =>
+            {
+                c.AddProperty(p => p.Label)
+                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            });
+
+            builder.AddModel<ModifyClientRoleInput>(c =>
+            {
+                c.AddProperty(p => p.Label)
+                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            });
         }
     }
 }
