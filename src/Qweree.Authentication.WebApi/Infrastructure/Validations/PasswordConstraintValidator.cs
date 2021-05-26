@@ -17,6 +17,12 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
         {
             var password = validationContext.Subject;
 
+            if (password == null)
+            {
+                builder.AddError($"{validationContext.Path}", "Password cannot be null");
+                return Task.CompletedTask;
+            }
+
             if (!HasNumberRegex.IsMatch(password))
                 builder.AddError($"{validationContext.Path}", "Password has to contain number.");
 

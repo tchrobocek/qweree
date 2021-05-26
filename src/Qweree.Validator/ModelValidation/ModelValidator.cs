@@ -40,7 +40,7 @@ namespace Qweree.Validator.ModelValidation
         public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
             CancellationToken cancellationToken = new())
         {
-            var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.Subject.GetType());
+            var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.MemberInfo?.DeclaringType?.GetType());
 
             foreach (var settings in modelSettings)
                 await ValidateAsync(validationContext, builder, settings, cancellationToken)
@@ -63,13 +63,13 @@ namespace Qweree.Validator.ModelValidation
         {
             foreach (var property in settings.PropertySettings)
             {
-                var propInfo = validationContext.Subject.GetType().GetProperties()
-                    .First(p => p.Name == property.PropertyName);
+                var propInfo = validationContext.Subject?.GetType().GetProperties()
+                    .FirstOrDefault(p => p.Name == property.PropertyName);
+
+                if (propInfo == null)
+                    continue;
 
                 var value = propInfo.GetValue(validationContext.Subject);
-
-                if (value == null)
-                    throw new InvalidOperationException("Value is null.");
 
                 foreach (var constraint in property.Constraints)
                 {
