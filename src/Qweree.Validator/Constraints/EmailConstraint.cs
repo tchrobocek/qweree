@@ -12,7 +12,7 @@ namespace Qweree.Validator.Constraints
         protected override Task ValidateAsync(ValidationContext<string> context, EmailConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
-            if (context.Subject == null)
+            if (string.IsNullOrEmpty(context.Subject))
                 return Task.CompletedTask;
 
             try
