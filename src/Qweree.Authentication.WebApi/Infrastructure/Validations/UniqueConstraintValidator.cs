@@ -20,6 +20,9 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
         protected override async Task ValidateAsync(ValidationContext<string> validationContext,
             UniqueConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
+            if (validationContext.Subject == null)
+                return;
+
             var repository = _repositories.FirstOrDefault(r => constraint.RepositoryType == r.GetType());
 
             if (repository == null)

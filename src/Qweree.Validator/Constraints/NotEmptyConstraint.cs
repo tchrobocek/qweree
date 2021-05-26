@@ -12,6 +12,9 @@ namespace Qweree.Validator.Constraints
         protected override Task ValidateAsync(ValidationContext<IEnumerable> context, NotEmptyConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
+            if (context.Subject == null)
+                return Task.CompletedTask;
+
             if (!context.Subject.Cast<object>().Any())
                 builder.AddError(context.Path, constraint.Message);
 

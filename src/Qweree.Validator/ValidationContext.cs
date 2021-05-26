@@ -13,7 +13,7 @@ namespace Qweree.Validator
         /// <param name="path">Validation subject path.</param>
         /// <param name="subject">Validation subject.</param>
         /// <param name="memberInfo">Validation subject member info.</param>
-        public ValidationContext(string path, object subject, MemberInfo? memberInfo)
+        public ValidationContext(string path, object? subject, MemberInfo? memberInfo)
         {
             Subject = subject;
             MemberInfo = memberInfo;
@@ -23,7 +23,7 @@ namespace Qweree.Validator
         /// <summary>
         ///     Validation subject.
         /// </summary>
-        public object Subject { get; }
+        public object? Subject { get; }
 
         public MemberInfo? MemberInfo { get; }
 
@@ -45,7 +45,7 @@ namespace Qweree.Validator
         /// <param name="path">Validation subject path.</param>
         /// <param name="subject">Validation subject.</param>
         /// <param name="memberInfo">Validation subject member info.</param>
-        public ValidationContext(string path, TModelType subject, MemberInfo? memberInfo) : base(path, subject!,
+        public ValidationContext(string path, TModelType? subject, MemberInfo? memberInfo) : base(path, subject!,
             memberInfo)
         {
             Subject = subject;
@@ -54,6 +54,6 @@ namespace Qweree.Validator
         /// <summary>
         ///     Validation subject.
         /// </summary>
-        public new TModelType Subject { get; }
+        public new TModelType? Subject { get; }
     }
 }

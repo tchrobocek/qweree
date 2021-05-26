@@ -12,6 +12,9 @@ namespace Qweree.Validator.Constraints
         protected override Task ValidateAsync(ValidationContext<string> context, EmailConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
+            if (context.Subject == null)
+                return Task.CompletedTask;
+
             try
             {
                 // ReSharper disable once ObjectCreationAsStatement
