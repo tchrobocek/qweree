@@ -25,6 +25,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                 c.AddProperty(p => p.Password)
                     .AddConstraint(new NotEmptyConstraint("Password cannot be empty."))
                     .AddConstraint(new PasswordConstraint());
+                c.AddProperty(p => p.Roles)
+                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
             });
 
             builder.AddModel<UserRoleCreateInput>(c =>
@@ -36,6 +38,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+                c.AddProperty(p => p.Items)
+                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
             });
 
             builder.AddModel<ClientRoleCreateInput>(c =>
@@ -47,18 +51,24 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+                c.AddProperty(p => p.Items)
+                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
             });
 
             builder.AddModel<UserRoleModifyInput>(c =>
             {
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+                c.AddProperty(p => p.Items)
+                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
             });
 
             builder.AddModel<ClientRoleModifyInput>(c =>
             {
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+                c.AddProperty(p => p.Items)
+                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
             });
         }
     }
