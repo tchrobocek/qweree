@@ -151,6 +151,7 @@ namespace Qweree.Authentication.WebApi
             // Validator
             services.AddSingleton<IConstraintValidator, PasswordConstraintValidator>();
             services.AddSingleton<IConstraintValidator, UniqueConstraintValidator>();
+            services.AddSingleton<IConstraintValidator, ExistsConstraintValidator>();
             services.AddSingleton<CreateUserRoleValidator>();
             services.AddSingleton<ModifyUserRoleValidator>();
             services.AddSingleton<CreateClientRoleValidator>();
