@@ -41,6 +41,12 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
                 var items = new List<ClientRole>();
                 foreach (var itemId in input.Items)
                 {
+                    if (itemId == input.Id)
+                    {
+                        builder.AddError(validationContext.Path, @"Role cannot reference itself.");
+                        continue;
+                    }
+
                     try
                     {
                         items.Add(await _clientRoleRepository.GetAsync(itemId, cancellationToken));
@@ -96,6 +102,12 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 
                     foreach (var itemId in input.Items)
                     {
+                        if (itemId == input.Id)
+                        {
+                            builder.AddError(validationContext.Path, @"Role cannot reference itself.");
+                            continue;
+                        }
+
                         try
                         {
                             items.Add(await _clientRoleRepository.GetAsync(itemId, cancellationToken));
