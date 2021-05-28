@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +32,7 @@ namespace Qweree.Validator.Test.ModelValidator
                 var item = new Model(1);
                 Assert.True(modelValidator.Supports(item.GetType()));
                 var builder = new ValidationBuilder();
-                await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder);
+                await modelValidator.ValidateAsync(new ValidationContext("", item, item.GetType().GetMember(nameof(Model.Number)).First()), builder);
 
                 var result = builder.Build();
                 Assert.Single(result.Errors);
@@ -46,29 +45,6 @@ namespace Qweree.Validator.Test.ModelValidator
                 await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder);
                 Assert.Empty(builder.Build().Errors);
             }
-        }
-
-        [Fact]
-        public async Task TestModelValidator_NotFound()
-        {
-            var modelSettings = new[]
-            {
-                new ModelSettings(typeof(Model), new[]
-                {
-                    new PropertySettings(nameof(Model.Number), new[]
-                    {
-                        new MinConstraint(5)
-                    })
-                })
-            };
-
-            var constraintValidators = new IConstraintValidator[0];
-            var modelValidator = new ModelValidation.ModelValidator(modelSettings, constraintValidators);
-
-            var item = new Model(1);
-            var builder = new ValidationBuilder();
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
-                await modelValidator.ValidateAsync(new ValidationContext("", item, null), builder));
         }
 
         private class MinConstraint : Constraint<MinConstraintValidator>
