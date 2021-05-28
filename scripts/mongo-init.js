@@ -26,23 +26,21 @@ db.users.insert({
 });
 db.clients.insert([{
     "_id": UUID("9e8fc855-4feb-4c27-8903-f4fed64bf243"),
-    "ClientId": "swagger",
+    "ClientId": "admin-cli",
     "ClientSecret": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
-    "ApplicationName": "Swagger",
+    "ApplicationName": "Admin CLI",
     "Origin": "localhost",
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
     "Roles": [
-        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
-        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
-        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431"
     ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
-    "ClientId": "tests",
+    "ClientId": "test-cli",
     "ClientSecret": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
-    "ApplicationName": "Tests",
+    "ApplicationName": "Test CLI",
     "Origin": "",
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),

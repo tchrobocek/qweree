@@ -11,7 +11,7 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
     {
         public const string TestAdminUsername = "admin";
         public const string TestAdminPassword = "password";
-        public const string TestClientId = "tests";
+        public const string TestClientId = "test-cli";
         public const string TestClientSecret = "password";
 
         private readonly HttpMessageHandler _messageHandler;
