@@ -12,7 +12,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Qweree.AspNet.Application;
+using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
@@ -52,6 +54,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
         {
             var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
             var userRoleRepository = new UserRoleRepositoryMock();
+            var clientRoleRepositoryMock = new Mock<IClientRoleRepository>();
             var httpClient = CreateClient();
             var userRepositoryMock = new Mock<IUserRepository>();
             userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
@@ -63,9 +66,12 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
 
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
 
+            var sdkMapperService = new SdkMapperService(userRepositoryMock.Object, userRoleRepository,
+                clientRoleRepositoryMock.Object);
+
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
                 new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
-                authConfig?.FileAccessTokenKey ?? "", 0, new NonePasswordEncoder(), clientRepositoryMock.Object, userRoleRepository);
+                authConfig?.FileAccessTokenKey ?? "", 0, new NonePasswordEncoder(), clientRepositoryMock.Object, userRoleRepository, sdkMapperService);
             var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password), new ClientCredentials(client.ClientId, client.ClientSecret));
 
             Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);
