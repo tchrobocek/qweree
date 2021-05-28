@@ -40,7 +40,7 @@ namespace Qweree.Validator.ModelValidation
         public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
             CancellationToken cancellationToken = new())
         {
-            var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.MemberInfo?.DeclaringType?.GetType());
+            var modelSettings = _modelSettings.Where(s => s.SubjectType == validationContext.MemberInfo?.DeclaringType);
 
             foreach (var settings in modelSettings)
                 await ValidateAsync(validationContext, builder, settings, cancellationToken)
