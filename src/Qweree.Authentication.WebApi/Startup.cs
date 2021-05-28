@@ -198,11 +198,12 @@ namespace Qweree.Authentication.WebApi
                 var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
                 var clientRepository = p.GetRequiredService<IClientRepository>();
                 var userRoleRepository = p.GetRequiredService<IUserRoleRepository>();
+                var sdkMapper = p.GetRequiredService<SdkMapperService>();
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
                     config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "",
-                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, userRoleRepository);
+                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, userRoleRepository, sdkMapper);
             });
 
             // Identity
