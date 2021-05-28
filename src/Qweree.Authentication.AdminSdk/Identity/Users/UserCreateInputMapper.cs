@@ -9,6 +9,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
         {
             return new()
             {
+                Id = userCreateInput.Id,
                 Password = userCreateInput.Password,
                 Roles = userCreateInput.Roles.ToArray(),
                 Username = userCreateInput.Username,
@@ -19,7 +20,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
 
         public static UserCreateInput FromDto(UserCreateInputDto userCreateInput)
         {
-            return new(userCreateInput.Username ?? "", userCreateInput.ContactEmail ?? "",
+            return new(userCreateInput.Id ?? Guid.Empty, userCreateInput.Username ?? "", userCreateInput.ContactEmail ?? "",
                 userCreateInput.FullName ?? "", userCreateInput.Password ?? "",
                 userCreateInput.Roles ?? Array.Empty<Guid>());
         }

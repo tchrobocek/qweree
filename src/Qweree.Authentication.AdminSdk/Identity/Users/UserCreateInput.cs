@@ -6,9 +6,10 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
 {
     public class UserCreateInput
     {
-        public UserCreateInput(string username, string contactEmail, string fullName, string password,
+        public UserCreateInput(Guid id, string username, string contactEmail, string fullName, string password,
             IEnumerable<Guid> roles)
         {
+            Id = id;
             Username = username;
             ContactEmail = contactEmail;
             FullName = fullName;
@@ -16,6 +17,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
             Roles = roles.ToImmutableArray();
         }
 
+        public Guid Id { get; }
         public string Username { get; }
         public string ContactEmail { get; }
         public string FullName { get; }
