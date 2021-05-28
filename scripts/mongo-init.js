@@ -32,7 +32,12 @@ db.clients.insert([{
     "Origin": "localhost",
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
-    "ModifiedAt": ISODate("1970-01-01")
+    "ModifiedAt": ISODate("1970-01-01"),
+    "Roles": [
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+    ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
     "ClientId": "tests",
@@ -41,8 +46,14 @@ db.clients.insert([{
     "Origin": "",
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
-    "ModifiedAt": ISODate("1970-01-01")
+    "ModifiedAt": ISODate("1970-01-01"),
+    "Roles": [
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+    ]
 }]);
+
 db.user_roles.insert([{
     "_id": UUID("d0a77eeb-972e-4337-a62e-493b3e59f214"),
     "Key": "AUTH_USERS_CREATE",
@@ -154,6 +165,35 @@ db.user_roles.insert([{
 }, {
     "_id": UUID("d98049ab-977e-42ef-bba6-05c16184d054"),
     "Key": "CDN_STORAGE_STORE",
+    "Label": "",
+    "Description": "",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}]);
+
+db.client_roles.insert([{
+    "_id": UUID("f946f6cd-5d17-4dc5-b383-af0201a8b431"),
+    "Key": "AUTH_GRANT_PASSWORD",
+    "Label": "",
+    "Description": "",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+},{
+    "_id": UUID("92024488-4c7d-42a9-8fc5-19fc73853c8e"),
+    "Key": "AUTH_GRANT_REFRESH",
+    "Label": "",
+    "Description": "",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+},{
+    "_id": UUID("2ec76030-c18d-450c-9a0e-5ff9efb1721d"),
+    "Key": "AUTH_GRANT_ADMIN_API",
     "Label": "",
     "Description": "",
     "Items": [],
