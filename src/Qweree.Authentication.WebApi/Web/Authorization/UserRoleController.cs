@@ -36,7 +36,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         {
             var serviceInput = UserRoleMapper.FromDto(input);
 
-            var response = await _roleService.CreateUserRoleAsync(serviceInput);
+            var response = await _roleService.UserRoleCreateAsync(serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
@@ -95,7 +95,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetRolesActionAsync()
         {
-            var response = await _roleService.FindUserRolesAsync();
+            var response = await _roleService.UserRolesFindAsync();
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
