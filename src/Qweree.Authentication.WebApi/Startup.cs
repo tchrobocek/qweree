@@ -151,6 +151,10 @@ namespace Qweree.Authentication.WebApi
             // Validator
             services.AddSingleton<IConstraintValidator, PasswordConstraintValidator>();
             services.AddSingleton<IConstraintValidator, UniqueConstraintValidator>();
+            services.AddSingleton<CreateUserRoleValidator>();
+            services.AddSingleton<ModifyUserRoleValidator>();
+            services.AddSingleton<CreateClientRoleValidator>();
+            services.AddSingleton<ModifyClientRoleValidator>();
             services.AddSingleton<IValidator>(p =>
             {
                 var validatorBuilder = new ValidatorBuilder();
@@ -158,6 +162,10 @@ namespace Qweree.Authentication.WebApi
                 validatorBuilder.WithStaticModelSettings(ValidationMap.ConfigureValidator);
                 validatorBuilder.WithAttributeModelSettings(typeof(Program).Assembly);
                 validatorBuilder.WithDefaultConstraints();
+                validatorBuilder.WithObjectValidator(p.GetRequiredService<CreateUserRoleValidator>());
+                validatorBuilder.WithObjectValidator(p.GetRequiredService<ModifyUserRoleValidator>());
+                validatorBuilder.WithObjectValidator(p.GetRequiredService<CreateClientRoleValidator>());
+                validatorBuilder.WithObjectValidator(p.GetRequiredService<ModifyClientRoleValidator>());
 
                 var validators = p.GetServices<IConstraintValidator>();
                 foreach (var validator in validators)
