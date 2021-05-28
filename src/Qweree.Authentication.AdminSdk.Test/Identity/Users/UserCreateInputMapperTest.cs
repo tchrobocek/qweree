@@ -12,7 +12,7 @@ namespace Qweree.Authentication.AdminSdk.Test.Identity.Users
         [Fact]
         public void TestMapper()
         {
-            var expected = new UserCreateInput("username", "contact email", "full name", "password",
+            var expected = new UserCreateInput(Guid.NewGuid(), "username", "contact email", "full name", "password",
                 new[] {Guid.NewGuid(), Guid.NewGuid()});
             var dto = UserCreateInputMapper.ToDto(expected);
             var actual = UserCreateInputMapper.FromDto(dto);

@@ -44,7 +44,12 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<SdkUser>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
 
             var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
-            var user = new User(Guid.NewGuid(), userCreateInput.Username, userCreateInput.FullName,
+
+            var id = userCreateInput.Id;
+            if (id == Guid.Empty)
+                id = Guid.NewGuid();
+
+            var user = new User(id, userCreateInput.Username, userCreateInput.FullName,
                 userCreateInput.ContactEmail, password, userCreateInput.Roles, _datetimeProvider.UtcNow,
                 _datetimeProvider.UtcNow);
 

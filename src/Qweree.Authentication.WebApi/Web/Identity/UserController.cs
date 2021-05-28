@@ -37,8 +37,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUserActionAsync(UserCreateInputDto input)
         {
-            var serviceInput = new UserCreateInput(input.Username ?? "", input.ContactEmail ?? "",
-                input.FullName ?? "", input.Password ?? "", input.Roles ?? Array.Empty<Guid>());
+            var serviceInput = UserCreateInputMapper.FromDto(input);
 
             var userResponse = await _userService.CreateUserAsync(serviceInput);
 
