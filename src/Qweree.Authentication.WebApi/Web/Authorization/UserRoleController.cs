@@ -32,16 +32,16 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleCreate")]
         [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateRoleActionAsync(CreateUserRoleInputDto input)
+        public async Task<IActionResult> CreateRoleActionAsync(UserRoleCreateInputDto input)
         {
-            var serviceInput = RoleMapper.FromDto(input);
+            var serviceInput = UserRoleMapper.FromDto(input);
 
             var response = await _roleService.CreateUserRoleAsync(serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
 
-            var payload = RoleMapper.ToDto(response.Payload!);
+            var payload = UserRoleMapper.ToDto(response.Payload!);
             return Created($"/api/admin/authorization/userRoles", payload);
         }
 
@@ -55,16 +55,16 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleModify")]
         [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ModifyRoleActionAsync(Guid id, ModifyUserRoleInputDto input)
+        public async Task<IActionResult> ModifyRoleActionAsync(Guid id, UserRoleModifyInputDto input)
         {
-            var serviceInput = RoleMapper.FromDto(id, input);
+            var serviceInput = UserRoleMapper.FromDto(id, input);
 
             var response = await _roleService.ModifyUserRoleAsync(serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
 
-            var payload = RoleMapper.ToDto(response.Payload!);
+            var payload = UserRoleMapper.ToDto(response.Payload!);
             return Ok(payload);
         }
 
@@ -100,7 +100,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
 
-            return Ok(response.Payload!.Select(RoleMapper.ToDto));
+            return Ok(response.Payload!.Select(UserRoleMapper.ToDto));
         }
     }
 }

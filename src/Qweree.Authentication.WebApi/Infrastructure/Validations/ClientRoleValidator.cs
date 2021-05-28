@@ -10,7 +10,7 @@ using ClientRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.Clien
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 {
-    public class CreateClientRoleValidator : ObjectValidatorBase<CreateClientRoleInput>
+    public class CreateClientRoleValidator : ObjectValidatorBase<ClientRoleCreateInput>
     {
         private readonly IClientRoleRepository _clientRoleRepository;
 
@@ -19,7 +19,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             _clientRoleRepository = clientRoleRepository;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<CreateClientRoleInput> validationContext,
+        protected override async Task ValidateAsync(ValidationContext<ClientRoleCreateInput> validationContext,
             ValidationBuilder builder, CancellationToken cancellationToken)
         {
             var input = validationContext.Subject;
@@ -67,7 +67,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
         }
     }
 
-    public class ModifyClientRoleValidator : ObjectValidatorBase<ModifyClientRoleInput>
+    public class ModifyClientRoleValidator : ObjectValidatorBase<ClientRoleModifyInput>
     {
         private readonly IClientRoleRepository _clientRoleRepository;
 
@@ -76,7 +76,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             _clientRoleRepository = clientRoleRepository;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<ModifyClientRoleInput> validationContext,
+        protected override async Task ValidateAsync(ValidationContext<ClientRoleModifyInput> validationContext,
             ValidationBuilder builder, CancellationToken cancellationToken)
         {
             var input = validationContext.Subject;
