@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 using Qweree.Authentication.WebApi.Domain.Identity;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
@@ -7,10 +9,9 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
     {
         public static Client FromDo(ClientDo document)
         {
-            return new(document.Id ?? Guid.Empty,
-                document.ClientId ?? string.Empty, document.ClientSecret ?? string.Empty, document.ApplicationName ?? string.Empty,
-                document.CreatedAt ?? DateTime.MinValue, document.ModifiedAt ?? DateTime.MinValue,
-                document.OwnerId ?? Guid.Empty, document.Origin ?? String.Empty);
+            return new(document.Id ?? Guid.Empty, document.ClientId ?? string.Empty, document.ClientSecret ?? string.Empty,
+                document.ApplicationName ?? string.Empty, document.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty, document.CreatedAt ?? DateTime.MinValue,
+                document.ModifiedAt ?? DateTime.MinValue, document.OwnerId ?? Guid.Empty, document.Origin ?? String.Empty);
         }
 
         public static ClientDo ToDo(Client client)
@@ -24,7 +25,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
                 CreatedAt = client.CreatedAt,
                 ModifiedAt = client.ModifiedAt,
                 OwnerId = client.OwnerId,
-                Origin = client.Origin
+                Origin = client.Origin,
+                Roles = client.Roles.ToArray()
             };
         }
     }
