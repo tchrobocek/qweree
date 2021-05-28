@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -59,7 +61,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, user);
             {
                 var input = new ClientCreateInput(client.Id, client.ClientId, client.ClientSecret,
-                    client.ApplicationName, client.Origin, user.Id);
+                    client.ApplicationName, client.Origin, user.Id, ImmutableArray<Guid>.Empty);
 
                 var json = JsonUtils.Serialize(input);
                 var response = await httpClient.PostAsync("/api/admin/identity/clients",

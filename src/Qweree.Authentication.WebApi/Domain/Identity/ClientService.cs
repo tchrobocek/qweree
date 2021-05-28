@@ -40,7 +40,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
             var secret = _passwordEncoder.EncodePassword(clientCreateInput.ClientSecret);
             var client = new Client(clientCreateInput.Id, clientCreateInput.ClientId, secret,
-                clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+                clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
 
             try
@@ -53,7 +53,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             }
 
             var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientCreateInput.ClientSecret,
-                clientCreateInput.ApplicationName, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+                clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
             return Response.Ok(await _sdkMapperService.MapToCreatedClientAsync(clientToReturn, cancellationToken));
         }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Clients
 {
@@ -13,7 +15,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 ApplicationName = input.ApplicationName,
                 ClientId = input.ClientId,
                 ClientSecret = input.ClientSecret,
-                OwnerId = input.OwnerId
+                OwnerId = input.OwnerId,
+                Roles = input.Roles.ToArray()
             };
         }
         public static ClientCreateInput FromDto(ClientCreateInputDto input)
@@ -23,7 +26,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 input.ClientSecret ?? string.Empty,
                 input.ApplicationName ?? string.Empty,
                 input.Origin ?? string.Empty,
-                input.OwnerId ?? Guid.Empty);
+                input.OwnerId ?? Guid.Empty,
+                input.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
         }
     }
 }
