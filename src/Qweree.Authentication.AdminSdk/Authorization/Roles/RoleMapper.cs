@@ -20,5 +20,15 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
             return new(role.Id ?? Guid.Empty, role.Key ?? string.Empty, role.Label ?? string.Empty, role.Description ??
                 string.Empty);
         }
+
+        public static Role FromUserRole(UserRole userRole)
+        {
+            return new(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
+        }
+
+        public static Role FromClientRole(ClientRole clientRole)
+        {
+            return new(clientRole.Id, clientRole.Key, clientRole.Label, clientRole.Description);
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -70,7 +71,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 Assert.NotNull(user);
                 Assert.Equal(input.Username, user.Username);
-                Assert.Empty(user.Roles ?? Array.Empty<string>());
+                Assert.Empty(user.Roles ?? Array.Empty<RoleDto>());
             }
 
             {
