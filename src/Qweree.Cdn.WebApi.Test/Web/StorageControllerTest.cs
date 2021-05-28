@@ -38,7 +38,7 @@ namespace Qweree.Cdn.WebApi.Test.Web
         public async Task TestStoreAndRead()
         {
             var passwordInput = new PasswordGrantInput("admin", "password");
-            var clientCredentials = new ClientCredentials("tests", "password");
+            var clientCredentials = new ClientCredentials("test-cli", "password");
             var client = await _factory.CreateAuthenticatedClientAsync(passwordInput, clientCredentials);
             const string text = "Ahoj!";
 
