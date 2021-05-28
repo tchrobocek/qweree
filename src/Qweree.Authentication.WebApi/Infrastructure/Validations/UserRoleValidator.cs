@@ -10,7 +10,7 @@ using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRol
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 {
-    public class CreateUserRoleValidator : ObjectValidatorBase<CreateUserRoleInput>
+    public class CreateUserRoleValidator : ObjectValidatorBase<UserRoleCreateInput>
     {
         private readonly IUserRoleRepository _userRoleRepository;
 
@@ -19,7 +19,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             _userRoleRepository = userRoleRepository;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<CreateUserRoleInput> validationContext,
+        protected override async Task ValidateAsync(ValidationContext<UserRoleCreateInput> validationContext,
             ValidationBuilder builder, CancellationToken cancellationToken)
         {
             var input = validationContext.Subject;
@@ -67,7 +67,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
         }
     }
 
-    public class ModifyUserRoleValidator : ObjectValidatorBase<ModifyUserRoleInput>
+    public class ModifyUserRoleValidator : ObjectValidatorBase<UserRoleModifyInput>
     {
         private readonly IUserRoleRepository _userRoleRepository;
 
@@ -76,7 +76,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             _userRoleRepository = userRoleRepository;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<ModifyUserRoleInput> validationContext,
+        protected override async Task ValidateAsync(ValidationContext<UserRoleModifyInput> validationContext,
             ValidationBuilder builder, CancellationToken cancellationToken)
         {
             var input = validationContext.Subject;

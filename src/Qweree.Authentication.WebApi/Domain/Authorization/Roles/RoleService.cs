@@ -55,7 +55,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok((IEnumerable<SdkClientRole>)sdkRoles);
         }
 
-        public async Task<Response<SdkUserRole>> CreateUserRoleAsync(CreateUserRoleInput input,
+        public async Task<Response<SdkUserRole>> CreateUserRoleAsync(UserRoleCreateInput input,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
@@ -82,7 +82,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok(await _sdkMapperService.MapUserRoleAsync(role, cancellationToken));
         }
 
-        public async Task<Response<SdkClientRole>> CreateClientRoleAsync(CreateClientRoleInput input,
+        public async Task<Response<SdkClientRole>> CreateClientRoleAsync(ClientRoleCreateInput input,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
@@ -121,7 +121,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok();
         }
 
-        public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(ModifyUserRoleInput input,
+        public async Task<Response<SdkUserRole>> ModifyUserRoleAsync(UserRoleModifyInput input,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
@@ -149,7 +149,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
             return Response.Ok(await _sdkMapperService.MapUserRoleAsync(role, cancellationToken));
         }
 
-        public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(ModifyClientRoleInput input,
+        public async Task<Response<SdkClientRole>> ModifyClientRoleAsync(ClientRoleModifyInput input,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);

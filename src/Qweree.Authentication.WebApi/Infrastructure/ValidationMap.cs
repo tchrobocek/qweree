@@ -27,7 +27,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new PasswordConstraint());
             });
 
-            builder.AddModel<CreateUserRoleInput>(c =>
+            builder.AddModel<UserRoleCreateInput>(c =>
             {
                 c.AddProperty(p => p.Key)
                     .AddConstraint(new UniqueConstraint(typeof(UserRoleRepository)))
@@ -38,7 +38,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
             });
 
-            builder.AddModel<CreateClientRoleInput>(c =>
+            builder.AddModel<ClientRoleCreateInput>(c =>
             {
                 c.AddProperty(p => p.Key)
                     .AddConstraint(new UniqueConstraint(typeof(ClientRoleRepository)))
@@ -49,13 +49,13 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
             });
 
-            builder.AddModel<ModifyUserRoleInput>(c =>
+            builder.AddModel<UserRoleModifyInput>(c =>
             {
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
             });
 
-            builder.AddModel<ModifyClientRoleInput>(c =>
+            builder.AddModel<ClientRoleModifyInput>(c =>
             {
                 c.AddProperty(p => p.Label)
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
