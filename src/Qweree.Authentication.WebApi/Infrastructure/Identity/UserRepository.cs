@@ -10,7 +10,7 @@ using Qweree.Mongo.Exception;
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
 {
     public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository,
-        IUniqueConstraintValidatorRepository
+        IUniqueConstraintValidatorRepository, IExistsConstraintValidatorRepository
     {
         public UserRepository(MongoContext context) : base("users", context)
         {
@@ -36,6 +36,23 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity
                 throw new DocumentNotFoundException(@$"User ""{username}"" was not found.");
 
             return user;
+        }
+
+
+        public async Task<bool> IsExistingAsync(string value, CancellationToken cancellationToken = new())
+        {
+            if (!Guid.TryParse(value, out var guid))
+                return false;
+
+            try
+            {
+                await GetAsync(guid, cancellationToken);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
