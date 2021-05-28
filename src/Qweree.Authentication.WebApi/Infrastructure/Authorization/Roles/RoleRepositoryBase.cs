@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +26,11 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 
             return clientRole != null;
         }
+
+        public async Task<IEnumerable<ClientRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);
+        }
     }
 
     public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUserRoleRepository, IUniqueConstraintValidatorRepository
@@ -43,6 +49,11 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
                 .FirstOrDefault();
 
             return userRole != null;
+        }
+
+        public async Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);
         }
     }
 }

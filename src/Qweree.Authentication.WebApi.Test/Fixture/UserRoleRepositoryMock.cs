@@ -74,5 +74,10 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
         {
             throw new NotImplementedException();
         }
+
+        public Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
     }
 }
