@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 
 namespace Qweree.Authentication.AdminSdk.Test.TestUtils
@@ -8,7 +9,7 @@ namespace Qweree.Authentication.AdminSdk.Test.TestUtils
     {
         public static User CreateValid()
         {
-            return new(Guid.NewGuid(), "user", "User User", "user@example.com", new[] {"role1", "role2"}.ToImmutableArray(),
+            return new(Guid.NewGuid(), "user", "User User", "user@example.com", new[] {new Role(Guid.NewGuid(), "role1", "", ""), new Role(Guid.NewGuid(), "role2", "", "")}.ToImmutableArray(),
                 DateTime.UtcNow, DateTime.UtcNow);
         }
     }

@@ -43,7 +43,7 @@ namespace Qweree.Authentication.WebApi.Domain
                 catch (DocumentNotFoundException)
                 {}
             }
-            return new(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(r=>r.Key).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
+            return new(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(FromUserRole).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
         }
 
         public async Task<SdkClient> MapClientAsync(Client client, CancellationToken cancellationToken = new())
@@ -143,10 +143,15 @@ namespace Qweree.Authentication.WebApi.Domain
             if (userRole.IsGroup)
             {
                 foreach (var item in userRole.Items.SelectMany(ComputeEffectiveRoles))
-                    yield return new Role(item.Id, item.Key, item.Label, item.Description);
+                    yield return item;
             }
 
-            yield return new Role(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
+            yield return RoleMapper.FromUserRole(userRole);
+        }
+
+        private Role FromUserRole(UserRole role)
+        {
+            return new (role.Id, role.Key, role.Label, role.Description);
         }
     }
 }
