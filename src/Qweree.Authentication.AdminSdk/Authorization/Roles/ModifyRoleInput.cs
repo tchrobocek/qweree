@@ -5,14 +5,16 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
 {
     public class ModifyClientRoleInput
     {
-        public ModifyClientRoleInput(string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
+        public ModifyClientRoleInput(Guid id, string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
         {
+            Id = id;
             Label = label;
             Description = description;
             IsGroup = isGroup;
             Items = items;
         }
 
+        public Guid Id { get; }
         public string? Label { get; }
         public string? Description { get; }
         public bool? IsGroup { get; }
@@ -21,14 +23,16 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
 
     public class ModifyUserRoleInput
     {
-        public ModifyUserRoleInput(string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
+        public ModifyUserRoleInput(Guid id, string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
         {
+            Id = id;
             Label = label;
             Description = description;
             IsGroup = isGroup;
             Items = items;
         }
 
+        public Guid Id { get; }
         public string? Label { get; }
         public string? Description { get; }
         public bool? IsGroup { get; }

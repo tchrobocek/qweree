@@ -57,9 +57,9 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ModifyRoleActionAsync(Guid id, ModifyUserRoleInputDto input)
         {
-            var serviceInput = RoleMapper.FromDto(input);
+            var serviceInput = RoleMapper.FromDto(id, input);
 
-            var response = await _roleService.ModifyUserRoleAsync(id, serviceInput);
+            var response = await _roleService.ModifyUserRoleAsync(serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
