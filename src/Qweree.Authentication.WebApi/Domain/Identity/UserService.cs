@@ -77,7 +77,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             return Response.Ok(await _sdkMapperService.MapUserAsync(user, cancellationToken));
         }
 
-        public async Task<PaginationResponse<SdkUser>> FindUsersAsync(FindUsersInput input,
+        public async Task<PaginationResponse<SdkUser>> FindUsersAsync(UserFindInput input,
             CancellationToken cancellationToken = new())
         {
             Pagination<User> pagination;

@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity
 {
-    public class FindUsersInput
+    public class UserFindInput
     {
-        public FindUsersInput(int skip, int take, Dictionary<string, int> sort)
+        public UserFindInput(int skip, int take, Dictionary<string, int> sort)
         {
             Skip = skip;
             Take = take;

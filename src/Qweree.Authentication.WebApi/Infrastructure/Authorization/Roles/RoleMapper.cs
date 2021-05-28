@@ -5,7 +5,7 @@ using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 {
-    public static class UserRoleMapper
+    public static class RoleMapper
     {
         public static UserRoleDo ToDo(UserRole role)
         {
@@ -35,9 +35,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
                 roleDo.ModifiedAt ?? DateTime.MinValue
             );
         }
-    }
-    public static class ClientRoleMapper
-    {
+
         public static ClientRoleDo ToDo(ClientRole role)
         {
             return new()
