@@ -9,7 +9,7 @@ using Qweree.Mongo;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
 {
-    public class ClientRoleRepository : MongoRepositoryBase<ClientRole, ClientRoleDo>, IClientRoleRepository, IUniqueConstraintValidatorRepository
+    public class ClientRoleRepository : MongoRepositoryBase<ClientRole, ClientRoleDo>, IClientRoleRepository, IUniqueConstraintValidatorRepository, IExistsConstraintValidatorRepository
     {
         public ClientRoleRepository(MongoContext context) : base("client_roles", context)
         {
@@ -31,9 +31,26 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
         {
             return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);
         }
+
+
+        public async Task<bool> IsExistingAsync(string value, CancellationToken cancellationToken = new())
+        {
+            if (!Guid.TryParse(value, out var guid))
+                return false;
+
+            try
+            {
+                await GetAsync(guid, cancellationToken);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 
-    public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUserRoleRepository, IUniqueConstraintValidatorRepository
+    public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUserRoleRepository, IUniqueConstraintValidatorRepository, IExistsConstraintValidatorRepository
     {
         public UserRoleRepository(MongoContext context) : base("user_roles", context)
         {
@@ -54,6 +71,22 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
         public async Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
         {
             return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);
+        }
+
+        public async Task<bool> IsExistingAsync(string value, CancellationToken cancellationToken = new())
+        {
+            if (!Guid.TryParse(value, out var guid))
+                return false;
+
+            try
+            {
+                await GetAsync(guid, cancellationToken);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
