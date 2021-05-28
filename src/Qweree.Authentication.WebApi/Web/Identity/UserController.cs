@@ -43,7 +43,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             var userResponse = await _userService.CreateUserAsync(serviceInput);
 
             if (userResponse.Status != ResponseStatus.Ok)
-                return BadRequest(userResponse.ToErrorResponseDto());
+                return userResponse.ToErrorActionResult();
 
             var userDto = UserMapper.ToDto(userResponse.Payload!);
             return Created($"/api/v1/users/{userDto.Id}", userDto);
@@ -100,7 +100,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         )
         {
             var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
-            var input = new FindUsersInput(skip, take, sortDictionary);
+            var input = new UserFindInput(skip, take, sortDictionary);
             var usersResponse = await _userService.FindUsersAsync(input);
 
             if (usersResponse.Status != ResponseStatus.Ok)
