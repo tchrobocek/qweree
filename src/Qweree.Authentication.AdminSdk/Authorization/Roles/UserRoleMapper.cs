@@ -23,8 +23,8 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
             return new(dto.Id ?? Guid.Empty, dto.Key ?? string.Empty, dto.Label ?? string.Empty,
                 dto.Description ?? string.Empty,
                 dto.Items?.Select(FromDto).ToImmutableArray() ?? ImmutableArray<UserRole>.Empty, dto.IsGroup ?? false,
-                dto.CreatedAt ?? DateTime.MinValue, dto.ModifiedAt ?? DateTime.MinValue, dto.EffectiveRoles
-                    ?.ToImmutableArray() ?? ImmutableArray<string>.Empty);
+                dto.CreatedAt ?? DateTime.MinValue, dto.ModifiedAt ?? DateTime.MinValue, dto.EffectiveRoles?.Select(RoleMapper.FromDto)
+                    .ToImmutableArray() ?? ImmutableArray<Role>.Empty);
         }
 
         public static UserRoleCreateInputDto ToDto(UserRoleCreateInput input)
@@ -51,7 +51,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
                 IsGroup = input.IsGroup,
                 Label = input.Label,
                 CreatedAt = input.CreatedAt,
-                EffectiveRoles = input.EffectiveRoles.ToArray(),
+                EffectiveRoles = input.EffectiveRoles.Select(RoleMapper.ToDto).ToArray(),
                 ModifiedAt = input.ModifiedAt
             };
         }

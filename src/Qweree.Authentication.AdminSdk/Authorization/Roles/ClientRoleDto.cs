@@ -12,6 +12,6 @@ namespace Qweree.Authentication.AdminSdk.Authorization.Roles
         public bool? IsGroup { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
-        public string[]? EffectiveRoles { get; set; }
+        public RoleDto[]? EffectiveRoles { get; set; }
     }
 }

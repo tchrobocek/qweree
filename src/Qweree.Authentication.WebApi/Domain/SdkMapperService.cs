@@ -3,15 +3,18 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
+using ClientRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRole;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
 using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
+using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
 
 namespace Qweree.Authentication.WebApi.Domain
 {
@@ -73,7 +76,7 @@ namespace Qweree.Authentication.WebApi.Domain
                 }
             }
 
-            var effectiveRoles = ImmutableArray<string>.Empty;
+            var effectiveRoles = ImmutableArray<Role>.Empty;
 
             if (level == 0)
             {
@@ -81,7 +84,6 @@ namespace Qweree.Authentication.WebApi.Domain
                     role.Description, items.ToImmutableArray(), role.IsGroup, role.CreatedAt, role.ModifiedAt,
                     effectiveRoles);
                 effectiveRoles = ComputeEffectiveRoles(sdkRole)
-                    .Concat(new[] {role.Key})
                     .Distinct()
                     .ToImmutableArray();
             }
@@ -90,15 +92,15 @@ namespace Qweree.Authentication.WebApi.Domain
                 role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles);
         }
 
-        private IEnumerable<string> ComputeEffectiveRoles(SdkClientRole clientRole)
+        private IEnumerable<Role> ComputeEffectiveRoles(SdkClientRole clientRole)
         {
             if (clientRole.IsGroup)
             {
                 foreach (var item in clientRole.Items.SelectMany(ComputeEffectiveRoles))
-                    yield return item;
+                    yield return new Role(item.Id, item.Key, item.Label, item.Description);
             }
 
-            yield return clientRole.Key;
+            yield return new Role(clientRole.Id, clientRole.Key, clientRole.Label, clientRole.Description);
         }
 
         public async Task<SdkUserRole> MapUserRoleAsync(UserRole role, CancellationToken cancellationToken = new())
@@ -120,7 +122,7 @@ namespace Qweree.Authentication.WebApi.Domain
                 }
             }
 
-            var effectiveRoles = ImmutableArray<string>.Empty;
+            var effectiveRoles = ImmutableArray<Role>.Empty;
 
             if (level == 0)
             {
@@ -136,15 +138,15 @@ namespace Qweree.Authentication.WebApi.Domain
                 role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles);
         }
 
-        private IEnumerable<string> ComputeEffectiveRoles(SdkUserRole userRole)
+        private IEnumerable<Role> ComputeEffectiveRoles(SdkUserRole userRole)
         {
             if (userRole.IsGroup)
             {
                 foreach (var item in userRole.Items.SelectMany(ComputeEffectiveRoles))
-                    yield return item;
+                    yield return new Role(item.Id, item.Key, item.Label, item.Description);
             }
 
-            yield return userRole.Key;
+            yield return new Role(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
         }
     }
 }

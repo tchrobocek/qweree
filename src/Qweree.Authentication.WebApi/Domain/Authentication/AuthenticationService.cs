@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -229,7 +230,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 
         private async Task<IEnumerable<string>> GetEffectiveRolesAsync(User user, CancellationToken cancellationToken = new())
         {
-            var roles = new List<string>();
+            var roles = new List<Role>();
             foreach (var guid in user.Roles)
             {
                 try
@@ -242,7 +243,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 {}
             }
 
-            return roles.Distinct();
+            return roles.Select(r => r.Key).Distinct();
         }
     }
 }
