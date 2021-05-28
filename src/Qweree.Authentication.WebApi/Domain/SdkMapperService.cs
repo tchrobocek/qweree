@@ -48,8 +48,18 @@ namespace Qweree.Authentication.WebApi.Domain
 
         public async Task<SdkClient> MapClientAsync(Client client, CancellationToken cancellationToken = new())
         {
+            var roles = new List<ClientRole>();
+            foreach (var role in client.Roles)
+            {
+                try
+                {
+                    roles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
+                }
+                catch (DocumentNotFoundException)
+                {}
+            }
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), client.CreatedAt, client.ModifiedAt);
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), roles.Select(FromClientRole).ToImmutableArray(), client.CreatedAt, client.ModifiedAt);
         }
 
         public async Task<CreatedClient> MapToCreatedClientAsync(Client client, CancellationToken cancellationToken = new())
@@ -150,6 +160,11 @@ namespace Qweree.Authentication.WebApi.Domain
         }
 
         private Role FromUserRole(UserRole role)
+        {
+            return new (role.Id, role.Key, role.Label, role.Description);
+        }
+
+        private Role FromClientRole(ClientRole role)
         {
             return new (role.Id, role.Key, role.Label, role.Description);
         }

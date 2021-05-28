@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Immutable;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 
 namespace Qweree.Authentication.AdminSdk.Test.TestUtils
@@ -7,7 +9,7 @@ namespace Qweree.Authentication.AdminSdk.Test.TestUtils
     {
         public static Client CreateValid()
         {
-            return new(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(),
+            return new(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(), ImmutableArray<Role>.Empty,
                 DateTime.UtcNow, DateTime.UtcNow);
         }
 
