@@ -10,12 +10,10 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.Sdk.Tokens;
-using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
+using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
-using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
@@ -39,8 +37,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         private readonly IUserRepository _userRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IPasswordEncoder _passwordEncoder;
-        private readonly IUserRoleRepository _userRoleRepository;
-        private readonly SdkMapperService _sdkMapperService;
+        private readonly AuthorizationService _authorizationService;
 
         private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
@@ -48,7 +45,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             IDateTimeProvider datetimeProvider, Random random,
             int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey,
             string fileAccessTokenKey, int fileAccessTokenValiditySeconds, IPasswordEncoder passwordEncoder,
-            IClientRepository clientRepository, IUserRoleRepository userRoleRepository, SdkMapperService sdkMapperService)
+            IClientRepository clientRepository, AuthorizationService authorizationService)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -59,8 +56,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             _fileAccessTokenValiditySeconds = fileAccessTokenValiditySeconds;
             _passwordEncoder = passwordEncoder;
             _clientRepository = clientRepository;
-            _userRoleRepository = userRoleRepository;
-            _sdkMapperService = sdkMapperService;
+            _authorizationService = authorizationService;
             _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
             _random = random;
         }
@@ -83,9 +79,16 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
+            var effectiveRoles = new List<string>();
+            await foreach (var role in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+                .WithCancellation(cancellationToken))
+            {
+                effectiveRoles.Add(role.Key);
+            }
+
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
-                user.ContactEmail, await GetEffectiveRolesAsync(user, cancellationToken), now, expiresAt);
+                user.ContactEmail, effectiveRoles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
@@ -116,9 +119,16 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             if (token.ExpiresAt < now)
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
+            var effectiveRoles = new List<string>();
+            await foreach (var role in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+                .WithCancellation(cancellationToken))
+            {
+                effectiveRoles.Add(role.Key);
+            }
+
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
-                user.ContactEmail, await GetEffectiveRolesAsync(user, cancellationToken), now, expiresAt);
+                user.ContactEmail, effectiveRoles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
@@ -226,24 +236,6 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 throw new AuthenticationException();
 
             return client;
-        }
-
-        private async Task<IEnumerable<string>> GetEffectiveRolesAsync(User user, CancellationToken cancellationToken = new())
-        {
-            var roles = new List<Role>();
-            foreach (var guid in user.Roles)
-            {
-                try
-                {
-                    var role = await _userRoleRepository.GetAsync(guid, cancellationToken);
-                    var sdkRole = await _sdkMapperService.MapUserRoleAsync(role, cancellationToken);
-                    roles.AddRange(sdkRole.EffectiveRoles);
-                }
-                catch (DocumentNotFoundException)
-                {}
-            }
-
-            return roles.Select(r => r.Key).Distinct();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
@@ -23,12 +24,15 @@ namespace Qweree.Authentication.WebApi.Domain
         private readonly IUserRepository _userRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IClientRoleRepository _clientRoleRepository;
+        private readonly AuthorizationService _authorizationService;
 
-        public SdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository, IClientRoleRepository clientRoleRepository)
+        public SdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository,
+            IClientRoleRepository clientRoleRepository, AuthorizationService authorizationService)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
             _clientRoleRepository = clientRoleRepository;
+            _authorizationService = authorizationService;
         }
 
         public async Task<SdkUser> MapUserAsync(User user, CancellationToken cancellationToken = new())
@@ -41,9 +45,12 @@ namespace Qweree.Authentication.WebApi.Domain
                     roles.Add(await _userRoleRepository.GetAsync(role, cancellationToken));
                 }
                 catch (DocumentNotFoundException)
-                {}
+                {
+                }
             }
-            return new(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(FromUserRole).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
+
+            return new(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(FromUserRole)
+                .ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
         }
 
         public async Task<SdkClient> MapClientAsync(Client client, CancellationToken cancellationToken = new())
@@ -56,23 +63,32 @@ namespace Qweree.Authentication.WebApi.Domain
                     roles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
                 }
                 catch (DocumentNotFoundException)
-                {}
+                {
+                }
             }
+
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), roles.Select(FromClientRole).ToImmutableArray(), client.CreatedAt, client.ModifiedAt);
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin,
+                await MapUserAsync(owner, cancellationToken), roles.Select(FromClientRole).ToImmutableArray(),
+                client.CreatedAt, client.ModifiedAt);
         }
 
-        public async Task<CreatedClient> MapToCreatedClientAsync(Client client, CancellationToken cancellationToken = new())
+        public async Task<CreatedClient> MapToCreatedClientAsync(Client client,
+            CancellationToken cancellationToken = new())
         {
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner, cancellationToken), client.CreatedAt, client.ModifiedAt);
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner,
+                cancellationToken), client.CreatedAt, client.ModifiedAt);
         }
-        public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role, CancellationToken cancellationToken = new())
+
+        public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role,
+            CancellationToken cancellationToken = new())
         {
             return await DoMapClientRoleAsync(0, role, cancellationToken);
         }
 
-        private async Task<SdkClientRole> DoMapClientRoleAsync(int level, ClientRole role, CancellationToken cancellationToken = new())
+        private async Task<SdkClientRole> DoMapClientRoleAsync(int level, ClientRole role,
+            CancellationToken cancellationToken = new())
         {
             var items = new List<SdkClientRole>();
 
@@ -118,7 +134,8 @@ namespace Qweree.Authentication.WebApi.Domain
             return await DoMapUserRoleAsync(0, role, cancellationToken);
         }
 
-        private async Task<SdkUserRole> DoMapUserRoleAsync(int level, UserRole role, CancellationToken cancellationToken = new())
+        private async Task<SdkUserRole> DoMapUserRoleAsync(int level, UserRole role,
+            CancellationToken cancellationToken = new())
         {
             var items = new List<SdkUserRole>();
 
@@ -132,41 +149,29 @@ namespace Qweree.Authentication.WebApi.Domain
                 }
             }
 
-            var effectiveRoles = ImmutableArray<Role>.Empty;
+            var effectiveRoles = new List<Role>();
 
             if (level == 0)
             {
-                var sdkRole = new SdkUserRole(role.Id, role.Key, role.Label,
-                    role.Description, items.ToImmutableArray(), role.IsGroup, role.CreatedAt, role.ModifiedAt,
-                    effectiveRoles);
-                effectiveRoles = ComputeEffectiveRoles(sdkRole)
-                    .Distinct()
-                    .ToImmutableArray();
+                await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(role, cancellationToken)
+                    .WithCancellation(cancellationToken))
+                {
+                    effectiveRoles.Add(effectiveRole);
+                }
             }
 
             return new SdkUserRole(role.Id, role.Key, role.Label, role.Description, items.ToImmutableArray(),
-                role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles);
-        }
-
-        private IEnumerable<Role> ComputeEffectiveRoles(SdkUserRole userRole)
-        {
-            if (userRole.IsGroup)
-            {
-                foreach (var item in userRole.Items.SelectMany(ComputeEffectiveRoles))
-                    yield return item;
-            }
-
-            yield return RoleMapper.FromUserRole(userRole);
+                role.IsGroup, role.CreatedAt, role.ModifiedAt, effectiveRoles.ToImmutableArray());
         }
 
         private Role FromUserRole(UserRole role)
         {
-            return new (role.Id, role.Key, role.Label, role.Description);
+            return new(role.Id, role.Key, role.Label, role.Description);
         }
 
         private Role FromClientRole(ClientRole role)
         {
-            return new (role.Id, role.Key, role.Label, role.Description);
+            return new(role.Id, role.Key, role.Label, role.Description);
         }
     }
 }
