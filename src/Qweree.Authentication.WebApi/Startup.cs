@@ -18,6 +18,7 @@ using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
@@ -198,13 +199,12 @@ namespace Qweree.Authentication.WebApi
                 var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
                 var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
                 var clientRepository = p.GetRequiredService<IClientRepository>();
-                var userRoleRepository = p.GetRequiredService<IUserRoleRepository>();
-                var sdkMapper = p.GetRequiredService<SdkMapperService>();
+                var authorizationService = p.GetRequiredService<AuthorizationService>();
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
                     config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "",
-                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, userRoleRepository, sdkMapper);
+                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, authorizationService);
             });
 
             // Identity
@@ -232,6 +232,7 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IUserRoleRepository, UserRoleRepository>();
             services.AddSingleton<IClientRoleRepository, ClientRoleRepository>();
             services.AddSingleton<RoleService, RoleService>();
+            services.AddSingleton<AuthorizationService>();
 
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
