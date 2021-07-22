@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users
@@ -22,7 +23,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users
         {
             return new(userCreateInput.Id ?? Guid.Empty, userCreateInput.Username ?? "", userCreateInput.ContactEmail ?? "",
                 userCreateInput.FullName ?? "", userCreateInput.Password ?? "",
-                userCreateInput.Roles ?? Array.Empty<Guid>());
+                userCreateInput.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
         }
     }
 }
