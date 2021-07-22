@@ -35,6 +35,7 @@ namespace Qweree.Authentication.WebApi.Test.Infrastructure.Identiity
 
             actualUser.WithDeepEqual(user)
                 .WithCustomComparison(new MillisecondDateTimeComparison())
+                .WithCustomComparison(new ImmutableArrayComparison())
                 .Assert();
         }
     }
