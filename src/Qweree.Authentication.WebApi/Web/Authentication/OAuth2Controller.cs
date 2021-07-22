@@ -9,6 +9,7 @@ using Microsoft.Net.Http.Headers;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Utils;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
 using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
@@ -22,6 +23,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
         private static readonly ImmutableArray<string> GrantWhitelist =
             new[] {"password", "refresh_token", "file_access"}.ToImmutableArray();
 
+        private readonly AuthorizationHeaderEncoder _authorizationHeaderEncoder = new();
         private readonly AuthenticationService _authenticationService;
         private readonly IDateTimeProvider _datetimeProvider;
 
@@ -40,7 +42,8 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
         /// <param name="username">Username.</param>
         /// <param name="password">Password.</param>
         /// <param name="refreshToken">Refresh token.</param>
-        /// <param name="clientId">Client id</param>
+        /// <param name="clientId">Client id.</param>
+        /// <param name="authorizationHeader">Authorization header.</param>
         /// <returns>Created user.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(TokenInfoDto), StatusCodes.Status200OK)]
@@ -52,8 +55,8 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             [FromForm(Name = "access_token")] string? accessToken,
             [FromForm(Name = "client_id")] string? clientId,
             [FromForm(Name = "client_secret")] string? clientSecret,
-            [Required] [FromForm(Name = "grant_type")]
-            string grantType)
+            [Required] [FromForm(Name = "grant_type")] string grantType,
+            [FromHeader(Name = "Authorization")] string? authorizationHeader)
         {
             if (!GrantWhitelist.Contains(grantType))
                 return Unauthorized();
@@ -61,6 +64,24 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             Response<TokenInfo> response;
 
             var clientCredentials = new ClientCredentials(clientId ?? "", clientSecret);
+
+            if (!string.IsNullOrWhiteSpace(authorizationHeader))
+            {
+                if (authorizationHeader.StartsWith("Basic "))
+                {
+                    var hash = authorizationHeader.Substring("Basic ".Length).Trim();
+
+                    try
+                    {
+                        clientCredentials = _authorizationHeaderEncoder.Decode(hash);
+                    }
+                    catch (Exception)
+                    {
+                        return Unauthorized();
+                    }
+                }
+            }
+
             if (grantType == "password")
             {
                 var passwordInput = new PasswordGrantInput(username ?? "", password ?? "");
