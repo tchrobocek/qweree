@@ -20,9 +20,11 @@ Start chosen services by listing them.
 
 ### Services
 
+#### qweree-proxy
+Nginx proxy
 
 #### qweree-db
-Mongo db
+Mongo database
 
 Connection string: `mongodb://localhost:27017`.
 
@@ -33,17 +35,15 @@ Use for example `mongo compass` application to explore database.
 #### qweree-auth
 Auth api
 
-Swagger: `http://localhost:10001/swagger/index.html`
+Swagger: `http://localhost/auth/swagger/index.html`
 
-OAuth2 endpoint: `http://localhost:10001/api/oauth2/auth`
+OAuth2 endpoint: `http://localhost/auth/api/oauth2/auth`
 
 #### qweree-cdn
 Cdn api
 
-Swagger: `http://localhost:10002/swagger/index.html`
-
-#### qweree-qadmin
-Angular admin for micro services qweree-auth and qweree-cdn. Available at `http://localhost:11001`
+Swagger: `http://localhost/cdn/swagger/index.html`
 
 ### Credentials
 - Init admin user - `admin`:`password`
+- Init client - `admin-cli`:`password`
