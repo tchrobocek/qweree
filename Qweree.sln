@@ -32,12 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Sdk.Http", "src\Qwer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Cdn.Sdk.Test", "src\Qweree.Cdn.Sdk.Test\Qweree.Cdn.Sdk.Test.csproj", "{BD0A0E87-A7DB-4DF4-915F-E3F551934C98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.QAdmin.ConsoleApplication", "src\Qweree.QAdmin.ConsoleApplication\Qweree.QAdmin.ConsoleApplication.csproj", "{BF1D7B35-8440-4C88-9D56-333A41E03FDB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.CommandLine", "src\Qweree.CommandLine\Qweree.CommandLine.csproj", "{F8B7018C-0D59-4A07-A288-4DC388695DB6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.CommandLine.Test", "src\Qweree.CommandLine.Test\Qweree.CommandLine.Test.csproj", "{C2615067-9023-4139-8746-9DAE714DBDF4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.AdminSdk", "src\Qweree.Authentication.AdminSdk\Qweree.Authentication.AdminSdk.csproj", "{298FB3B6-F7E2-46C0-AB08-6D3E0C3721FE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Authentication.AdminSdk.Test", "src\Qweree.Authentication.AdminSdk.Test\Qweree.Authentication.AdminSdk.Test.csproj", "{4F409CDE-955C-4B56-84EF-BD848EA2E9DF}"
@@ -112,18 +106,6 @@ Global
 		{BD0A0E87-A7DB-4DF4-915F-E3F551934C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD0A0E87-A7DB-4DF4-915F-E3F551934C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD0A0E87-A7DB-4DF4-915F-E3F551934C98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF1D7B35-8440-4C88-9D56-333A41E03FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF1D7B35-8440-4C88-9D56-333A41E03FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF1D7B35-8440-4C88-9D56-333A41E03FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF1D7B35-8440-4C88-9D56-333A41E03FDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8B7018C-0D59-4A07-A288-4DC388695DB6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2615067-9023-4139-8746-9DAE714DBDF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2615067-9023-4139-8746-9DAE714DBDF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2615067-9023-4139-8746-9DAE714DBDF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2615067-9023-4139-8746-9DAE714DBDF4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{298FB3B6-F7E2-46C0-AB08-6D3E0C3721FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{298FB3B6-F7E2-46C0-AB08-6D3E0C3721FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{298FB3B6-F7E2-46C0-AB08-6D3E0C3721FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
