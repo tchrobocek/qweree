@@ -9,10 +9,12 @@ namespace Qweree.TestUtils.DeepEqual
 {
     public class ImmutableArrayComparison : IComparison
     {
+        private readonly IComparison _inner;
         private readonly bool _withDeepEqual;
 
-        public ImmutableArrayComparison(bool withDeepEqual = true)
+        public ImmutableArrayComparison(IComparison inner = null, bool withDeepEqual = true)
         {
+            _inner = inner;
             _withDeepEqual = withDeepEqual;
         }
 
@@ -25,8 +27,14 @@ namespace Qweree.TestUtils.DeepEqual
         public (ComparisonResult result, IComparisonContext context) Compare(IComparisonContext context, object value1,
             object value2)
         {
-            var array1 = ((IEnumerable) value1).Cast<object>().ToArray();
-            var array2 = ((IEnumerable) value2).Cast<object>().ToArray();
+            if (value1 is not IEnumerable enumerable1 || value2 is not IEnumerable enumerable2)
+            {
+                context = context.AddDifference(new BasicDifference(context.Breadcrumb, value1.GetType(), value2.GetType(), ""));
+                return (ComparisonResult.Fail, context);
+            }
+
+            var array1 = enumerable1.Cast<object>().ToArray();
+            var array2 = enumerable2.Cast<object>().ToArray();
 
             if (array1.Length != array2.Length)
             {
@@ -37,9 +45,12 @@ namespace Qweree.TestUtils.DeepEqual
 
             if (_withDeepEqual)
             {
-                array1.WithDeepEqual(array2)
-                    .WithCustomComparison(new MillisecondDateTimeComparison())
-                    .Assert();
+                var syntax = array1.WithDeepEqual(array2);
+                if (_inner != null)
+                {
+                    syntax = syntax.WithCustomComparison(_inner);
+                }
+                syntax.Assert();
             }
             else
             {
