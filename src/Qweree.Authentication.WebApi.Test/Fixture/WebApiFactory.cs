@@ -66,7 +66,7 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
 
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
                 new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
-                authConfig?.FileAccessTokenKey ?? "", 0, new NonePasswordEncoder(), clientRepositoryMock.Object, new AuthorizationService(userRoleRepository));
+                new NonePasswordEncoder(), clientRepositoryMock.Object, new AuthorizationService(userRoleRepository));
             var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password), new ClientCredentials(client.ClientId, client.ClientSecret));
 
             Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);

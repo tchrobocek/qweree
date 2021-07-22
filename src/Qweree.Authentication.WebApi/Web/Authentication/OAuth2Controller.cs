@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authentication;
@@ -91,17 +89,6 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             {
                 var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
                 response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
-            }
-            else if (grantType == "file_access")
-            {
-                FileAccessGrantInput fileAccessInput;
-
-                if (User.Identity?.IsAuthenticated ?? false)
-                    fileAccessInput = new FileAccessGrantInput(Request.Headers[HeaderNames.Authorization].First() ?? "");
-                else
-                    fileAccessInput = new FileAccessGrantInput(accessToken ?? "");
-
-                response = await _authenticationService.AuthenticateAsync(fileAccessInput, clientCredentials);
             }
             else
             {

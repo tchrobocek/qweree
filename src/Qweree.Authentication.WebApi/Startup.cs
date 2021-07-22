@@ -203,8 +203,7 @@ namespace Qweree.Authentication.WebApi
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
-                    config.AccessTokenKey ?? "", config.FileAccessTokenKey ?? "",
-                    config.FileAccessTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, authorizationService);
+                    config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService);
             });
 
             // Identity
