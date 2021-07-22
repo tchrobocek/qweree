@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using DeepEqual.Syntax;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
 namespace Qweree.Authentication.AdminSdk.Test.Identity.Clients
@@ -19,6 +20,7 @@ namespace Qweree.Authentication.AdminSdk.Test.Identity.Clients
             var actual = ClientCreateInputMapper.FromDto(dto);
 
             actual.WithDeepEqual(expected)
+                .WithCustomComparison(new ImmutableArrayComparison())
                 .Assert();
         }
     }
