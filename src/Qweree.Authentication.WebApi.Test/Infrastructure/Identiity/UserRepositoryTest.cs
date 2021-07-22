@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using DeepEqual;
 using DeepEqual.Syntax;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
@@ -33,10 +34,13 @@ namespace Qweree.Authentication.WebApi.Test.Infrastructure.Identiity
 
             var actualUser = await _repository.GetByUsernameAsync(user.Username);
 
-            actualUser.WithDeepEqual(user)
+            var comparison = ComparisonBuilder.Get()
                 .WithCustomComparison(new MillisecondDateTimeComparison())
-                .WithCustomComparison(new ImmutableArrayComparison())
-                .Assert();
+                .Create();
+
+            comparison.Add(new ImmutableArrayComparison(comparison));
+
+            actualUser.ShouldDeepEqual(user, comparison);
         }
     }
 }
