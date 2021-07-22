@@ -62,6 +62,11 @@ namespace Qweree.Utils
             return JsonSerializer.Deserialize<TValueType>(json, CamelCaseOptions);
         }
 
+        public static TValueType? Deserialize<TValueType>(string json, JsonSerializerOptions jsonSerializerOptions) where TValueType : class
+        {
+            return JsonSerializer.Deserialize<TValueType>(json, jsonSerializerOptions);
+        }
+
         public static async Task<object?> DeserializeAsync(Stream stream, Type returnType,
             JsonSerializerOptions jsonSerializerOptions, CancellationToken cancellationToken = new())
         {
