@@ -19,7 +19,6 @@ namespace Qweree.Validator.Constraints
             new OneOfConstraintValidator(),
             new NotEmptyConstraintValidator(),
             new NotNullConstraintValidator(),
-            new OneOfConstraintValidator()
         };
 
         /// <summary>
