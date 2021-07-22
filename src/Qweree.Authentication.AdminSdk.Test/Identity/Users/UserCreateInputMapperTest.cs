@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using DeepEqual.Syntax;
 using Qweree.Authentication.AdminSdk.Identity.Users;
@@ -13,7 +14,7 @@ namespace Qweree.Authentication.AdminSdk.Test.Identity.Users
         public void TestMapper()
         {
             var expected = new UserCreateInput(Guid.NewGuid(), "username", "contact email", "full name", "password",
-                new[] {Guid.NewGuid(), Guid.NewGuid()});
+                new[] {Guid.NewGuid(), Guid.NewGuid()}.ToImmutableArray());
             var dto = UserCreateInputMapper.ToDto(expected);
             var actual = UserCreateInputMapper.FromDto(dto);
 
