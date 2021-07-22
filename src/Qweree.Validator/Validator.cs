@@ -61,9 +61,11 @@ namespace Qweree.Validator
         {
             var builder = new ValidationBuilder();
 
+            var i = 0;
             foreach (var subject in subjects)
             {
-                await ValidateModelAsync("", subject, builder, cancellationToken)
+                i++;
+                await ValidateModelAsync($"[{i}]", subject, builder, cancellationToken)
                     .ConfigureAwait(false);
             }
 
