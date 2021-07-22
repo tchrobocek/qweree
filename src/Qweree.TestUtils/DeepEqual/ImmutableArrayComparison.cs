@@ -37,7 +37,9 @@ namespace Qweree.TestUtils.DeepEqual
 
             if (_withDeepEqual)
             {
-                array1.ShouldDeepEqual(array2);
+                array1.WithDeepEqual(array2)
+                    .WithCustomComparison(new MillisecondDateTimeComparison())
+                    .Assert();
             }
             else
             {
