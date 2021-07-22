@@ -36,7 +36,7 @@ namespace Qweree.Validator.Test.ModelValidator
 
                 var result = builder.Build();
                 Assert.Single(result.Errors);
-                Assert.Equal(".Number", result.Errors.First().Path);
+                Assert.Equal("Number", result.Errors.First().Path);
             }
             {
                 var item = new Model(5);

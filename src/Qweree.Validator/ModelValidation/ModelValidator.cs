@@ -78,8 +78,13 @@ namespace Qweree.Validator.ModelValidation
                     if (validator == null)
                         throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
 
-                    await validator.ValidateAsync(
-                            new ValidationContext($"{validationContext.Path}.{propInfo.Name}", value, propInfo),
+                    var path = validationContext.Path;
+                    if (!string.IsNullOrWhiteSpace(path))
+                        path += ".";
+                    path += propInfo.Name;
+
+                    var context = new ValidationContext(path, value, propInfo);
+                    await validator.ValidateAsync(context,
                             constraint, builder, cancellationToken)
                         .ConfigureAwait(false);
                 }
