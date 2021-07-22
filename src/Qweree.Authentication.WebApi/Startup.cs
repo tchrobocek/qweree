@@ -223,10 +223,12 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<SdkMapperService, SdkMapperService>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
                 p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<SdkMapperService>()));
+                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>(),
+                p.GetRequiredService<SdkMapperService>()));
             services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
-                p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>()));
+                p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>(),
+                new Random()));
 
             // Authorization
             services.AddSingleton<IUserRoleRepository, UserRoleRepository>();

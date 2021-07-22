@@ -14,7 +14,7 @@ namespace Qweree.Authentication.AdminSdk.Test.Identity.Clients
         [Fact]
         public void TestMapper()
         {
-            var expected = new ClientCreateInput(Guid.NewGuid(), "client id", "client secret", "application", "origin",
+            var expected = new ClientCreateInput(Guid.NewGuid(), "client id", "application", "origin",
                 Guid.NewGuid(), new[] {Guid.NewGuid(), Guid.NewGuid()}.ToImmutableArray());
             var dto = ClientCreateInputMapper.ToDto(expected);
             var actual = ClientCreateInputMapper.FromDto(dto);
