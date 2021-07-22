@@ -92,7 +92,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             }
             else
             {
-                throw new InvalidOperationException("Invalid grant.");
+                return Unauthorized();
             }
 
             if (response.Status == ResponseStatus.Fail)
