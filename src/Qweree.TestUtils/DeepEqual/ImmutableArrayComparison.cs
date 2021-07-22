@@ -9,10 +9,10 @@ namespace Qweree.TestUtils.DeepEqual
 {
     public class ImmutableArrayComparison : IComparison
     {
-        private readonly IComparison _inner;
+        private readonly IComparison? _inner;
         private readonly bool _withDeepEqual;
 
-        public ImmutableArrayComparison(IComparison inner = null, bool withDeepEqual = true)
+        public ImmutableArrayComparison(IComparison? inner = null, bool withDeepEqual = true)
         {
             _inner = inner;
             _withDeepEqual = withDeepEqual;
