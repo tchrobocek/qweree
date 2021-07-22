@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
+using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
+using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Xunit;
@@ -43,7 +46,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
         }
 
         [Fact]
-        public async Task TestAuthenticatePassword()
+        public async Task TestAuthenticatePassword_RequestBody()
         {
             var user = UserFactory.CreateDefault();
             await _userRepository.InsertAsync(user);
@@ -61,6 +64,37 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
             var request = new FormUrlEncodedContent(input);
 
             var response = await _client.PostAsync("/api/oauth2/auth", request);
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task TestAuthenticatePassword_Header()
+        {
+            var user = UserFactory.CreateDefault();
+            await _userRepository.InsertAsync(user);
+            var client = ClientFactory.CreateDefault(user.Id);
+            await _clientRepository.InsertAsync(client);
+
+            var input = new[]
+            {
+                new KeyValuePair<string?, string?>("grant_type", "password"),
+                new KeyValuePair<string?, string?>("username", user.Username),
+                new KeyValuePair<string?, string?>("password", user.Password),
+            };
+
+            var authHeaderEncoder = new AuthorizationHeaderEncoder();
+            var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+            var request = new FormUrlEncodedContent(input);
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
+            {
+                Content = request,
+                Headers =
+                {
+                    {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+                }
+            };
+
+            var response = await _client.SendAsync(message);
             response.EnsureSuccessStatusCode();
         }
     }
