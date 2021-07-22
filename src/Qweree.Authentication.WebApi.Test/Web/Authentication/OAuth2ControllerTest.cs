@@ -108,7 +108,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
             var client = ClientFactory.CreateDefault(user.Id);
             await _clientRepository.InsertAsync(client);
 
-            var refreshToken = "";
+            string refreshToken;
 
             {
                 var input = new[]
@@ -136,7 +136,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
                 var content = await response.Content.ReadAsStringAsync();
                 var tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
 
-                refreshToken = tokenInfo!.RefreshToken;
+                refreshToken = tokenInfo?.RefreshToken!;
             }
 
             {
