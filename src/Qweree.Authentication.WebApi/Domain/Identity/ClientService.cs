@@ -20,15 +20,32 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IClientRepository _clientRepository;
         private readonly SdkMapperService _sdkMapperService;
+        private readonly Random _random;
 
         public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-            IClientRepository clientRepository, SdkMapperService sdkMapperService)
+            IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random)
         {
             _validator = validator;
             _passwordEncoder = passwordEncoder;
             _dateTimeProvider = dateTimeProvider;
             _clientRepository = clientRepository;
             _sdkMapperService = sdkMapperService;
+            _random = random;
+        }
+
+        private string GenerateClientSecret()
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$~&*#@";
+            const int secretLength = 40;
+            var result = string.Empty;
+
+            for (var i = 0; i < secretLength; i++)
+            {
+                var index = _random.Next(chars.Length);
+                result += chars[index];
+            }
+
+            return result;
         }
 
         public async Task<Response<CreatedClient>> ClientCreateAsync(ClientCreateInput clientCreateInput,
@@ -38,7 +55,8 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             if (validationResult.HasFailed)
                 return Response.Fail<CreatedClient>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
 
-            var secret = _passwordEncoder.EncodePassword(clientCreateInput.ClientSecret);
+            var clientSecret = GenerateClientSecret();
+            var secret = _passwordEncoder.EncodePassword(clientSecret);
             var client = new Client(clientCreateInput.Id, clientCreateInput.ClientId, secret,
                 clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
@@ -52,7 +70,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<CreatedClient>("Client is a duplicate.");
             }
 
-            var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientCreateInput.ClientSecret,
+            var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientSecret,
                 clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
             return Response.Ok(await _sdkMapperService.ClientMapToCreatedClientAsync(clientToReturn, cancellationToken));
