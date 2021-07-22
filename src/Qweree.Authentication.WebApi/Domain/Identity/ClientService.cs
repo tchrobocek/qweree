@@ -31,7 +31,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             _sdkMapperService = sdkMapperService;
         }
 
-        public async Task<Response<CreatedClient>> CreateClientAsync(ClientCreateInput clientCreateInput,
+        public async Task<Response<CreatedClient>> ClientCreateAsync(ClientCreateInput clientCreateInput,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(clientCreateInput, cancellationToken);
@@ -55,10 +55,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientCreateInput.ClientSecret,
                 clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
-            return Response.Ok(await _sdkMapperService.MapToCreatedClientAsync(clientToReturn, cancellationToken));
+            return Response.Ok(await _sdkMapperService.ClientMapToCreatedClientAsync(clientToReturn, cancellationToken));
         }
 
-        public async Task<Response<SdkClient>> GetClientAsync(Guid id,
+        public async Task<Response<SdkClient>> ClientGetAsync(Guid id,
             CancellationToken cancellationToken = new())
         {
             Client client;
@@ -72,10 +72,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<SdkClient>(new Error("Client was not found", 404));
             }
 
-            return Response.Ok(await _sdkMapperService.MapClientAsync(client, cancellationToken));
+            return Response.Ok(await _sdkMapperService.ClientMapAsync(client, cancellationToken));
         }
 
-        public async Task<PaginationResponse<SdkClient>> PaginateClientsAsync(int skip, int take, Dictionary<string, int> sort,
+        public async Task<PaginationResponse<SdkClient>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
             CancellationToken cancellationToken = new())
         {
             var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
@@ -83,13 +83,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
             foreach (var document in pagination.Documents)
             {
-                documents.Add(await _sdkMapperService.MapClientAsync(document, cancellationToken));
+                documents.Add(await _sdkMapperService.ClientMapAsync(document, cancellationToken));
             }
 
             return Response.Ok(documents, pagination.TotalCount);
         }
 
-        public async Task<Response> DeleteClientAsync(Guid id)
+        public async Task<Response> ClientDeleteAsync(Guid id)
         {
             await _clientRepository.DeleteAsync(id);
             return Response.Ok();

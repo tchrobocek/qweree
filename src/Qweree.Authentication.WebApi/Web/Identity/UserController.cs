@@ -35,11 +35,11 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "UserCreate")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateUserActionAsync(UserCreateInputDto input)
+        public async Task<IActionResult> UserCreateActionAsync(UserCreateInputDto input)
         {
             var serviceInput = UserCreateInputMapper.FromDto(input);
 
-            var userResponse = await _userService.CreateUserAsync(serviceInput);
+            var userResponse = await _userService.UserCreateAsync(serviceInput);
 
             if (userResponse.Status != ResponseStatus.Ok)
                 return userResponse.ToErrorActionResult();
@@ -57,9 +57,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "UserRead")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetUserActionAsync(Guid id)
+        public async Task<IActionResult> UserGetActionAsync(Guid id)
         {
-            var userResponse = await _userService.GetUserAsync(id);
+            var userResponse = await _userService.UserGetAsync(id);
 
             if (userResponse.Status != ResponseStatus.Ok)
                 return userResponse.ToErrorActionResult();
@@ -92,7 +92,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "UserRead")]
         [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> FindUsersActionAsync(
+        public async Task<IActionResult> UsersPaginateActionAsync(
             [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 50
@@ -100,7 +100,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         {
             var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
             var input = new UserFindInput(skip, take, sortDictionary);
-            var usersResponse = await _userService.FindUsersAsync(input);
+            var usersResponse = await _userService.UsersPaginateAsync(input);
 
             if (usersResponse.Status != ResponseStatus.Ok)
                 return usersResponse.ToErrorActionResult();
@@ -121,9 +121,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "UserDelete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteActionAsync(Guid id)
+        public async Task<IActionResult> UserDeleteActionAsync(Guid id)
         {
-            var deleteResponse = await _userService.DeleteAsync(id);
+            var deleteResponse = await _userService.UserDeleteAsync(id);
 
             if (deleteResponse.Status != ResponseStatus.Ok)
                 return deleteResponse.ToErrorActionResult();

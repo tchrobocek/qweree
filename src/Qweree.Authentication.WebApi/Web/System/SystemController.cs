@@ -23,7 +23,7 @@ namespace Qweree.Authentication.WebApi.Web.System
         /// <returns>Returns current project assembly version.</returns>
         [HttpGet("version")]
         [ProducesResponseType(typeof(VersionDto), StatusCodes.Status200OK)]
-        public IActionResult GetVersionAction()
+        public IActionResult VersionGetAction()
         {
             var version = GetType().Assembly.GetName().Version?.ToString();
             return Ok(new VersionDto {Version = version});
@@ -36,7 +36,7 @@ namespace Qweree.Authentication.WebApi.Web.System
         [HttpGet("health")]
         [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status503ServiceUnavailable)]
-        public async Task<IActionResult> GetHealthActionAsync(CancellationToken cancellationToken = new())
+        public async Task<IActionResult> HealthGetActionAsync(CancellationToken cancellationToken = new())
         {
             var report = await _healthCheckService.CheckHealthAsync(cancellationToken);
             var reportDto = HealthReportMapper.ToDto(report);

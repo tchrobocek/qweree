@@ -36,7 +36,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             _sdkMapperService = sdkMapperService;
         }
 
-        public async Task<Response<SdkUser>> CreateUserAsync(UserCreateInput userCreateInput,
+        public async Task<Response<SdkUser>> UserCreateAsync(UserCreateInput userCreateInput,
             CancellationToken cancellationToken = new())
         {
             var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
@@ -62,10 +62,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                 return Response.Fail<SdkUser>("User is duplicate.");
             }
 
-            return Response.Ok(await _sdkMapperService.MapUserAsync(user, cancellationToken));
+            return Response.Ok(await _sdkMapperService.UserMapAsync(user, cancellationToken));
         }
 
-        public async Task<Response<SdkUser>> GetUserAsync(Guid userId, CancellationToken cancellationToken = new())
+        public async Task<Response<SdkUser>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())
         {
             User user;
 
@@ -79,10 +79,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
                     StatusCodes.Status404NotFound));
             }
 
-            return Response.Ok(await _sdkMapperService.MapUserAsync(user, cancellationToken));
+            return Response.Ok(await _sdkMapperService.UserMapAsync(user, cancellationToken));
         }
 
-        public async Task<PaginationResponse<SdkUser>> FindUsersAsync(UserFindInput input,
+        public async Task<PaginationResponse<SdkUser>> UsersPaginateAsync(UserFindInput input,
             CancellationToken cancellationToken = new())
         {
             Pagination<User> pagination;
@@ -99,13 +99,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             var users = new List<SdkUser>();
             foreach (var document in pagination.Documents)
             {
-                users.Add(await _sdkMapperService.MapUserAsync(document, cancellationToken));
+                users.Add(await _sdkMapperService.UserMapAsync(document, cancellationToken));
             }
 
             return Response.Ok(users, pagination.TotalCount);
         }
 
-        public async Task<Response> DeleteAsync(Guid id, CancellationToken cancellationToken = new())
+        public async Task<Response> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             if (_sessionStorage.CurrentUser.Id == id)
             {
