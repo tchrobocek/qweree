@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.WebApplication", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.PiccStash.WebApi", "src\Qweree.PiccStash.WebApi\Qweree.PiccStash.WebApi.csproj", "{2E8E2C9E-58D3-47E1-AEEC-85D3D0574C26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.ConsoleHost", "src\Qweree.ConsoleHost\Qweree.ConsoleHost.csproj", "{086D52E2-71BA-4E5D-8348-6A0A34FD7D5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{4F409CDE-955C-4B56-84EF-BD848EA2E9DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F409CDE-955C-4B56-84EF-BD848EA2E9DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F409CDE-955C-4B56-84EF-BD848EA2E9DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{086D52E2-71BA-4E5D-8348-6A0A34FD7D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{086D52E2-71BA-4E5D-8348-6A0A34FD7D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{086D52E2-71BA-4E5D-8348-6A0A34FD7D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{086D52E2-71BA-4E5D-8348-6A0A34FD7D5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95F312DD-15C5-4A9C-947F-B2753123F5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{95F312DD-15C5-4A9C-947F-B2753123F5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95F312DD-15C5-4A9C-947F-B2753123F5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
