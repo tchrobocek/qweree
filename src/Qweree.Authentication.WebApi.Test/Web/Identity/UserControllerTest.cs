@@ -93,7 +93,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             for (var i = 0; i < 10; i++)
             {
                 var user = UserFactory.CreateDefault($"{i}user");
-                usersList.Add(await _sdkMapperService.MapUserAsync(user));
+                usersList.Add(await _sdkMapperService.UserMapAsync(user));
                 await _userRepository.InsertAsync(user);
             }
 

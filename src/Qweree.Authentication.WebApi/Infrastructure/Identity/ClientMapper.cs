@@ -5,7 +5,7 @@ using Qweree.Authentication.WebApi.Domain.Identity;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity
 {
-    public class ClientMapper
+    public static class ClientMapper
     {
         public static Client FromDo(ClientDo document)
         {

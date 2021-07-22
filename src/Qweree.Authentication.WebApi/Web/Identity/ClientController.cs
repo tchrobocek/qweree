@@ -33,11 +33,11 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "ClientCreate")]
         [ProducesResponseType(typeof(CreatedClientDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateClientActionAsync(ClientCreateInputDto input)
+        public async Task<IActionResult> ClientCreateActionAsync(ClientCreateInputDto input)
         {
             var serviceInput = ClientCreateInputMapper.FromDto(input);
 
-            var clientResponse = await _clientService.CreateClientAsync(serviceInput);
+            var clientResponse = await _clientService.ClientCreateAsync(serviceInput);
 
             if (clientResponse.Status != ResponseStatus.Ok)
                 return clientResponse.ToErrorActionResult();
@@ -57,9 +57,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "ClientRead")]
         [ProducesResponseType(typeof(ClientDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetClientActionAsync(Guid id)
+        public async Task<IActionResult> ClientGetActionAsync(Guid id)
         {
-            var clientResponse = await _clientService.GetClientAsync(id);
+            var clientResponse = await _clientService.ClientGetAsync(id);
 
             if (clientResponse.Status != ResponseStatus.Ok)
                 return clientResponse.ToErrorActionResult();
@@ -77,9 +77,9 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "ClientDelete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteClientActionAsync(Guid id)
+        public async Task<IActionResult> ClientDeleteActionAsync(Guid id)
         {
-            var clientResponse = await _clientService.DeleteClientAsync(id);
+            var clientResponse = await _clientService.ClientDeleteAsync(id);
 
             if (clientResponse.Status != ResponseStatus.Ok)
                 return clientResponse.ToErrorActionResult();
@@ -102,14 +102,14 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "ClientRead")]
         [ProducesResponseType(typeof(List<ClientDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> FindClientsActionAsync(
+        public async Task<IActionResult> ClientsFindActionAsync(
             [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 50
         )
         {
             var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
-            var clientsResponse = await _clientService.PaginateClientsAsync(skip, take, sortDictionary);
+            var clientsResponse = await _clientService.ClientPaginateAsync(skip, take, sortDictionary);
 
             if (clientsResponse.Status != ResponseStatus.Ok)
                 return clientsResponse.ToErrorActionResult();

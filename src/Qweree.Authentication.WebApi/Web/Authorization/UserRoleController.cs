@@ -32,7 +32,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleCreate")]
         [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateRoleActionAsync(UserRoleCreateInputDto input)
+        public async Task<IActionResult> UserRoleCreateActionAsync(UserRoleCreateInputDto input)
         {
             var serviceInput = UserRoleMapper.FromDto(input);
 
@@ -55,11 +55,11 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleModify")]
         [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ModifyRoleActionAsync(Guid id, UserRoleModifyInputDto input)
+        public async Task<IActionResult> UserRoleModifyActionAsync(Guid id, UserRoleModifyInputDto input)
         {
             var serviceInput = UserRoleMapper.FromDto(id, input);
 
-            var response = await _roleService.ModifyUserRoleAsync(serviceInput);
+            var response = await _roleService.UserRoleModifyAsync(serviceInput);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
@@ -76,9 +76,9 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleDelete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteRoleActionAsync(Guid id)
+        public async Task<IActionResult> UserRoleDeleteActionAsync(Guid id)
         {
-            var response = await _roleService.DeleteUserRoleAsync(id);
+            var response = await _roleService.UserRoleDeleteAsync(id);
 
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
@@ -93,7 +93,7 @@ namespace Qweree.Authentication.WebApi.Web.Authorization
         [Authorize(Policy = "RoleRead")]
         [ProducesResponseType(typeof(UserRoleDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetRolesActionAsync()
+        public async Task<IActionResult> UserRolesFindActionAsync()
         {
             var response = await _roleService.UserRolesFindAsync();
 

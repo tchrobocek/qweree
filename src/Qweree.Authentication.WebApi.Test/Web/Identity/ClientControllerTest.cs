@@ -71,7 +71,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 var createdClientDto = await response.Content.ReadAsObjectAsync<CreatedClientDto>();
 
-                createdClientDto.WithDeepEqual(CreatedClientMapper.ToDto(await _sdkMapperService.MapToCreatedClientAsync(client)))
+                createdClientDto.WithDeepEqual(CreatedClientMapper.ToDto(await _sdkMapperService.ClientMapToCreatedClientAsync(client)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
                     .IgnoreProperty(p => p.Name == "CreatedAt" || p.Name == "ModifiedAt")
@@ -85,7 +85,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
                 var clientDto = await response.Content.ReadAsObjectAsync<ClientDto>();
 
-                clientDto.WithDeepEqual(ClientMapper.ToDto(await _sdkMapperService.MapClientAsync(client)))
+                clientDto.WithDeepEqual(ClientMapper.ToDto(await _sdkMapperService.ClientMapAsync(client)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
                     .IgnoreProperty(p => p.Name is "CreatedAt" or "ModifiedAt")
@@ -120,7 +120,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             for (var i = 0; i < 10; i++)
             {
                 var client = ClientFactory.CreateDefault(user.Id, $"client{i}");
-                clientsList.Add(await _sdkMapperService.MapClientAsync(client));
+                clientsList.Add(await _sdkMapperService.ClientMapAsync(client));
                 await _clientRepository.InsertAsync(client);
             }
 

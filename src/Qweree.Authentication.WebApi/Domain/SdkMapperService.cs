@@ -35,7 +35,7 @@ namespace Qweree.Authentication.WebApi.Domain
             _authorizationService = authorizationService;
         }
 
-        public async Task<SdkUser> MapUserAsync(User user, CancellationToken cancellationToken = new())
+        public async Task<SdkUser> UserMapAsync(User user, CancellationToken cancellationToken = new())
         {
             var roles = new List<UserRole>();
             foreach (var role in user.Roles)
@@ -53,7 +53,7 @@ namespace Qweree.Authentication.WebApi.Domain
                 .ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
         }
 
-        public async Task<SdkClient> MapClientAsync(Client client, CancellationToken cancellationToken = new())
+        public async Task<SdkClient> ClientMapAsync(Client client, CancellationToken cancellationToken = new())
         {
             var roles = new List<ClientRole>();
             foreach (var role in client.Roles)
@@ -69,19 +69,19 @@ namespace Qweree.Authentication.WebApi.Domain
 
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
             return new(client.Id, client.ClientId, client.ApplicationName, client.Origin,
-                await MapUserAsync(owner, cancellationToken), roles.Select(FromClientRole).ToImmutableArray(),
+                await UserMapAsync(owner, cancellationToken), roles.Select(FromClientRole).ToImmutableArray(),
                 client.CreatedAt, client.ModifiedAt);
         }
 
-        public async Task<CreatedClient> MapToCreatedClientAsync(Client client,
+        public async Task<CreatedClient> ClientMapToCreatedClientAsync(Client client,
             CancellationToken cancellationToken = new())
         {
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await MapUserAsync(owner,
+            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await UserMapAsync(owner,
                 cancellationToken), client.CreatedAt, client.ModifiedAt);
         }
 
-        public async Task<SdkClientRole> MapClientRoleAsync(ClientRole role,
+        public async Task<SdkClientRole> ClientRoleMapAsync(ClientRole role,
             CancellationToken cancellationToken = new())
         {
             return await DoMapClientRoleAsync(0, role, cancellationToken);
@@ -129,7 +129,7 @@ namespace Qweree.Authentication.WebApi.Domain
             yield return new Role(clientRole.Id, clientRole.Key, clientRole.Label, clientRole.Description);
         }
 
-        public async Task<SdkUserRole> MapUserRoleAsync(UserRole role, CancellationToken cancellationToken = new())
+        public async Task<SdkUserRole> UserRoleMapAsync(UserRole role, CancellationToken cancellationToken = new())
         {
             return await DoMapUserRoleAsync(0, role, cancellationToken);
         }
