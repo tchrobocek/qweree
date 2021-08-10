@@ -44,6 +44,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.ConsoleHost", "src\Q
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.ConsoleApplication", "src\Qweree.ConsoleApplication\Qweree.ConsoleApplication.csproj", "{8C90C0BF-7FC6-4E63-9AED-F587A9F88703}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Commands", "src\Qweree.Commands\Qweree.Commands.csproj", "{C7542F25-B8D6-4CFF-89A7-17126F7983CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Commands.Test", "src\Qweree.Commands.Test\Qweree.Commands.Test.csproj", "{268052AF-2F35-4A85-A28B-FA55D78BDAA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,5 +142,13 @@ Global
 		{2E8E2C9E-58D3-47E1-AEEC-85D3D0574C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E8E2C9E-58D3-47E1-AEEC-85D3D0574C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E8E2C9E-58D3-47E1-AEEC-85D3D0574C26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7542F25-B8D6-4CFF-89A7-17126F7983CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7542F25-B8D6-4CFF-89A7-17126F7983CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7542F25-B8D6-4CFF-89A7-17126F7983CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7542F25-B8D6-4CFF-89A7-17126F7983CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
