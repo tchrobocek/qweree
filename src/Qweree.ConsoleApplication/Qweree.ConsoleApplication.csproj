@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Qweree.Commands\Qweree.Commands.csproj" />
       <ProjectReference Include="..\Qweree.ConsoleHost\Qweree.ConsoleHost.csproj" />
+      <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
     </ItemGroup>
 
 </Project>

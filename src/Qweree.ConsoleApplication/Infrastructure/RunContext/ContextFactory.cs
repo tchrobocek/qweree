@@ -9,7 +9,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 
         public static Context GuessContext()
         {
-            var mainDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var mainDir = Directory.GetCurrentDirectory();
             var testDirectories = new[]
             {
                 Directory.GetCurrentDirectory(),
