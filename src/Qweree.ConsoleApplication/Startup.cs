@@ -8,6 +8,7 @@ namespace Qweree.ConsoleApplication
     {
         public static void ConfigureServices(IServiceCollection services)
         {
+
         }
 
         public static void Configure(ConsoleApplicationBuilder app)

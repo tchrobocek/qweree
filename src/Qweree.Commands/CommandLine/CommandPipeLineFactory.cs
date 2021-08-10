@@ -27,16 +27,24 @@ namespace Qweree.Commands.CommandLine
                 if (arg.StartsWith("-"))
                 {
                     optionsStarted = true;
-
-                    if (!options.ContainsKey(arg))
+                    var optionKeys = new[] {arg};
+                    if (!arg.StartsWith("--"))
                     {
-                        options[arg] = new List<string>();
+                        optionKeys = arg.TrimStart('-').Select(c => '-' + c.ToString()).ToArray();
                     }
 
-                    if (nextArg != null && !nextArg.StartsWith("-"))
+                    foreach (var optionKey in optionKeys)
                     {
-                        options[arg].Add(nextArg);
-                        i++;
+                        if (!options.ContainsKey(optionKey))
+                        {
+                            options[optionKey] = new List<string>();
+                        }
+
+                        if (nextArg != null && !nextArg.StartsWith("-"))
+                        {
+                            options[optionKey].Add(nextArg);
+                            i++;
+                        }
                     }
                 }
 
