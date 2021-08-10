@@ -1,13 +1,9 @@
 using System;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Qweree.WebApplication.Infrastructure.Authentication;
 
 namespace Qweree.WebApplication
@@ -24,6 +20,7 @@ namespace Qweree.WebApplication
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
+            builder.Services.AddScoped<ClaimsPrincipalStorage>();
 
             await builder.Build().RunAsync();
         }

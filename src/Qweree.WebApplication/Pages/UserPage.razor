@@ -1,0 +1,29 @@
+@page "/claims"
+@using Qweree.WebApplication.Infrastructure.Authentication
+@inject ClaimsPrincipalStorage _storage
+
+<h3>ClaimsPrincipal Data</h3>
+
+@if (_user != null)
+{
+    <ul>
+        <li>id: @_user.Id</li>
+        <li>username: @_user.Username</li>
+        <li>email: @_user.Email</li>
+        <li>full name: @_user.FullName</li>
+        <li>roles: @string.Join(", ", _user.Roles)</li>
+    </ul>
+}
+else
+{
+    <p>User not authenticated</p>
+}
+
+@code {
+    private User? _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await _storage.GetUser();
+    }
+}

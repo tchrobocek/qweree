@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,7 +22,10 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
         {
             return new(new[]
             {
-                new Claim(ClaimTypes.Name, "admin"),
+                new Claim("userId", Guid.NewGuid().ToString()),
+                new Claim("username", "user"),
+                new Claim("full_name", "user userowitch"),
+                new Claim("email", "user@email.com"),
             }, "auth-type");
         }
     }
