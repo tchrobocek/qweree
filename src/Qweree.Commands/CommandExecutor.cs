@@ -18,7 +18,7 @@ namespace Qweree.Commands
 
         public async Task<int> ExecuteCommandAsync(string[] args, CancellationToken cancellationToken = new())
         {
-            var pipeline = CommandPipeLineFactory.CreatePipeline(args);
+            var pipeline = CommandPipelineFactory.CreatePipeline(args);
 
             var lastResult = -1;
             foreach (var call in pipeline)

@@ -10,7 +10,7 @@ namespace Qweree.Commands.Test.CommandLine
     public class CommandPipeLineFactoryTest
     {
         [Fact]
-        public void TestCommandPipeLine()
+        public void TestCommandPipeline()
         {
             var expectedPipeLine = new List<CommandCall>
             {
@@ -22,7 +22,7 @@ namespace Qweree.Commands.Test.CommandLine
 
             var args = new[] {"command1", "command2", "-f", "a", "--file", "b", "-f", "b", "command3", "-f"};
 
-            var actualPipeline = CommandPipeLineFactory.CreatePipeline(args);
+            var actualPipeline = CommandPipelineFactory.CreatePipeline(args);
             actualPipeline.ShouldDeepEqual(expectedPipeLine, new ImmutableArrayComparison(new ImmutableArrayComparison(new ImmutableArrayComparison())));
         }
     }

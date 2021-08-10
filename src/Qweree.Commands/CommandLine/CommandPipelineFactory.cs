@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Qweree.Commands.CommandLine
 {
-    public static class CommandPipeLineFactory
+    public static class CommandPipelineFactory
     {
         public static IEnumerable<CommandCall> CreatePipeline(string[] args)
         {
