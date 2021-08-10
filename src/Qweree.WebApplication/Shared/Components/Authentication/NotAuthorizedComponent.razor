@@ -1,0 +1,22 @@
+@using Qweree.WebApplication.Infrastructure.Authentication
+
+@inject ClaimsPrincipalStorage _storage;
+@inject NavigationManager _navigationManager;
+
+<p>
+    You are not authorized, go <NavLink href="/">home</NavLink>.
+</p>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await _storage.GetUserAsync();
+
+        if (user == null)
+        {
+            _navigationManager.NavigateTo("/login");
+        }
+    }
+
+}

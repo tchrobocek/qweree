@@ -24,6 +24,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _user = await _storage.GetUser();
+        _user = await _storage.GetUserAsync();
     }
 }
