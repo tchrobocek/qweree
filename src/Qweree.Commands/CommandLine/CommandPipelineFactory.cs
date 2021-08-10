@@ -11,12 +11,15 @@ namespace Qweree.Commands.CommandLine
             var calls = new List<CommandCall>();
 
             Dictionary<string, List<string>> options = new();
-            var commandPath = "";
+            var commandPath = new List<string>();
             var optionsStarted = false;
 
             for (var i = 0; i < args.Length; i++)
             {
                 var arg = args[i];
+                if (string.IsNullOrWhiteSpace(arg))
+                    continue;
+
                 string? nextArg = null;
 
                 if (i + 1 < args.Length)
@@ -50,24 +53,22 @@ namespace Qweree.Commands.CommandLine
 
                 if (!optionsStarted && arg != "--")
                 {
-                    commandPath += arg + " ";
+                    commandPath.Add(arg);
                 }
 
                 if (optionsStarted && !arg.StartsWith("-") || i == args.Length - 1 || arg == "--")
                 {
-                    if (commandPath == "")
+                    if (!commandPath.Any())
                     {
                         continue;
                     }
 
-                    commandPath = commandPath[..^1];
                     var callOptions = options.Select(kv =>
                         new CommandCallOption(kv.Key, kv.Value.ToImmutableArray()));
-                    calls.Add(new CommandCall(commandPath, callOptions.ToImmutableArray()));
+                    calls.Add(new CommandCall(string.Join(" ", commandPath), callOptions.ToImmutableArray()));
 
-                    commandPath = arg.TrimStart('-');
-                    if (!string.IsNullOrWhiteSpace(commandPath))
-                        commandPath += " ";
+                    if (arg != "--")
+                        commandPath.Add(arg);
 
                     options = new Dictionary<string, List<string>>();
                     optionsStarted = false;
