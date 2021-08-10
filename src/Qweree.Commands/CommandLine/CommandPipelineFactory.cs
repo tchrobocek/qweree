@@ -24,7 +24,7 @@ namespace Qweree.Commands.CommandLine
                     nextArg = args[i + 1];
                 }
 
-                if (arg.StartsWith("-"))
+                if (arg.StartsWith("-") && arg != "--")
                 {
                     optionsStarted = true;
                     var optionKeys = new[] {arg};
@@ -48,19 +48,27 @@ namespace Qweree.Commands.CommandLine
                     }
                 }
 
-                if (!optionsStarted)
+                if (!optionsStarted && arg != "--")
                 {
                     commandPath += arg + " ";
                 }
 
-                if (optionsStarted && !arg.StartsWith("-") || i == args.Length - 1)
+                if (optionsStarted && !arg.StartsWith("-") || i == args.Length - 1 || arg == "--")
                 {
+                    if (commandPath == "")
+                    {
+                        continue;
+                    }
+
                     commandPath = commandPath[..^1];
                     var callOptions = options.Select(kv =>
                         new CommandCallOption(kv.Key, kv.Value.ToImmutableArray()));
                     calls.Add(new CommandCall(commandPath, callOptions.ToImmutableArray()));
 
-                    commandPath = arg + " ";
+                    commandPath = arg.TrimStart('-');
+                    if (!string.IsNullOrWhiteSpace(commandPath))
+                        commandPath += " ";
+
                     options = new Dictionary<string, List<string>>();
                     optionsStarted = false;
                 }
