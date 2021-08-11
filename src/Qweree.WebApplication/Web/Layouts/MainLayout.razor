@@ -4,32 +4,34 @@
 @inject AuthenticationService _authenticationService
 @inject NavigationManager _navigationManager
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
-    <div class="main">
-        <div class="top-row px-4">
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="DrawerToggle" />
+        <MudText Typo="Typo.h5" Class="ml-3">Qweree</MudText>
+        <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <span>@_username</span>
-                <NavLink href="#" @onclick="LogoutAsync">Logout</NavLink>
+                <MudText>
+                    <span class="top-user-panel">@_username</span>
+                    <span class="top-user-panel"><a href="#" @onclick="LogoutAsync">Logout</a></span>
+                </MudText>
             </Authorized>
-            <NotAuthorized>
-                <NavLink href="/login">Login</NavLink>
-            </NotAuthorized>
         </AuthorizeView>
-        </div>
-
-        <div class="content px-4">
-            @Body
-        </div>
-    </div>
-</div>
-
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 @code {
     private string _username = string.Empty;
+    bool _drawerOpen = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,4 +45,8 @@
         _navigationManager.NavigateTo("/", true);
     }
 
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
 }
