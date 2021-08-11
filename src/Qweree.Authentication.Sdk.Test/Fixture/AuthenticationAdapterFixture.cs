@@ -41,7 +41,8 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
             CancellationToken cancellationToken = new())
         {
             var client = await CreateHttpClientAsync(cancellationToken);
-            var authAdapter = new OAuth2Adapter(new Uri(AuthenticationApiUri), client);
+            client.BaseAddress = new Uri(AuthenticationApiUri);
+            var authAdapter = new OAuth2Client(client);
             var token = await authAdapter.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
             client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token.AccessToken}");
 

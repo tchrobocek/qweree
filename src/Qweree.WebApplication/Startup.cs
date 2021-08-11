@@ -27,7 +27,14 @@ namespace Qweree.WebApplication
             services.AddMudServices();
             services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
             services.AddScoped<ClaimsPrincipalStorage>();
-            services.AddScoped(_ => new OAuth2Adapter(new Uri("http://localhost/auth/api/oauth2/auth", UriKind.Absolute), new HttpClient()));
+            services.AddScoped(_ =>
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri("http://localhost/auth/api/oauth2/auth", UriKind.Absolute)
+                };
+                return new OAuth2Client(client);
+            });
             services.AddScoped<AuthenticationService>();
             services.AddScoped<LocalStorage>();
         }

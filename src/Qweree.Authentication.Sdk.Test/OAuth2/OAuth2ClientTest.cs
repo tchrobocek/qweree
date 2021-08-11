@@ -8,15 +8,16 @@ namespace Qweree.Authentication.Sdk.Test.OAuth2
 {
     [Collection("Authentication adapter collection")]
     [Trait("Category", "Integration test")]
-    public class OAuth2AdapterTest : IClassFixture<AuthenticationAdapterFixture>
+    public class OAuth2ClientTest : IClassFixture<AuthenticationAdapterFixture>
     {
-        private readonly OAuth2Adapter _oAuth2Adapter;
+        private readonly OAuth2Client _oAuth2Client;
 
-        public OAuth2AdapterTest(AuthenticationAdapterFixture authFixture)
+        public OAuth2ClientTest(AuthenticationAdapterFixture authFixture)
         {
             var uri = new Uri(authFixture.AuthenticationApiUri);
-            _oAuth2Adapter = new OAuth2Adapter(new Uri(uri, "/api/oauth2/auth"),
-                authFixture.CreateHttpClientAsync().GetAwaiter().GetResult());
+            var client = authFixture.CreateHttpClientAsync().GetAwaiter().GetResult();
+            client.BaseAddress = new Uri(uri, "/api/oauth2/auth");
+            _oAuth2Client = new OAuth2Client(client);
         }
 
         [Fact]
@@ -26,7 +27,7 @@ namespace Qweree.Authentication.Sdk.Test.OAuth2
                 AuthenticationAdapterFixture.TestAdminPassword);
             var clientCredentials = new ClientCredentials(AuthenticationAdapterFixture.TestClientId,
                 AuthenticationAdapterFixture.TestClientSecret);
-            var tokenInfo = await _oAuth2Adapter.SignInAsync(input, clientCredentials);
+            var tokenInfo = await _oAuth2Client.SignInAsync(input, clientCredentials);
 
             Assert.NotEmpty(tokenInfo.AccessToken);
             Assert.NotEmpty(tokenInfo.RefreshToken ?? "");
