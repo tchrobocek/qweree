@@ -6,21 +6,30 @@
 @inject NavigationManager _navigationManager
 @inject ClaimsPrincipalStorage _session;
 
-<h3>LoginPage</h3>
 
-@if (!string.IsNullOrWhiteSpace(_authMessage))
-{
-    <p>Message: @_authMessage</p>
-}
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
+            @if (!string.IsNullOrWhiteSpace(_authMessage))
+            {
+                <MudAlert Severity="Severity.Error">@_authMessage</MudAlert>
+            }
 
-<input type="text" @bind="_username" />
-<input type="password" @bind="_password" />
-<button class="btn btn-primary" @onclick="LoginAsync">Login</button>
-
+            <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
+            <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+            <MudTextField @bind-Value="_password" Label="Password" Variant="Variant.Outlined" InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+            <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await LoginAsync()" Size="Size.Large" FullWidth="true">Sign In</MudButton>
+        </MudPaper>
+    </div>
+</MudContainer>
 @code {
     private string _authMessage = string.Empty;
     private string _username = string.Empty;
+    private bool _passwordVisibility;
     private string _password = string.Empty;
+    private InputType _passwordInput = InputType.Password;
+    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,19 +41,39 @@
 
     private async Task LoginAsync()
     {
+        _authMessage = string.Empty;
         try
         {
             await _authenticationService.AuthenticateAsync(_username, _password);
             _navigationManager.NavigateTo("/", true);
         }
-        catch (HttpException e)
+        catch (HttpException)
         {
-            _authMessage = e.Message;
+            _authMessage = "Wrong username or password.";
         }
         catch (Exception)
         {
-            _authMessage = "Something went wrong";
+            _authMessage = "System error.";
+        }
+        finally
+        {
+            _password = string.Empty;
         }
     }
 
+    private void TogglePasswordVisibility()
+    {
+        if (_passwordVisibility)
+        {
+            _passwordVisibility = false;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInput = InputType.Password;
+        }
+        else
+        {
+            _passwordVisibility = true;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+            _passwordInput = InputType.Text;
+        }
+    }
 }
