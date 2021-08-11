@@ -20,12 +20,18 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
         {
             var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
 
-            if (!authenticationState.User.Identity?.IsAuthenticated ?? false)
+            if (!(authenticationState.User.Identity?.IsAuthenticated ?? false))
             {
                 return null;
             }
 
             return CreateUser(authenticationState.User);
+        }
+
+        public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(CancellationToken cancellationToken = new())
+        {
+            var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            return authenticationState.User;
         }
 
         private static User CreateUser(ClaimsPrincipal claimsPrincipal)
@@ -34,7 +40,7 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
             var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value ?? "anonymous";
             var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "full_name")?.Value ?? "anonymous";
             var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
-            var roles = claimsPrincipal.Claims.Where(c => c.Type == "roles").Select(c => c.Value);
+            var roles = claimsPrincipal.Claims.Where(c => c.Type == "role").Select(c => c.Value);
             return new User(Guid.Parse(id), username, fullName, email, roles);
         }
     }

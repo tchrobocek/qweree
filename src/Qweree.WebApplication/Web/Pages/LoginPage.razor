@@ -1,9 +1,50 @@
 @page "/login"
+@using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.Sdk.Http.Errors.Exceptions
 @layout EmptyLayout
+@inject AuthenticationService _authenticationService
+@inject NavigationManager _navigationManager
+@inject ClaimsPrincipalStorage _session;
 
 <h3>LoginPage</h3>
 
+@if (!string.IsNullOrWhiteSpace(_authMessage))
+{
+    <p>Message: @_authMessage</p>
+}
+
+<input type="text" @bind="_username" />
+<input type="password" @bind="_password" />
+<button class="btn btn-primary" @onclick="LoginAsync">Login</button>
 
 @code {
+    private string _authMessage = string.Empty;
+    private string _username = string.Empty;
+    private string _password = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await _session.GetUserAsync();
+
+        if (user != null)
+            _navigationManager.NavigateTo("/");
+    }
+
+    private async Task LoginAsync()
+    {
+        try
+        {
+            await _authenticationService.AuthenticateAsync(_username, _password);
+            _navigationManager.NavigateTo("/", true);
+        }
+        catch (HttpException e)
+        {
+            _authMessage = e.Message;
+        }
+        catch (Exception)
+        {
+            _authMessage = "Something went wrong";
+        }
+    }
 
 }

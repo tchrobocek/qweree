@@ -1,10 +1,13 @@
 @page "/claims"
 @using Qweree.WebApplication.Infrastructure.Authentication
+@using System.Security.Claims
 @inject ClaimsPrincipalStorage _storage
+@inject AuthenticationService _authenticationService
+@inject NavigationManager _navigationManager
 
 <h3>ClaimsPrincipal Data</h3>
 
-@if (_user != null)
+@if (_user != null && _claimsPrincipal != null)
 {
     <ul>
         <li>id: @_user.Id</li>
@@ -13,6 +16,17 @@
         <li>full name: @_user.FullName</li>
         <li>roles: @string.Join(", ", _user.Roles)</li>
     </ul>
+    <ul>
+        @foreach (var claim in _claimsPrincipal.Claims)
+        {
+            <li>@claim.Type: @claim.Value</li>
+        }
+    </ul>
+    <ul>
+        <li>authenticated: @_claimsPrincipal.Identity?.IsAuthenticated</li>
+    </ul>
+
+    <button class="btn btn-primary" @onclick="LogoutAsync">Logout</button>
 }
 else
 {
@@ -21,9 +35,18 @@ else
 
 @code {
     private User? _user;
+    private ClaimsPrincipal? _claimsPrincipal;
 
     protected override async Task OnInitializedAsync()
     {
         _user = await _storage.GetUserAsync();
+        _claimsPrincipal = await _storage.GetClaimsPrincipalAsync();
     }
+
+    private async Task LogoutAsync()
+    {
+        await _authenticationService.LogoutAsync();
+        _navigationManager.NavigateTo("/", true);
+    }
+
 }
