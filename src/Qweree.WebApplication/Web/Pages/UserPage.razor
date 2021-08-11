@@ -1,9 +1,11 @@
 @page "/claims"
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @inject ClaimsPrincipalStorage _storage
 @inject AuthenticationService _authenticationService
 @inject NavigationManager _navigationManager
+@attribute [Authorize]
 
 <h3>ClaimsPrincipal Data</h3>
 
