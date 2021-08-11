@@ -3,6 +3,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
@@ -23,6 +24,7 @@ namespace Qweree.WebApplication
         {
             services.AddOptions();
             services.AddAuthorizationCore();
+            services.AddMudServices();
             services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
             services.AddScoped<ClaimsPrincipalStorage>();
             services.AddScoped(_ => new OAuth2Adapter(new Uri("http://localhost/auth/api/oauth2/auth", UriKind.Absolute), new HttpClient()));
