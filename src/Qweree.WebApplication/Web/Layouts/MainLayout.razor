@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using Qweree.WebApplication.Infrastructure.Authentication
+@inherits LayoutComponentBase
+@inject ClaimsPrincipalStorage _session
+@inject AuthenticationService _authenticationService
+@inject NavigationManager _navigationManager
 
 <div class="page">
     <div class="sidebar">
@@ -7,7 +11,15 @@
 
     <div class="main">
         <div class="top-row px-4">
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        <AuthorizeView>
+            <Authorized>
+                <span>@_username</span>
+                <NavLink href="#" @onclick="LogoutAsync">Logout</NavLink>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink href="/login">Login</NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
         </div>
 
         <div class="content px-4">
@@ -15,3 +27,20 @@
         </div>
     </div>
 </div>
+
+@code {
+    private string _username = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await _session.GetUserAsync();
+        _username = user?.FullName ?? string.Empty;
+    }
+
+    private async Task LogoutAsync()
+    {
+        await _authenticationService.LogoutAsync();
+        _navigationManager.NavigateTo("/", true);
+    }
+
+}
