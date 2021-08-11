@@ -1,10 +1,5 @@
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Web;
 
 namespace Qweree.WebApplication
@@ -16,12 +11,8 @@ namespace Qweree.WebApplication
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(
-                _ => new HttpClient {BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)});
-            builder.Services.AddOptions();
-            builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
-            builder.Services.AddScoped<ClaimsPrincipalStorage>();
+            var startup = new Startup(builder.HostEnvironment);
+            startup.ConfigureServices(builder.Services);
 
             await builder.Build().RunAsync();
         }
