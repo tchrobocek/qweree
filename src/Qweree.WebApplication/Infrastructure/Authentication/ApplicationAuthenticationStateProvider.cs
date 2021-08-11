@@ -9,7 +9,7 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
     {
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var user = new ClaimsPrincipal(CreateAuthenticatedIdentity());
+            var user = new ClaimsPrincipal(CreateAnonymousIdentity());
             return Task.FromResult(new AuthenticationState(user));
         }
 
