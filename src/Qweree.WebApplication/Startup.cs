@@ -18,13 +18,10 @@ namespace Qweree.WebApplication
 
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddScoped(_ => new HttpClient {BaseAddress = new Uri(_hostEnvironment.BaseAddress)});
             services.AddOptions();
             services.AddAuthorizationCore();
             services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
             services.AddScoped<ClaimsPrincipalStorage>();
-
         }
     }
 }
