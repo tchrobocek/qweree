@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.WebApplication.Infrastructure.Authentication;
+using Qweree.WebApplication.Web;
 
 namespace Qweree.WebApplication
 {
