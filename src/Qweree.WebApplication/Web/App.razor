@@ -12,9 +12,18 @@
             </AuthorizeRouteView>
         </Found>
         <NotFound>
-            <LayoutView Layout="@typeof(EmptyLayout)">
-                <RedirectComponent Uri="/not-found" />
-            </LayoutView>
+            <AuthorizeView>
+                <Authorized>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        Not found.
+                    </LayoutView>
+                </Authorized>
+                <NotAuthorized>
+                    <LayoutView Layout="@typeof(EmptyLayout)">
+                        Not found.
+                    </LayoutView>
+                </NotAuthorized>
+            </AuthorizeView>
         </NotFound>
     </Router>
 </CascadingAuthenticationState>

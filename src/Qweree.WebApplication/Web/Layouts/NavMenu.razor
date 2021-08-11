@@ -1,4 +1,16 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="/">Home</MudNavLink>
-    <MudNavLink Href="/claims">Claims</MudNavLink>
+    <MudDivider Class="mb-8"/>
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Main menu</MudText>
+    <MudNavLink Href="/home" Icon="@Icons.Material.Outlined.Dashboard">Homepage</MudNavLink>
+    <MudNavLink Href="/claims" Icon="@Icons.Material.Outlined.Lock">Account</MudNavLink>
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Authentication service</MudText>
+    <MudNavLink Href="/services/auth/overview" Icon="@Icons.Material.Outlined.Dashboard">Overview</MudNavLink>
+    <MudNavLink Href="/services/auth/roles" Icon="@Icons.Material.Outlined.AccountBox">Roles</MudNavLink>
+    <MudNavLink Href="/services/auth/clients" Icon="@Icons.Material.Outlined.Apps">Clients</MudNavLink>
+    <MudNavLink Href="/services/auth/users" Icon="@Icons.Material.Outlined.Person">Users</MudNavLink>
+
+    <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Cdn service</MudText>
+    <MudNavLink Href="/services/cdn/overview" Icon="@Icons.Material.Outlined.Dashboard">Overview</MudNavLink>
+    <MudNavLink Href="/services/cdn/explorer" Icon="@Icons.Material.Outlined.FileCopy">Explorer</MudNavLink>
 </MudNavMenu>
