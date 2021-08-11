@@ -15,23 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Shared\Components\Authentication\NotAuthorizedComponent.razor" />
-      <_ContentIncludedByDefault Remove="Pages\Counter.razor" />
-      <_ContentIncludedByDefault Remove="Pages\FetchData.razor" />
-      <_ContentIncludedByDefault Remove="Pages\ForbiddenPage.razor" />
-      <_ContentIncludedByDefault Remove="Pages\Index.razor" />
-      <_ContentIncludedByDefault Remove="Pages\NotFoundPage.razor" />
-      <_ContentIncludedByDefault Remove="Pages\UserPage.razor" />
-      <_ContentIncludedByDefault Remove="Shared\Components\Common\RedirectComponent.razor" />
-      <_ContentIncludedByDefault Remove="Shared\EmptyLayout.razor" />
-      <_ContentIncludedByDefault Remove="Shared\MainLayout.razor" />
-      <_ContentIncludedByDefault Remove="Shared\NavMenu.razor" />
-      <_ContentIncludedByDefault Remove="Shared\SurveyPrompt.razor" />
-      <_ContentIncludedByDefault Remove="Web\Shared\Components\Common\RedirectComponent.razor" />
-      <_ContentIncludedByDefault Remove="Web\wwwroot\sample-data\weather.json" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
     </ItemGroup>
 </Project>
