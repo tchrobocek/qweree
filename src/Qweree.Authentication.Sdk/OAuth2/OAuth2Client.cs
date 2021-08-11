@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -9,15 +8,13 @@ using Qweree.Utils;
 
 namespace Qweree.Authentication.Sdk.OAuth2
 {
-    public class OAuth2Adapter
+    public class OAuth2Client
     {
-        private readonly Uri _authUri;
         private readonly IErrorHandler _errorResponseHandler = new QwereeErrorHandler();
         private readonly HttpClient _httpClient;
 
-        public OAuth2Adapter(Uri authUri, HttpClient httpClient)
+        public OAuth2Client(HttpClient httpClient)
         {
-            _authUri = authUri;
             _httpClient = httpClient;
         }
 
@@ -34,7 +31,7 @@ namespace Qweree.Authentication.Sdk.OAuth2
             };
 
             var content = new FormUrlEncodedContent(form);
-            var request = new HttpRequestMessage(HttpMethod.Post, _authUri)
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
             {
                 Content = content
             };

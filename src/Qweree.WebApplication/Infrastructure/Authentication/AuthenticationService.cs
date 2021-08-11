@@ -7,18 +7,18 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
 {
     public class AuthenticationService
     {
-        private readonly OAuth2Adapter _oauthAdapter;
+        private readonly OAuth2Client _oauthClient;
         private readonly LocalStorage _localStorage;
 
-        public AuthenticationService(OAuth2Adapter oauthAdapter, LocalStorage localStorage)
+        public AuthenticationService(OAuth2Client oauthClient, LocalStorage localStorage)
         {
-            _oauthAdapter = oauthAdapter;
+            _oauthClient = oauthClient;
             _localStorage = localStorage;
         }
 
         public async Task AuthenticateAsync(string username, string password, CancellationToken cancellationToken = new())
         {
-            var tokenInfo = await _oauthAdapter.SignInAsync(new PasswordGrantInput(username, password),
+            var tokenInfo = await _oauthClient.SignInAsync(new PasswordGrantInput(username, password),
                 new ClientCredentials("admin-cli", "password"), cancellationToken);
 
             await _localStorage.SetItemAsync("access_token", tokenInfo.AccessToken, cancellationToken);

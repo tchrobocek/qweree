@@ -43,7 +43,7 @@ namespace Qweree.Cdn.WebApi.Test.Fixture
         {
             var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
             var client = CreateClient();
-            var adapter = new OAuth2Adapter(new Uri(authConfig.TokenUri!), new HttpClient());
+            var adapter = new OAuth2Client(CreateClient(new WebApplicationFactoryClientOptions{BaseAddress = new Uri(authConfig.TokenUri!)}));
             var tokenInfo = await adapter.SignInAsync(passwordInput, clientCredentials);
             client.DefaultRequestHeaders.Add(HeaderNames.Authorization, $"Bearer {tokenInfo.AccessToken}");
 
