@@ -1,27 +1,38 @@
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
+using Qweree.WebApplication.Infrastructure.Browser;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication
 {
     public class ApplicationAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private ClaimsPrincipal? _claimsPrincipal;
+        private readonly LocalStorage _localStorage;
 
-        public void SetClaimsPrincipal(ClaimsPrincipal? claimsPrincipal)
+        public ApplicationAuthenticationStateProvider(LocalStorage localStorage)
         {
-            _claimsPrincipal = claimsPrincipal;
+            _localStorage = localStorage;
         }
 
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            ClaimsPrincipal user = _claimsPrincipal ?? new ClaimsPrincipal(CreateAnonymousIdentity());
-            return Task.FromResult(new AuthenticationState(user));
-        }
+            var accessToken = await _localStorage.GetItemAsync("access_token");
 
-        private ClaimsIdentity CreateAnonymousIdentity()
-        {
-            return new(authenticationType: null);
+            ClaimsIdentity user;
+
+            if (accessToken == null)
+            {
+                user = new ClaimsIdentity(authenticationType: null);
+            }
+            else
+            {
+                var claims = TokenDecoder.ReadClaims(accessToken);
+                user = new ClaimsIdentity(claims, "oauth2");
+            }
+
+            return new AuthenticationState(new ClaimsPrincipal(user));
         }
     }
 }
