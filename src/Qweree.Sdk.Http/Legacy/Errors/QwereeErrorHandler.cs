@@ -2,10 +2,10 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Sdk.Http.Errors.Exceptions;
+using Qweree.Sdk.Http.Exceptions;
 using Qweree.Utils;
 
-namespace Qweree.Sdk.Http.Errors
+namespace Qweree.Sdk.Http.Legacy.Errors
 {
     public class QwereeErrorHandler : IErrorHandler
     {

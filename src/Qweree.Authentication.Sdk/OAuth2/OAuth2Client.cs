@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.Tokens;
-using Qweree.Sdk.Http.Errors;
+using Qweree.Sdk.Http.Legacy.Errors;
 using Qweree.Utils;
 
 namespace Qweree.Authentication.Sdk.OAuth2

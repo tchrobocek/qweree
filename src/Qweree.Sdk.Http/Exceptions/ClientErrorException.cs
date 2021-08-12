@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Qweree.Sdk.Http.Errors.Exceptions
+namespace Qweree.Sdk.Http.Exceptions
 {
     public class ClientErrorException : HttpException
     {
