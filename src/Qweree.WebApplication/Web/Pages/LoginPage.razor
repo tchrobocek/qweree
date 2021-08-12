@@ -47,7 +47,7 @@
             await _authenticationService.AuthenticateAsync(_username, _password);
             _navigationManager.NavigateTo("/", true);
         }
-        catch (HttpException)
+        catch (ClientErrorErrorException)
         {
             _authMessage = "Wrong username or password.";
         }

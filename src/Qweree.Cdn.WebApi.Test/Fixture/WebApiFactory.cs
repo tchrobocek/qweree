@@ -1,17 +1,18 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.WebApi.Infrastructure.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Mongo;
 using Qweree.TestUtils.IO;
+using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi.Test.Fixture
 {
@@ -43,10 +44,15 @@ namespace Qweree.Cdn.WebApi.Test.Fixture
         {
             var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
             var client = CreateClient();
-            var adapter = new OAuth2Client(CreateClient(new WebApplicationFactoryClientOptions{BaseAddress = new Uri(authConfig.TokenUri!)}));
-            var tokenInfo = await adapter.SignInAsync(passwordInput, clientCredentials);
-            client.DefaultRequestHeaders.Add(HeaderNames.Authorization, $"Bearer {tokenInfo.AccessToken}");
-
+            var oauthClient = new HttpClient
+            {
+                BaseAddress = new Uri(authConfig.TokenUri!)
+            };
+            var oAuth2Client = new OAuth2Client(oauthClient);
+            var response = await oAuth2Client.SignInAsync(passwordInput, clientCredentials);
+            response.EnsureSuccessStatusCode();
+            var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy);
+            client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token?.AccessToken}");
             return client;
         }
     }
