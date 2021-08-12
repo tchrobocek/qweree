@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Utils;
 using Qweree.WebApplication.Infrastructure.Browser;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication
@@ -18,10 +19,13 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
 
         public async Task AuthenticateAsync(string username, string password, CancellationToken cancellationToken = new())
         {
-            var tokenInfo = await _oauthClient.SignInAsync(new PasswordGrantInput(username, password),
+            var response = await _oauthClient.SignInAsync(new PasswordGrantInput(username, password),
                 new ClientCredentials("admin-cli", "password"), cancellationToken);
 
-            await _localStorage.SetItemAsync("access_token", tokenInfo.AccessToken, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var tokenInfo = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
+            await _localStorage.SetItemAsync("access_token", tokenInfo?.AccessToken!, cancellationToken);
         }
 
         public async Task LogoutAsync(CancellationToken cancellationToken = new())

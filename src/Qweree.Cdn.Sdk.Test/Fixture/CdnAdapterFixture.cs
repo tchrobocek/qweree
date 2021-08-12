@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Utils;
 
 namespace Qweree.Cdn.Sdk.Test.Fixture
 {
@@ -43,9 +44,13 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
         {
             var client = await CreateHttpClientAsync(cancellationToken);
             client.BaseAddress = new Uri($"{AuthenticationApiUri}/api/oauth2/auth");
-            var authAdapter = new OAuth2Client(client);
-            var token = await authAdapter.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
-            client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token.AccessToken}");
+            var oAuth2Client = new OAuth2Client(client);
+            var response = await oAuth2Client.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
+
+            client = await CreateHttpClientAsync(cancellationToken);
+            client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token?.AccessToken}");
 
             return client;
         }

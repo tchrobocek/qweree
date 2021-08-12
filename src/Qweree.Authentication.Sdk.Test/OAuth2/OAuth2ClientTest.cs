@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Test.Fixture;
+using Qweree.Utils;
 using Xunit;
 
 namespace Qweree.Authentication.Sdk.Test.OAuth2
@@ -27,10 +28,13 @@ namespace Qweree.Authentication.Sdk.Test.OAuth2
                 AuthenticationAdapterFixture.TestAdminPassword);
             var clientCredentials = new ClientCredentials(AuthenticationAdapterFixture.TestClientId,
                 AuthenticationAdapterFixture.TestClientSecret);
-            var tokenInfo = await _oAuth2Client.SignInAsync(input, clientCredentials);
+            var response = await _oAuth2Client.SignInAsync(input, clientCredentials);
 
-            Assert.NotEmpty(tokenInfo.AccessToken);
-            Assert.NotEmpty(tokenInfo.RefreshToken ?? "");
+            response.EnsureSuccessStatusCode();
+            var tokenInfo = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy);
+
+            Assert.NotEmpty(tokenInfo?.AccessToken ?? "");
+            Assert.NotEmpty(tokenInfo?.RefreshToken ?? "");
         }
     }
 }

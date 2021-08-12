@@ -3,14 +3,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.Tokens;
-using Qweree.Sdk.Http.Legacy.Errors;
-using Qweree.Utils;
+using Qweree.Sdk.Http;
 
 namespace Qweree.Authentication.Sdk.OAuth2
 {
     public class OAuth2Client
     {
-        private readonly IErrorHandler _errorResponseHandler = new QwereeErrorHandler();
         private readonly HttpClient _httpClient;
 
         public OAuth2Client(HttpClient httpClient)
@@ -18,7 +16,7 @@ namespace Qweree.Authentication.Sdk.OAuth2
             _httpClient = httpClient;
         }
 
-        public async Task<TokenInfo> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
+        public async Task<ApiResponse<TokenInfoDto>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
             CancellationToken cancellationToken = new())
         {
             var form = new[]
@@ -37,14 +35,7 @@ namespace Qweree.Authentication.Sdk.OAuth2
             };
 
             var response = await _httpClient.SendAsync(request, cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-                await _errorResponseHandler.HandleErrorResponseAsync(response, cancellationToken);
-
-            var tokenInfoDto =
-                await response.Content.ReadAsObjectAsync<TokenInfoDto>(JsonUtils.SnakeCaseNamingPolicy,
-                    cancellationToken);
-            return TokenInfoMapper.FromDto(tokenInfoDto!);
+            return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
         }
     }
 }
