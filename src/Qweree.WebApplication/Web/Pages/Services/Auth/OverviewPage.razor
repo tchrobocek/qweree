@@ -1,0 +1,20 @@
+@page "/services/auth/overview"
+@using Qweree.WebApplication.Infrastructure.ServicesOverview
+
+<MudCard Elevation="1" Class="pa-4">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Authentication service overview</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+
+        <MudText>Version: @_versionDto.Version</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    private VersionDto _versionDto = new();
+
+
+
+}
