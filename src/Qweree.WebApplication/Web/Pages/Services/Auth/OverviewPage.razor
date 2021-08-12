@@ -1,5 +1,6 @@
 @page "/services/auth/overview"
 @using Qweree.WebApplication.Infrastructure.ServicesOverview
+@inject SystemInfoClient _systemInfoClient
 
 <MudCard Elevation="1" Class="pa-4">
     <MudCardHeader>
@@ -7,14 +8,21 @@
     </MudCardHeader>
     <MudCardContent>
 
-        <MudText>Version: @_versionDto.Version</MudText>
+        <MudText>Version: @_versionDto?.Version</MudText>
     </MudCardContent>
 </MudCard>
 
 @code {
 
-    private VersionDto _versionDto = new();
+    private VersionDto? _versionDto = new();
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _systemInfoClient.GetVersionAsync();
+        response.EnsureSuccessStatusCode();
+
+        _versionDto = await response.ReadPayloadAsync();
+    }
 
 }

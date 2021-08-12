@@ -7,20 +7,20 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
 {
     public class ApplicationAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly LocalStorage _localStorage;
+        private readonly LocalTokenStorage _localTokenStorage;
 
-        public ApplicationAuthenticationStateProvider(LocalStorage localStorage)
+        public ApplicationAuthenticationStateProvider(LocalTokenStorage localTokenStorage)
         {
-            _localStorage = localStorage;
+            _localTokenStorage = localTokenStorage;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var accessToken = await _localStorage.GetItemAsync("access_token");
+            var accessToken = await _localTokenStorage.GetAccessTokenAsync();
 
             ClaimsIdentity user;
 
-            if (accessToken == null)
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
                 user = new ClaimsIdentity(authenticationType: null);
             }

@@ -9,12 +9,12 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
     public class AuthenticationService
     {
         private readonly OAuth2Client _oauthClient;
-        private readonly LocalStorage _localStorage;
+        private readonly LocalTokenStorage _localTokenStorage;
 
-        public AuthenticationService(OAuth2Client oauthClient, LocalStorage localStorage)
+        public AuthenticationService(OAuth2Client oauthClient, LocalTokenStorage localTokenStorage)
         {
             _oauthClient = oauthClient;
-            _localStorage = localStorage;
+            _localTokenStorage = localTokenStorage;
         }
 
         public async Task AuthenticateAsync(string username, string password, CancellationToken cancellationToken = new())
@@ -25,12 +25,12 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
             response.EnsureSuccessStatusCode();
 
             var tokenInfo = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-            await _localStorage.SetItemAsync("access_token", tokenInfo?.AccessToken!, cancellationToken);
+            await _localTokenStorage.SetAccessTokenAsync(tokenInfo?.AccessToken!, cancellationToken);
         }
 
         public async Task LogoutAsync(CancellationToken cancellationToken = new())
         {
-            await _localStorage.RemoveItem("access_token", cancellationToken);
+            await _localTokenStorage.SetAccessTokenAsync("", cancellationToken);
         }
     }
 }
