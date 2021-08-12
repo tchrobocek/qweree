@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -26,7 +27,9 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
             }
             else
             {
-                var claims = TokenDecoder.ReadClaims(accessToken);
+                var claims = TokenDecoder.ReadClaims(accessToken)
+                    .ToList();
+                claims.AddRange(claims.Where(c => c.Type == "role").Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
                 user = new ClaimsIdentity(claims, "oauth2");
             }
 
