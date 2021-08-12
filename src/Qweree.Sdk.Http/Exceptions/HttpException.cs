@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Sdk.Http.Errors.Exceptions
+namespace Qweree.Sdk.Http.Exceptions
 {
     public class HttpException : Exception
     {
