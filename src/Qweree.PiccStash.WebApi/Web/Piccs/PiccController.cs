@@ -64,7 +64,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 CreatedAt = _dateTimeProvider.UtcNow,
                 ModifiedAt = _dateTimeProvider.UtcNow,
                 OwnerId = userId,
-                StorageSlug = slug.ToImmutableArray()
+                StorageSlug = slug
             };
 
             try
@@ -120,7 +120,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 Name = picc.Name,
                 CreatedAt = picc.CreatedAt,
                 ModifiedAt = picc.ModifiedAt,
-                StorageSlug = picc.StorageSlug
+                StorageSlug = picc.StorageSlug?.ToImmutableArray()
             };
         }
     }

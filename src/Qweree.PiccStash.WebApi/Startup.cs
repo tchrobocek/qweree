@@ -194,7 +194,7 @@ namespace Qweree.PiccStash.WebApi
                 var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
 
                 return new QwereeHttpHandler(httpHandler,
-                        new ClientAuthenticationStorage(new ClientCredentials("admin-ci", "password"), new PasswordGrantInput("admin", "password"), oauth2Client));
+                        new ClientAuthenticationStorage(new ClientCredentials("admin-cli", "password"), new PasswordGrantInput("admin", "password"), oauth2Client));
             });
             services.AddScoped(p =>
             {
