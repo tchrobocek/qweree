@@ -22,7 +22,6 @@ using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Mongo;
-using Qweree.PiccStash.WebApi.Infrastructure.Authentication;
 using Qweree.Utils;
 
 namespace Qweree.PiccStash.WebApi
@@ -168,7 +167,6 @@ namespace Qweree.PiccStash.WebApi
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
             // Session
-            services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
             services.AddScoped(p =>
                 p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
