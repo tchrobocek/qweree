@@ -8,6 +8,7 @@ using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Sdk.Http.HttpClient;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
+using Qweree.WebApplication.Infrastructure.PiccStash;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
 
 namespace Qweree.WebApplication
@@ -48,6 +49,14 @@ namespace Qweree.WebApplication
                     BaseAddress = new Uri("http://localhost/auth/api/system/", UriKind.Absolute)
                 };
                 return new SystemInfoClient(client);
+            });
+            services.AddScoped(p =>
+            {
+                var client = new HttpClient(p.GetRequiredService<QwereeHttpHandler>())
+                {
+                    BaseAddress = new Uri("http://localhost/picc/api/v1/picc/", UriKind.Absolute)
+                };
+                return new PiccClient(client);
             });
             services.AddScoped<AuthenticationService>();
         }

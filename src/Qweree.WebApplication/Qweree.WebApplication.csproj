@@ -17,5 +17,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
+      <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
     </ItemGroup>
 </Project>

@@ -46,6 +46,11 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PiccCreateActionAsync([FromHeader(Name = "Content-Type")] string contentType)
         {
+            if (!contentType.StartsWith("image/"))
+            {
+                return BadRequest("Can upload images only.");
+            }
+
             var userId = _sessionStorage.CurrentUser.Id;
             var piccId = Guid.NewGuid();
 
