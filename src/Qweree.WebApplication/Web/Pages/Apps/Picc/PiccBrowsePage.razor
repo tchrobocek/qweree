@@ -3,6 +3,7 @@
 @using Qweree.Cdn.Sdk
 @using Qweree.WebApplication.Infrastructure.PiccStash
 @using Qweree.WebApplication.Web.Components.Apps.Picc
+@using Qweree.WebApplication.Web.Components.Dialog
 @attribute [Authorize]
 @inject IDialogService _dialogService
 @inject PiccClient _piccClient
@@ -81,7 +82,10 @@
 
     private async Task DeletePiccAsync(PiccDto item)
     {
-        if (item.Id == null)
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
+        var delete = (bool)((await result.Result).Data ?? false);
+
+        if (!delete || item.Id == null)
             return;
 
         await _piccClient.DeleteAsync((Guid) item.Id);
