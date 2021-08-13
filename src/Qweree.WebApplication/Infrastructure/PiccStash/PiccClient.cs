@@ -50,7 +50,7 @@ namespace Qweree.WebApplication.Infrastructure.PiccStash
 
         private string CreatePaginateUri(int skip, int take)
         {
-            return $"?skip={skip}&take={take}&sort[CreatedAt]=1";
+            return $"?skip={skip}&take={take}&sort[CreatedAt]=-1";
         }
     }
 }
