@@ -31,14 +31,16 @@
                 </a>
                 <MudCardContent>
                     <MudText Typo="Typo.body2">
-                        <MudTooltip Text="Copy uri" Placement="Placement.Bottom">
-                            <MudIconButton OnClick="() => CopyLinkAsync(item)" Icon="@Icons.Outlined.Link"/>
-                        </MudTooltip>
                         @item.Id
                     </MudText>
                 </MudCardContent>
                 <MudCardActions Class="d-flex flex-row-reverse">
-                    <MudIconButton Color="Color.Primary" OnClick="() => DeletePiccAsync(item)" Icon="@Icons.Material.Filled.Delete" />
+                    <MudTooltip Text="Delete" Placement="Placement.Bottom">
+                        <MudIconButton OnClick="() => DeletePiccAsync(item)" Icon="@Icons.Filled.Delete"/>
+                    </MudTooltip>
+                    <MudTooltip Text="Copy uri" Placement="Placement.Bottom">
+                        <MudIconButton OnClick="() => CopyLinkAsync(item)" Icon="@Icons.Filled.Link"/>
+                    </MudTooltip>
                 </MudCardActions>
             </MudCard>
         </MudItem>
@@ -48,7 +50,7 @@
 @code {
     private const int Batch = 12;
     private int _pageIndex;
-    private IEnumerable<PiccDto> _piccs = new List<PiccDto>();
+    private List<PiccDto> _piccs = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,7 +62,8 @@
         var piccs = await _piccClient.PiccsPaginateAsync(_pageIndex * Batch, Batch);
         if (piccs.IsSuccessful)
         {
-            _piccs = (await piccs.ReadPayloadAsync())!;
+            _piccs = (await piccs.ReadPayloadAsync())!
+                .ToList();
         }
     }
 
@@ -101,6 +104,9 @@
     {
         _pageIndex++;
         await RefreshAsync();
+
+        if (_piccs.Count == 0)
+            await PrevPageAsync();
     }
 
     private async Task PrevPageAsync()
