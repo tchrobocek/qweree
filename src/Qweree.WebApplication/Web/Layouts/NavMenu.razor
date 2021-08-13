@@ -2,7 +2,9 @@
     <MudDivider Class="mb-8"/>
     <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Main menu</MudText>
     <MudNavLink Href="/home" Icon="@Icons.Material.Outlined.Dashboard">Homepage</MudNavLink>
-    <MudNavLink Href="/apps/picc" Icon="@Icons.Material.Outlined.Image">Picc stash</MudNavLink>
+    <MudNavGroup Icon="@Icons.Material.Outlined.Image" Title="Picc stash" Expanded="false">
+        <MudNavLink Href="/apps/picc/browse">Browse</MudNavLink>
+    </MudNavGroup>
     <MudNavLink Href="/claims" Icon="@Icons.Material.Outlined.Person">My Account</MudNavLink>
 
     <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Admin menu</MudText>

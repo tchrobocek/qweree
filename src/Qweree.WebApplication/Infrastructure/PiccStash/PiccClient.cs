@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -38,6 +39,12 @@ namespace Qweree.WebApplication.Infrastructure.PiccStash
             };
 
             var response = await _httpClient.SendAsync(request, cancellationToken);
+            return ApiResponse.CreateApiResponse<PiccDto>(response);
+        }
+
+        public async Task<ApiResponse> DeleteAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.DeleteAsync(id.ToString(), cancellationToken);
             return ApiResponse.CreateApiResponse<PiccDto>(response);
         }
 
