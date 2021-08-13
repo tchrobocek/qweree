@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,11 @@ namespace Qweree.WebApplication
                 p.GetRequiredService<LocalTokenStorage>()));
             services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
             services.AddScoped<ClaimsPrincipalStorage>();
+            services.AddScoped(p =>
+            {
+                return new UnauthorizedHttpHandler(p.GetRequiredService<AuthenticationService>(),
+                    p.GetRequiredService<NavigationManager>(), p.GetRequiredService<QwereeHttpHandler>());
+            });
             services.AddScoped(_ =>
             {
                 var client = new HttpClient
@@ -44,7 +50,7 @@ namespace Qweree.WebApplication
             });
             services.AddScoped(p =>
             {
-                var client = new HttpClient(p.GetRequiredService<QwereeHttpHandler>())
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
                     BaseAddress = new Uri("http://localhost/auth/api/system/", UriKind.Absolute)
                 };
@@ -52,7 +58,7 @@ namespace Qweree.WebApplication
             });
             services.AddScoped(p =>
             {
-                var client = new HttpClient(p.GetRequiredService<QwereeHttpHandler>())
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
                     BaseAddress = new Uri("http://localhost/picc/api/v1/picc/", UriKind.Absolute)
                 };
