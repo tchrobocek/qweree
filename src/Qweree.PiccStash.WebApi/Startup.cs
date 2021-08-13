@@ -202,7 +202,7 @@ namespace Qweree.PiccStash.WebApi
                 var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
                 var httpClient = new HttpClient(httpHandler)
                 {
-                    BaseAddress = new Uri("http://localhost/cdn/api/v1/storage/")
+                    BaseAddress = new Uri(Configuration["Storage:CdnUri"])
                 };
                 return new StorageClient(httpClient);
             });
