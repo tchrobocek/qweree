@@ -2,8 +2,25 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Cdn.Sdk
 @using Qweree.WebApplication.Infrastructure.PiccStash
+@using Qweree.WebApplication.Web.Components.Apps.Picc
 @attribute [Authorize]
+@inject IDialogService _dialogService
 @inject PiccClient _piccClient
+
+<MudCard Elevation="1" Class="pa-4">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Picc stash</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <div class="mb-4">
+            <MudButton OnClick="OpenUploadDialog">Upload</MudButton>
+        </div>
+        @if (!_piccs.Any())
+        {
+            <MudText Typo="Typo.body2">No piccs.</MudText>
+        }
+    </MudCardContent>
+</MudCard>
 
 <MudGrid>
     @foreach (var item in _piccs)
@@ -24,24 +41,12 @@
     }
 </MudGrid>
 
-@if (!_piccs.Any())
-{
-    <MudCard Elevation="1" Class="pa-4">
-        <MudCardHeader>
-            <MudText Typo="Typo.h6">Picc stash</MudText>
-        </MudCardHeader>
-        <MudCardContent>
-            <MudText Typo="Typo.body2">No piccs.</MudText>
-        </MudCardContent>
-    </MudCard>
-}
-
 @code {
     private IEnumerable<PiccDto> _piccs = new List<PiccDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        var piccs = await _piccClient.PaginatePics(0, 50);
+        var piccs = await _piccClient.PiccsPaginateAsync(0, 50);
         if (piccs.IsSuccessful)
         {
             _piccs = (await piccs.ReadPayloadAsync())!;
@@ -51,6 +56,12 @@
     private string GetCdnUri(PiccDto item)
     {
         return "http://localhost/cdn/api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
+    }
+
+    private void OpenUploadDialog()
+    {
+
+        _dialogService.Show<UploadPiccComponentDialog>("Simple Dialog",  new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
 
 }
