@@ -117,6 +117,20 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
             return Ok(dtos);
         }
 
+        /// <summary>
+        ///     Delete picc.
+        /// </summary>
+        /// <param name="piccId">Picc to delete.</param>
+        [HttpDelete("{piccId:guid}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PiccDeleteActionAsync(Guid piccId)
+        {
+            await _piccRepository.DeleteAsync(piccId);
+            return NoContent();
+        }
+
         private PiccDto PiccDto(StashedPicc picc)
         {
             return new()
