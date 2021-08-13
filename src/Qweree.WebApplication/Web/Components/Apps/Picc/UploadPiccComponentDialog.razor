@@ -1,34 +1,40 @@
 @using Qweree.WebApplication.Infrastructure.PiccStash
+@using System.IO
 @inject PiccClient _piccClient
 
 <MudDialog>
     <DialogContent>
         <style>
             .drag-drop-zone {
-                display: flex;align-items: center;justify-content: center;transition: all .4s;min-height: 400px;
+                display: flex;transition: all .4s;min-height: 400px;
             }
             .drag-drop-input {
                 position: absolute;width: 100%;height: 90%;opacity: 0;cursor:pointer;
                 z-index:2;
             }
-            .drag-enter {
-                box-shadow: var(--mud-elevation-10);
-            }
             .list{
                 padding:2em;min-width:100%;
+            }
+            .drag-n-drop-no-files {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         </style>
 
         <MudPaper @ondragenter="@(()=>_dragEnterStyle="drag-enter")"
                   @ondragleave="@(()=>_dragEnterStyle=null)"
                   @ondragend="@(()=>_dragEnterStyle=null)"
-                  Class=@("drag-drop-zone "+ _dragEnterStyle)>
+                  Class=@("drag-drop-zone "+ _dragEnterStyle)
+                  Elevation="0">
 
             <InputFile OnChange="OnInputFileChanged" multiple  class="drag-drop-input" />
 
             @if (_files.Count == 0)
             {
-                <MudText Typo="Typo.body2">Drag and drop files here or click</MudText>
+                <div>
+                    <MudText Class="drag-n-drop-no-files" Typo="Typo.body2">Drag and drop files here or click</MudText>
+                </div>
             }else
             {
                 <MudList Style="padding:2em;width:100%;" Dense="true" >
@@ -38,7 +44,7 @@
                            <MudChip Color="Color.Dark"
                                     Style="width:60px; overflow:hidden;"
                                     Text="@(file.Name.Split(".").Last())" />
-                           @file
+                           @file.Name
                         </MudListItem>}
                 </MudList>
             }
@@ -78,8 +84,19 @@
     {
         foreach (var file in _files)
         {
-            await using var stream = file.OpenReadStream(32 * 1000 * 1000);
+            Stream stream;
+
+            try
+            {
+                stream = file.OpenReadStream(32 * 1000 * 1000);
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+
             await _piccClient.PiccUploadAsync(stream, file.ContentType);
+            await stream.DisposeAsync();
         }
     }
 }

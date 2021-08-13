@@ -1,0 +1,116 @@
+@page "/apps/picc/browse"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Cdn.Sdk
+@using Qweree.WebApplication.Infrastructure.PiccStash
+@using Qweree.WebApplication.Web.Components.Apps.Picc
+@attribute [Authorize]
+@inject IDialogService _dialogService
+@inject PiccClient _piccClient
+@inject IJSRuntime _jsRuntime
+
+<div class="mb-4">
+    <MudButton OnClick="OpenUploadDialogAsync">Upload piccs</MudButton>
+</div>
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudIconButton OnClick="PrevPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateBefore"/>
+    </MudItem>
+    <MudItem xs="6" Style="text-align: right">
+        <MudIconButton OnClick="NextPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateNext"/>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="mt-4">
+    @foreach (var item in _piccs)
+    {
+        <MudItem xs="3">
+            <MudCard>
+                <a href="@GetCdnUri(item)">
+                    <MudCardMedia Image="@GetCdnUri(item)" Height="200"/>
+                </a>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">
+                        <MudTooltip Text="Copy uri" Placement="Placement.Bottom">
+                            <MudIconButton OnClick="() => CopyLinkAsync(item)" Icon="@Icons.Outlined.Link"/>
+                        </MudTooltip>
+                        @item.Id
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions Class="d-flex flex-row-reverse">
+                    <MudIconButton Color="Color.Primary" OnClick="() => DeletePiccAsync(item)" Icon="@Icons.Material.Filled.Delete" />
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private const int Batch = 12;
+    private int _pageIndex;
+    private IEnumerable<PiccDto> _piccs = new List<PiccDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        var piccs = await _piccClient.PiccsPaginateAsync(_pageIndex * Batch, Batch);
+        if (piccs.IsSuccessful)
+        {
+            _piccs = (await piccs.ReadPayloadAsync())!;
+        }
+    }
+
+    private string GetCdnUri(PiccDto item)
+    {
+        return "http://localhost/cdn/api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
+    }
+
+    private async Task OpenUploadDialogAsync()
+    {
+
+        _dialogService.Show<UploadPiccComponentDialog>("Simple Dialog",  new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        await RefreshAsync();
+    }
+
+    private async Task DeletePiccAsync(PiccDto item)
+    {
+        if (item.Id == null)
+            return;
+
+        await _piccClient.DeleteAsync((Guid) item.Id);
+        await RefreshAsync();
+    }
+
+    private async Task CopyLinkAsync(PiccDto item)
+    {
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", GetCdnUri(item));
+        }
+        catch (Exception)
+        {
+            // ignore, couldn't copy link
+        }
+    }
+
+    private async Task NextPageAsync()
+    {
+        _pageIndex++;
+        await RefreshAsync();
+    }
+
+    private async Task PrevPageAsync()
+    {
+        _pageIndex--;
+
+        if (_pageIndex < 0)
+            _pageIndex = 0;
+
+        await RefreshAsync();
+    }
+
+}
