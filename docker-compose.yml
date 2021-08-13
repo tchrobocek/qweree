@@ -65,6 +65,16 @@ services:
       Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
       Storage__CdnUri: "http://qweree-cdn/api/v1/storage/"
       Routing__PathBase: "/picc"
+
+  qweree-webapp:
+    container_name: qweree-webapp
+    build:
+      dockerfile: ./docker/Qweree.WebApplication.Dockerfile
+      context: .
+    restart: always
+    environment:
+       ASPNETCORE_URLS: http://localhost:80
+
 volumes:
   qweree-db:
   qweree-cdn:
