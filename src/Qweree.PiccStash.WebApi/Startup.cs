@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
@@ -195,7 +194,7 @@ namespace Qweree.PiccStash.WebApi
                 var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
 
                 return new QwereeHttpHandler(httpHandler,
-                        new ClientAuthenticationStorage(new ClientCredentials("admin-ci", "password"), oauth2Client));
+                        new ClientAuthenticationStorage(new ClientCredentials("admin-ci", "password"), new PasswordGrantInput("admin", "password"), oauth2Client));
             });
             services.AddScoped(p =>
             {
