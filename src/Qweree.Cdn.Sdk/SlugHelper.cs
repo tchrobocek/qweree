@@ -1,8 +1,8 @@
 using System;
 
-namespace Qweree.Cdn.WebApi.Infrastructure
+namespace Qweree.Cdn.Sdk
 {
-    public class SlugHelper
+    public static class SlugHelper
     {
         public static string[] PathToSlug(string path)
         {
