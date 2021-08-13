@@ -27,7 +27,7 @@
     {
         <MudItem xs="3">
             <MudCard>
-                <a href="@GetCdnUri(item)">
+                <a target="_blank" href="@GetCdnUri(item)">
                     <MudCardMedia Image="@GetCdnUri(item)" Height="200"/>
                 </a>
                 <MudCardContent>
@@ -75,8 +75,8 @@
 
     private async Task OpenUploadDialogAsync()
     {
-
-        _dialogService.Show<UploadPiccComponentDialog>("Simple Dialog",  new DialogOptions() { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        var result = _dialogService.Show<UploadPiccDialogComponent>("Upload piccs",  new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        await result.Result;
         await RefreshAsync();
     }
 
