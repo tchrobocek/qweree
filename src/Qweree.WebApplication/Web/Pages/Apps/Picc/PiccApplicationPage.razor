@@ -1,0 +1,56 @@
+@page "/apps/picc"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Cdn.Sdk
+@using Qweree.WebApplication.Infrastructure.PiccStash
+@attribute [Authorize]
+@inject PiccClient _piccClient
+
+<MudGrid>
+    @foreach (var item in _piccs)
+    {
+        <MudItem xs="3">
+            <MudCard>
+                <a href="@GetCdnUri(item)">
+                    <MudCardMedia Image="@GetCdnUri(item)" Height="200"/>
+                </a>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">@item.Id</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Remove</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@if (!_piccs.Any())
+{
+    <MudCard Elevation="1" Class="pa-4">
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">Picc stash</MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.body2">No piccs.</MudText>
+        </MudCardContent>
+    </MudCard>
+}
+
+@code {
+    private IEnumerable<PiccDto> _piccs = new List<PiccDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var piccs = await _piccClient.PaginatePics(0, 50);
+        if (piccs.IsSuccessful)
+        {
+            _piccs = (await piccs.ReadPayloadAsync())!;
+        }
+    }
+
+    private string GetCdnUri(PiccDto item)
+    {
+        return "http://localhost/cdn/api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
+    }
+
+}
