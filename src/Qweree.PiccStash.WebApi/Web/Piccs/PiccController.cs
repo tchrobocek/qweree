@@ -54,7 +54,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
             var userId = _sessionStorage.CurrentUser.Id;
             var piccId = Guid.NewGuid();
 
-            var slug = new[] {"apps", "picc", "usr", userId.ToString(), "stash", piccId.ToString()};
+            var slug = new[] {"apps", "picc", "stash", piccId.ToString()};
             var response = await _storageClient.StoreAsync(SlugHelper.SlugToPath(slug), contentType, Request.Body);
 
             if (!response.IsSuccessful)
