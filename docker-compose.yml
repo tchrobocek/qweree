@@ -27,8 +27,6 @@ services:
       dockerfile: ./docker/Qweree.Authentication.WebApi.Dockerfile
       context: .
     restart: always
-    ports:
-      - "10001:80"
     environment:
       Database__ConnectionString: "mongodb://qweree-db:27017"
       HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
@@ -42,8 +40,6 @@ services:
       dockerfile: ./docker/Qweree.Cdn.WebApi.Dockerfile
       context: .
     restart: always
-    ports:
-      - "10002:80"
     volumes:
       - qweree-cdn:/storage
     environment:
@@ -53,6 +49,22 @@ services:
       Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
       Storage__FileSystemRoot: "/storage"
       Routing__PathBase: "/cdn"
+
+  qweree-picc:
+    container_name: qweree-picc
+    depends_on:
+      - qweree-db
+    build:
+      dockerfile: ./docker/Qweree.PiccStash.WebApi.Dockerfile
+      context: .
+    restart: always
+    environment:
+      Database__ConnectionString: "mongodb://qweree-db:27017"
+      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
+      Authentication__TokenUri: "http://qweree-auth/api/oauth2/auth"
+      Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
+      Storage__CdnUri: "http://qweree-cdn/api/v1/storage/"
+      Routing__PathBase: "/picc"
 volumes:
   qweree-db:
   qweree-cdn:
