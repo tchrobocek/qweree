@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -21,8 +22,13 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
+using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo;
+using Qweree.PiccStash.WebApi.Domain;
+using Qweree.Sdk.Http.HttpClient;
 using Qweree.Utils;
+using ClientCredentials = Qweree.Authentication.Sdk.OAuth2.ClientCredentials;
 
 namespace Qweree.PiccStash.WebApi
 {
@@ -55,6 +61,7 @@ namespace Qweree.PiccStash.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHealthChecks()
                 .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
 
@@ -180,24 +187,48 @@ namespace Qweree.PiccStash.WebApi
                 return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
             });
 
+            // Http
+            services.AddSingleton<HttpClientHandler>();
+            services.AddSingleton(p =>
+            {
+                var httpHandler = p.GetRequiredService<HttpClientHandler>();
+                var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
+
+                return new QwereeHttpHandler(httpHandler,
+                        new ClientAuthenticationStorage(new ClientCredentials("admin-ci", "password"), oauth2Client));
+            });
+            services.AddScoped(p =>
+            {
+
+                var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
+                var httpClient = new HttpClient(httpHandler)
+                {
+                    BaseAddress = new Uri("http://localhost/cdn/api/v1/storage/")
+                };
+                return new StorageClient(httpClient);
+            });
+
+            // Picc stash
+            services.AddScoped<StashedPiccRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
         {
-            if (env.IsDevelopment())
+            var pathBase = routingConfiguration.Value.PathBase;
+
+            if (pathBase != null)
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Qweree.PiccStash.WebApi v1"));
+                app.UsePathBase(pathBase);
             }
-
-            app.UseHttpsRedirection();
-
+            app.UseForwardedHeaders();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree OAuth2 v1 api"));
+            app.UseCors("liberal");
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
