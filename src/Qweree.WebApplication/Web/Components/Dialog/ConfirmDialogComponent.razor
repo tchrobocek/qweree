@@ -1,0 +1,29 @@
+@using Qweree.WebApplication.Infrastructure.PiccStash
+@inject PiccClient _piccClient
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@Text</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="No">No</MudButton>
+        <MudButton OnClick="Yes">Yes</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    private void Yes()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void No()
+    {
+        MudDialog.Close(DialogResult.Ok(false));
+    }
+}
