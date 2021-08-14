@@ -90,6 +90,11 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
                 var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
                 response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
             }
+            else if (grantType == "client_credentials")
+            {
+                var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
+                response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
+            }
             else
             {
                 return Unauthorized();

@@ -107,7 +107,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
 
         public async Task<Response> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
-            if (_sessionStorage.CurrentUser.Id == id)
+            if (_sessionStorage.CurrentUser?.Id == id)
             {
                 return Response.Fail("Cannot delete self.");
             }

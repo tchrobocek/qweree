@@ -51,7 +51,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 return BadRequest("Can upload images only.");
             }
 
-            var userId = _sessionStorage.CurrentUser.Id;
+            var userId = _sessionStorage.Id;
             var piccId = Guid.NewGuid();
 
             var slug = new[] {"apps", "picc", "stash", piccId.ToString()};
@@ -107,7 +107,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
         {
             var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
 
-            var userId = _sessionStorage.CurrentUser.Id;
+            var userId = _sessionStorage.Id;
             var pagination = await _piccRepository.PaginateAsync($@"{{""OwnerId"": UUID(""{userId}"")}}", skip, take, sortDictionary);
 
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
