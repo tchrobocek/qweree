@@ -19,7 +19,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
     public class OAuth2Controller : ControllerBase
     {
         private static readonly ImmutableArray<string> GrantWhitelist =
-            new[] {"password", "refresh_token", "file_access"}.ToImmutableArray();
+            new[] {"password", "refresh_token", "client_credentials"}.ToImmutableArray();
 
         private readonly AuthorizationHeaderEncoder _authorizationHeaderEncoder = new();
         private readonly AuthenticationService _authenticationService;
@@ -92,8 +92,7 @@ namespace Qweree.Authentication.WebApi.Web.Authentication
             }
             else if (grantType == "client_credentials")
             {
-                var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
-                response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
+                response = await _authenticationService.AuthenticateAsync(clientCredentials);
             }
             else
             {
