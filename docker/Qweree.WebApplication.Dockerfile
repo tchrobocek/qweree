@@ -4,6 +4,9 @@ WORKDIR /app
 COPY *.sln .
 COPY src ./src/
 
+ARG APPSETTINGS_PATH=src/Qweree.WebApplication/wwwroot/appsettings.json
+COPY $APPSETTINGS_PATH ./src/Qweree.WebApplication/wwwroot/appsettings.json
+
 RUN dotnet restore ./src/Qweree.WebApplication/Qweree.WebApplication.csproj
 RUN dotnet build ./src/Qweree.WebApplication/Qweree.WebApplication.csproj -c Release -o publish --no-restore
 
