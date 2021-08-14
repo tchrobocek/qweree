@@ -1,6 +1,7 @@
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
@@ -89,6 +90,13 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
                 c.AddProperty(p => p.Items)
                     .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
+            });
+
+            builder.AddModel<ChangeMyPasswordInput>(c =>
+            {
+                c.AddProperty(p => p.NewPassword)
+                    .AddConstraint(new NotEmptyConstraint("Password cannot be empty."))
+                    .AddConstraint(new PasswordConstraint());
             });
         }
     }

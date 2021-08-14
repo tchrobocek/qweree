@@ -17,6 +17,7 @@ using MongoDB.HealthCheck;
 using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.WebApi.Domain;
+using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
@@ -234,6 +235,7 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IClientRoleRepository, ClientRoleRepository>();
             services.AddSingleton<RoleService, RoleService>();
             services.AddSingleton<AuthorizationService>();
+            services.AddScoped<MyAccountService>();
 
             // Security
             services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
