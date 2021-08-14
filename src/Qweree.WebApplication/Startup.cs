@@ -7,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.PiccStash.Sdk;
 using Qweree.Sdk.Http.HttpClient;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
-using Qweree.WebApplication.Infrastructure.PiccStash;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
 
 namespace Qweree.WebApplication

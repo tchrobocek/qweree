@@ -18,5 +18,10 @@
     <ItemGroup>
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
+      <ProjectReference Include="..\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructure\PiccStash" />
     </ItemGroup>
 </Project>

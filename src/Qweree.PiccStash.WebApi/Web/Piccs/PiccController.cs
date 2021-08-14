@@ -11,6 +11,7 @@ using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Storage;
+using Qweree.PiccStash.Sdk;
 using Qweree.PiccStash.WebApi.Domain;
 using Qweree.Sdk;
 using Qweree.Utils;

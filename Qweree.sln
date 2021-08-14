@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Commands", "src\Qwer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Commands.Test", "src\Qweree.Commands.Test\Qweree.Commands.Test.csproj", "{268052AF-2F35-4A85-A28B-FA55D78BDAA0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.PiccStash.Sdk", "src\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj", "{CBF658C0-1732-4F2D-A207-95A833B29DEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,5 +152,9 @@ Global
 		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{268052AF-2F35-4A85-A28B-FA55D78BDAA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBF658C0-1732-4F2D-A207-95A833B29DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBF658C0-1732-4F2D-A207-95A833B29DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBF658C0-1732-4F2D-A207-95A833B29DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBF658C0-1732-4F2D-A207-95A833B29DEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

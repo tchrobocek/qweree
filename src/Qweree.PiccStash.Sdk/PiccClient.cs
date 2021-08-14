@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Sdk.Http;
 
-namespace Qweree.WebApplication.Infrastructure.PiccStash
+namespace Qweree.PiccStash.Sdk
 {
     public class PiccClient
     {

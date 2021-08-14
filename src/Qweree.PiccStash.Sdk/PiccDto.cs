@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.WebApplication.Infrastructure.PiccStash
+namespace Qweree.PiccStash.Sdk
 {
     public class PiccDto
     {
