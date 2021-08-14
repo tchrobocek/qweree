@@ -5,6 +5,7 @@ using Qweree.ConsoleApplication.Commands.Context;
 using Qweree.ConsoleApplication.Commands.Picc;
 using Qweree.ConsoleApplication.Infrastructure.Authentication;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
+using Qweree.ConsoleApplication.Infrastructure.ErrorHandling;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.ConsoleHost;
 using Qweree.ConsoleHost.Extensions;
@@ -16,6 +17,7 @@ namespace Qweree.ConsoleApplication
     {
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ErrorHandlingMiddleware>();
             services.AddSingleton<CommandExecutorMiddleware>();
             services.AddSingleton<RefreshTokenMiddleware>();
             services.AddSingleton<ITokenStorage, MemoryTokenStorage>();
@@ -38,6 +40,7 @@ namespace Qweree.ConsoleApplication
 
         public static void Configure(ConsoleApplicationBuilder app)
         {
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMiddleware<RefreshTokenMiddleware>();
             app.UseMiddleware<CommandExecutorMiddleware>();
         }
