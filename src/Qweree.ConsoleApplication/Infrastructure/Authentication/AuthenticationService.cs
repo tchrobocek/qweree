@@ -29,7 +29,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.Authentication
             var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
 
             var accessToken = token?.AccessToken!;
-            var refreshToken = token?.AccessToken!;
+            var refreshToken = token?.RefreshToken!;
 
             await _context.SetCredentialsAsync(accessToken, refreshToken, cancellationToken);
         }
@@ -38,7 +38,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.Authentication
         {
             var oauthClient = await _oauthClientFactory.CreateClientAsync(cancellationToken);
 
-            var clientCredentials = new ClientCredentials("admin", "password");
+            var clientCredentials = new ClientCredentials("admin-cli", "password");
             var response = await oauthClient.RefreshAsync(refreshTokenGrantInput, clientCredentials, cancellationToken);
 
             response.EnsureSuccessStatusCode();

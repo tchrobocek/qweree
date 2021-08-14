@@ -2,6 +2,7 @@ using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.ConsoleApplication.Commands;
 using Qweree.ConsoleApplication.Commands.Context;
+using Qweree.ConsoleApplication.Commands.Picc;
 using Qweree.ConsoleApplication.Infrastructure.Authentication;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
@@ -25,11 +26,13 @@ namespace Qweree.ConsoleApplication
             });
             services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
             services.AddSingleton<OAuth2ClientFactory>();
+            services.AddSingleton<PiccClientFactory>();
             services.AddSingleton<AuthenticationService>();
             services.AddSingleton<ICommand, RootCommand>();
             services.AddSingleton<ICommand, ContextInitCommand>();
             services.AddSingleton<ICommand, ContextReadCommand>();
             services.AddSingleton<ICommand, LoginCommand>();
+            services.AddSingleton<ICommand, PiccStashCommand>();
         }
 
         public static void Configure(ConsoleApplicationBuilder app)

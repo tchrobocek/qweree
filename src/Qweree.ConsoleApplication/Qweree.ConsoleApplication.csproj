@@ -10,6 +10,7 @@
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Commands\Qweree.Commands.csproj" />
       <ProjectReference Include="..\Qweree.ConsoleHost\Qweree.ConsoleHost.csproj" />
+      <ProjectReference Include="..\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
     </ItemGroup>
 

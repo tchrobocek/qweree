@@ -28,7 +28,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.Authentication
             {
                 token = await _context.GetRefreshTokenAsync(cancellationToken);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 token = string.Empty;
             }
