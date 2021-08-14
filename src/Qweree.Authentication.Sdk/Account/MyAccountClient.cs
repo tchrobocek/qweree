@@ -8,18 +8,18 @@ using Qweree.Utils;
 
 namespace Qweree.Authentication.Sdk.Account
 {
-    public class PasswordClient
+    public class MyAccountClient
     {
         private readonly HttpClient _httpClient;
 
-        public PasswordClient(HttpClient httpClient)
+        public MyAccountClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
         public async Task<ApiResponse> ChangeMyPasswordAsync(ChangeMyPasswordInput input, CancellationToken cancellationToken = new())
         {
-            var response = await _httpClient.PostAsync("api/account/change-password",
+            var response = await _httpClient.PostAsync("change-password",
                 new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json),
                 cancellationToken);
 

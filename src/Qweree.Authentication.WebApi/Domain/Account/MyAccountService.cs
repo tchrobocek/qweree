@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
@@ -7,6 +8,7 @@ using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Utils;
+using Qweree.Validator;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Account
@@ -17,18 +19,25 @@ namespace Qweree.Authentication.WebApi.Domain.Account
         private readonly IUserRepository _userRepository;
         private readonly IPasswordEncoder _passwordEncoder;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IValidator _validator;
 
-        public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider)
+        public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
+            IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator)
         {
             _userRepository = userRepository;
             _sessionStorage = sessionStorage;
             _passwordEncoder = passwordEncoder;
             _dateTimeProvider = dateTimeProvider;
+            _validator = validator;
         }
 
         public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
             CancellationToken cancellationToken = new())
         {
+            var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+            if (validationResult.HasFailed)
+                return Response.Fail(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+
             User user;
             var id = _sessionStorage.Id;
 

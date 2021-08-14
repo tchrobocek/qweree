@@ -1,0 +1,122 @@
+@page "/my-account"
+@using Qweree.WebApplication.Infrastructure.Authentication
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.Sdk.Account
+@using System.Net
+@inject ClaimsPrincipalStorage _storage
+@inject AuthenticationService _authenticationService
+@inject NavigationManager _navigationManager
+@inject MyAccountClient _myAccountClient
+@inject ISnackbar _snackbar
+@attribute [Authorize]
+
+@if (_user != null && _claimsPrincipal != null)
+{
+    <MudText Typo="Typo.h3">My Account</MudText>
+
+
+
+    <MudGrid Spacing="5">
+        <MudItem xs="4">
+            <MudPaper Class="pa-4">
+                <div style="text-align: center">
+                    <MudAvatar Style="height:140px; width:140px; font-size:2rem;" Color="Color.Primary" Class="ma-2 my-8">
+                        @_user.Username.First().ToString().ToUpper()
+                    </MudAvatar>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="8">
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-8">
+                <MudTabPanel Text="Personal info">
+                    <MudText Class="ma-4" Typo="Typo.body2">Username: @_user.Username</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Full name: @_user.FullName</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Email: @_user.Email</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _user.Roles)</MudText>
+                </MudTabPanel>
+                <MudTabPanel Text="Change password">
+                    @foreach(var error in _errors)
+                    {
+                        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+                    }
+
+                    <PasswordFieldComponent @bind-Value="_oldPassword" Label="Old password" Variant="Variant.Outlined" Class="my-6"></PasswordFieldComponent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <PasswordFieldComponent @bind-Value="_newPassword" Label="New password" Variant="Variant.Outlined" Class="my-6"></PasswordFieldComponent>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <PasswordFieldComponent @bind-Value="_newPassword2" Label="Repeat new password" Variant="Variant.Outlined" Class="my-6"></PasswordFieldComponent>
+                        </MudItem>
+                    </MudGrid>
+                    <MudButton OnClick="ChangePasswordAsync" Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">Change password</MudButton>
+                </MudTabPanel>
+            </MudTabs>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    private User? _user;
+    private ClaimsPrincipal? _claimsPrincipal;
+
+    private string _oldPassword = string.Empty;
+    private string _newPassword = string.Empty;
+    private string _newPassword2 = string.Empty;
+
+    private readonly List<string> _errors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await _storage.GetUserAsync();
+        _claimsPrincipal = await _storage.GetClaimsPrincipalAsync();
+    }
+
+    private async Task ChangePasswordAsync()
+    {
+        var newPassword = _newPassword;
+        var newPassword2 = _newPassword2;
+        var oldPassword = _oldPassword;
+
+        _newPassword = string.Empty;
+        _newPassword2 = string.Empty;
+        _oldPassword = string.Empty;
+
+        Console.WriteLine(newPassword);
+        Console.WriteLine(newPassword2);
+        Console.WriteLine(oldPassword);
+
+        _errors.Clear();
+
+        if (newPassword != newPassword2)
+        {
+            _errors.Add("Passwords do not match.");
+            return;
+        }
+
+        var response = await _myAccountClient.ChangeMyPasswordAsync(new ChangeMyPasswordInput(oldPassword, newPassword));
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    _errors.Add("You are not authorized.");
+                    break;
+                default:
+                    _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+
+                    if (!_errors.Any())
+                        _errors.Add(response.StatusCode.ToString());
+                    break;
+            }
+
+            return;
+        }
+
+        _snackbar.Add("Password changed.", Severity.Success);
+    }
+
+}

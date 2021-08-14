@@ -17,7 +17,7 @@
 
             <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
             <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
-            <MudTextField @bind-Value="_password" Label="Password" Variant="Variant.Outlined" InputType="@_passwordInput" Adornment="Adornment.End" AdornmentIcon="@_passwordInputIcon" OnAdornmentClick="TogglePasswordVisibility"/>
+            <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined"/>
             <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await LoginAsync()" Size="Size.Large" FullWidth="true">Sign In</MudButton>
         </MudPaper>
     </div>
@@ -25,10 +25,7 @@
 @code {
     private string _authMessage = string.Empty;
     private string _username = string.Empty;
-    private bool _passwordVisibility;
     private string _password = string.Empty;
-    private InputType _passwordInput = InputType.Password;
-    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
 
 
     protected override async Task OnInitializedAsync()
@@ -58,22 +55,6 @@
         finally
         {
             _password = string.Empty;
-        }
-    }
-
-    private void TogglePasswordVisibility()
-    {
-        if (_passwordVisibility)
-        {
-            _passwordVisibility = false;
-            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
-            _passwordInput = InputType.Password;
-        }
-        else
-        {
-            _passwordVisibility = true;
-            _passwordInputIcon = Icons.Material.Filled.Visibility;
-            _passwordInput = InputType.Text;
         }
     }
 }
