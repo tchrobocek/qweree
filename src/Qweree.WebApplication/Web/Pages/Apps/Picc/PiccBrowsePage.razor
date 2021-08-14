@@ -1,7 +1,6 @@
 @page "/apps/picc/browse"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Configuration
-@using Qweree.Cdn.Sdk
 @using Qweree.PiccStash.Sdk
 @using Qweree.WebApplication.Web.Components.Apps.Picc
 @using Qweree.WebApplication.Web.Components.Dialog
@@ -33,6 +32,12 @@
                     <MudCardMedia Image="@GetCdnUri(item)" Height="200"/>
                 </a>
                 <MudCardContent>
+                    @if (!string.IsNullOrWhiteSpace(item.Name))
+                    {
+                        <MudText Typo="Typo.body1">
+                            @item.Name
+                        </MudText>
+                    }
                     <MudText Typo="Typo.body2">
                         @item.Id
                     </MudText>
@@ -72,7 +77,7 @@
 
     private string GetCdnUri(PiccDto item)
     {
-        return _configuration["CdnServiceUri"] + "api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
+        return _configuration["PiccServiceUri"] + "api/v1/picc/" + item.Id;
     }
 
     private async Task OpenUploadDialogAsync()
@@ -90,7 +95,7 @@
         if (!delete || item.Id == null)
             return;
 
-        await _piccClient.DeleteAsync((Guid) item.Id);
+        await _piccClient.PiccDeleteAsync((Guid) item.Id);
         await RefreshAsync();
     }
 

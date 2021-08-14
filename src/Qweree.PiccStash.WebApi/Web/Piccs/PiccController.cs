@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -63,10 +63,12 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
             }
 
+            var extension = contentType["image/".Length..];
+
             var picc = new StashedPicc
             {
                 Id = piccId,
-                Name = string.Empty,
+                Name = piccId + "." + extension,
                 CreatedAt = _dateTimeProvider.UtcNow,
                 ModifiedAt = _dateTimeProvider.UtcNow,
                 OwnerId = userId,
@@ -83,6 +85,86 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
             }
 
             return Ok(PiccDto(picc));
+        }
+
+        /// <summary>
+        ///     Read picc.
+        /// </summary>
+        /// <param name="piccId">Picc id.</param>
+        [HttpGet("{piccId:guid}")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PiccReadActionAsync(Guid piccId)
+        {
+            StashedPicc picc;
+
+            try
+            {
+                picc = await _piccRepository.GetAsync(piccId);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var response = await _storageClient.RetrieveAsync(SlugHelper.SlugToPath(picc.StorageSlug!));
+
+            if (!response.IsSuccessful)
+            {
+                return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
+            }
+
+            string mimeType = MediaTypeNames.Application.Octet;
+
+            if (response.ContentHeaders.TryGetValues("Content-Type", out var mimeTypes))
+            {
+                mimeType = mimeTypes.Single();
+            }
+
+
+            var stream = await response.ReadPayloadAsStreamAsync();
+            return File(stream, mimeType);
+        }
+
+        /// <summary>
+        ///     Download picc.
+        /// </summary>
+        /// <param name="piccId">Picc id.</param>
+        [HttpGet("{piccId:guid}/download")]
+        [Authorize]
+        [RequiresFileFromBody]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PiccDownloadActionAsync(Guid piccId)
+        {
+            StashedPicc picc;
+
+            try
+            {
+                picc = await _piccRepository.GetAsync(piccId);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var response = await _storageClient.RetrieveAsync(SlugHelper.SlugToPath(picc.StorageSlug!));
+
+            if (!response.IsSuccessful)
+            {
+                return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
+            }
+
+            string mimeType = MediaTypeNames.Application.Octet;
+
+            if (response.ContentHeaders.TryGetValues("Content-Type", out var mimeTypes))
+            {
+                mimeType = mimeTypes.Single();
+            }
+
+
+            await using var stream = await response.ReadPayloadAsStreamAsync();
+            return File(stream, mimeType, picc.Name);
         }
 
         /// <summary>
@@ -139,8 +221,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 Id = picc.Id,
                 Name = picc.Name,
                 CreatedAt = picc.CreatedAt,
-                ModifiedAt = picc.ModifiedAt,
-                StorageSlug = picc.StorageSlug?.ToImmutableArray()
+                ModifiedAt = picc.ModifiedAt
             };
         }
     }

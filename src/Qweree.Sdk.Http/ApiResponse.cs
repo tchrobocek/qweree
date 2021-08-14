@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace Qweree.Sdk.Http
         protected HttpResponseMessage ResponseMessage { get; }
         public bool IsSuccessful => ResponseMessage.IsSuccessStatusCode;
         public HttpStatusCode StatusCode => ResponseMessage.StatusCode;
+        public HttpResponseHeaders ResponseHeaders => ResponseMessage.Headers;
+        public HttpContentHeaders ContentHeaders => ResponseMessage.Content.Headers;
 
         public void EnsureSuccessStatusCode()
         {

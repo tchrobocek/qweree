@@ -42,9 +42,15 @@ namespace Qweree.PiccStash.Sdk
             return ApiResponse.CreateApiResponse<PiccDto>(response);
         }
 
-        public async Task<ApiResponse> DeleteAsync(Guid id, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse> PiccDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             var response = await _httpClient.DeleteAsync(id.ToString(), cancellationToken);
+            return ApiResponse.CreateApiResponse<PiccDto>(response);
+        }
+
+        public async Task<ApiResponse> PiccReadAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.GetAsync(id.ToString(), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             return ApiResponse.CreateApiResponse<PiccDto>(response);
         }
 
