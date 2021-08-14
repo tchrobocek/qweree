@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Commands;
@@ -18,10 +19,23 @@ namespace Qweree.ConsoleApplication.Commands.Context
 
         public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
         {
+            var authUri = "http://qweree.chrobocek.com/auth/";
+            var piccUri = "http://qweree.chrobocek.com/picc/";
+
+            if (optionsBag.Options.TryGetValue("--auth-uri", out var authUris))
+            {
+                authUri = authUris.Single();
+            }
+
+            if (optionsBag.Options.TryGetValue("--picc-uri", out var piccUris))
+            {
+                piccUri = piccUris.Single();
+            }
+
             var config = new ContextConfigurationDo
             {
-                AuthUri = "http://qweree.chrobocek.com/auth/",
-                PiccUri = "http://qweree.chrobocek.com/picc/"
+                AuthUri = authUri,
+                PiccUri = piccUri
             };
 
             await _context.SaveConfigurationAsync(config, cancellationToken);

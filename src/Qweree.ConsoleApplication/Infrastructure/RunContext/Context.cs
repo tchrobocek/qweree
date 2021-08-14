@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Sdk.Http.HttpClient;
 using Qweree.Utils;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext
@@ -9,10 +10,14 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
     public class Context
     {
         private ContextConfigurationDo? _configuration;
+        private readonly MemoryTokenStorage? _tokenStorage;
 
-        public Context(string rootDirectory)
+        public Context(string rootDirectory, ITokenStorage tokenStorage)
         {
             RootDirectory = rootDirectory;
+
+            if (tokenStorage is MemoryTokenStorage memoryTokenStorage)
+                _tokenStorage = memoryTokenStorage;
         }
 
         public string RootDirectory { get; }
@@ -63,5 +68,28 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
             await JsonUtils.SerializeAsync(stream, configuration, cancellationToken);
         }
 
+        public async Task SetCredentialsAsync(string accessToken, string refreshToken, CancellationToken cancellationToken = new())
+        {
+            var configFilePath = Path.Combine(RootDirectory, "config", "rft");
+
+            var dirName = Path.GetDirectoryName(configFilePath);
+
+            if (dirName != null && !Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+
+            await File.WriteAllTextAsync(configFilePath, refreshToken, cancellationToken);
+
+            if (_tokenStorage != null)
+                await _tokenStorage.SetAccessTokenAsync(accessToken, cancellationToken);
+        }
+
+        public async Task<string> GetRefreshTokenAsync(CancellationToken cancellationToken = new())
+        {
+            var configFilePath = Path.Combine(RootDirectory, "config", "rft");
+            if (!File.Exists(configFilePath))
+                throw new InvalidOperationException("User is not logged in.");
+
+            return await File.ReadAllTextAsync(configFilePath, cancellationToken);
+        }
     }
 }

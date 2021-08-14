@@ -29,7 +29,7 @@ namespace Qweree.Commands
                     return -4;
 
                 var options = call.Options.ToImmutableDictionary(o =>
-                    o.OptionName.TrimStart('-'), o => o.OptionValues);
+                    o.OptionName, o => o.OptionValues);
 
                 var optionsBag = new OptionsBag(args.ToImmutableArray(), options);
                 var task = command.ExecuteFunc.Invoke(optionsBag, cancellationToken);

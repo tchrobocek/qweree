@@ -41,6 +41,8 @@ namespace Qweree.ConsoleApplication.Commands
                 config.AuthUri = piccUri.Single();
             }
 
+            await _context.SetContextAsync(config, cancellationToken: cancellationToken);
+
             return 0;
         }
     }

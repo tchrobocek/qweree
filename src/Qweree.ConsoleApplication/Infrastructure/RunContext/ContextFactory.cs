@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Qweree.Sdk.Http.HttpClient;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 {
@@ -7,7 +8,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
     {
         private const string ContextDir = ".qweree";
 
-        public static Context GuessContext()
+        public static Context GuessContext(ITokenStorage tokenStorage)
         {
             var mainDir = Directory.GetCurrentDirectory();
             var testDirectories = new[]
@@ -36,7 +37,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
                 Directory.CreateDirectory(directory);
             }
 
-            return new Context(directory);
+            return new Context(directory, tokenStorage);
         }
     }
 }
