@@ -1,5 +1,6 @@
 @page "/apps/picc/browse"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Configuration
 @using Qweree.Cdn.Sdk
 @using Qweree.WebApplication.Infrastructure.PiccStash
 @using Qweree.WebApplication.Web.Components.Apps.Picc
@@ -8,6 +9,7 @@
 @inject IDialogService _dialogService
 @inject PiccClient _piccClient
 @inject IJSRuntime _jsRuntime
+@inject IConfiguration _configuration
 
 <div class="mb-4">
     <MudButton OnClick="OpenUploadDialogAsync">Upload piccs</MudButton>
@@ -70,7 +72,7 @@
 
     private string GetCdnUri(PiccDto item)
     {
-        return "http://localhost/cdn/api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
+        return _configuration["CdnServiceUri"] + "api/v1/storage" + SlugHelper.SlugToPath(item.StorageSlug?.ToArray() ?? Array.Empty<string>());
     }
 
     private async Task OpenUploadDialogAsync()
