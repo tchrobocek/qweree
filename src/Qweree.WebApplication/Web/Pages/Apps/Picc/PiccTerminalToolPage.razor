@@ -1,0 +1,25 @@
+@page "/apps/picc/terminal-tool"
+
+<MudText Typo="Typo.h3">Terminal tool</MudText>
+
+<MudPaper Class="pa-4 mt-8">
+    <MudText Class="my-2" Typo="Typo.body1">Download qweree tool here: download link.</MudText>
+    <MudText Class="my-2" Typo="Typo.body1">Initialize context, authenticate and Picc!!!</MudText>
+
+    <code class="my-4">
+        <pre>
+    // Initialize global context
+    $ qweree context init -g
+
+    // Authenticate yourself
+    $ qweree login --username {your-username}
+
+    // Save picc
+    $ qweree picc -u {url-address}
+        </pre>
+    </code>
+</MudPaper>
+
+@code {
+
+}
