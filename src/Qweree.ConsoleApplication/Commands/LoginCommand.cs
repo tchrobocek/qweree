@@ -26,6 +26,8 @@ namespace Qweree.ConsoleApplication.Commands
                 return -1;
 
             var username = userNameCollection.Single();
+
+            Console.WriteLine("Enter password:");
             var password = Console.ReadLine() ?? string.Empty;
 
             try

@@ -38,7 +38,8 @@ namespace Qweree.ConsoleApplication.Commands.Context
                 PiccUri = piccUri
             };
 
-            await _context.SaveConfigurationAsync(config, cancellationToken);
+            var isGlobal = optionsBag.Options.TryGetValue("-g", out _);
+            await _context.SaveConfigurationAsync(config, isGlobal, cancellationToken);
             return 0;
         }
     }

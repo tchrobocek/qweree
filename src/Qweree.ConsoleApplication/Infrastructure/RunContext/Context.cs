@@ -20,7 +20,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
                 _tokenStorage = memoryTokenStorage;
         }
 
-        public string RootDirectory { get; }
+        public string RootDirectory { get; private set; }
 
         public async Task<ContextConfigurationDo> GetConfigurationAsync(CancellationToken cancellationToken = new())
         {
@@ -51,12 +51,15 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 
             if (saveContext)
             {
-                await SaveConfigurationAsync(configuration, cancellationToken);
+                await SaveConfigurationAsync(configuration, false, cancellationToken);
             }
         }
 
-        public async Task SaveConfigurationAsync(ContextConfigurationDo configuration, CancellationToken cancellationToken = new())
+        public async Task SaveConfigurationAsync(ContextConfigurationDo configuration, bool isGlobal, CancellationToken cancellationToken = new())
         {
+            if (isGlobal)
+                RootDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ContextFactory.ContextDir);
+
             var configFilePath = Path.Combine(RootDirectory, "config", "context.json");
 
             var dirName = Path.GetDirectoryName(configFilePath);

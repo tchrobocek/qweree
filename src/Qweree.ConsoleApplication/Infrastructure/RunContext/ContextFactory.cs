@@ -6,7 +6,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 {
     public static class ContextFactory
     {
-        private const string ContextDir = ".qweree";
+        public const string ContextDir = ".qweree";
 
         public static Context GuessContext(ITokenStorage tokenStorage)
         {

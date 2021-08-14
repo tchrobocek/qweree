@@ -12,10 +12,12 @@ namespace Qweree.ConsoleApplication.Commands.Picc
     {
         private readonly PiccClientFactory _piccClientFactory;
         private readonly HttpClient _httpClient;
+        private readonly Infrastructure.RunContext.Context _context;
 
-        public PiccStashCommand(PiccClientFactory piccClientFactory, HttpMessageHandler httpMessageHandler)
+        public PiccStashCommand(PiccClientFactory piccClientFactory, HttpMessageHandler httpMessageHandler, Infrastructure.RunContext.Context context)
         {
             _piccClientFactory = piccClientFactory;
+            _context = context;
             _httpClient = new HttpClient(httpMessageHandler);
         }
 
@@ -67,7 +69,10 @@ namespace Qweree.ConsoleApplication.Commands.Picc
                 return -1;
             }
 
-            Console.WriteLine("Uploaded.");
+            var picc = await piccResponse.ReadPayloadAsync(cancellationToken);
+
+            var config = await _context.GetConfigurationAsync(cancellationToken);
+            Console.WriteLine(new Uri(new Uri(new Uri(config.PiccUri ?? string.Empty), "api/v1/picc/"), picc?.Id.ToString() ?? string.Empty));
             return 0;
         }
     }
