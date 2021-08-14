@@ -12,7 +12,7 @@ namespace Qweree.WebApplication
             builder.RootComponents.Add<App>("#app");
 
             var startup = new Startup(builder.HostEnvironment);
-            startup.ConfigureServices(builder.Services);
+            startup.ConfigureServices(builder.Configuration, builder.Services);
 
             await builder.Build().RunAsync();
         }

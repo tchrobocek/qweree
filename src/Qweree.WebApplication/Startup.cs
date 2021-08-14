@@ -3,6 +3,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using Qweree.Authentication.Sdk.OAuth2;
@@ -24,7 +25,7 @@ namespace Qweree.WebApplication
             _hostEnvironment = hostEnvironment;
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IConfiguration configuration, IServiceCollection services)
         {
             services.AddOptions();
             services.AddAuthorizationCore();
@@ -44,7 +45,7 @@ namespace Qweree.WebApplication
             {
                 var client = new HttpClient
                 {
-                    BaseAddress = new Uri("http://localhost/auth/api/oauth2/auth/", UriKind.Absolute)
+                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]), "api/oauth2/auth/")
                 };
                 return new OAuth2Client(client);
             });
@@ -52,7 +53,7 @@ namespace Qweree.WebApplication
             {
                 var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
-                    BaseAddress = new Uri("http://localhost/auth/api/system/", UriKind.Absolute)
+                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]), "api/system/")
                 };
                 return new SystemInfoClient(client);
             });
@@ -60,7 +61,7 @@ namespace Qweree.WebApplication
             {
                 var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
-                    BaseAddress = new Uri("http://localhost/picc/api/v1/picc/", UriKind.Absolute)
+                    BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]) , "api/v1/picc/")
                 };
                 return new PiccClient(client);
             });
