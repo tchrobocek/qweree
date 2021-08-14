@@ -8,7 +8,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 {
     public class Context
     {
-        private ContextConfiguration? _configuration;
+        private ContextConfigurationDo? _configuration;
 
         public Context(string rootDirectory)
         {
@@ -17,7 +17,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
 
         public string RootDirectory { get; }
 
-        public async Task<ContextConfiguration> GetConfigurationAsync(CancellationToken cancellationToken = new())
+        public async Task<ContextConfigurationDo> GetConfigurationAsync(CancellationToken cancellationToken = new())
         {
             if (_configuration != null)
                 return _configuration;
@@ -37,7 +37,14 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
                 throw new InvalidOperationException("Configuration corrupted.");
             }
 
-            return _configuration = new ContextConfiguration(configDo.Username ?? "", configDo.RefreshToken ?? "");
+            return _configuration = configDo;
+        }
+
+        public async Task SaveConfigurationAsync(ContextConfigurationDo configuration, CancellationToken cancellationToken = new())
+        {
+            var configFilePath = Path.Combine(RootDirectory, "config", "context.json");
+            await using var stream = File.Create(configFilePath);
+            await JsonUtils.SerializeAsync(stream, configuration, cancellationToken);
         }
     }
 }

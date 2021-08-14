@@ -46,7 +46,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                 c.AddProperty(p => p.Roles)
                     .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
                 c.AddProperty(p => p.OwnerId)
-                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
+                    .AddConstraint(new ExistsConstraint(typeof(UserRepository)));
             });
 
             builder.AddModel<UserRoleCreateInput>(c =>

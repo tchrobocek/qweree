@@ -57,5 +57,26 @@ namespace Qweree.Authentication.Sdk.OAuth2
             var response = await _httpClient.SendAsync(request, cancellationToken);
             return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
         }
+
+        public async Task<ApiResponse<TokenInfoDto>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
+            CancellationToken cancellationToken = new())
+        {
+            var form = new[]
+            {
+                new KeyValuePair<string?, string?>("grant_type", "refresh_token"),
+                new KeyValuePair<string?, string?>("refresh_token", refreshTokenGrantInput.RefreshToken),
+                new KeyValuePair<string?, string?>("client_id", clientCredentials.ClientId),
+                new KeyValuePair<string?, string?>("client_secret", clientCredentials.ClientSecret)
+            };
+
+            var content = new FormUrlEncodedContent(form);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+            {
+                Content = content
+            };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
+        }
     }
 }
