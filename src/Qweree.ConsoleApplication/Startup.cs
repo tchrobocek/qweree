@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Qweree.ConsoleApplication.Commands;
+using Qweree.ConsoleApplication.Commands.Context;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.ConsoleHost;
@@ -16,6 +18,9 @@ namespace Qweree.ConsoleApplication
                 var context = ContextFactory.GuessContext();
                 return context;
             });
+            services.AddSingleton<ICommand, RootCommand>();
+            services.AddSingleton<ICommand, ContextInitCommand>();
+            services.AddSingleton<ICommand, ContextReadCommand>();
         }
 
         public static void Configure(ConsoleApplicationBuilder app)

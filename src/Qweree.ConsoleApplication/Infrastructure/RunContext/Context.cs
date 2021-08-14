@@ -40,11 +40,28 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
             return _configuration = configDo;
         }
 
+        public async Task SetContextAsync(ContextConfigurationDo configuration, bool saveContext = false, CancellationToken cancellationToken = new())
+        {
+            _configuration = configuration;
+
+            if (saveContext)
+            {
+                await SaveConfigurationAsync(configuration, cancellationToken);
+            }
+        }
+
         public async Task SaveConfigurationAsync(ContextConfigurationDo configuration, CancellationToken cancellationToken = new())
         {
             var configFilePath = Path.Combine(RootDirectory, "config", "context.json");
+
+            var dirName = Path.GetDirectoryName(configFilePath);
+
+            if (dirName != null && !Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+
             await using var stream = File.Create(configFilePath);
             await JsonUtils.SerializeAsync(stream, configuration, cancellationToken);
         }
+
     }
 }

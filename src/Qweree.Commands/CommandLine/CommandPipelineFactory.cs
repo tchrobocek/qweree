@@ -58,11 +58,6 @@ namespace Qweree.Commands.CommandLine
 
                 if (optionsStarted && !arg.StartsWith("-") || i == args.Length - 1 || arg == "--")
                 {
-                    if (!commandPath.Any())
-                    {
-                        continue;
-                    }
-
                     var callOptions = options.Select(kv =>
                         new CommandCallOption(kv.Key, kv.Value.ToImmutableArray()));
                     calls.Add(new CommandCall(string.Join(" ", commandPath), callOptions.ToImmutableArray()));

@@ -29,7 +29,7 @@ namespace Qweree.ConsoleApplication.Infrastructure.RunContext
                 }
             }
 
-            directory ??= mainDir;
+            directory ??= Path.Combine(mainDir, ContextDir);
 
             if (!Directory.Exists(directory))
             {
