@@ -17,4 +17,4 @@ FROM nginx:alpine AS final
 WORKDIR /usr/share/nginx/html
 
 COPY --from=publish /publish/wwwroot /usr/local/webapp/nginx/html
-COPY ./src/Qweree.WebApplication/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./src/Qweree.WebApplication/publish/nginx/nginx.conf /etc/nginx/nginx.conf
