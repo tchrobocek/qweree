@@ -20,8 +20,4 @@
       <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Infrastructure\Piccs" />
-    </ItemGroup>
-
 </Project>
