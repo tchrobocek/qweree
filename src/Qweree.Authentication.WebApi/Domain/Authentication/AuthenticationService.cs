@@ -83,7 +83,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
                 user.ContactEmail, effectiveRoles, now, expiresAt);
-            var jwt = EncodeAccessToken(accessToken);
+            var jwt = EncodeAccessToken(accessToken, true);
 
             var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
 
@@ -123,9 +123,33 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
             var accessToken = new AccessToken(clientCredentials.ClientId, user.Id, user.Username, user.FullName,
                 user.ContactEmail, effectiveRoles, now, expiresAt);
-            var jwt = EncodeAccessToken(accessToken);
+            var jwt = EncodeAccessToken(accessToken, true);
 
             var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
+            return Response.Ok(tokenInfo);
+        }
+
+        public async Task<Response<TokenInfo>> AuthenticateAsync(ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
+        {
+            var now = _datetimeProvider.UtcNow;
+
+            User owner;
+
+            try
+            {
+                var client = await AuthenticateClientAsync(clientCredentials, cancellationToken);
+                owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
+            }
+            catch (Exception)
+            {
+                return Response.Fail<TokenInfo>(AccessDeniedMessage);
+            }
+
+            var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
+            var accessToken = new AccessToken(clientCredentials.ClientId, owner.ContactEmail, now, expiresAt);
+            var jwt = EncodeAccessToken(accessToken, false);
+
+            var tokenInfo = new TokenInfo(jwt, null, expiresAt);
             return Response.Ok(tokenInfo);
         }
 
@@ -144,20 +168,27 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             return token;
         }
 
-        private string EncodeAccessToken(AccessToken accessToken)
+        private string EncodeAccessToken(AccessToken accessToken, bool isUser)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new("userId", accessToken.UserId.ToString()),
-                new("username", accessToken.Username),
-                new("full_name", accessToken.FullName),
+                new("userId", accessToken.UserId?.ToString() ?? string.Empty),
+                new("clientId", accessToken.ClientId),
+                new("username", accessToken.Username ?? string.Empty),
+                new("full_name", accessToken.FullName ?? string.Empty),
                 new("email", accessToken.Email),
                 new("iat", accessToken.IssuedAt.Ticks.ToString()),
                 new("jti", Guid.NewGuid().ToString())
             };
-            claims.AddRange(accessToken.Roles.Select(role => new Claim("role", role)));
+
+            claims.AddRange(accessToken.Roles?.Select(role => new Claim("role", role)) ?? Array.Empty<Claim>());
+
+            if (isUser)
+                claims.Add(new Claim("role", "USER"));
+            else
+                claims.Add(new Claim("role", "CLIENT"));
 
             var token = new JwtSecurityToken(Issuer, Audience, claims,
                 expires: accessToken.ExpiresAt, signingCredentials: credentials, notBefore: _datetimeProvider.UtcNow);
