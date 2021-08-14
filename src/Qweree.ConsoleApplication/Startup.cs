@@ -31,6 +31,7 @@ namespace Qweree.ConsoleApplication
             services.AddSingleton<ICommand, RootCommand>();
             services.AddSingleton<ICommand, ContextInitCommand>();
             services.AddSingleton<ICommand, ContextReadCommand>();
+            services.AddSingleton<ICommand, ContextLocationCommand>();
             services.AddSingleton<ICommand, LoginCommand>();
             services.AddSingleton<ICommand, PiccStashCommand>();
         }
