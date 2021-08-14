@@ -11,7 +11,7 @@ using Qweree.Utils;
 
 namespace Qweree.Sdk.Http
 {
-    public class ApiResponse
+    public class ApiResponse : IDisposable
     {
         public static ApiResponse CreateApiResponse(HttpResponseMessage message)
         {
@@ -75,6 +75,11 @@ namespace Qweree.Sdk.Http
             {
                 return new ErrorResponseDto();
             }
+        }
+
+        public void Dispose()
+        {
+            ResponseMessage.Dispose();
         }
     }
 

@@ -46,7 +46,7 @@ namespace Qweree.Cdn.Sdk.Test.Storage
             }
 
             {
-                var response = await _storageClient.RetrieveAsync(slug);
+                using var response = await _storageClient.RetrieveAsync(slug);
                 response.EnsureSuccessStatusCode();
                 Assert.Equal(bytes, await response.ReadPayloadAsByteArrayAsync());
             }
