@@ -34,7 +34,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<UserDto>(response);
         }
 
-        public async Task<ApiResponse<IEnumerable<UserDto>>> UsersPaginateAsync(Guid id, int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse<IEnumerable<UserDto>>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var sortString = "";
             foreach (var (field, direction) in sort)
@@ -66,7 +66,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<ClientDto>(response);
         }
 
-        public async Task<ApiResponse<IEnumerable<ClientDto>>> ClientsPaginateAsync(Guid id, int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse<IEnumerable<ClientDto>>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var sortString = "";
             foreach (var (field, direction) in sort)
