@@ -27,10 +27,10 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<UserDto>(response);
         }
 
-        public async Task<ApiResponse<UserDto>> UserCreateAsync(Guid id, UserCreateInputDto input, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse<UserDto>> UserCreateAsync(UserCreateInputDto input, CancellationToken cancellationToken = new())
         {
             var json = JsonUtils.Serialize(input);
-            var response = await _httpClient.PostAsync($"users/{id}", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+            var response = await _httpClient.PostAsync($"users", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
             return new ApiResponse<UserDto>(response);
         }
 
@@ -59,11 +59,11 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<ClientDto>(response);
         }
 
-        public async Task<ApiResponse<ClientDto>> ClientCreateAsync(Guid id, ClientCreateInputDto input, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse<CreatedClientDto>> ClientCreateAsync(ClientCreateInputDto input, CancellationToken cancellationToken = new())
         {
             var json = JsonUtils.Serialize(input);
-            var response = await _httpClient.PostAsync($"clients/{id}", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-            return new ApiResponse<ClientDto>(response);
+            var response = await _httpClient.PostAsync("clients", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+            return new ApiResponse<CreatedClientDto>(response);
         }
 
         public async Task<ApiResponse<IEnumerable<ClientDto>>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())

@@ -30,7 +30,6 @@
         <MudTd DataLabel="Roles">@string.Join(", ", context.Roles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">
-            <MudIconButton Title="Edit" OnClick="() => NavigateToEdit(context.Id)" Color="Color.Primary" Icon="@Icons.Material.Filled.EditNote"></MudIconButton>
             <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
         </MudTd>
     </RowTemplate>
@@ -57,11 +56,6 @@
     private void AddClient()
     {
         _navigationManager.NavigateTo("/services/auth/clients/add");
-    }
-
-    private void NavigateToEdit(Guid? id)
-    {
-        _navigationManager.NavigateTo($"/services/auth/clients/edit/{id?.ToString()}");
     }
 
     private async Task DeleteAsync(Guid? contextId)
