@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
+using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.PiccStash.Sdk;
@@ -73,6 +74,14 @@ namespace Qweree.WebApplication
                     BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/account/")
                 };
                 return new MyAccountClient(client);
+            });
+            services.AddScoped(p =>
+            {
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
+                {
+                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/authorization/")
+                };
+                return new AuthorizationClient(client);
             });
             services.AddScoped<AuthenticationService>();
         }

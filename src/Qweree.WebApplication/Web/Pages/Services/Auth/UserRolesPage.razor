@@ -1,0 +1,63 @@
+@page "/services/auth/user-roles"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@attribute [Authorize]
+@inject AuthorizationClient _authorizationClient
+@inject NavigationManager _navigationManager
+
+<MudTable Items="@_userRoles" Hover="true" Class="pa-4">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">User roles</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddUserRole">Add user role</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Role</MudTh>
+        <MudTh>Group role</MudTh>
+        <MudTh>Modified at</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
+        <MudTd DataLabel="Role">@context.Label "@context.Key"</MudTd>
+        <MudTd DataLabel="Is group role?">
+            @context.IsGroup
+            @if (context.IsGroup ?? false)
+            {
+                @($"({context.Items?.Length})")
+            }
+        </MudTd>
+        <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
+        <MudTd DataLabel="Actions" Style="text-align: right">
+            <MudIconButton Title="Edit" OnClick="() => NavigateToEdit(context.Id)" Color="Color.Primary" Icon="@Icons.Material.Filled.EditNote"></MudIconButton>
+            <MudIconButton Title="Delete" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+@code {
+    private readonly List<UserRoleDto> _userRoles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _authorizationClient.UserRolesFindAsync();
+
+        if (response.IsSuccessful)
+        {
+            var payload = await response.ReadPayloadAsync();
+            _userRoles.AddRange(payload ?? ArraySegment<UserRoleDto>.Empty);
+        }
+    }
+
+    private void AddUserRole()
+    {
+        _navigationManager.NavigateTo("/services/auth/user-roles/edit");
+    }
+
+    private void NavigateToEdit(Guid? id)
+    {
+        _navigationManager.NavigateTo($"/services/auth/user-roles/edit/{id?.ToString()}");
+    }
+
+}

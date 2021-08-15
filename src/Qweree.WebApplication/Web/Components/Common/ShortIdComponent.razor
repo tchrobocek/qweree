@@ -1,0 +1,28 @@
+@inject IJSRuntime _jsRuntime
+
+<MudTooltip Text="@string.Join(" ", "Copy", Id?.ToString())">
+    <span @onclick="CopyIdAsync" style="cursor: pointer;">
+        @Id?.ToString()[..8]
+    </span>
+</MudTooltip>
+
+@code {
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    private async Task CopyIdAsync()
+    {
+        if (Id == null)
+            return;
+
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", Id.ToString()!);
+        }
+        catch (Exception)
+        {
+            // ignore, couldn't copy link
+        }
+    }
+
+}
