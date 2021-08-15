@@ -38,7 +38,7 @@ namespace Qweree.ConsoleApplication.Commands
 
             if (optionsBag.Options.TryGetValue("--picc-uri", out var piccUri))
             {
-                config.AuthUri = piccUri.Single();
+                config.PiccUri = piccUri.Single();
             }
 
             await _context.SetContextAsync(config, cancellationToken: cancellationToken);
