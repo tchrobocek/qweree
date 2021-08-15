@@ -1,4 +1,4 @@
-@page "/services/auth/user-roles"
+@page "/services/auth/user-roles/list"
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
@@ -52,7 +52,7 @@
 
     private void AddUserRole()
     {
-        _navigationManager.NavigateTo("/services/auth/user-roles/edit");
+        _navigationManager.NavigateTo("/services/auth/user-roles/add");
     }
 
     private void NavigateToEdit(Guid? id)

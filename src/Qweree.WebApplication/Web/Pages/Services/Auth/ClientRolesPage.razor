@@ -1,4 +1,4 @@
-@page "/services/auth/client-roles"
+@page "/services/auth/client-roles/list"
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
@@ -52,7 +52,7 @@
 
     private void AddClientRole()
     {
-        _navigationManager.NavigateTo("/services/auth/client-roles/edit");
+        _navigationManager.NavigateTo("/services/auth/client-roles/add");
     }
 
     private void NavigateToEdit(Guid? id)
