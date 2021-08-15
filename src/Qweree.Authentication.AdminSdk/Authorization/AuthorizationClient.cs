@@ -47,7 +47,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization
 
         public async Task<ApiResponse<ClientRoleDto>> ClientRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
-            var response = await _httpClient.DeleteAsync($"clientRoles{id}", cancellationToken);
+            var response = await _httpClient.DeleteAsync($"clientRoles/{id}", cancellationToken);
 
             return ApiResponse.CreateApiResponse<ClientRoleDto>(response);
         }
@@ -79,7 +79,7 @@ namespace Qweree.Authentication.AdminSdk.Authorization
 
         public async Task<ApiResponse<UserRoleDto>> UserRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
-            var response = await _httpClient.DeleteAsync($"userRoles{id}", cancellationToken);
+            var response = await _httpClient.DeleteAsync($"userRoles/{id}", cancellationToken);
 
             return ApiResponse.CreateApiResponse<UserRoleDto>(response);
         }

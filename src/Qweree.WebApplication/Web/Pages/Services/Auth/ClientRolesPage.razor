@@ -2,13 +2,16 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Qweree.WebApplication.Web.Components.Dialog
 @attribute [Authorize]
 @inject AuthorizationClient _authorizationClient
 @inject NavigationManager _navigationManager
+@inject IDialogService _dialogService
 
 <MudTable Items="@_clientRoles" Hover="true" Class="pa-4">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Client roles</MudText>
+        <MudIconButton Title="Refresh" OnClick="RefreshAsync" Icon="@Icons.Material.Filled.Refresh"></MudIconButton>
         <MudSpacer />
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddClientRole">Add client role</MudButton>
     </ToolBarContent>
@@ -32,7 +35,7 @@
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">
             <MudIconButton Title="Edit" OnClick="() => NavigateToEdit(context.Id)" Color="Color.Primary" Icon="@Icons.Material.Filled.EditNote"></MudIconButton>
-            <MudIconButton Title="Delete" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -41,13 +44,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _authorizationClient.ClientRolesFindAsync();
-
-        if (response.IsSuccessful)
-        {
-            var payload = await response.ReadPayloadAsync();
-            _clientRoles.AddRange(payload ?? ArraySegment<ClientRoleDto>.Empty);
-        }
+        await RefreshAsync();
     }
 
     private void AddClientRole()
@@ -60,4 +57,28 @@
         _navigationManager.NavigateTo($"/services/auth/client-roles/edit/{id?.ToString()}");
     }
 
+    private async Task DeleteAsync(Guid? contextId)
+    {
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
+        var delete = (bool)((await result.Result).Data ?? false);
+
+        if (!delete || contextId == null)
+            return;
+
+        await _authorizationClient.ClientRoleDeleteAsync((Guid) contextId);
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        _clientRoles.Clear();
+
+        var response = await _authorizationClient.ClientRolesFindAsync();
+
+        if (response.IsSuccessful)
+        {
+            var payload = await response.ReadPayloadAsync();
+            _clientRoles.AddRange(payload ?? ArraySegment<ClientRoleDto>.Empty);
+        }
+    }
 }
