@@ -224,7 +224,7 @@ namespace Qweree.PiccStash.WebApi
             }
             app.UseForwardedHeaders();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree OAuth2 v1 api"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Picc Stash api"));
             app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
