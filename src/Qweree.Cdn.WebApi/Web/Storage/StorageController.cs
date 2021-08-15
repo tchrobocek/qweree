@@ -51,6 +51,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         [HttpPost("{*path}")]
         [Authorize]
         [RequiresFileFromBody]
+        [RequestSizeLimit(1000 * 1000 * 1000)]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> PostStoredObjectActionAsync(string path,
             [FromHeader(Name = "Content-Type")] string contentType)

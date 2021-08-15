@@ -212,7 +212,7 @@ namespace Qweree.Cdn.WebApi
             }
             app.UseForwardedHeaders();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Cdn v1 api"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Cdn api"));
             app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
