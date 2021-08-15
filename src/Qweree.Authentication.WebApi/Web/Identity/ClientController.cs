@@ -102,7 +102,7 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         [Authorize(Policy = "ClientRead")]
         [ProducesResponseType(typeof(List<ClientDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ClientsFindActionAsync(
+        public async Task<IActionResult> ClientsPaginateActionAsync(
             [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
             [FromQuery(Name = "skip")] int skip = 0,
             [FromQuery(Name = "take")] int take = 50
@@ -116,6 +116,8 @@ namespace Qweree.Authentication.WebApi.Web.Identity
 
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
             Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, clientsResponse.DocumentCount);
+
+            Response.Headers.Add("q-document-count", new[] { clientsResponse.DocumentCount.ToString() });
 
             var usersDto = clientsResponse.Payload?.Select(ClientMapper.ToDto);
             return Ok(usersDto);

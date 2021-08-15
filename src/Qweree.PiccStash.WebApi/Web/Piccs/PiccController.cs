@@ -199,6 +199,8 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
             Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, pagination.TotalCount);
 
+            Response.Headers.Add("q-document-count", new[] { pagination.TotalCount.ToString() });
+
             var dtos = pagination.Documents.Select(PiccDto);
             return Ok(dtos);
         }

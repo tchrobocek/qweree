@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -17,12 +16,12 @@ namespace Qweree.PiccStash.Sdk
             _httpClient = httpClient;
         }
 
-        public async Task<ApiResponse<IEnumerable<PiccDto>>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
+        public async Task<PaginationApiResponse<PiccDto>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
         {
             var uri = CreatePaginateUri(skip, take);
             var response = await _httpClient.GetAsync(uri, cancellationToken);
 
-            return ApiResponse.CreateApiResponse<IEnumerable<PiccDto>>(response);
+            return new PaginationApiResponse<PiccDto>(response);
         }
 
         public async Task<ApiResponse<PiccDto>> PiccUploadAsync(Stream stream, string mediaType, CancellationToken cancellationToken = new())

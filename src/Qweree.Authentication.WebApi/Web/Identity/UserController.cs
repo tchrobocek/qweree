@@ -108,6 +108,8 @@ namespace Qweree.Authentication.WebApi.Web.Identity
             var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");
             Response.Headers.AddLinkHeaders($"?{string.Join("&", sortParts)}", skip, take, usersResponse.DocumentCount);
 
+            Response.Headers.Add("q-document-count", new[] { usersResponse.DocumentCount.ToString() });
+
             var usersDto = usersResponse.Payload?.Select(UserMapper.ToDto);
             return Ok(usersDto);
         }

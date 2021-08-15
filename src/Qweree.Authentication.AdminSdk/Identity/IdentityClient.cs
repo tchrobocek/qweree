@@ -34,7 +34,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<UserDto>(response);
         }
 
-        public async Task<ApiResponse<IEnumerable<UserDto>>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        public async Task<PaginationApiResponse<UserDto>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var sortString = "";
             foreach (var (field, direction) in sort)
@@ -44,7 +44,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             var queryString = $"?skip={skip}&take={take}&{sortString}";
 
             var response = await _httpClient.GetAsync($"users/{queryString}", cancellationToken);
-            return new ApiResponse<IEnumerable<UserDto>>(response);
+            return new PaginationApiResponse<UserDto>(response);
         }
 
         public async Task<ApiResponse> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -66,7 +66,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<CreatedClientDto>(response);
         }
 
-        public async Task<ApiResponse<IEnumerable<ClientDto>>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        public async Task<PaginationApiResponse<ClientDto>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var sortString = "";
             foreach (var (field, direction) in sort)
@@ -76,7 +76,7 @@ namespace Qweree.Authentication.AdminSdk.Identity
             var queryString = $"?skip={skip}&take={take}&{sortString}";
 
             var response = await _httpClient.GetAsync($"clients/{queryString}", cancellationToken);
-            return new ApiResponse<IEnumerable<ClientDto>>(response);
+            return new PaginationApiResponse<ClientDto>(response);
         }
 
         public async Task<ApiResponse> ClientDeleteAsync(Guid id, CancellationToken cancellationToken = new())
