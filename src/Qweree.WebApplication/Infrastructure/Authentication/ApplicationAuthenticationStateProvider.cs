@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,10 +29,17 @@ namespace Qweree.WebApplication.Infrastructure.Authentication
             }
             else
             {
-                var claims = TokenDecoder.ReadClaims(accessToken)
-                    .ToList();
-                claims.AddRange(claims.Where(c => c.Type == "role").Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
-                user = new ClaimsIdentity(claims, "oauth2");
+                try
+                {
+                    List<Claim> claims = TokenDecoder.ReadClaims(accessToken)
+                        .ToList();
+                    claims.AddRange(claims.Where(c => c.Type == "role").Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
+                    user = new ClaimsIdentity(claims, "oauth2");
+                }
+                catch (Exception)
+                {
+                    user = new ClaimsIdentity(authenticationType: null);
+                }
             }
 
             return new AuthenticationState(new ClaimsPrincipal(user));

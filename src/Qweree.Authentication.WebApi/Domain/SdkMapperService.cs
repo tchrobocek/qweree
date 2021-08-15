@@ -77,7 +77,7 @@ namespace Qweree.Authentication.WebApi.Domain
             CancellationToken cancellationToken = new())
         {
             var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-            return new(client.Id, client.ClientId, client.ApplicationName, client.Origin, await UserMapAsync(owner,
+            return new(client.Id, client.ClientId, client.ClientSecret, client.ApplicationName, client.Origin, await UserMapAsync(owner,
                 cancellationToken), client.CreatedAt, client.ModifiedAt);
         }
 

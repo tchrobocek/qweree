@@ -1,0 +1,202 @@
+@page "/services/auth/user-roles/edit/{modifyId?}"
+@page "/services/auth/user-roles/add"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@attribute [Authorize]
+@inject AuthorizationClient _authorizationClient;
+@inject NavigationManager _navigationManager;
+
+@if (ModifyId != null)
+{
+    <MudText Typo="Typo.h3">Modify user role</MudText>
+    <MudText Typo="Typo.body1" Color="Color.Info" Class="mb-8">@ModifyId</MudText>
+}
+else
+{
+    <MudText Typo="Typo.h3" Class="mb-8">Add user role</MudText>
+}
+
+<MudPaper Class="pa-4">
+    @foreach(var error in _errors)
+    {
+        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+    }
+    <MudGrid>
+        <MudItem xs="6">
+            <MudTextField Disabled="_keyDisabled"  @bind-Value="_key" T="string" Label="Key" Variant="Variant.Outlined" Class="my-3"></MudTextField>
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-Value="_label" T="string" Label="Label" Variant="Variant.Outlined" Class="my-3"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="_description" T="string" Label="Description" Lines="5" Variant="Variant.Outlined" Class="my-6"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudCheckBox @bind-Checked="@_isGroup">Group role</MudCheckBox>
+        </MudItem>
+        @if (_isGroup)
+        {
+            <MudItem xs="12">
+                <MudList Dense="true">
+                    <MudList Dense="true">
+                        @foreach (var (userRole, _) in _userRoles)
+                        {
+                            <MudListItem>
+                                <MudTooltip Text="@userRole.Description">
+                                    <MudCheckBox @bind-Checked="@_userRoles[userRole]" T="bool">@userRole.Label - @userRole.Key</MudCheckBox>
+                                </MudTooltip>
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudList>
+            </MudItem>
+        }
+    </MudGrid>
+
+    @if (ModifyId != null)
+    {
+        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="ModifyAsync">Edit</MudButton>
+    }
+    else
+    {
+        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Add</MudButton>
+    }
+
+</MudPaper>
+
+@code {
+    private string _key = string.Empty;
+    private string _label = string.Empty;
+    private string _description = string.Empty;
+    private bool _isGroup;
+    private readonly List<string> _errors = new();
+    private readonly IDictionary<UserRoleDto, bool> _userRoles = new Dictionary<UserRoleDto, bool>();
+    private bool _keyDisabled;
+    [Parameter]
+    public string? ModifyId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Guid id = default;
+
+        if (!string.IsNullOrWhiteSpace(ModifyId) && !Guid.TryParse(ModifyId, out id))
+        {
+            _navigationManager.NavigateTo("/services/auth/user-roles/edit");
+            return;
+        }
+
+        var response = await _authorizationClient.UserRolesFindAsync();
+
+        if (!response.IsSuccessful)
+            return;
+
+        var roles = (await response.ReadPayloadAsync() ?? new UserRoleDto[0])
+            .ToArray();
+
+        foreach (var role in roles)
+        {
+            _userRoles[role] = false;
+        }
+
+        if (id != Guid.Empty)
+        {
+            _keyDisabled = true;
+
+            var editingRole = roles.SingleOrDefault(r => r.Id == id);
+
+            if (editingRole == null)
+            {
+                _navigationManager.NavigateTo("/services/auth/user-roles/edit");
+                return;
+            }
+
+            _key = editingRole.Key ?? string.Empty;
+            _description = editingRole.Description ?? string.Empty;
+            _label = editingRole.Label ?? string.Empty;
+            _isGroup = editingRole.IsGroup ?? false;
+
+            foreach (var role in editingRole.Items ?? ArraySegment<UserRoleDto>.Empty)
+            {
+                if (_userRoles.ContainsKey(role))
+                    _userRoles[role] = true;
+            }
+
+            _userRoles.Remove(editingRole);
+        }
+    }
+
+    public async Task CreateAsync()
+    {
+        _errors.Clear();
+        Guid[] roles = new Guid[0];
+
+        if (_isGroup)
+        {
+            roles = _userRoles.Where(r => r.Value).Select(kv => kv.Key.Id ?? Guid.Empty)
+                .ToArray();
+        }
+
+        var input = new UserRoleCreateInputDto
+        {
+            Key = _key,
+            Label = _label,
+            Description = _description,
+            Items = roles,
+            IsGroup = _isGroup
+        };
+
+        var response = await _authorizationClient.UserRoleCreateAsync(input);
+
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+
+            if (!_errors.Any())
+                _errors.Add(response.StatusCode.ToString());
+
+            return;
+        }
+
+        _navigationManager.NavigateTo("/services/auth/user-roles");
+    }
+
+    private async Task ModifyAsync()
+    {
+        _errors.Clear();
+        Guid[] roles = new Guid[0];
+
+        if (_isGroup)
+        {
+            roles = _userRoles.Where(r => r.Value).Select(kv => kv.Key.Id ?? Guid.Empty)
+                .ToArray();
+        }
+
+        var input = new UserRoleModifyInputDto
+        {
+            Label = _label,
+            Description = _description,
+            Items = roles,
+            IsGroup = _isGroup
+        };
+
+        var guid = Guid.Parse(ModifyId!);
+        var response = await _authorizationClient.UserRoleModifyAsync(guid, input);
+
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+
+            if (!_errors.Any())
+                _errors.Add(response.StatusCode.ToString());
+
+            return;
+        }
+
+        _navigationManager.NavigateTo("/services/auth/user-roles");
+    }
+}

@@ -1,0 +1,85 @@
+@page "/services/auth/user-roles/list"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Qweree.WebApplication.Web.Components.Dialog
+@attribute [Authorize]
+@inject AuthorizationClient _authorizationClient
+@inject NavigationManager _navigationManager
+@inject IDialogService _dialogService
+
+<MudTable Items="@_userRoles" Hover="true" Class="pa-4">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">User roles</MudText>
+        <MudIconButton Title="Refresh" OnClick="RefreshAsync" Icon="@Icons.Material.Filled.Refresh"></MudIconButton>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddUserRole">Add user role</MudButton>
+</ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Role</MudTh>
+        <MudTh>Group role</MudTh>
+        <MudTh>Modified at</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
+        <MudTd DataLabel="Role">@context.Label "@context.Key"</MudTd>
+        <MudTd DataLabel="Is group role?">
+            @context.IsGroup
+            @if (context.IsGroup ?? false)
+            {
+                @($"({context.Items?.Length})")
+            }
+        </MudTd>
+        <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
+        <MudTd DataLabel="Actions" Style="text-align: right">
+            <MudIconButton Title="Edit" OnClick="() => NavigateToEdit(context.Id)" Color="Color.Primary" Icon="@Icons.Material.Filled.EditNote"></MudIconButton>
+            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+@code {
+    private readonly List<UserRoleDto> _userRoles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshAsync();
+    }
+
+    private void AddUserRole()
+    {
+        _navigationManager.NavigateTo("/services/auth/user-roles/add");
+    }
+
+    private void NavigateToEdit(Guid? id)
+    {
+        _navigationManager.NavigateTo($"/services/auth/user-roles/edit/{id?.ToString()}");
+    }
+
+    private async Task DeleteAsync(Guid? contextId)
+    {
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
+        var delete = (bool)((await result.Result).Data ?? false);
+
+        if (!delete || contextId == null)
+            return;
+
+        await _authorizationClient.UserRoleDeleteAsync((Guid) contextId);
+        await RefreshAsync();
+    }
+
+
+    private async Task RefreshAsync()
+    {
+        _userRoles.Clear();
+
+        var response = await _authorizationClient.UserRolesFindAsync();
+
+        if (response.IsSuccessful)
+        {
+            var payload = await response.ReadPayloadAsync();
+            _userRoles.AddRange(payload ?? ArraySegment<UserRoleDto>.Empty);
+        }
+    }
+}

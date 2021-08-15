@@ -17,9 +17,22 @@ namespace Qweree.WebApplication.Infrastructure.Browser
         {
             await _localStorage.SetItemAsync("access_token", token, cancellationToken);
         }
+
+
         public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = new())
         {
             var storedToken = await _localStorage.GetItemAsync("access_token", cancellationToken);
+            return storedToken ?? string.Empty;
+        }
+
+        public async Task SetRefreshTokenAsync(string token, CancellationToken cancellationToken = new())
+        {
+            await _localStorage.SetItemAsync("refresh_token", token, cancellationToken);
+        }
+
+        public async Task<string> GetRefreshTokenAsync(CancellationToken cancellationToken = new())
+        {
+            var storedToken = await _localStorage.GetItemAsync("refresh_token", cancellationToken);
             return storedToken ?? string.Empty;
         }
     }

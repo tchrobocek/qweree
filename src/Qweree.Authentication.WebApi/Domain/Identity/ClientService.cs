@@ -55,9 +55,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
             if (validationResult.HasFailed)
                 return Response.Fail<CreatedClient>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
 
+            var id = clientCreateInput.Id;
+            if (id == Guid.Empty)
+                id = Guid.NewGuid();
+
             var clientSecret = GenerateClientSecret();
             var secret = _passwordEncoder.EncodePassword(clientSecret);
-            var client = new Client(clientCreateInput.Id, clientCreateInput.ClientId, secret,
+            var client = new Client(id, clientCreateInput.ClientId, secret,
                 clientCreateInput.ApplicationName, clientCreateInput.Roles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
                 clientCreateInput.OwnerId, clientCreateInput.Origin);
 

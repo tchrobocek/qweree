@@ -1,0 +1,116 @@
+@page "/services/auth/users/add"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.AdminSdk.Identity.Users
+@attribute [Authorize]
+@inject AuthorizationClient _authorizationClient;
+@inject IdentityClient _identityClient;
+@inject NavigationManager _navigationManager;
+
+<MudText Typo="Typo.h3" Class="mb-8">Add user</MudText>
+
+<MudPaper Class="pa-4">
+    @foreach(var error in _errors)
+    {
+        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+    }
+    <MudGrid>
+        <MudItem xs="12">
+            <MudTextField @bind-Value="_username" T="string" Label="Username" Variant="Variant.Outlined" Class="my-3" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-Value="_contactEmail" T="string" Label="Contact email" Variant="Variant.Outlined" Class="my-3"/>
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField @bind-Value="_fullName" T="string" Label="Full name" Variant="Variant.Outlined" Class="my-3"/>
+        </MudItem>
+        <MudItem xs="6">
+            <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined" Class="my-6"/>
+        </MudItem>
+        <MudItem xs="6">
+            <PasswordFieldComponent @bind-Value="_password2" Label="Repeat password" Variant="Variant.Outlined" Class="my-6"/>
+        </MudItem>
+        <MudItem xs="12">
+            <MudList Dense="true">
+                <MudList Dense="true">
+                    @foreach (var (userRole, _) in _userRoles)
+                    {
+                        <MudListItem>
+                            <MudTooltip Text="@userRole.Description">
+                                <MudCheckBox @bind-Checked="@_userRoles[userRole]" T="bool">@userRole.Label - @userRole.Key</MudCheckBox>
+                            </MudTooltip>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudList>
+        </MudItem>
+    </MudGrid>
+    <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Add</MudButton>
+</MudPaper>
+
+@code {
+    private string _username = string.Empty;
+    private string _contactEmail = string.Empty;
+    private string _fullName = string.Empty;
+    private string _password = string.Empty;
+    private string _password2 = string.Empty;
+    private readonly List<string> _errors = new();
+    private readonly IDictionary<UserRoleDto, bool> _userRoles = new Dictionary<UserRoleDto, bool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var rolesResponse = await _authorizationClient.UserRolesFindAsync();
+
+        if (!rolesResponse.IsSuccessful)
+            return;
+
+        var roles = (await rolesResponse.ReadPayloadAsync() ?? new UserRoleDto[0])
+            .ToArray();
+
+        foreach (var role in roles)
+        {
+            _userRoles[role] = false;
+        }
+    }
+
+    public async Task CreateAsync()
+    {
+        _errors.Clear();
+
+        if (_password != _password2)
+        {
+            _errors.Add("Passwords do not match.");
+            _password = string.Empty;
+            _password2 = string.Empty;
+            return;
+        }
+        var roles = _userRoles.Where(r => r.Value).Select(kv => kv.Key.Id ?? Guid.Empty)
+            .ToArray();
+
+        var input = new UserCreateInputDto
+        {
+            Username = _username,
+            ContactEmail = _contactEmail,
+            Roles = roles,
+            FullName = _fullName,
+            Password = _password
+        };
+
+        var response = await _identityClient.UserCreateAsync(input);
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+
+            if (!_errors.Any())
+                _errors.Add(response.StatusCode.ToString());
+
+            return;
+        }
+
+        _navigationManager.NavigateTo("/services/auth/users/list");
+    }
+}

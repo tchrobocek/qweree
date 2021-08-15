@@ -31,7 +31,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
 
             IEnumerable<object> subjects;
 
-            if (validationContext.Subject is IEnumerable enumerable)
+            if (validationContext.Subject is not string && validationContext.Subject is IEnumerable enumerable)
             {
                 subjects = enumerable.Cast<object>();
             }
@@ -44,7 +44,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
             {
                 var isExisting = await repository.IsExistingAsync(subject.ToString() ?? string.Empty, cancellationToken);
 
-                if (isExisting)
+                if (!isExisting)
                     builder.AddError(validationContext.Path, $@"Entity ""{subject}"" does not exist.");
             }
         }

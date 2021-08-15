@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -23,11 +24,27 @@ namespace Qweree.WebApplication.Infrastructure.Browser
         {
             var response = await base.SendAsync(request, cancellationToken);
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            if (response.StatusCode != HttpStatusCode.Unauthorized)
+                return response;
+
+            try
+            {
+                await _authenticationService.RefreshAsync(cancellationToken);
+            }
+            catch (Exception)
             {
                 await _authenticationService.LogoutAsync(cancellationToken);
                 _navigationManager.NavigateTo("/", true);
+                return response;
             }
+
+            response = await base.SendAsync(request, cancellationToken);
+
+            if (response.StatusCode != HttpStatusCode.Unauthorized)
+                return response;
+
+            await _authenticationService.LogoutAsync(cancellationToken);
+            _navigationManager.NavigateTo("/", true);
 
             return response;
         }

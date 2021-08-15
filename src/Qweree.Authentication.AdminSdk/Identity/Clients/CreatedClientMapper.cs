@@ -15,15 +15,18 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 ClientId = createdClient.ClientId,
                 ClientSecret = createdClient.ClientSecret,
                 CreatedAt = createdClient.CreatedAt,
-                ModifiedAt = createdClient.ModifiedAt
+                ModifiedAt = createdClient.ModifiedAt,
+                Origin = createdClient.Origin
             };
         }
+
         public static CreatedClient FromDto(CreatedClientDto createdClient)
         {
             return new(createdClient.Id ?? Guid.Empty,
                 createdClient.ClientId ?? string.Empty,
                 createdClient.ClientSecret ?? string.Empty,
                 createdClient.ApplicationName ?? string.Empty,
+                createdClient.Origin ?? string.Empty,
                 UserMapper.FromDto(createdClient.Owner ?? new UserDto()),
                 createdClient.CreatedAt ?? DateTime.MinValue,
                 createdClient.ModifiedAt ?? DateTime.MinValue);

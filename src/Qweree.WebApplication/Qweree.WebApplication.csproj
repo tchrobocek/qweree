@@ -16,8 +16,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Qweree.Authentication.AdminSdk\Qweree.Authentication.AdminSdk.csproj" />
       <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Web\Components\Apps\Services\UserRoleModifyDialogComponent.razor" />
     </ItemGroup>
 </Project>
