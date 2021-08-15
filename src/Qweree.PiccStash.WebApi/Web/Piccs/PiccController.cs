@@ -63,6 +63,7 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
             }
 
+            var descriptor = await response.ReadPayloadAsync();
             var extension = contentType["image/".Length..];
 
             var picc = new StashedPicc
@@ -72,7 +73,9 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
                 CreatedAt = _dateTimeProvider.UtcNow,
                 ModifiedAt = _dateTimeProvider.UtcNow,
                 OwnerId = userId,
-                StorageSlug = slug
+                StorageSlug = slug,
+                Size = descriptor?.Size,
+                MediaType = descriptor?.MediaType
             };
 
             try
@@ -220,6 +223,8 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
             {
                 Id = picc.Id,
                 Name = picc.Name,
+                Size = picc.Size,
+                MediaType = picc.MediaType,
                 CreatedAt = picc.CreatedAt,
                 ModifiedAt = picc.ModifiedAt
             };
