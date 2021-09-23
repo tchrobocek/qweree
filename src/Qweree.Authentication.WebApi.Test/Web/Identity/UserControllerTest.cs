@@ -75,7 +75,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             }
 
             {
-                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user.Id}");
                 response.EnsureSuccessStatusCode();
                 var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
@@ -127,17 +127,17 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             await _userRepository.InsertAsync(user);
 
             {
-                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await httpClient.DeleteAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.DeleteAsync($"/api/admin/identity/users/{user.Id}");
                 response.EnsureSuccessStatusCode();
             }
 
             {
-                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user!.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user.Id}");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
