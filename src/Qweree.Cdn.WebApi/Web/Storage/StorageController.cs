@@ -57,7 +57,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             path = HttpUtility.UrlDecode(path);
-            var input = new StoreObjectInput(path, contentType, Request.Body.Length, Request.Body);
+            var input = new StoreObjectInput(path, contentType, Request.Body);
             var response = await _service.StoreObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)
