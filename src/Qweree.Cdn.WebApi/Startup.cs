@@ -26,6 +26,7 @@ using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Cdn.WebApi.Infrastructure.Authentication;
 using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
+using Qweree.Cdn.WebApi.Infrastructure.System;
 using Qweree.Mongo;
 using Qweree.Utils;
 
@@ -199,6 +200,7 @@ namespace Qweree.Cdn.WebApi
             });
             services.AddScoped<StoredObjectService>();
             services.AddScoped<ExplorerService>();
+            services.AddScoped<StatsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

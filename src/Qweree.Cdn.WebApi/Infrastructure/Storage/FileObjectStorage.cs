@@ -45,6 +45,12 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             return Task.FromResult((Stream) stream);
         }
 
+        public Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            var drive = new DriveInfo(Path.GetPathRoot(_rootPath) ?? string.Empty);
+            return Task.FromResult(new StorageStats(drive.TotalSize, drive.AvailableFreeSpace));
+        }
+
         private string GetPath(StoredObjectDescriptor descriptor)
         {
             var parts = new List<string>
