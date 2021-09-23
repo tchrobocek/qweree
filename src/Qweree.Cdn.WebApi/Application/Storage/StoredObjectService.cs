@@ -28,6 +28,8 @@ namespace Qweree.Cdn.WebApi.Application.Storage
 
             await using var stream = new MemoryStream();
             await input.Stream.CopyToAsync(stream, cancellationToken);
+            await input.Stream.DisposeAsync();
+            stream.Seek(0, SeekOrigin.Begin);
 
             var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, stream.Length,
                 _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
