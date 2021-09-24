@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Cdn.WebApi.Web.System
+namespace Qweree.Cdn.Sdk.System
 {
     public class CdnStatsDto
     {

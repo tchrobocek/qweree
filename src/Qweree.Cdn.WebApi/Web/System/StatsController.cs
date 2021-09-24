@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Qweree.Cdn.Sdk.System;
 using Qweree.Cdn.WebApi.Infrastructure.System;
 
 namespace Qweree.Cdn.WebApi.Web.System
