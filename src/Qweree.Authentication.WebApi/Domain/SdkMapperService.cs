@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -96,7 +97,17 @@ namespace Qweree.Authentication.WebApi.Domain
             {
                 foreach (var itemId in role.Items)
                 {
-                    var item = await _clientRoleRepository.GetAsync(itemId, cancellationToken);
+                    ClientRole item;
+
+                    try
+                    {
+                        item = await _clientRoleRepository.GetAsync(itemId, cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
                     var sdkItem = await DoMapClientRoleAsync(level + 1, item, cancellationToken);
                     items.Add(sdkItem);
                 }
@@ -143,7 +154,17 @@ namespace Qweree.Authentication.WebApi.Domain
             {
                 foreach (var itemId in role.Items)
                 {
-                    var item = await _userRoleRepository.GetAsync(itemId, cancellationToken);
+                    UserRole item;
+
+                    try
+                    {
+                        item = await _userRoleRepository.GetAsync(itemId, cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
                     var sdkItem = await DoMapUserRoleAsync(level + 1, item, cancellationToken);
                     items.Add(sdkItem);
                 }
