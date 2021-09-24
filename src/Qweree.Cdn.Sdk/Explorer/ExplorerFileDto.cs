@@ -10,5 +10,6 @@ namespace Qweree.Cdn.Sdk.Explorer
         public DateTime? ModifiedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? Path { get; set; }
+        public string TypeName => "file";
     }
 }

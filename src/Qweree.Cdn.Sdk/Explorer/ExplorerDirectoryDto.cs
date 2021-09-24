@@ -9,5 +9,6 @@ namespace Qweree.Cdn.Sdk.Explorer
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public string? Path { get; set; }
+        public string TypeName => "directory";
     }
 }
