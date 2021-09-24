@@ -23,7 +23,7 @@ namespace Qweree.Cdn.WebApi.Test.Application.Storage
             var storedObjectRepositoryMock = new Mock<IStoredObjectRepository>();
             var service = new StoredObjectService(dateTimeProvider, storedObjectRepositoryMock.Object);
 
-            var stream = new MemoryStream();
+            var stream = new MemoryStream(new byte[] {0x1, 0x2, 0x3, 0x4, 0x5});
             const string slug = "test/object/slug";
             var input = new StoreObjectInput(slug, MediaTypeNames.Application.Octet, stream);
             var response = await service.StoreObjectAsync(input);
@@ -34,7 +34,6 @@ namespace Qweree.Cdn.WebApi.Test.Application.Storage
             Assert.Equal(new[] {"test", "object", "slug"}, storedObject.Descriptor.Slug);
             Assert.Equal(5, storedObject.Descriptor.Size);
             Assert.Equal(MediaTypeNames.Application.Octet, storedObject.Descriptor.MediaType);
-            Assert.Same(storedObject.Stream, stream);
         }
 
         [Fact]

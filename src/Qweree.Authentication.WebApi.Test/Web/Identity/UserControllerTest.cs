@@ -26,6 +26,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
     [Collection("Web api collection")]
     [Trait("Category", "Integration test")]
     [Trait("Category", "Web api test")]
+    [Trait("Category", "Database test")]
     public class UserControllerTest : IClassFixture<WebApiFactory>
     {
         private readonly UserRepository _userRepository;

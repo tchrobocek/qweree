@@ -21,7 +21,7 @@ namespace Qweree.Authentication.Sdk.Test.Fixture
             _messageHandler = new HttpClientHandler();
         }
 
-        public string AuthenticationApiUri => "http://localhost:10001";
+        public string AuthenticationApiUri => "http://localhost/auth/";
 
         public void Dispose()
         {
