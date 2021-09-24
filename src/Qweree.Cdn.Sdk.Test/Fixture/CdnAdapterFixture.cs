@@ -22,8 +22,8 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
             _messageHandler = new HttpClientHandler();
         }
 
-        public string CdnApiUri => "http://localhost:10002";
-        public string AuthenticationApiUri => "http://localhost:10001";
+        public string CdnApiUri => "http://localhost/cdn/";
+        public string AuthenticationApiUri => "http://localhost/auth/";
 
         public void Dispose()
         {
@@ -43,7 +43,7 @@ namespace Qweree.Cdn.Sdk.Test.Fixture
             CancellationToken cancellationToken = new())
         {
             var client = await CreateHttpClientAsync(cancellationToken);
-            client.BaseAddress = new Uri($"{AuthenticationApiUri}/api/oauth2/auth");
+            client.BaseAddress = new Uri(new Uri(AuthenticationApiUri), "api/oauth2/auth");
             var oAuth2Client = new OAuth2Client(client);
             var response = await oAuth2Client.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
             response.EnsureSuccessStatusCode();

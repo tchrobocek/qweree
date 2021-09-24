@@ -17,7 +17,7 @@ namespace Qweree.Cdn.Sdk.Test.Storage
 
         public StorageAdapterTest(CdnAdapterFixture cdnAdapterFixture)
         {
-            var uri = new Uri(new Uri(cdnAdapterFixture.CdnApiUri), "/api/v1/storage/");
+            var uri = new Uri(new Uri(cdnAdapterFixture.CdnApiUri), "api/v1/storage/");
             var httpClient = cdnAdapterFixture
                 .CreateAuthenticatedHttpClientAsync(new PasswordGrantInput(CdnAdapterFixture.TestAdminUsername,
                     CdnAdapterFixture.TestAdminPassword), new ClientCredentials(CdnAdapterFixture.TestClientId,
