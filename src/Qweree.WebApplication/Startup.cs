@@ -10,7 +10,6 @@ using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Authentication.AdminSdk.Identity;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Cdn.Sdk.Explorer;
 using Qweree.Cdn.Sdk.System;
 using Qweree.PiccStash.Sdk;
 using Qweree.Sdk.Http.HttpClient;
