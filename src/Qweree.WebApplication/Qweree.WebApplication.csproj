@@ -21,8 +21,4 @@
       <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Web\Components\Apps\Services\UserRoleModifyDialogComponent.razor" />
-    </ItemGroup>
 </Project>
