@@ -1,4 +1,4 @@
-namespace Qweree.Cdn.Sdk.Explorer
+namespace Qweree.Cdn.WebApi.Infrastructure.Explorer
 {
     public interface IExplorerObject
     {

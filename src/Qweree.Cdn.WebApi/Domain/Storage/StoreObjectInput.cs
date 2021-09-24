@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Qweree.Cdn.WebApi.Application.Storage
+namespace Qweree.Cdn.WebApi.Domain.Storage
 {
     public class StoreObjectInput
     {

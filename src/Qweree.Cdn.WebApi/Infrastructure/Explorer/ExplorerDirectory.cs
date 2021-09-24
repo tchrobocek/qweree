@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Cdn.Sdk.Explorer
+namespace Qweree.Cdn.WebApi.Infrastructure.Explorer
 {
     public class ExplorerDirectory : IExplorerObject
     {
