@@ -1,7 +1,6 @@
 using System;
-using Qweree.Cdn.WebApi.Application.Explorer;
 
-namespace Qweree.Cdn.WebApi.Web.Explorer
+namespace Qweree.Cdn.Sdk.Explorer
 {
     public static class ExplorerObjectMapper
     {

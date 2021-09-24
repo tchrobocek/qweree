@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Qweree.Cdn.WebApi.Web.Explorer;
+using Qweree.Cdn.Sdk.Explorer;
 
 namespace Qweree.Cdn.WebApi.Infrastructure.Explorer
 {
