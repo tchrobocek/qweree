@@ -17,7 +17,7 @@ namespace Qweree.Authentication.Sdk.Test.OAuth2
         {
             var uri = new Uri(authFixture.AuthenticationApiUri);
             var client = authFixture.CreateHttpClientAsync().GetAwaiter().GetResult();
-            client.BaseAddress = new Uri(uri, "/api/oauth2/auth");
+            client.BaseAddress = new Uri(uri, "api/oauth2/auth");
             _oAuth2Client = new OAuth2Client(client);
         }
 

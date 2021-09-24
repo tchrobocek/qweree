@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Moq;
 using Qweree.Cdn.Sdk;
-using Qweree.Cdn.WebApi.Application.Explorer;
+using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Cdn.WebApi.Test.Fixture.Factories;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
+using ExplorerObjectMapper = Qweree.Cdn.WebApi.Infrastructure.Explorer.ExplorerObjectMapper;
 
-namespace Qweree.Cdn.WebApi.Test.Application.Explorer
+namespace Qweree.Cdn.WebApi.Test.Infrastructure.Explorer
 {
     [Trait("Category", "Unit test")]
     public class ExplorerServiceTest

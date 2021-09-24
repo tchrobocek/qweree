@@ -1,7 +1,116 @@
 @page "/home"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Configuration
+@using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.WebApplication.Infrastructure.ServicesOverview
+@attribute [Authorize]
+@inject ClaimsPrincipalStorage _session
+@inject IConfiguration _configuration
+@inject SystemInfoClientFactory _systemInfoClientFactory
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navManager
 
-<h3>Home</h3>
-
+<MudText Typo="Typo.h4" Class="mb-8">Hello @_username</MudText>
+<MudGrid>
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-8">Services</MudText>
+            <MudTable Elevation="0" Items="_services">
+                <RowTemplate>
+                    <MudTd Class="pa-1" DataLabel="Status">@context.HealthReport.Status</MudTd>
+                    <MudTd Class="pa-1" DataLabel="Label">@context.Label (@context.Version)</MudTd>
+                    <MudTd Class="pa-1" DataLabel="Actions">
+                        <MudIconButton @onclick="() => GoToSwagger(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
+                        <MudIconButton @onclick="() => CopyLinkAsync(context)" Title="Copy link" Icon="@Icons.Material.Filled.Link"></MudIconButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-8">Picc</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
 @code {
+    private readonly List<ServiceInfo> _services = new();
+    private string _username = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await _session.GetUserAsync())!;
+        _username = user.FullName;
+
+        var cdnUri = _configuration["CdnServiceUri"];
+        var authUri = _configuration["TokenServiceUri"];
+        var piccUri = _configuration["PiccServiceUri"];
+        _services.Add(new ServiceInfo {Label = "Authentication service", SwaggerUri = authUri + "swagger", Uri = authUri});
+        _services.Add(new ServiceInfo {Label = "Cdn service", SwaggerUri = cdnUri + "swagger", Uri = cdnUri});
+        _services.Add(new ServiceInfo {Label = "Picc service", SwaggerUri = piccUri + "swagger", Uri = piccUri});
+
+        await UpdateServicesAsync();
+    }
+
+    private async Task UpdateServicesAsync()
+    {
+        var tasks = new List<Task>();
+        foreach (var service in _services)
+        {
+            service.HealthReport.Status = "Loading";
+            service.Version = "0.0.0";
+
+            var client = _systemInfoClientFactory.Create(new Uri(service.Uri));
+
+            var task1 = Task.Run(async () =>
+            {
+                var healthResponse = await client.GetHealthAsync();
+
+                if (healthResponse.IsSuccessful)
+                {
+                    service.HealthReport = (await healthResponse.ReadPayloadAsync())!;
+                }
+                else
+                {
+                    service.HealthReport.Status = "Unhealthy";
+                }
+            });
+            var task2 = Task.Run(async () =>
+            {
+                var versionResponse = await client.GetVersionAsync();
+
+                if (versionResponse.IsSuccessful)
+                {
+                    service.Version = (await versionResponse.ReadPayloadAsync())?.Version ?? "0.0.0";
+                }
+                else
+                {
+                    service.Version = "0.0.0";
+                }
+            });
+
+            tasks.Add(task1);
+            tasks.Add(task2);
+        }
+
+        await Task.WhenAll(tasks.ToArray());
+    }
+
+    private async Task CopyLinkAsync(ServiceInfo serviceInfo)
+    {
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", serviceInfo.Uri);
+        }
+        catch (Exception)
+        {
+    // ignore, couldn't copy link
+        }
+    }
+
+    private void GoToSwagger(ServiceInfo context)
+    {
+        _navManager.NavigateTo(new Uri(new Uri(context.Uri), "swagger").ToString());
+    }
 
 }

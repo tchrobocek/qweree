@@ -1,13 +1,13 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Storage;
-using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Utils;
 
-namespace Qweree.Cdn.WebApi.Application.Storage
+namespace Qweree.Cdn.WebApi.Domain.Storage
 {
     public class StoredObjectService
     {
@@ -24,10 +24,16 @@ namespace Qweree.Cdn.WebApi.Application.Storage
             CancellationToken cancellationToken = new())
         {
             var slug = SlugHelper.PathToSlug(input.Path);
-            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, input.Length,
+
+            await using var stream = new MemoryStream();
+            await input.Stream.CopyToAsync(stream, cancellationToken);
+            await input.Stream.DisposeAsync();
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, stream.Length,
                 _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
 
-            var storedObject = new StoredObject(descriptor, input.Stream);
+            var storedObject = new StoredObject(descriptor, stream);
 
             try
             {

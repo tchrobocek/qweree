@@ -121,5 +121,26 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
 
             return await result.ToListAsync(cancellationToken);
         }
+
+        public async Task<IEnumerable<StoredObjectStatsDo>> GetObjectsStatsAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            var aggregation = $@"[{{
+    ""$group"": {{
+        _id: ""$MediaType"",
+        Count: {{
+            $sum: 1
+        }},
+        Used: {{
+            $sum: ""$Size""
+        }}
+    }}
+}}]";
+
+            var bsonPipeline = BsonSerializer.Deserialize<BsonArray>(aggregation);
+            var result = await Collection.AggregateAsync<StoredObjectStatsDo>(
+                bsonPipeline.Select(d => d.AsBsonDocument).ToArray(), cancellationToken: cancellationToken);
+
+            return await result.ToListAsync(cancellationToken);
+        }
     }
 }

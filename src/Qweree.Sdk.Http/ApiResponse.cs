@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -97,6 +99,24 @@ namespace Qweree.Sdk.Http
         public async Task<TPayloadType?> ReadPayloadAsync(JsonSerializerOptions options, CancellationToken cancellationToken = new())
         {
             return await ResponseMessage.Content.ReadAsObjectAsync<TPayloadType>(options, cancellationToken);
+        }
+    }
+
+    public class PaginationApiResponse<TPayloadType> : ApiResponse<IEnumerable<TPayloadType>> where TPayloadType : class
+    {
+        public PaginationApiResponse(HttpResponseMessage responseMessage) : base(responseMessage)
+        {
+        }
+
+        public int DocumentCount
+        {
+            get
+            {
+                ResponseHeaders.TryGetValues("q-document-count", out var documentCounts);
+                int.TryParse(documentCounts?.FirstOrDefault(), out var documentCount);
+
+                return documentCount;
+            }
         }
     }
 }

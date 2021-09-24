@@ -74,6 +74,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 createdClientDto.WithDeepEqual(CreatedClientMapper.ToDto(await _sdkMapperService.ClientMapToCreatedClientAsync(client)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .WithCustomComparison(new ImmutableArrayComparison())
+                    .IgnoreProperty(p => p.Name == nameof(client.ClientSecret))
                     .IgnoreProperty(p => p.Name == "CreatedAt" || p.Name == "ModifiedAt")
                     .Assert();
             }

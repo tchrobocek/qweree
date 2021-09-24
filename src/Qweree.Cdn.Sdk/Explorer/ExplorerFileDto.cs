@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Cdn.WebApi.Web.Explorer
+namespace Qweree.Cdn.Sdk.Explorer
 {
     public class ExplorerFileDto : IExplorerObjectDto
     {
@@ -10,5 +10,6 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
         public DateTime? ModifiedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? Path { get; set; }
+        public string TypeName => "file";
     }
 }

@@ -1,5 +1,6 @@
 using System;
-using Qweree.Cdn.WebApi.Application.Explorer;
+using Qweree.Cdn.Sdk.Explorer;
+using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 
 namespace Qweree.Cdn.WebApi.Web.Explorer
 {

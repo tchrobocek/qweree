@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace Qweree.PiccStash.WebApi.Web.System
 {
     [ApiController]
-    [Route("/api/v1/_system")]
+    [Route("/api/system/")]
     public class SystemController : ControllerBase
     {
         private readonly HealthCheckService _healthCheckService;

@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Cdn.WebApi.Application.Explorer;
+using Qweree.Cdn.Sdk.Explorer;
+using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 
 namespace Qweree.Cdn.WebApi.Web.Explorer
 {

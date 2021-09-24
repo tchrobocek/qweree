@@ -7,7 +7,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk.Storage;
-using Qweree.Cdn.WebApi.Application.Storage;
+using Qweree.Cdn.WebApi.Domain.Storage;
 
 namespace Qweree.Cdn.WebApi.Web.Storage
 {
@@ -57,7 +57,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             path = HttpUtility.UrlDecode(path);
-            var input = new StoreObjectInput(path, contentType, Request.ContentLength ?? 0, Request.Body);
+            var input = new StoreObjectInput(path, contentType, Request.Body);
             var response = await _service.StoreObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)

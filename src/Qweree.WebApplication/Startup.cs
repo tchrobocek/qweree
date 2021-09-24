@@ -56,14 +56,6 @@ namespace Qweree.WebApplication
             {
                 var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
-                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]), "api/system/")
-                };
-                return new SystemInfoClient(client);
-            });
-            services.AddScoped(p =>
-            {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
                     BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]) , "api/v1/picc/")
                 };
                 return new PiccClient(client);
@@ -93,6 +85,7 @@ namespace Qweree.WebApplication
                 return new IdentityClient(client);
             });
             services.AddScoped<AuthenticationService>();
+            services.AddScoped<SystemInfoClientFactory>();
         }
     }
 }
