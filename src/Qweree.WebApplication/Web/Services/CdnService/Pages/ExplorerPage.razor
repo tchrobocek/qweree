@@ -1,0 +1,87 @@
+@page "/services/cdn/explorer/{*path}"
+@using Qweree.Cdn.Sdk.Explorer
+@using System.Text.Json
+
+@inject ExplorerClient _explorerClient;
+@inject NavigationManager _navigationManager;
+
+<MudCard Elevation="1" Class="pa-4">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Explorer</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTextField OnKeyPress="OnPathKeyPressedAsync" FullWidth="true" T="string" @bind-Value="_pathInput" Label="Path" Variant="Variant.Outlined" Class="my-6" />
+
+        @foreach (var item in _items)
+        {
+            if (item is ExplorerFileDto file)
+            {
+                <ExplorerFileComponent Item="file" />
+            }
+            if (item is ExplorerDirectoryDto directory)
+            {
+                <ExplorerDirectoryComponent OnClick="() => NavigateToAsync(directory)" Item="directory" />
+            }
+        }
+        <div></div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    private readonly List<IExplorerObjectDto> _items = new();
+    private string? _path;
+    private string? _pathInput;
+
+    [Parameter]
+    public string? Path
+    {
+        set
+        {
+            _path = $"/{value?.Trim('/')}";
+            _pathInput = _path;
+        }
+        get => _path ?? "/";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCurrentItemsAsync();
+    }
+
+    private async Task LoadCurrentItemsAsync()
+    {
+        var exploreResult = await _explorerClient.ExploreAsync(Path ?? "/");
+
+        if (!exploreResult.IsSuccessful)
+            return;
+
+        var items = await exploreResult.ReadPayloadAsync(new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            IgnoreNullValues = true,
+            Converters = { new ExplorerObjectConverter() }
+        });
+        _items.Clear();
+        _items.AddRange(items!);
+        StateHasChanged();
+    }
+
+    private async Task OnPathKeyPressedAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            Path = _pathInput;
+            await LoadCurrentItemsAsync();
+            _navigationManager.NavigateTo("/services/cdn/explorer/" + Path);
+        }
+    }
+
+    private async Task NavigateToAsync(ExplorerDirectoryDto directory)
+    {
+        Path = directory.Path;
+        await LoadCurrentItemsAsync();
+        _navigationManager.NavigateTo($"/services/cdn/explorer{directory.Path}");
+    }
+}

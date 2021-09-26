@@ -1,32 +1,31 @@
-@page "/services/auth/users/list"
+@page "/services/auth/clients/list"
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Identity
-@using Qweree.Authentication.AdminSdk.Identity.Users
-@using Qweree.WebApplication.Web.Components.Dialog
+@using Qweree.Authentication.AdminSdk.Identity.Clients
 @attribute [Authorize]
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
 @inject IDialogService _dialogService
 
-<MudTable Items="@_users" Hover="true" Class="pa-4">
+<MudTable Items="@_clients" Hover="true" Class="pa-4">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Users</MudText>
+        <MudText Typo="Typo.h6">Clients</MudText>
         <MudIconButton Title="Refresh" OnClick="RefreshAsync" Icon="@Icons.Material.Filled.Refresh"></MudIconButton>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddUser">Add user</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddClient">Add client</MudButton>
     </ToolBarContent>
     <HeaderContent>
         <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
-        <MudTh>Email</MudTh>
+        <MudTh>Owner</MudTh>
         <MudTh>Roles</MudTh>
         <MudTh>Modified at</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
-        <MudTd DataLabel="Role">@context.FullName (@context.Username)</MudTd>
-        <MudTd DataLabel="Contact email">@context.ContactEmail</MudTd>
+        <MudTd DataLabel="Role">@context.ApplicationName (@context.ClientId)</MudTd>
+        <MudTd DataLabel="Owner">@context.Owner?.Id (@context.Owner?.Username)</MudTd>
         <MudTd DataLabel="Roles">@string.Join(", ", context.Roles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">
@@ -46,16 +45,16 @@
 @code {
     private const int Batch = 30;
     private int _pageIndex;
-    private readonly List<UserDto> _users = new();
+    private readonly List<ClientDto> _clients = new();
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshAsync();
     }
 
-    private void AddUser()
+    private void AddClient()
     {
-        _navigationManager.NavigateTo("/services/auth/users/add");
+        _navigationManager.NavigateTo("/services/auth/clients/add");
     }
 
     private async Task DeleteAsync(Guid? contextId)
@@ -66,20 +65,21 @@
         if (!delete || contextId == null)
             return;
 
-        await _identityClient.UserDeleteAsync((Guid) contextId);
+        await _identityClient.ClientDeleteAsync((Guid) contextId);
         await RefreshAsync();
     }
 
 
     private async Task RefreshAsync()
     {
-        var response = await _identityClient.UsersPaginateAsync(_pageIndex * Batch, Batch, new Dictionary<string, int>());
+
+        var response = await _identityClient.ClientsPaginateAsync(_pageIndex * Batch, Batch, new Dictionary<string, int>());
 
         if (response.IsSuccessful)
         {
             var payload = await response.ReadPayloadAsync();
-            _users.Clear();
-            _users.AddRange(payload ?? ArraySegment<UserDto>.Empty);
+            _clients.Clear();
+            _clients.AddRange(payload ?? ArraySegment<ClientDto>.Empty);
         }
     }
 
@@ -88,7 +88,7 @@
         _pageIndex++;
         await RefreshAsync();
 
-        if (_users.Count == 0)
+        if (_clients.Count == 0)
             await PrevPageAsync();
     }
 

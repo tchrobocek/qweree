@@ -1,0 +1,12 @@
+.explorer-file {
+  margin: 1em 0;
+  cursor: pointer;
+}
+.explorer-file div {
+  display: inline-block;
+  margin: 0 1em;
+}
+
+.explorer-file-path {
+  width: 50%;
+}

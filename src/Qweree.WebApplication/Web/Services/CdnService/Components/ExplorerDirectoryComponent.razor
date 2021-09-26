@@ -1,0 +1,19 @@
+@using Qweree.Cdn.Sdk.Explorer
+
+@inject NavigationManager _navigationManager;
+
+<div class="explorer-directory" @onclick="() => OnClick.InvokeAsync()">
+    <div class="explorer-directory-path">@Item.Path</div>
+    <div class="explorer-directory-total-count">@Item.TotalCount items</div>
+    <div class="explorer-directory-total-size">@Item.TotalSize B</div>
+    <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
+</div>
+
+@code {
+
+    [Parameter]
+    public ExplorerDirectoryDto Item { get; set; } = new();
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+}

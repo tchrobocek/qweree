@@ -14,9 +14,9 @@ namespace Qweree.Cdn.Sdk.System
             _httpClient = httpClient;
         }
 
-        public async Task<ApiResponse<CdnStatsDto>> GetStatsAsync(string path, CancellationToken cancellationToken = new())
+        public async Task<ApiResponse<CdnStatsDto>> GetStatsAsync(CancellationToken cancellationToken = new())
         {
-            var response = await _httpClient.GetAsync(path.Trim('/'), cancellationToken);
+            var response = await _httpClient.GetAsync(string.Empty, cancellationToken);
             return new ApiResponse<CdnStatsDto>(response);
         }
     }

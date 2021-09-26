@@ -1,0 +1,12 @@
+.explorer-directory {
+  margin: 1em 0;
+  cursor: pointer;
+}
+.explorer-directory div {
+  display: inline-block;
+  margin: 0 1em;
+}
+
+.explorer-directory-path {
+  width: 50%;
+}

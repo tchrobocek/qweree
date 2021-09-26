@@ -10,6 +10,8 @@ using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Authentication.AdminSdk.Identity;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Cdn.Sdk.Explorer;
+using Qweree.Cdn.Sdk.System;
 using Qweree.PiccStash.Sdk;
 using Qweree.Sdk.Http.HttpClient;
 using Qweree.WebApplication.Infrastructure.Authentication;
@@ -83,6 +85,22 @@ namespace Qweree.WebApplication
                     BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/identity/")
                 };
                 return new IdentityClient(client);
+            });
+            services.AddScoped(p =>
+            {
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
+                {
+                    BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/system/stats/")
+                };
+                return new StatsClient(client);
+            });
+            services.AddScoped(p =>
+            {
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
+                {
+                    BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/explorer/")
+                };
+                return new ExplorerClient(client);
             });
             services.AddScoped<AuthenticationService>();
             services.AddScoped<SystemInfoClientFactory>();
