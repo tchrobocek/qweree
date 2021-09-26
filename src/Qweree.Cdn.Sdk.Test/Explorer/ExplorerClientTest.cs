@@ -64,7 +64,13 @@ namespace Qweree.Cdn.Sdk.Test.Explorer
             {
                 using var response = await _explorerClient.ExploreAsync($"/test/{guid}");
                 response.EnsureSuccessStatusCode();
-                Assert.Single(await response.ReadPayloadAsync(new JsonSerializerOptions{Converters = { new ExplorerObjectConverter() }}) ?? Array.Empty<IExplorerObjectDto>());
+                Assert.Single(await response.ReadPayloadAsync(new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true,
+                    IgnoreNullValues = true,
+                    Converters = { new ExplorerObjectConverter() }
+                }) ?? Array.Empty<IExplorerObjectDto>());
             }
         }
     }

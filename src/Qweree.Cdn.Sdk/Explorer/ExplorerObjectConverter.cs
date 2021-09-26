@@ -36,7 +36,7 @@ namespace Qweree.Cdn.Sdk.Explorer
             // See if that class can be deserialized or not
             if (!string.IsNullOrEmpty(className) && _typeMap.TryGetValue(className, out var targetType))
             {
-                return JsonSerializer.Deserialize(ref readerAtStart, targetType, options) as IExplorerObjectDto;
+                return (IExplorerObjectDto?)JsonSerializer.Deserialize(ref readerAtStart, targetType, options);
             }
 
             throw new NotSupportedException($"{className} can not be deserialized");
