@@ -1,9 +1,10 @@
 @using Qweree.Cdn.Sdk.Explorer
-
 @inject NavigationManager _navigationManager;
 
 <div class="explorer-directory" @onclick="() => OnClick.InvokeAsync()">
-    <div class="explorer-directory-path">@Item!.Label</div>
+    <div class="explorer-directory-icon"><MudIcon Icon="@Icons.Filled.Folder" Size="Size.Small"></MudIcon></div>
+    <div class="explorer-directory-item explorer-directory-path">@Item!.Label</div>
+
     @if (Item.TotalCount != null)
     {
         <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="Item.TotalCount ?? 0" Singular="item" Plural="items" /></div>

@@ -115,7 +115,12 @@
             .Union(new[] {DateTime.MinValue})
             .Max();
 
-        return new(".", _items.Count, 0, created,
+        var totalSize = _items.OfType<ExplorerDirectoryDto>()
+            .Select(i => i.TotalSize ?? 0)
+            .Union(_items.OfType<ExplorerFileDto>()
+                .Select(i => i.Size ?? 0))
+            .Sum();
+        return new(".", _items.Count, totalSize, created,
             modified);
     }
 
