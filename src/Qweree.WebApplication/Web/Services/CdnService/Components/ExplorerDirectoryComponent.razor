@@ -4,14 +4,23 @@
 
 <div class="explorer-directory" @onclick="() => OnClick.InvokeAsync()">
     <div class="explorer-directory-path">@Item!.Label</div>
-    <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="Item.TotalCount" Singular="item" Plural="items" /></div>
-    <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize" /></div>
-    <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
+    @if (Item.TotalCount != null)
+    {
+        <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="Item.TotalCount ?? 0" Singular="item" Plural="items" /></div>
+    }
+    @if (Item.TotalSize != null)
+    {
+        <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize ?? 0" /></div>
+    }
+    @if (Item.ModifiedAt != null)
+    {
+        <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
+    }
 </div>
 
 @code {
 
-    public record ExplorerDirectory(string Label, long TotalCount, long TotalSize, DateTime CreatedAt, DateTime ModifiedAt);
+    public record ExplorerDirectory(string Label, long? TotalCount, long? TotalSize, DateTime? CreatedAt, DateTime? ModifiedAt);
 
     [Parameter]
     public ExplorerDirectory? Item { get; set; }
