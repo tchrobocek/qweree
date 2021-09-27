@@ -13,27 +13,37 @@
 <MudText Typo="Typo.h4" Class="mb-8">Hello @_username</MudText>
 <MudGrid>
     <MudItem xs="6">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6" Class="mb-8">Services</MudText>
-            <MudTable Elevation="0" Items="_services">
-                <RowTemplate>
-                    <MudTd Class="pa-1" DataLabel="Status">@context.HealthReport.Status</MudTd>
-                    <MudTd Class="pa-1" DataLabel="Label">@context.Label (@context.Version)</MudTd>
-                    <MudTd Class="pa-1" DataLabel="Actions">
-                        <MudIconButton @onclick="() => GoToSwagger(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
-                        <MudIconButton @onclick="() => CopyLinkAsync(context)" Title="Copy link" Icon="@Icons.Material.Filled.Link"></MudIconButton>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        </MudPaper>
+        <MudCard Class="pa-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Service info</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Elevation="0" Items="_services">
+                    <RowTemplate>
+                        <MudTd Class="pa-1" DataLabel="Status">@context.HealthReport.Status</MudTd>
+                        <MudTd Class="pa-1" DataLabel="Label">@context.Label (@context.Version)</MudTd>
+                        <MudTd Class="pa-1" DataLabel="Actions">
+                            <MudIconButton @onclick="() => GoToSwagger(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
+                            <MudIconButton @onclick="() => CopyLinkAsync(context)" Title="Copy link" Icon="@Icons.Material.Filled.Link"></MudIconButton>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
     </MudItem>
     <MudItem xs="6">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6" Class="mb-8">
-                Cdn storage
-            </MudText>
-            <CdnOverviewGraphComponent LegendPosition="Position.Bottom" ChartType="ChartType.Donut" Width="300" Height="300" />
-        </MudPaper>
+        <MudCard Class="pa-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Cdn storage</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <CdnOverviewGraphComponent LegendPosition="Position.Bottom" ChartType="ChartType.Donut" Width="300" Height="300" />
+            </MudCardContent>
+        </MudCard>
     </MudItem>
 </MudGrid>
 @code {
