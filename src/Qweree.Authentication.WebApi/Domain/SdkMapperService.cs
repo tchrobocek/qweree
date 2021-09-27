@@ -57,7 +57,7 @@ namespace Qweree.Authentication.WebApi.Domain
         public async Task<SdkClient> ClientMapAsync(Client client, CancellationToken cancellationToken = new())
         {
             var roles = new List<ClientRole>();
-            foreach (var role in client.Roles)
+            foreach (var role in client.ClientRoles)
             {
                 try
                 {

@@ -26,7 +26,7 @@
         <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
         <MudTd DataLabel="Role">@context.ApplicationName (@context.ClientId)</MudTd>
         <MudTd DataLabel="Owner">@context.Owner?.Id (@context.Owner?.Username)</MudTd>
-        <MudTd DataLabel="Roles">@string.Join(", ", context.Roles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
+        <MudTd DataLabel="Roles">@string.Join(", ", context.ClientRoles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">
             <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>

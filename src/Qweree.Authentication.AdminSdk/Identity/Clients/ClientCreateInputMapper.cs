@@ -15,7 +15,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 ApplicationName = input.ApplicationName,
                 ClientId = input.ClientId,
                 OwnerId = input.OwnerId,
-                Roles = input.Roles.ToArray()
+                ClientRoles = input.ClientRoles.ToArray()
             };
         }
         public static ClientCreateInput FromDto(ClientCreateInputDto input)
@@ -25,7 +25,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 input.ApplicationName ?? string.Empty,
                 input.Origin ?? string.Empty,
                 input.OwnerId ?? Guid.Empty,
-                input.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+                input.ClientRoles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
         }
     }
 }

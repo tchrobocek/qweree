@@ -44,7 +44,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                     .AddConstraint(new NotEmptyConstraint("Application name cannot be empty."))
                     .AddConstraint(new MinLengthConstraint(3, "Application name has to have 3 or more characters."))
                     .AddConstraint(new MaxLengthConstraint(255, "Application name has to have up to 255 characters."));
-                c.AddProperty(p => p.Roles)
+                c.AddProperty(p => p.ClientRoles)
                     .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
                 c.AddProperty(p => p.OwnerId)
                     .AddConstraint(new ExistsConstraint(typeof(UserRepository)));

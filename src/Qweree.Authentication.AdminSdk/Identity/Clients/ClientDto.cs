@@ -11,7 +11,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
         public string? ApplicationName { get; set; }
         public string? Origin { get; set; }
         public UserDto? Owner { get; set; }
-        public RoleDto[]? Roles { get; set; }
+        public RoleDto[]? ClientRoles { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
