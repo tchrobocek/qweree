@@ -2,6 +2,7 @@
 @using Qweree.Cdn.Sdk.Explorer
 @using System.Text.Json
 @using System.Net.Mime
+@using Qweree.Cdn.Sdk
 
 @inject ExplorerClient _explorerClient;
 @inject NavigationManager _navigationManager;
@@ -13,7 +14,8 @@
     <MudCardContent>
         <MudTextField OnKeyPress="OnPathKeyPressedAsync" FullWidth="true" T="string" @bind-Value="_pathInput" Label="Path" Variant="Variant.Outlined" Class="my-6" />
 
-
+        <ExplorerDirectoryComponent Item="PrevDirectory()"  OnClick="() => GoToPrevDirectoryAsync()"/>
+        <ExplorerDirectoryComponent Item="ThisDirectory()" />
         @foreach (var item in _items)
         {
             if (item is ExplorerFileDto file)
@@ -76,7 +78,7 @@
         {
             Path = _pathInput;
             await LoadCurrentItemsAsync();
-            _navigationManager.NavigateTo("/services/cdn/explorer/" + Path);
+            _navigationManager.NavigateTo("/services/cdn/explorer" + Path);
         }
     }
 
@@ -84,7 +86,7 @@
     {
         Path = directory.Path;
         await LoadCurrentItemsAsync();
-        _navigationManager.NavigateTo($"/services/cdn/explorer{directory.Path}");
+        _navigationManager.NavigateTo($"/services/cdn/explorer{Path}");
     }
 
     private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)
@@ -99,6 +101,42 @@
         var label = (file.Path?[Path!.Length..] ?? "unknown file").TrimStart('/');
         return new(label, file.MediaType ?? MediaTypeNames.Application.Octet, file.Size ?? 0,
             file.CreatedAt ?? DateTime.MinValue, file.ModifiedAt ?? DateTime.MinValue);
+    }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory ThisDirectory()
+    {
+        var created = _items.Select(i => i.CreatedAt)
+            .OfType<DateTime>()
+            .Union(new[] {DateTime.MaxValue})
+            .Min();
+
+        var modified = _items.Select(i => i.ModifiedAt)
+            .OfType<DateTime>()
+            .Union(new[] {DateTime.MinValue})
+            .Max();
+
+        return new(".", _items.Count, 0, created,
+            modified);
+    }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory PrevDirectory()
+    {
+        return new("..", 0, 0, DateTime.MinValue, DateTime.MinValue);
+    }
+
+    private async Task GoToPrevDirectoryAsync()
+    {
+        var items = SlugHelper.PathToSlug(Path ?? "/")
+            .ToList();
+
+        var i = items.Count - 1;
+
+        if (i >= 0)
+            items.RemoveAt(i);
+
+        Path = SlugHelper.SlugToPath(items.ToArray());
+        await LoadCurrentItemsAsync();
+        _navigationManager.NavigateTo($"/services/cdn/explorer{Path}");
     }
 
 }
