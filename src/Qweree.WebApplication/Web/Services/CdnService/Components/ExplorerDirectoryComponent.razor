@@ -5,18 +5,25 @@
     <div class="explorer-directory-icon"><MudIcon Icon="@Icons.Filled.Folder" Size="Size.Small"></MudIcon></div>
     <div class="explorer-directory-item explorer-directory-path">@Item!.Label</div>
 
-    @if (Item.TotalCount != null)
-    {
-        <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="Item.TotalCount ?? 0" Singular="item" Plural="items" /></div>
-    }
+    <div class="explorer-directory-total-count">
+        @if (Item.TotalCount != null)
+        {
+            @Item.TotalCount <PluralityComponent Value="Item.TotalCount ?? 0" Singular="item" Plural="items"/>
+        }
+    </div>
+
+    <div class="explorer-directory-total-size">
     @if (Item.TotalSize != null)
-    {
-        <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize ?? 0" /></div>
-    }
-    @if (Item.ModifiedAt != null)
-    {
-        <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
-    }
+        {
+            <BinarySizeComponent Bytes="Item.TotalSize ?? 0"/>
+        }
+    </div>
+    <div class="explorer-directory-modified-at">
+        @if (Item.ModifiedAt != null)
+        {
+            @Item.ModifiedAt
+        }
+    </div>
 </div>
 
 @code {
