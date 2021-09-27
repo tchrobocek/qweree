@@ -4,7 +4,7 @@
 
 <div class="explorer-directory" @onclick="() => OnClick.InvokeAsync()">
     <div class="explorer-directory-path">@Item.Path</div>
-    <div class="explorer-directory-total-count">@Item.TotalCount items</div>
+    <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="(int?)Item.TotalCount ?? 0" Singular="item" Plural="items" /></div>
     <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize ?? 0" /></div>
     <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
 </div>
