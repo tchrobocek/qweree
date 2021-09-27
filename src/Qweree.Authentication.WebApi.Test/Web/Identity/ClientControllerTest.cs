@@ -61,7 +61,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, user);
             {
                 var input = new ClientCreateInput(client.Id, client.ClientId, client.ApplicationName,
-                    client.Origin, user.Id, ImmutableArray<Guid>.Empty);
+                    client.Origin, user.Id, ImmutableArray<Guid>.Empty, ImmutableArray<Guid>.Empty);
 
                 var json = JsonUtils.Serialize(input);
                 var response = await httpClient.PostAsync("/api/admin/identity/clients",

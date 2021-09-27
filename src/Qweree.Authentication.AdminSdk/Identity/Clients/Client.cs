@@ -7,7 +7,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
 {
     public class Client
     {
-        public Client(Guid id, string clientId, string applicationName, string origin, User owner, ImmutableArray<Role> clientRoles, DateTime createdAt, DateTime modifiedAt)
+        public Client(Guid id, string clientId, string applicationName, string origin, User owner, ImmutableArray<Role> clientRoles, ImmutableArray<Role> userRoles, DateTime createdAt, DateTime modifiedAt)
         {
             Id = id;
             ClientId = clientId;
@@ -15,6 +15,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
             Origin = origin;
             Owner = owner;
             ClientRoles = clientRoles;
+            UserRoles = userRoles;
             CreatedAt = createdAt;
             ModifiedAt = modifiedAt;
         }
@@ -25,6 +26,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
         public string Origin { get; }
         public User Owner { get; }
         public ImmutableArray<Role> ClientRoles { get; }
+        public ImmutableArray<Role> UserRoles { get; }
         public DateTime CreatedAt { get; }
         public DateTime ModifiedAt { get; }
     }
