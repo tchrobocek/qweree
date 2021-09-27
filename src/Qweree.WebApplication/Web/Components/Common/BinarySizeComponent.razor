@@ -1,0 +1,22 @@
+@using Qweree.WebApplication.Infrastructure.View.BinarySize
+
+@if (_size != null)
+{
+    @(_size.Value.ToString(BinaryUnit.ValueFormat))
+    @:&nbsp;
+    @_size.Unit.ShortName
+}
+
+
+@code {
+    private BinarySize? _size;
+
+    [Parameter]
+    public long Bytes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _size = BinaryUnit.GetUserSize(new BinarySize(Bytes, BinaryUnit.Byte));
+    }
+
+}

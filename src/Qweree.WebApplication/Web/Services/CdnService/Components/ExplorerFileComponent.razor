@@ -2,7 +2,7 @@
 <div class="explorer-file">
     <div class="explorer-file-path">@Item.Path</div>
     <div>@Item.MediaType</div>
-    <div>@Item.Size B</div>
+    <div><BinarySizeComponent Bytes="Item.Size ?? 0" /></div>
     <div>@Item.ModifiedAt</div>
 </div>
 

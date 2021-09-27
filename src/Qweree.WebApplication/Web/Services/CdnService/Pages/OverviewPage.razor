@@ -1,5 +1,6 @@
 @page "/services/cdn/overview"
 @using Qweree.Cdn.Sdk.System
+@using Qweree.WebApplication.Infrastructure.View.BinarySize
 @inject StatsClient _statsClient
 
 <MudCard Elevation="1" Class="pa-4">
@@ -23,11 +24,13 @@
         if (statsResponse.IsSuccessful)
         {
             var stats = await statsResponse.ReadPayloadAsync();
-            _data[$"Available space - {((stats!.DiskSpaceAvailable ?? 0d) / 1000000000):#.###} GB"] = stats.DiskSpaceAvailable ?? 0d;
+            var size = BinaryUnit.GetUserSize(new BinarySize(stats!.DiskSpaceAvailable ?? 0, BinaryUnit.Byte));
+            _data[$"Available space - {size.Value.ToString(BinaryUnit.ValueFormat)} {size.Unit.ShortName}"] = stats.DiskSpaceAvailable ?? 0d;
 
             foreach (var mediaType in stats.MediaTypes)
             {
-                var label = $"{mediaType.MediaType} ({mediaType.Count}) - {((mediaType.UsedSpace ?? 0d) / 1000000000):#.###} GB";
+                size = BinaryUnit.GetUserSize(new BinarySize(mediaType.UsedSpace ?? 0, BinaryUnit.Byte));
+                var label = $"{mediaType.MediaType} ({mediaType.Count}) - {size.Value.ToString(BinaryUnit.ValueFormat)} {size.Unit.ShortName}";
                 _data[label] = mediaType.UsedSpace ?? 0d;
             }
         }
