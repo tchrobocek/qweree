@@ -3,16 +3,18 @@
 @inject NavigationManager _navigationManager;
 
 <div class="explorer-directory" @onclick="() => OnClick.InvokeAsync()">
-    <div class="explorer-directory-path">@Item.Path</div>
-    <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="(int?)Item.TotalCount ?? 0" Singular="item" Plural="items" /></div>
-    <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize ?? 0" /></div>
+    <div class="explorer-directory-path">@Item!.Label</div>
+    <div class="explorer-directory-total-count">@Item.TotalCount <PluralityComponent Value="Item.TotalCount" Singular="item" Plural="items" /></div>
+    <div class="explorer-directory-total-size"><BinarySizeComponent Bytes="Item.TotalSize" /></div>
     <div class="explorer-directory-modified-at">@Item.ModifiedAt</div>
 </div>
 
 @code {
 
+    public record ExplorerDirectory(string Label, long TotalCount, long TotalSize, DateTime CreatedAt, DateTime ModifiedAt);
+
     [Parameter]
-    public ExplorerDirectoryDto Item { get; set; } = new();
+    public ExplorerDirectory? Item { get; set; }
     [Parameter]
     public EventCallback OnClick { get; set; }
 

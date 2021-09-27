@@ -1,6 +1,7 @@
 @page "/services/cdn/explorer/{*path}"
 @using Qweree.Cdn.Sdk.Explorer
 @using System.Text.Json
+@using System.Net.Mime
 
 @inject ExplorerClient _explorerClient;
 @inject NavigationManager _navigationManager;
@@ -12,15 +13,16 @@
     <MudCardContent>
         <MudTextField OnKeyPress="OnPathKeyPressedAsync" FullWidth="true" T="string" @bind-Value="_pathInput" Label="Path" Variant="Variant.Outlined" Class="my-6" />
 
+
         @foreach (var item in _items)
         {
             if (item is ExplorerFileDto file)
             {
-                <ExplorerFileComponent Item="file" />
+                <ExplorerFileComponent Item="ToExplorerFile(file)" />
             }
             if (item is ExplorerDirectoryDto directory)
             {
-                <ExplorerDirectoryComponent OnClick="() => NavigateToAsync(directory)" Item="directory" />
+                <ExplorerDirectoryComponent OnClick="() => NavigateToAsync(directory)" Item="ToExplorerDirectory(directory)" />
             }
         }
         <div></div>
@@ -84,4 +86,19 @@
         await LoadCurrentItemsAsync();
         _navigationManager.NavigateTo($"/services/cdn/explorer{directory.Path}");
     }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)
+    {
+        var label = (directory.Path?[(Path!.Length)..] ?? "unknown dir").TrimStart('/');
+        return new(label, directory.TotalCount ?? 0, directory.TotalSize ?? 0,
+            directory.CreatedAt ?? DateTime.MinValue, directory.ModifiedAt ?? DateTime.MinValue);
+    }
+
+    private ExplorerFileComponent.ExplorerFile ToExplorerFile(ExplorerFileDto file)
+    {
+        var label = (file.Path?[Path!.Length..] ?? "unknown file").TrimStart('/');
+        return new(label, file.MediaType ?? MediaTypeNames.Application.Octet, file.Size ?? 0,
+            file.CreatedAt ?? DateTime.MinValue, file.ModifiedAt ?? DateTime.MinValue);
+    }
+
 }
