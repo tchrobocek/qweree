@@ -9,7 +9,7 @@
 
 <MudCard>
     <MudCardHeader>
-        <MudText Typo="Typo.h6">Add user role</MudText>
+        <MudText Typo="Typo.h6">Edit user role @($"{_label} ({_key})")</MudText>
     </MudCardHeader>
     <MudCardContent>
         @foreach(var error in _errors)
@@ -18,13 +18,12 @@
         }
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="Role info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
-                <MudTextFieldString Variant="Variant.Outlined" Label="Id" @bind-Value="_idString" />
                 <MudGrid>
                     <MudItem xs="6">
                         <MudTextFieldString Variant="Variant.Outlined" Label="Label" @bind-Value="_label" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextFieldString Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
+                        <MudTextFieldString Disabled Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
                     </MudItem>
                 </MudGrid>
                 <MudTextFieldString Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
@@ -34,7 +33,7 @@
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateRoleAsync">Create role</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="EditRoleAsync">Edit role</MudButton>
         </div>
     </MudCardContent>
 </MudCard>
@@ -86,20 +85,18 @@
         }
     }
 
-    private async Task CreateRoleAsync()
+    private async Task EditRoleAsync()
     {
         _errors.Clear();
-        var input = new UserRoleCreateInputDto
+        var input = new UserRoleModifyInputDto
         {
-            Id = Guid.Parse(_idString),
             Description = _description,
             IsGroup = _groupRoles.Any(),
             Items = _groupRoles.Select(r => r.Id).OfType<Guid>().ToArray(),
-            Key = _key,
             Label = _label
         };
 
-        var response = await _authorizationClient.UserRoleCreateAsync(input);
+        var response = await _authorizationClient.UserRoleModifyAsync(Guid.Parse(_idString), input);
 
         if (!response.IsSuccessful)
         {
@@ -108,7 +105,7 @@
             return;
         }
 
-        _snackbar.Add($"Role {_label} ({_key}) was successfully created.", Severity.Success);
+        _snackbar.Add($"Role {_label} ({_key}) was successfully modified.", Severity.Success);
         _navigationManager.NavigateTo("/services/auth/user-roles/list");
     }
 
