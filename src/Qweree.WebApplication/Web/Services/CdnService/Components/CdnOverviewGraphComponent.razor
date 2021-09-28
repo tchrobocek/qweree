@@ -1,0 +1,38 @@
+@using Qweree.Cdn.Sdk.System
+@using Qweree.WebApplication.Infrastructure.View.BinarySize
+@inject StatsClient _statsClient
+
+<MudChart InputData="_data.Values.ToArray()"  InputLabels="_data.Keys.ToArray()" LegendPosition="LegendPosition" ChartType="ChartType" Width="@Width" Height="@Height"/>
+
+@code {
+    private readonly Dictionary<string, double> _data = new();
+
+    [Parameter]
+    public Position LegendPosition { get; set; }
+    [Parameter]
+    public ChartType ChartType { get; set; }
+    [Parameter]
+    public string? Width { get; set; }
+    [Parameter]
+    public string? Height { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var statsResponse = await _statsClient.GetStatsAsync();
+
+        if (statsResponse.IsSuccessful)
+        {
+            var stats = await statsResponse.ReadPayloadAsync();
+            var size = BinaryUnit.GetUserSize(new BinarySize(stats!.DiskSpaceAvailable ?? 0, BinaryUnit.Byte));
+            _data[$"Available space - {size.Value.ToString(BinaryUnit.ValueFormat)} {size.Unit.ShortName}"] = stats.DiskSpaceAvailable ?? 0d;
+
+            foreach (var mediaType in stats.MediaTypes)
+            {
+                size = BinaryUnit.GetUserSize(new BinarySize(mediaType.UsedSpace ?? 0, BinaryUnit.Byte));
+                var label = $"{mediaType.MediaType} ({mediaType.Count}) - {size.Value.ToString(BinaryUnit.ValueFormat)} {size.Unit.ShortName}";
+                _data[label] = mediaType.UsedSpace ?? 0d;
+            }
+        }
+    }
+}

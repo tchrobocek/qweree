@@ -1,0 +1,22 @@
+@using Qweree.WebApplication.Infrastructure.View.Text
+@_decision
+
+@code {
+    private string? _decision;
+
+    [Parameter]
+    public string Singular { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Plural { get; set; } = string.Empty;
+
+    [Parameter]
+    public object? Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var val = Value as long?;
+        _decision = Plurality.Decide(val ?? 0L, Singular, Plural);
+    }
+
+}

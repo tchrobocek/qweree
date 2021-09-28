@@ -1,14 +1,18 @@
 @using Qweree.Cdn.Sdk.Explorer
+
 <div class="explorer-file">
-    <div class="explorer-file-path">@Item.Path</div>
-    <div>@Item.MediaType</div>
-    <div>@Item.Size B</div>
-    <div>@Item.ModifiedAt</div>
+    <div class="explorer-file-icon"><MudIcon Icon="@Icons.Filled.InsertDriveFile" /></div>
+    <div class="explorer-file-path">@Item!.Label</div>
+    <div class="explorer-file-media-type">@Item.MediaType[(Item.MediaType.LastIndexOf("/", StringComparison.Ordinal) + 1)..]</div>
+    <div class="explorer-file-size"><BinarySizeComponent Bytes="Item.Size"/></div>
+    <div class="explorer-file-modified-at">@Item.ModifiedAt</div>
 </div>
 
 @code {
 
+    public record ExplorerFile(string Label, string MediaType, long Size, DateTime CreatedAt, DateTime ModifiedAt);
+
     [Parameter]
-    public ExplorerFileDto Item { get; set; } = new();
+    public ExplorerFile? Item { get; set; }
 
 }

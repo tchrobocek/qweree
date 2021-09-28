@@ -7,30 +7,9 @@
         <MudText Typo="Typo.h6">Overview</MudText>
     </MudCardHeader>
     <MudCardContent>
-        <MudChart InputData="_data.Values.ToArray()"  InputLabels="_data.Keys.ToArray()" LegendPosition="Position.Left" ChartType="ChartType.Pie" Width="300" Height="300"/>
+        <CdnOverviewGraphComponent LegendPosition="Position.Left" ChartType="ChartType.Pie" Width="300" Height="300" />
     </MudCardContent>
 </MudCard>
 
 @code {
-    private readonly Dictionary<string, double> _data = new();
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        var statsResponse = await _statsClient.GetStatsAsync();
-
-        if (statsResponse.IsSuccessful)
-        {
-            var stats = await statsResponse.ReadPayloadAsync();
-            _data[$"Available space - {((stats!.DiskSpaceAvailable ?? 0d) / 1000000000):#.###} GB"] = stats.DiskSpaceAvailable ?? 0d;
-
-            foreach (var mediaType in stats.MediaTypes)
-            {
-                var label = $"{mediaType.MediaType} ({mediaType.Count}) - {((mediaType.UsedSpace ?? 0d) / 1000000000):#.###} GB";
-                _data[label] = mediaType.UsedSpace ?? 0d;
-            }
-        }
-    }
-
 }

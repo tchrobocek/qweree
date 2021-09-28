@@ -1,4 +1,4 @@
-@page "/services/auth/client-roles/edit/{editId}"
+@page "/services/auth/client-roles/add"
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Microsoft.AspNetCore.Authorization
@@ -9,7 +9,7 @@
 
 <MudCard>
     <MudCardHeader>
-        <MudText Typo="Typo.h6">Edit client role @($"{_label} ({_key})")</MudText>
+        <MudText Typo="Typo.h6">Add client role</MudText>
     </MudCardHeader>
     <MudCardContent>
         @foreach(var error in _errors)
@@ -18,12 +18,13 @@
         }
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="Role info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
+                <MudTextFieldString Variant="Variant.Outlined" Label="Id" @bind-Value="_idString" />
                 <MudGrid>
                     <MudItem xs="6">
                         <MudTextFieldString Variant="Variant.Outlined" Label="Label" @bind-Value="_label" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextFieldString Disabled Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
+                        <MudTextFieldString Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
                     </MudItem>
                 </MudGrid>
                 <MudTextFieldString Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
@@ -33,7 +34,7 @@
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="EditRoleAsync">Edit role</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateRoleAsync">Create role</MudButton>
         </div>
     </MudCardContent>
 </MudCard>
@@ -47,56 +48,21 @@
     private string _label = string.Empty;
     private string _description = string.Empty;
 
-    [Parameter]
-    public string? EditId { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (!Guid.TryParse(EditId, out var editId))
-        {
-            _navigationManager.NavigateTo("/not-found");
-        }
-
-        var response = await _authorizationClient.ClientRolesFindAsync();
-
-        if (!response.IsSuccessful)
-        {
-            _navigationManager.NavigateTo("/not-found");
-            return;
-        }
-
-        var roles = await response.ReadPayloadAsync();
-        var role = roles!.FirstOrDefault(r => r.Id == editId);
-
-        if (role == null)
-        {
-            _navigationManager.NavigateTo("/not-found");
-            return;
-        }
-
-        _idString = role.Id?.ToString() ?? string.Empty;
-        _key = role.Key ?? string.Empty;
-        _label = role.Label ?? string.Empty;
-        _description = role.Description ?? string.Empty;
-
-        if (role.IsGroup ?? false)
-        {
-            _groupRoles.AddRange(role.Items ?? Array.Empty<ClientRoleDto>());
-        }
-    }
-
-    private async Task EditRoleAsync()
+    private async Task CreateRoleAsync()
     {
         _errors.Clear();
-        var input = new ClientRoleModifyInputDto
+        var input = new ClientRoleCreateInputDto
         {
+            Id = Guid.Parse(_idString),
             Description = _description,
             IsGroup = _groupRoles.Any(),
             Items = _groupRoles.Select(r => r.Id).OfType<Guid>().ToArray(),
+            Key = _key,
             Label = _label
         };
 
-        var response = await _authorizationClient.ClientRoleModifyAsync(Guid.Parse(_idString), input);
+        var response = await _authorizationClient.ClientRoleCreateAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -105,7 +71,7 @@
             return;
         }
 
-        _snackbar.Add($"Role {_label} ({_key}) was successfully modified.", Severity.Success);
+        _snackbar.Add($"Role {_label} ({_key}) was successfully created.", Severity.Success);
         _navigationManager.NavigateTo("/services/auth/client-roles/list");
     }
 

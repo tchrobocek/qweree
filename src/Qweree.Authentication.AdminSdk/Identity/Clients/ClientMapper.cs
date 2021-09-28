@@ -19,7 +19,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 ClientId = client.ClientId,
                 CreatedAt = client.CreatedAt,
                 ModifiedAt = client.ModifiedAt,
-                Roles = client.Roles.Select(RoleMapper.ToDto).ToArray()
+                ClientRoles = client.ClientRoles.Select(RoleMapper.ToDto).ToArray(),
+                UserRoles = client.UserRoles.Select(RoleMapper.ToDto).ToArray()
             };
         }
 
@@ -27,7 +28,9 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
         {
             return new(clientDto.Id ?? Guid.Empty, clientDto.ClientId ?? string.Empty,
                 clientDto.ApplicationName ?? string.Empty, clientDto.Origin ?? string.Empty,
-                UserMapper.FromDto(clientDto.Owner ?? new()), clientDto.Roles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
+                UserMapper.FromDto(clientDto.Owner ?? new()),
+                clientDto.ClientRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
+                clientDto.UserRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
                 clientDto.CreatedAt ?? DateTime.MinValue,
                 clientDto.ModifiedAt ?? DateTime.MinValue);
         }

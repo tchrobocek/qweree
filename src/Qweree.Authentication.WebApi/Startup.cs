@@ -132,18 +132,18 @@ namespace Qweree.Authentication.WebApi
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_CREATE"));
-                options.AddPolicy("UserRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ"));
-                options.AddPolicy("UserDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_DELETE"));
+                options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.create"));
+                options.AddPolicy("UserRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.read"));
+                options.AddPolicy("UserDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.delete"));
                 options.AddPolicy("UserReadPersonalDetail",
-                    policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_USERS_READ_PERSONAL_DETAIL"));
-                options.AddPolicy("ClientCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_CREATE"));
-                options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_READ"));
-                options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_CLIENTS_DELETE"));
-                options.AddPolicy("RoleCreate", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_CREATE"));
-                options.AddPolicy("RoleRead", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_READ"));
-                options.AddPolicy("RoleDelete", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_DELETE"));
-                options.AddPolicy("RoleModify", policy => policy.RequireClaim(ClaimTypes.Role, "AUTH_ROLES_MODIFY"));
+                    policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.read_personal"));
+                options.AddPolicy("ClientCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.create"));
+                options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.read"));
+                options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.delete"));
+                options.AddPolicy("RoleCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.create"));
+                options.AddPolicy("RoleRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.read"));
+                options.AddPolicy("RoleDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.delete"));
+                options.AddPolicy("RoleModify", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.modify"));
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -201,10 +201,11 @@ namespace Qweree.Authentication.WebApi
                 var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
                 var clientRepository = p.GetRequiredService<IClientRepository>();
                 var authorizationService = p.GetRequiredService<AuthorizationService>();
+                var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
-                    config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService);
+                    config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService, clientRoleRepository);
             });
 
             // Identity

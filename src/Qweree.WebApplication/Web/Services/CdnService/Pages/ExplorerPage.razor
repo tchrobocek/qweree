@@ -1,6 +1,8 @@
 @page "/services/cdn/explorer/{*path}"
 @using Qweree.Cdn.Sdk.Explorer
 @using System.Text.Json
+@using System.Net.Mime
+@using Qweree.Cdn.Sdk
 
 @inject ExplorerClient _explorerClient;
 @inject NavigationManager _navigationManager;
@@ -12,15 +14,25 @@
     <MudCardContent>
         <MudTextField OnKeyPress="OnPathKeyPressedAsync" FullWidth="true" T="string" @bind-Value="_pathInput" Label="Path" Variant="Variant.Outlined" Class="my-6" />
 
+        @if (_topDirectory != null)
+        {
+            <ExplorerDirectoryComponent Item="_topDirectory"  OnClick="GoToPrevDirectoryAsync"/>
+        }
+
+        @if (_currentDirectory != null)
+        {
+            <ExplorerDirectoryComponent Item="_currentDirectory" />
+        }
+
         @foreach (var item in _items)
         {
             if (item is ExplorerFileDto file)
             {
-                <ExplorerFileComponent Item="file" />
+                <ExplorerFileComponent Item="ToExplorerFile(file)" />
             }
             if (item is ExplorerDirectoryDto directory)
             {
-                <ExplorerDirectoryComponent OnClick="() => NavigateToAsync(directory)" Item="directory" />
+                <ExplorerDirectoryComponent OnClick="() => NavigateToAsync(directory.Path)" Item="ToExplorerDirectory(directory)" />
             }
         }
         <div></div>
@@ -30,6 +42,8 @@
 @code {
 
     private readonly List<IExplorerObjectDto> _items = new();
+    private ExplorerDirectoryComponent.ExplorerDirectory? _currentDirectory;
+    private ExplorerDirectoryComponent.ExplorerDirectory? _topDirectory;
     private string? _path;
     private string? _pathInput;
 
@@ -65,23 +79,76 @@
         });
         _items.Clear();
         _items.AddRange(items!);
+
+        _currentDirectory = CreateThisDirectory();
+        _topDirectory = CreateTopDirectory();
+
         StateHasChanged();
+    }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory CreateThisDirectory()
+    {
+        var created = _items.Select(i => i.CreatedAt)
+            .OfType<DateTime>()
+            .Union(new[] {DateTime.MaxValue})
+            .Min();
+
+        var modified = _items.Select(i => i.ModifiedAt)
+            .OfType<DateTime>()
+            .Union(new[] {DateTime.MinValue})
+            .Max();
+
+        var items = _items.ToArray();
+
+        return new(".", items.Length, null, created,
+            modified);
+    }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory CreateTopDirectory()
+    {
+        return new("..", null, null, null, null);
     }
 
     private async Task OnPathKeyPressedAsync(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            Path = _pathInput;
-            await LoadCurrentItemsAsync();
-            _navigationManager.NavigateTo("/services/cdn/explorer/" + Path);
+            await NavigateToAsync(_pathInput);
         }
     }
 
-    private async Task NavigateToAsync(ExplorerDirectoryDto directory)
+    private async Task NavigateToAsync(string? path)
     {
-        Path = directory.Path;
+        Path = path ?? "/";
         await LoadCurrentItemsAsync();
-        _navigationManager.NavigateTo($"/services/cdn/explorer{directory.Path}");
     }
+
+    private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)
+    {
+        var label = (directory.Path?[(Path!.Length)..] ?? "unknown dir").TrimStart('/');
+        return new(label, directory.TotalCount ?? 0, directory.TotalSize ?? 0,
+            directory.CreatedAt ?? DateTime.MinValue, directory.ModifiedAt ?? DateTime.MinValue);
+    }
+
+    private ExplorerFileComponent.ExplorerFile ToExplorerFile(ExplorerFileDto file)
+    {
+        var label = (file.Path?[Path!.Length..] ?? "unknown file").TrimStart('/');
+        return new(label, file.MediaType ?? MediaTypeNames.Application.Octet, file.Size ?? 0,
+            file.CreatedAt ?? DateTime.MinValue, file.ModifiedAt ?? DateTime.MinValue);
+    }
+
+    private async Task GoToPrevDirectoryAsync()
+    {
+        var items = SlugHelper.PathToSlug(Path ?? "/")
+            .ToList();
+
+        var i = items.Count - 1;
+
+        if (i >= 0)
+            items.RemoveAt(i);
+
+        Path = SlugHelper.SlugToPath(items.ToArray());
+        await LoadCurrentItemsAsync();
+    }
+
 }

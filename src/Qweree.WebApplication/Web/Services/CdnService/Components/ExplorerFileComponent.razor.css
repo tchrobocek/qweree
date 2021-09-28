@@ -7,6 +7,15 @@
   margin: 0 1em;
 }
 
+.explorer-file-icon {
+  margin-right: 0 !important;
+}
 .explorer-file-path {
-  width: 50%;
+  width: 400px;
+}
+.explorer-file-media-type {
+  width: 120px;
+}
+.explorer-file-size {
+  width: 80px;
 }

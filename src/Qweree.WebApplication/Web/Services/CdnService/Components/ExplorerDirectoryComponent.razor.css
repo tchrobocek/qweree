@@ -7,6 +7,15 @@
   margin: 0 1em;
 }
 
+.explorer-directory-icon {
+  margin-right: 0 !important;
+}
 .explorer-directory-path {
-  width: 50%;
+  width: 400px;
+}
+.explorer-directory-total-count {
+  width: 120px;
+}
+.explorer-directory-total-size {
+  width: 80px;
 }

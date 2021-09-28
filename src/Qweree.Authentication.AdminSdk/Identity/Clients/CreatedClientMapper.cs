@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Clients
@@ -16,7 +19,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 ClientSecret = createdClient.ClientSecret,
                 CreatedAt = createdClient.CreatedAt,
                 ModifiedAt = createdClient.ModifiedAt,
-                Origin = createdClient.Origin
+                Origin = createdClient.Origin,
+                ClientRoles = createdClient.ClientRoles.Select(RoleMapper.ToDto).ToArray()
             };
         }
 
@@ -29,7 +33,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
                 createdClient.Origin ?? string.Empty,
                 UserMapper.FromDto(createdClient.Owner ?? new UserDto()),
                 createdClient.CreatedAt ?? DateTime.MinValue,
-                createdClient.ModifiedAt ?? DateTime.MinValue);
+                createdClient.ModifiedAt ?? DateTime.MinValue,
+                createdClient.ClientRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty);
         }
     }
 }

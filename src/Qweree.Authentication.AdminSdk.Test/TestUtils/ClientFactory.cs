@@ -9,14 +9,14 @@ namespace Qweree.Authentication.AdminSdk.Test.TestUtils
     {
         public static Client CreateValid()
         {
-            return new(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(), ImmutableArray<Role>.Empty,
+            return new(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(), ImmutableArray<Role>.Empty, ImmutableArray<Role>.Empty,
                 DateTime.UtcNow, DateTime.UtcNow);
         }
 
         public static CreatedClient CreateValidCreatedClient()
         {
             return new(Guid.NewGuid(), "client", "application", "http://yomom.com", "localhost", UserFactory.CreateValid(),
-                DateTime.UtcNow, DateTime.UtcNow);
+                DateTime.UtcNow, DateTime.UtcNow, ImmutableArray<Role>.Empty);
         }
     }
 }

@@ -5,14 +5,15 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
 {
     public class ClientCreateInput
     {
-        public ClientCreateInput(Guid id, string clientId, string applicationName, string origin, Guid ownerId, ImmutableArray<Guid> roles)
+        public ClientCreateInput(Guid id, string clientId, string applicationName, string origin, Guid ownerId, ImmutableArray<Guid> clientRoles, ImmutableArray<Guid> userRoles)
         {
             Id = id;
             ClientId = clientId;
             ApplicationName = applicationName;
             Origin = origin;
             OwnerId = ownerId;
-            Roles = roles;
+            ClientRoles = clientRoles;
+            UserRoles = userRoles;
         }
 
         public Guid Id { get; }
@@ -20,6 +21,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Clients
         public string ApplicationName { get; }
         public Guid OwnerId { get; }
         public string Origin { get; }
-        public ImmutableArray<Guid> Roles { get; }
+        public ImmutableArray<Guid> ClientRoles { get; }
+        public ImmutableArray<Guid> UserRoles { get; }
     }
 }

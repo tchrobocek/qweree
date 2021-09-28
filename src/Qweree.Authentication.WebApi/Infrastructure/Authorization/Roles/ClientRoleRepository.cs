@@ -28,6 +28,14 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles
             return clientRole != null;
         }
 
+        public async Task<ClientRole?> FindByKey(string key, CancellationToken cancellationToken = new())
+        {
+            var clientRole = (await FindAsync($@"{{""Key"": ""{key}""}}", 0, 1, cancellationToken))
+                .FirstOrDefault();
+
+            return clientRole;
+        }
+
         public async Task<IEnumerable<ClientRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
         {
             return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);

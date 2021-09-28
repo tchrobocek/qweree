@@ -61,7 +61,8 @@ namespace Qweree.Authentication.WebApi.Test.Web.Account
 
 
             {
-                using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, user);
+                using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new Sdk.OAuth2.ClientCredentials(client.ClientId, client.ClientSecret),
+                    new Sdk.OAuth2.PasswordGrantInput(user.Username, user.Password));
                 var input = new ChangeMyPasswordInputDto
                 {
                     OldPassword = user.Password,

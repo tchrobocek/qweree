@@ -1,0 +1,84 @@
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@inject AuthorizationClient _authorizationClient;
+
+<div>
+    <MudAutocomplete T="UserRoleDto" Label="Search role"
+                     SearchFunc="@Search" ToStringFunc="@(r => $"{r.Label} ({r.Key})")"
+                     ValueChanged="SelectValueChanged"
+                     Value="_selectValue"
+                     @onfocus="OnFocus">
+    </MudAutocomplete>
+    <MudButton OnClick="SelectAll" Size="Size.Small">Add all roles</MudButton>
+    <MudButton OnClick="ClearRoles" Size="Size.Small">Clear</MudButton>
+</div>
+<div class="mt-6">
+    @foreach (var selectedRole in SelectedRoles)
+    {
+        <MudChip Color="Color.Default" OnClose="() => RoleRemoved(selectedRole)">@($"{selectedRole.Label} ({selectedRole.Key})")</MudChip>
+    }
+</div>
+
+@code {
+    private readonly List<UserRoleDto> _userRoles = new();
+    private UserRoleDto? _selectValue;
+
+    [Parameter]
+    public List<UserRoleDto> SelectedRoles { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _authorizationClient.UserRolesFindAsync();
+
+        if (!response.IsSuccessful)
+        {
+            return;
+        }
+
+        var roles = await response.ReadPayloadAsync() ?? Array.Empty<UserRoleDto>();
+        _userRoles.AddRange(roles.Where(r => !(r.IsGroup ?? true)).OrderBy(r => r.Key));
+    }
+
+    private Task<IEnumerable<UserRoleDto>> Search(string? arg)
+    {
+        var roles = _userRoles.Where(r => SearchRole(r, arg));
+        return Task.FromResult(roles);
+    }
+
+    private bool SearchRole(UserRoleDto role, string? searchArg)
+    {
+        if (SelectedRoles.Contains(role))
+            return false;
+
+        return (role.Label?.ToLower() ?? string.Empty).IndexOf(searchArg ?? string.Empty, StringComparison.Ordinal) >= 0 ||
+               (role.Key?.ToLower() ?? string.Empty).IndexOf(searchArg ?? string.Empty, StringComparison.Ordinal) >= 0;
+    }
+
+    private void SelectValueChanged(UserRoleDto role)
+    {
+        SelectedRoles.Add(role);
+        _selectValue = null;
+    }
+
+    private void RoleRemoved(UserRoleDto selectedRole)
+    {
+        SelectedRoles.Remove(selectedRole);
+    }
+
+    private void OnFocus()
+    {
+        _selectValue = null;
+    }
+
+    private void ClearRoles()
+    {
+        SelectedRoles.Clear();
+    }
+
+    private void SelectAll()
+    {
+        SelectedRoles.Clear();
+        SelectedRoles.AddRange(_userRoles);
+    }
+
+}
