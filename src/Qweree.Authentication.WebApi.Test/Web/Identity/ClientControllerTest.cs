@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +8,7 @@ using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
@@ -54,14 +53,18 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
         public async Task TestInsertAndGetClient()
         {
             var user = UserFactory.CreateAdmin();
-            var client = ClientFactory.CreateDefault(user.Id);
+            var adminClient = ClientFactory.CreateDefault(user.Id);
+            var client = ClientFactory.CreateDefault(user.Id, "testclient");
 
             await _userRepository.InsertAsync(user);
+            await _clientRepository.InsertAsync(adminClient);
 
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, user);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(adminClient.ClientId, adminClient.ClientSecret),
+                new PasswordGrantInput(user.Username, user.Password));
+
             {
                 var input = new ClientCreateInput(client.Id, client.ClientId, client.ApplicationName,
-                    client.Origin, user.Id, ImmutableArray<Guid>.Empty, ImmutableArray<Guid>.Empty);
+                    client.Origin, user.Id, client.ClientRoles, client.UserRoles);
 
                 var json = JsonUtils.Serialize(input);
                 var response = await httpClient.PostAsync("/api/admin/identity/clients",
@@ -125,13 +128,17 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
                 await _clientRepository.InsertAsync(client);
             }
 
-            clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
-
             var adminUser = UserFactory.CreateAdmin();
             var adminClient = ClientFactory.CreateDefault(adminUser.Id);
+            await _userRepository.InsertAsync(adminUser);
+            await _clientRepository.InsertAsync(adminClient);
+
+            clientsList.Add(await _sdkMapperService.ClientMapAsync(adminClient));
+            clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
 
             using var httpClient =
-                await _webApiFactory.CreateAuthenticatedClientAsync(adminClient, adminUser);
+                await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(adminClient.ClientId, adminClient.ClientSecret),
+                    new PasswordGrantInput(adminUser.Username, adminUser.Password));
 
             {
                 var response = await httpClient.GetAsync("/api/admin/identity/clients?sort[ClientId]=1&skip=2&take=3");

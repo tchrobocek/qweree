@@ -10,6 +10,7 @@ using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
@@ -30,6 +31,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
     public class UserControllerTest : IClassFixture<WebApiFactory>
     {
         private readonly UserRepository _userRepository;
+        private readonly ClientRepository _clientRepository;
         private readonly SdkMapperService _sdkMapperService;
         private readonly WebApiFactory _webApiFactory;
 
@@ -43,6 +45,10 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             _userRepository.DeleteAllAsync()
                 .GetAwaiter()
                 .GetResult();
+            _clientRepository = (ClientRepository) scope.ServiceProvider.GetRequiredService<IClientRepository>();
+            _clientRepository.DeleteAllAsync()
+                .GetAwaiter()
+                .GetResult();
         }
 
         [Fact]
@@ -51,10 +57,14 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             var adminUser = UserFactory.CreateAdmin();
             var client = ClientFactory.CreateDefault(adminUser.Id);
 
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, adminUser);
+            await _userRepository.InsertAsync(adminUser);
+            await _clientRepository.InsertAsync(client);
+
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
+                new PasswordGrantInput(adminUser.Username, adminUser.Password));
             var input = new UserCreateInputDto
             {
-                Username = "user",
+                Username = "user-test",
                 Password = "Password1",
                 Roles = Array.Empty<Guid>(),
                 ContactEmail = "user@example.com",
@@ -101,8 +111,11 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
             usersList = usersList.OrderBy(u => u.Username).ToList();
             var admin = UserFactory.CreateAdmin();
             var client = ClientFactory.CreateDefault(admin.Id);
+            await _userRepository.InsertAsync(admin);
+            await _clientRepository.InsertAsync(client);
 
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, admin);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
+                new PasswordGrantInput(admin.Username, admin.Password));
 
             {
                 var response = await httpClient.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
@@ -122,7 +135,10 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
         {
             var adminUser = UserFactory.CreateAdmin();
             var client = ClientFactory.CreateDefault(adminUser.Id);
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(client, adminUser);
+            await _userRepository.InsertAsync(adminUser);
+            await _clientRepository.InsertAsync(client);
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
+                new PasswordGrantInput(adminUser.Username, adminUser.Password));
 
             var user = UserFactory.CreateDefault();
             await _userRepository.InsertAsync(user);

@@ -1,27 +1,17 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using Moq;
-using Qweree.AspNet.Application;
-using Qweree.Authentication.WebApi.Domain.Authentication;
-using Qweree.Authentication.WebApi.Domain.Authorization;
-using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
-using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain.Security;
-using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Mongo;
 using Qweree.Utils;
-using Xunit;
 
 namespace Qweree.Authentication.WebApi.Test.Fixture
 {
@@ -51,35 +41,17 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
             base.ConfigureWebHost(builder);
         }
 
-        public async Task<HttpClient> CreateAuthenticatedClientAsync(Client client, User user)
+        public async Task<HttpClient> CreateAuthenticatedClientAsync(ClientCredentials clientCredentials, PasswordGrantInput passwordInput)
         {
-            var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
-            var userRoleRepository = new UserRoleRepositoryMock();
-            var httpClient = CreateClient();
-            var userRepositoryMock = new Mock<IUserRepository>();
-            userRepositoryMock.Setup(m => m.GetByUsernameAsync(user.Username, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(user);
-
-            var clientRepositoryMock = new Mock<IClientRepository>();
-            clientRepositoryMock.Setup(m => m.GetByClientIdAsync(client.ClientId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(client);
-
-            var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
-            var clientRoleRepositoryMock = new Mock<IClientRoleRepository>();
-            clientRoleRepositoryMock.Setup(m => m.FindByKey(GrantType.PasswordRoleKey, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ClientRole(Guid.Parse("f946f6cd-5d17-4dc5-b383-af0201a8b431"), GrantType.PasswordRoleKey, "", "", ImmutableArray<Guid>.Empty, false, DateTime.MinValue, DateTime.MinValue));
-
-            var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
-                new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
-                new NonePasswordEncoder(), clientRepositoryMock.Object, new AuthorizationService(userRoleRepository), clientRoleRepositoryMock.Object);
-            var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password),
-                new ClientCredentials(client.ClientId, client.ClientSecret));
-
-            Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);
-            httpClient.DefaultRequestHeaders.Add(HeaderNames.Authorization,
-                $"Bearer {tokenInfoResponse.Payload?.AccessToken ?? ""}");
-
-            return httpClient;
+            var client = CreateClient();
+            var oauthClient = CreateClient();
+            oauthClient.BaseAddress = new Uri(client.BaseAddress ?? new Uri("/"), "/api/oauth2/auth");
+            var oAuth2Client = new OAuth2Client(oauthClient);
+            var response = await oAuth2Client.SignInAsync(passwordInput, clientCredentials);
+            response.EnsureSuccessStatusCode();
+            var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy);
+            client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token?.AccessToken}");
+            return client;
         }
     }
 }
