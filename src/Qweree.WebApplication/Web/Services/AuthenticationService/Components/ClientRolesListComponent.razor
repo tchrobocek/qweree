@@ -2,8 +2,9 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @inject IDialogService _dialogService
 @inject AuthorizationClient _authorizationClient
+@inject NavigationManager _navigationManager
 
-<MudTable Items="@_clientRoles" Hover="true" Class="pa-4">
+<MudTable Items="@_clientRoles" Hover="true" Elevation="0">
     <ToolBarContent>
         <MudSpacer />
         <MudButton Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="RefreshAsync">Refresh client roles</MudButton>
@@ -17,19 +18,23 @@
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
-        <MudTd DataLabel="Role">@context.Label "@context.Key"</MudTd>
-        <MudTd DataLabel="Is group role?">
-            @context.IsGroup
+        <MudTd DataLabel="Id">
+            <ShortIdComponent Id="@context.Id"/>
+        </MudTd>
+        <MudTd DataLabel="Role">@context.Label (@context.Key)</MudTd>
+        <MudTd DataLabel="Group role">
+            <YesNoComponent Value="@context.IsGroup" />
             @if (context.IsGroup ?? false)
             {
-                @($"({context.Items?.Length})")
-            }
+                @($" ({context.Items?.Length} ")
+                <PluralityComponent Value="context.Items?.Length" Plural="items" Singular="item" />
+                @(")")
+  }
         </MudTd>
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">
             <MudIconButton Title="Edit" OnClick="() => NavigateToEdit(context.Id)" Color="Color.Primary" Icon="@Icons.Material.Filled.EditNote"></MudIconButton>
-            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -44,16 +49,17 @@
 
     private void AddClientRole()
     {
+        _navigationManager.NavigateTo("services/auth/client-roles/add");
     }
 
     private void NavigateToEdit(Guid? id)
     {
+        _navigationManager.NavigateTo($"services/auth/client-roles/edit/{id.ToString()}");
     }
 
-    private async Task DeleteAsync(ClientRoleDto context)
+    private async Task DeleteAsync(Guid? contextId)
     {
-        var contextId = context.Id;
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", $"Do you really want to delete role ({context.Key})?"}});
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
         var delete = (bool)((await result.Result).Data ?? false);
 
         if (!delete || contextId == null)

@@ -4,7 +4,7 @@
 @inject AuthorizationClient _authorizationClient
 @inject NavigationManager _navigationManager
 
-<MudTable Items="@_userRoles" Hover="true" Class="pa-4">
+<MudTable Items="@_userRoles" Hover="true" Elevation="0">
     <ToolBarContent>
         <MudSpacer />
         <MudButton Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary" OnClick="RefreshAsync">Refresh user roles</MudButton>
