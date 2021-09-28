@@ -2,6 +2,7 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @inject IDialogService _dialogService
 @inject AuthorizationClient _authorizationClient
+@inject NavigationManager _navigationManager
 
 <MudTable Items="@_userRoles" Hover="true" Class="pa-4">
     <ToolBarContent>
@@ -44,6 +45,7 @@
 
     private void AddUserRole()
     {
+        _navigationManager.NavigateTo("services/auth/user-roles/add");
     }
 
     private void NavigateToEdit(Guid? id)
