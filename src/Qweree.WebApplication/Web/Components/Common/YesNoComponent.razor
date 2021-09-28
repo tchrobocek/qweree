@@ -1,0 +1,19 @@
+@if (Value ?? false)
+{
+    @Yes
+}
+else
+{
+    @No
+}
+
+@code {
+    [Parameter]
+    public bool? Value { get; set; }
+
+    [Parameter]
+    public string? Yes { get; set; } = "Yes";
+
+    [Parameter]
+    public string? No { get; set; } = "No";
+}

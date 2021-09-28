@@ -18,14 +18,18 @@
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
-        <MudTd DataLabel="Role">@context.Label "@context.Key"</MudTd>
-        <MudTd DataLabel="Is group role?">
-            @context.IsGroup
+        <MudTd DataLabel="Id">
+            <ShortIdComponent Id="@context.Id"/>
+        </MudTd>
+        <MudTd DataLabel="Role">@context.Label (@context.Key)</MudTd>
+        <MudTd DataLabel="Group role">
+            <YesNoComponent Value="@context.IsGroup" />
             @if (context.IsGroup ?? false)
             {
-                @($"({context.Items?.Length})")
-            }
+                @($" ({context.Items?.Length} ")
+                <PluralityComponent Value="context.Items?.Length" Plural="items" Singular="item" />
+                @(")")
+  }
         </MudTd>
         <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
         <MudTd DataLabel="Actions" Style="text-align: right">

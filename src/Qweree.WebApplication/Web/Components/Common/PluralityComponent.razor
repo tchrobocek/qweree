@@ -15,7 +15,8 @@
 
     protected override void OnInitialized()
     {
-        _decision = Plurality.Decide((long?)Value ?? 0L, Singular, Plural);
+        var val = Value as long?;
+        _decision = Plurality.Decide(val ?? 0L, Singular, Plural);
     }
 
 }
