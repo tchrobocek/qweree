@@ -33,9 +33,12 @@ db.clients.insert([{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "Roles": [
-        "f946f6cd-5d17-4dc5-b383-af0201a8b431"
-    ]
+    "ClientRoles": [
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+    ],
+    "UserRoles": []
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
     "ClientId": "test-cli",
@@ -45,11 +48,12 @@ db.clients.insert([{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "Roles": [
+    "ClientRoles": [
         "f946f6cd-5d17-4dc5-b383-af0201a8b431",
         "92024488-4c7d-42a9-8fc5-19fc73853c8e",
         "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
-    ]
+    ],
+    "UserRoles": []
 }]);
 
 db.user_roles.insert([{

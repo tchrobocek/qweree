@@ -201,10 +201,11 @@ namespace Qweree.Authentication.WebApi
                 var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
                 var clientRepository = p.GetRequiredService<IClientRepository>();
                 var authorizationService = p.GetRequiredService<AuthorizationService>();
+                var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
 
                 return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
                     config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
-                    config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService);
+                    config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService, clientRoleRepository);
             });
 
             // Identity

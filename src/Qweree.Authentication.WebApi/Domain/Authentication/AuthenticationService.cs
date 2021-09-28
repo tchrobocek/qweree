@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Utils;
@@ -35,13 +36,14 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         private readonly IClientRepository _clientRepository;
         private readonly IPasswordEncoder _passwordEncoder;
         private readonly AuthorizationService _authorizationService;
+        private readonly IClientRoleRepository _clientRoleRepository;
 
         private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
         public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository,
             IDateTimeProvider datetimeProvider, Random random,
             int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey, IPasswordEncoder passwordEncoder,
-            IClientRepository clientRepository, AuthorizationService authorizationService)
+            IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
@@ -51,6 +53,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             _passwordEncoder = passwordEncoder;
             _clientRepository = clientRepository;
             _authorizationService = authorizationService;
+            _clientRoleRepository = clientRoleRepository;
             _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
             _random = random;
         }
@@ -66,7 +69,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             try
             {
                 user = await AuthenticateUserAsync(input, cancellationToken);
-                client = await AuthenticateClientAsync(clientCredentials, cancellationToken);
+                client = await AuthenticateClientAsync(clientCredentials, GrantType.Password, cancellationToken);
             }
             catch (Exception)
             {
@@ -103,7 +106,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             {
                 token = await _refreshTokenRepository.GetByTokenAsync(input.RefreshToken, cancellationToken);
                 user = await _userRepository.GetAsync(token.UserId, cancellationToken);
-                await AuthenticateClientAsync(clientCredentials, cancellationToken);
+                await AuthenticateClientAsync(clientCredentials, GrantType.RefreshToken, cancellationToken);
             }
             catch (Exception)
             {
@@ -137,7 +140,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 
             try
             {
-                var client = await AuthenticateClientAsync(clientCredentials, cancellationToken);
+                var client = await AuthenticateClientAsync(clientCredentials, GrantType.ClientCredentials, cancellationToken);
                 owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
             }
             catch (Exception)
@@ -207,10 +210,18 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
         }
 
         private async Task<Client> AuthenticateClientAsync(ClientCredentials clientCredentials,
+            GrantType grantType,
             CancellationToken cancellationToken = new())
         {
             var client = await _clientRepository.GetByClientIdAsync(clientCredentials.ClientId, cancellationToken);
             if (!_passwordEncoder.VerifyPassword(client.ClientSecret, clientCredentials.ClientSecret ?? ""))
+                throw new AuthenticationException();
+
+            var role = await _clientRoleRepository.FindByKey(grantType.RoleKey, cancellationToken);
+            if (role == null)
+                throw new AuthenticationException();
+
+            if (!client.ClientRoles.Contains(role.Id))
                 throw new AuthenticationException();
 
             return client;

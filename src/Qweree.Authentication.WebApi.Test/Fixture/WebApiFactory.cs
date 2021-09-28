@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -14,6 +15,7 @@ using Moq;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
@@ -63,11 +65,15 @@ namespace Qweree.Authentication.WebApi.Test.Fixture
                 .ReturnsAsync(client);
 
             var refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
+            var clientRoleRepositoryMock = new Mock<IClientRoleRepository>();
+            clientRoleRepositoryMock.Setup(m => m.FindByKey(GrantType.PasswordRoleKey, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ClientRole(Guid.Parse("f946f6cd-5d17-4dc5-b383-af0201a8b431"), GrantType.PasswordRoleKey, "", "", ImmutableArray<Guid>.Empty, false, DateTime.MinValue, DateTime.MinValue));
 
             var service = new AuthenticationService(userRepositoryMock.Object, refreshTokenRepositoryMock.Object,
                 new DateTimeProvider(), new Random(), 7200, 7200, authConfig?.AccessTokenKey ?? "",
-                new NonePasswordEncoder(), clientRepositoryMock.Object, new AuthorizationService(userRoleRepository));
-            var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password), new ClientCredentials(client.ClientId, client.ClientSecret));
+                new NonePasswordEncoder(), clientRepositoryMock.Object, new AuthorizationService(userRoleRepository), clientRoleRepositoryMock.Object);
+            var tokenInfoResponse = await service.AuthenticateAsync(new PasswordGrantInput(user.Username, user.Password),
+                new ClientCredentials(client.ClientId, client.ClientSecret));
 
             Assert.Equal(ResponseStatus.Ok, tokenInfoResponse.Status);
             httpClient.DefaultRequestHeaders.Add(HeaderNames.Authorization,
