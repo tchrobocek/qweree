@@ -10,6 +10,8 @@
                      Value="_selectValue"
                      @onfocus="OnFocus">
     </MudAutocomplete>
+    <MudButton OnClick="SelectAll" Size="Size.Small">Add all roles</MudButton>
+    <MudButton OnClick="ClearRoles" Size="Size.Small">Clear</MudButton>
 </div>
 <div class="mt-6">
     @foreach (var selectedRole in SelectedRoles)
@@ -67,6 +69,17 @@
     private void OnFocus()
     {
         _selectValue = null;
+    }
+
+    private void ClearRoles()
+    {
+        SelectedRoles.Clear();
+    }
+
+    private void SelectAll()
+    {
+        SelectedRoles.Clear();
+        SelectedRoles.AddRange(_userRoles);
     }
 
 }
