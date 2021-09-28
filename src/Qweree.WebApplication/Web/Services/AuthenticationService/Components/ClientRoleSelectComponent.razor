@@ -3,7 +3,7 @@
 @inject AuthorizationClient _authorizationClient;
 
 <div>
-    <MudAutocomplete T="UserRoleDto" Label="Search role"
+    <MudAutocomplete T="ClientRoleDto" Label="Search role"
                      SearchFunc="@Search" ToStringFunc="@(r => $"{r.Label} ({r.Key})")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
@@ -20,32 +20,32 @@
 </div>
 
 @code {
-    private readonly List<UserRoleDto> _userRoles = new();
-    private UserRoleDto? _selectValue;
+    private readonly List<ClientRoleDto> _clientRoles = new();
+    private ClientRoleDto? _selectValue;
 
     [Parameter]
-    public List<UserRoleDto> SelectedRoles { get; set; } = new();
+    public List<ClientRoleDto> SelectedRoles { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _authorizationClient.UserRolesFindAsync();
+        var response = await _authorizationClient.ClientRolesFindAsync();
 
         if (!response.IsSuccessful)
         {
             return;
         }
 
-        var roles = await response.ReadPayloadAsync() ?? Array.Empty<UserRoleDto>();
-        _userRoles.AddRange(roles.Where(r => !(r.IsGroup ?? true)).OrderBy(r => r.Key));
+        var roles = await response.ReadPayloadAsync() ?? Array.Empty<ClientRoleDto>();
+        _clientRoles.AddRange(roles.Where(r => !(r.IsGroup ?? true)).OrderBy(r => r.Key));
     }
 
-    private Task<IEnumerable<UserRoleDto>> Search(string? arg)
+    private Task<IEnumerable<ClientRoleDto>> Search(string? arg)
     {
-        var roles = _userRoles.Where(r => SearchRole(r, arg));
+        var roles = _clientRoles.Where(r => SearchRole(r, arg));
         return Task.FromResult(roles);
     }
 
-    private bool SearchRole(UserRoleDto role, string? searchArg)
+    private bool SearchRole(ClientRoleDto role, string? searchArg)
     {
         if (SelectedRoles.Contains(role))
             return false;
@@ -54,13 +54,13 @@
                (role.Key?.ToLower() ?? string.Empty).IndexOf(searchArg ?? string.Empty, StringComparison.Ordinal) >= 0;
     }
 
-    private void SelectValueChanged(UserRoleDto role)
+    private void SelectValueChanged(ClientRoleDto role)
     {
         SelectedRoles.Add(role);
         _selectValue = null;
     }
 
-    private void RoleRemoved(UserRoleDto selectedRole)
+    private void RoleRemoved(ClientRoleDto selectedRole)
     {
         SelectedRoles.Remove(selectedRole);
     }
@@ -78,7 +78,7 @@
     private void SelectAll()
     {
         SelectedRoles.Clear();
-        SelectedRoles.AddRange(_userRoles);
+        SelectedRoles.AddRange(_clientRoles);
     }
 
 }
