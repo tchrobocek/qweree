@@ -1,10 +1,8 @@
 @inject IJSRuntime _jsRuntime
 
-<MudTooltip Text="@string.Join(" ", "Copy", Id?.ToString())">
-    <span @onclick="CopyIdAsync" style="cursor: pointer;">
-        @Id?.ToString()[..8]
-    </span>
-</MudTooltip>
+<span title="@Id?.ToString()" @onclick="CopyIdAsync" style="cursor: pointer;">
+    @Id?.ToString()[..8]
+</span>
 
 @code {
     [Parameter]
