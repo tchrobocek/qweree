@@ -6,10 +6,11 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 {
     public class AccessToken
     {
-        public AccessToken(string clientId, string email, DateTime issuedAt, DateTime expiresAt)
+        public AccessToken(string clientId, string email, IEnumerable<string> roles, DateTime issuedAt, DateTime expiresAt)
         {
             ClientId = clientId;
             Email = email;
+            Roles = roles.ToImmutableArray();
             IssuedAt = issuedAt;
             ExpiresAt = expiresAt;
         }

@@ -138,9 +138,11 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
 
             User owner;
 
+            Client client;
+
             try
             {
-                var client = await AuthenticateClientAsync(clientCredentials, GrantType.ClientCredentials, cancellationToken);
+                client = await AuthenticateClientAsync(clientCredentials, GrantType.ClientCredentials, cancellationToken);
                 owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
             }
             catch (Exception)
@@ -148,8 +150,16 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
                 return Response.Fail<TokenInfo>(AccessDeniedMessage);
             }
 
+            var effectiveRoles = new List<string>();
+            await foreach (var role in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
+                .WithCancellation(cancellationToken))
+            {
+                effectiveRoles.Add(role.Key);
+            }
+
+
             var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-            var accessToken = new AccessToken(clientCredentials.ClientId, owner.ContactEmail, now, expiresAt);
+            var accessToken = new AccessToken(clientCredentials.ClientId, owner.ContactEmail, effectiveRoles, now, expiresAt);
             var jwt = EncodeAccessToken(accessToken, false);
 
             var tokenInfo = new TokenInfo(jwt, null, expiresAt);
