@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
+using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -60,7 +60,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<SdkUserRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+                return validationResult.ToErrorResponse<SdkUserRole>();
 
             var id = input.Id;
 
@@ -87,7 +87,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<SdkClientRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+                return validationResult.ToErrorResponse<SdkClientRole>();
 
             var id = input.Id;
 
@@ -126,7 +126,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<SdkUserRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+                return validationResult.ToErrorResponse<SdkUserRole>();
 
             UserRole role;
 
@@ -154,7 +154,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles
         {
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<SdkClientRole>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+                return validationResult.ToErrorResponse<SdkClientRole>();
 
             ClientRole role;
 

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -53,7 +53,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         {
             var validationResult = await _validator.ValidateAsync(clientCreateInput, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<CreatedClient>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}"));
+                return validationResult.ToErrorResponse<CreatedClient>();
 
             var id = clientCreateInput.Id;
             if (id == Guid.Empty)

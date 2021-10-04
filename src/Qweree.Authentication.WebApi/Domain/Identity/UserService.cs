@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +7,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
@@ -41,7 +41,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity
         {
             var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
             if (validationResult.HasFailed)
-                return Response.Fail<SdkUser>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
+                return validationResult.ToErrorResponse<SdkUser>();
 
             var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
 
