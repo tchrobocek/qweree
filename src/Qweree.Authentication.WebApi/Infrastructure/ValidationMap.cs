@@ -1,6 +1,7 @@
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
@@ -99,6 +100,20 @@ namespace Qweree.Authentication.WebApi.Infrastructure
                 c.AddProperty(p => p.NewPassword)
                     .AddConstraint(new NotEmptyConstraint("Password cannot be empty."))
                     .AddConstraint(new PasswordConstraint());
+            });
+
+            builder.AddModel<UserInvitationInput>(c =>
+            {
+                c.AddProperty(p => p.Username)
+                    .AddConstraint(new UniqueConstraint(typeof(UserRepository)))
+                    .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
+                    .AddConstraint(new MinLengthConstraint(3, "Username has to have 3 or more characters."))
+                    .AddConstraint(new MaxLengthConstraint(255, "Username has to have up to 255 characters."));
+                c.AddProperty(p => p.ContactEmail)
+                    .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
+                    .AddConstraint(new EmailConstraint("Email cannot be empty.", "Email is not valid email address."));
+                c.AddProperty(p => p.Roles)
+                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
             });
         }
     }
