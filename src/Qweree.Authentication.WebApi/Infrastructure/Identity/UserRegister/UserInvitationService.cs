@@ -60,5 +60,10 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
             return Response.Ok(pagination.Documents, pagination.TotalCount);
         }
 
+        public async Task<Response> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            await _userInvitationRepository.DeleteAsync(id, cancellationToken);
+            return Response.Ok();
+        }
     }
 }
