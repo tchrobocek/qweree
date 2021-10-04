@@ -27,28 +27,6 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         }
 
         /// <summary>
-        ///     Create user.
-        /// </summary>
-        /// <param name="input">Create user input.</param>
-        /// <returns>Created user.</returns>
-        [HttpPost]
-        [Authorize(Policy = "UserCreate")]
-        [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UserCreateActionAsync(UserCreateInputDto input)
-        {
-            var serviceInput = UserCreateInputMapper.FromDto(input);
-
-            var userResponse = await _userService.UserCreateAsync(serviceInput);
-
-            if (userResponse.Status != ResponseStatus.Ok)
-                return userResponse.ToErrorActionResult();
-
-            var userDto = UserMapper.ToDto(userResponse.Payload!);
-            return Created($"/api/v1/users/{userDto.Id}", userDto);
-        }
-
-        /// <summary>
         ///     Get user by id.
         /// </summary>
         /// <param name="id">User id.</param>

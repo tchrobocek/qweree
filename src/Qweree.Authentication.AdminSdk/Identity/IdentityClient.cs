@@ -27,13 +27,6 @@ namespace Qweree.Authentication.AdminSdk.Identity
             return new ApiResponse<UserDto>(response);
         }
 
-        public async Task<ApiResponse<UserDto>> UserCreateAsync(UserCreateInputDto input, CancellationToken cancellationToken = new())
-        {
-            var json = JsonUtils.Serialize(input);
-            var response = await _httpClient.PostAsync($"users", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-            return new ApiResponse<UserDto>(response);
-        }
-
         public async Task<PaginationApiResponse<UserDto>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
         {
             var sortString = "";

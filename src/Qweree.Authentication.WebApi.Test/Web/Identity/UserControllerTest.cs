@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain;
@@ -52,7 +47,7 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
         }
 
         [Fact]
-        public async Task TestCreateAndGetUser()
+        public async Task TestGetUser()
         {
             var adminUser = UserFactory.CreateAdmin();
             var client = ClientFactory.CreateDefault(adminUser.Id);
@@ -62,35 +57,13 @@ namespace Qweree.Authentication.WebApi.Test.Web.Identity
 
             using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
                 new PasswordGrantInput(adminUser.Username, adminUser.Password));
-            var input = new UserCreateInputDto
-            {
-                Username = "user-test",
-                Password = "Password1",
-                Roles = Array.Empty<Guid>(),
-                ContactEmail = "user@example.com",
-                FullName = "User Userov"
-            };
-
-            UserDto user;
 
             {
-                var json = JsonUtils.Serialize(input);
-                var response = await httpClient.PostAsync("/api/admin/identity/users",
-                    new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json));
-                response.EnsureSuccessStatusCode();
-                user = await response.Content.ReadAsObjectAsync<UserDto>() ?? throw new ArgumentNullException();
-
-                Assert.NotNull(user);
-                Assert.Equal(input.Username, user.Username);
-                Assert.Empty(user.Roles ?? Array.Empty<RoleDto>());
-            }
-
-            {
-                var response = await httpClient.GetAsync($"/api/admin/identity/users/{user.Id}");
+                var response = await httpClient.GetAsync($"/api/admin/identity/users/{adminUser.Id}");
                 response.EnsureSuccessStatusCode();
                 var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
-                actualUser.WithDeepEqual(user)
+                actualUser.WithDeepEqual(UserMapper.ToDto(await _sdkMapperService.UserMapAsync(adminUser)))
                     .WithCustomComparison(new MillisecondDateTimeComparison())
                     .Assert();
             }
