@@ -1,10 +1,11 @@
 using System;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Mongo;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
 {
-    public class UserInvitationRepository : MongoRepositoryBase<UserInvitation, UserInvitationDo>
+    public class UserInvitationRepository : MongoRepositoryBase<UserInvitation, UserInvitationDo>, IUserInvitationRepository
     {
         public UserInvitationRepository(MongoContext context) : base("user_invitations", context)
         {

@@ -8,14 +8,14 @@ using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Validator;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
 {
     public class UserInvitationService
     {
         private readonly IValidator _validator;
-        private readonly UserInvitationRepository _userInvitationRepository;
+        private readonly IUserInvitationRepository _userInvitationRepository;
 
-        public UserInvitationService(IValidator validator, UserInvitationRepository userInvitationRepository)
+        public UserInvitationService(IValidator validator, IUserInvitationRepository userInvitationRepository)
         {
             _validator = validator;
             _userInvitationRepository = userInvitationRepository;

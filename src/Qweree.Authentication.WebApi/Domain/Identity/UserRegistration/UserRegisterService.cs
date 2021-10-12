@@ -5,23 +5,22 @@ using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
-using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
 {
     public class UserRegisterService
     {
         private readonly IValidator _validator;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly UserInvitationRepository _userInvitationRepository;
-        private readonly UserRepository _userRepository;
+        private readonly IUserInvitationRepository _userInvitationRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserRegisterService(IValidator validator, IDateTimeProvider dateTimeProvider,
-            UserInvitationRepository userInvitationRepository, UserRepository userRepository)
+            IUserInvitationRepository userInvitationRepository, IUserRepository userRepository)
         {
             _validator = validator;
             _dateTimeProvider = dateTimeProvider;

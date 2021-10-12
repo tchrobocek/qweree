@@ -6,6 +6,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
+using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 using Qweree.Sdk;
 

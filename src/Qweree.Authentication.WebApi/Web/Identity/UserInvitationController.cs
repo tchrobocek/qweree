@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 using Qweree.Sdk;
 using UserInvitationMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserRegister.UserInvitationMapper;
@@ -15,7 +16,7 @@ using UserInvitationMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserR
 namespace Qweree.Authentication.WebApi.Web.Identity
 {
     [ApiController]
-    [Microsoft.AspNetCore.Components.Route("/api/admin/identity/user-invitations")]
+    [Route("/api/admin/identity/user-invitations")]
     public class UserInvitationController : ControllerBase
     {
         private readonly UserInvitationService _userInvitationService;
