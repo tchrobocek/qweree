@@ -7,7 +7,6 @@ using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
-using Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Account
@@ -46,7 +45,7 @@ namespace Qweree.Authentication.WebApi.Web.Account
         ///     Returns user invitation.
         /// </summary>
         /// <param name="id">User invitation id.</param>
-        [HttpPost]
+        [HttpGet("invitation/{id}")]
         [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
