@@ -21,7 +21,21 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
             _userInvitationRepository = userInvitationRepository;
         }
 
-        public async Task<Response<UserInvitation>> CreateInvitationAsync(UserInvitationInput input, CancellationToken cancellationToken = new())
+        public async Task<Response<UserInvitation>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            UserInvitation invitation;
+            try
+            {
+                invitation = await _userInvitationRepository.GetAsync(id, cancellationToken);
+            }
+            catch (DocumentNotFoundException)
+            {
+                return Response.Fail<UserInvitation>("User invitation was not found.");
+            }
+            return Response.Ok(invitation);
+        }
+
+        public async Task<Response<UserInvitation>> UserInvitationCreateAsync(UserInvitationInput input, CancellationToken cancellationToken = new())
         {
             var invitation = new UserInvitation(Guid.NewGuid(), input.Username, input.FullName, input.ContactEmail,
                 input.Roles);
