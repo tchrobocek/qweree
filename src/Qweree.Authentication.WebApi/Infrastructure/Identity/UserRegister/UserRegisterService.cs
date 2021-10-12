@@ -13,14 +13,14 @@ using Qweree.Validator;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
 {
-    public class UserRegistrationService
+    public class UserRegisterService
     {
         private readonly IValidator _validator;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly UserInvitationRepository _userInvitationRepository;
         private readonly UserRepository _userRepository;
 
-        public UserRegistrationService(IValidator validator, IDateTimeProvider dateTimeProvider,
+        public UserRegisterService(IValidator validator, IDateTimeProvider dateTimeProvider,
             UserInvitationRepository userInvitationRepository, UserRepository userRepository)
         {
             _validator = validator;

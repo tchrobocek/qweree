@@ -225,7 +225,7 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IExistsConstraintValidatorRepository, ClientRoleRepository>();
             services.AddSingleton<SdkMapperService, SdkMapperService>();
             services.AddSingleton<UserInvitationService>();
-            services.AddSingleton<UserRegistrationService>();
+            services.AddSingleton<UserRegisterService>();
             services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),
                 p.GetRequiredService<ISessionStorage>(),
                 p.GetRequiredService<SdkMapperService>()));
