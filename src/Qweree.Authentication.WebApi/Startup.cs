@@ -22,11 +22,13 @@ using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
+using Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
@@ -213,6 +215,7 @@ namespace Qweree.Authentication.WebApi
                 p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IUserInvitationRepository, UserInvitationRepository>();
             services.AddSingleton<IClientRepository, ClientRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
             services.AddSingleton<IUniqueConstraintValidatorRepository, UserRoleRepository>();
@@ -222,9 +225,10 @@ namespace Qweree.Authentication.WebApi
             services.AddSingleton<IExistsConstraintValidatorRepository, UserRoleRepository>();
             services.AddSingleton<IExistsConstraintValidatorRepository, ClientRoleRepository>();
             services.AddSingleton<SdkMapperService, SdkMapperService>();
-            services.AddScoped(p => new UserService(p.GetRequiredService<IDateTimeProvider>(),
-                p.GetRequiredService<IUserRepository>(), p.GetRequiredService<IValidator>(),
-                p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<IPasswordEncoder>(),
+            services.AddSingleton<UserInvitationService>();
+            services.AddSingleton<UserRegisterService>();
+            services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),
+                p.GetRequiredService<ISessionStorage>(),
                 p.GetRequiredService<SdkMapperService>()));
             services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
                 p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),

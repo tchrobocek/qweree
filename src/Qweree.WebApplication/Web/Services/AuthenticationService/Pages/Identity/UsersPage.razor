@@ -1,0 +1,16 @@
+@page "/services/auth/users/list"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Users</MudText>
+    </MudCardHeader>
+    <MudCardContent Class="py-6">
+        <UsersListComponent />
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+}

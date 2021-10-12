@@ -1,68 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Session;
-using Qweree.Authentication.AdminSdk.Identity.Users;
-using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
-using Qweree.Utils;
-using Qweree.Validator;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity
 {
     public class UserService
     {
-        private readonly IDateTimeProvider _datetimeProvider;
         private readonly IUserRepository _userRepository;
-        private readonly IValidator _validator;
         private readonly ISessionStorage _sessionStorage;
-        private readonly IPasswordEncoder _passwordEncoder;
         private readonly SdkMapperService _sdkMapperService;
 
-        public UserService(IDateTimeProvider datetimeProvider, IUserRepository userRepository, IValidator validator,
-            ISessionStorage sessionStorage, IPasswordEncoder passwordEncoder, SdkMapperService sdkMapperService)
+        public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, SdkMapperService sdkMapperService)
         {
-            _datetimeProvider = datetimeProvider;
             _userRepository = userRepository;
-            _validator = validator;
             _sessionStorage = sessionStorage;
-            _passwordEncoder = passwordEncoder;
             _sdkMapperService = sdkMapperService;
-        }
-
-        public async Task<Response<SdkUser>> UserCreateAsync(UserCreateInput userCreateInput,
-            CancellationToken cancellationToken = new())
-        {
-            var validationResult = await _validator.ValidateAsync(userCreateInput, cancellationToken);
-            if (validationResult.HasFailed)
-                return Response.Fail<SdkUser>(validationResult.Errors.Select(e => $"{e.Path} - {e.Message}."));
-
-            var password = _passwordEncoder.EncodePassword(userCreateInput.Password);
-
-            var id = userCreateInput.Id;
-            if (id == Guid.Empty)
-                id = Guid.NewGuid();
-
-            var user = new User(id, userCreateInput.Username, userCreateInput.FullName,
-                userCreateInput.ContactEmail, password, userCreateInput.Roles, _datetimeProvider.UtcNow,
-                _datetimeProvider.UtcNow);
-
-            try
-            {
-                await _userRepository.InsertAsync(user, cancellationToken);
-            }
-            catch (InsertDocumentException)
-            {
-                return Response.Fail<SdkUser>("User is duplicate.");
-            }
-
-            return Response.Ok(await _sdkMapperService.UserMapAsync(user, cancellationToken));
         }
 
         public async Task<Response<SdkUser>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())

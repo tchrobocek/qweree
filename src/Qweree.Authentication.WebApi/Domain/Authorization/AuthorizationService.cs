@@ -62,6 +62,46 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization
             }
         }
 
+        public async IAsyncEnumerable<Role> GetEffectiveUserRoles(Client client,
+            [EnumeratorCancellation] CancellationToken cancellationToken = new(),
+            bool ignoreNonExisting = true)
+        {
+            var ids = new List<Guid>();
+
+            foreach (var userRoleId in client.UserRoles)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await foreach (var item in GetEffectiveUserRoles(0, userRoleId, cancellationToken, ignoreNonExisting)
+                    .WithCancellation(cancellationToken))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    ids.Add(item);
+                }
+            }
+
+            foreach (var id in ids.Distinct())
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                UserRole userRole;
+
+                try
+                {
+                    userRole = await _userRoleRepository.GetAsync(id, cancellationToken);
+                }
+                catch (DocumentNotFoundException)
+                {
+                    if (ignoreNonExisting)
+                        continue;
+
+                    throw;
+                }
+
+                yield return new Role(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
+            }
+        }
+
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         public async IAsyncEnumerable<Role> GetEffectiveUserRoles(UserRole userRole,
             [EnumeratorCancellation] CancellationToken cancellationToken = new(),

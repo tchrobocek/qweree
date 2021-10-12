@@ -1,0 +1,30 @@
+@using Qweree.WebApplication.Infrastructure.View.Text
+
+@(GetString())
+
+@code {
+    [Parameter]
+    public IEnumerable<object>? Values { get; set; }
+
+    [Parameter]
+    public int DisplayItems { get; set; } = 2;
+
+    private IEnumerable<string> GetStringValues()
+    {
+        return Values?.Take(DisplayItems).Select(v => v.ToString() ?? string.Empty)
+               ?? Array.Empty<string>();
+    }
+
+    private string GetString()
+    {
+        var valuesToDisplay = GetStringValues();
+
+        var moreValuesCount = (Values?.Count() ?? 0) - DisplayItems;
+
+        if (moreValuesCount <= 0)
+            return $"{string.Join(", ", valuesToDisplay)}";
+        else
+            return $"{string.Join(", ", valuesToDisplay)} and {moreValuesCount - DisplayItems} more {Plurality.Decide(moreValuesCount, "item", "items")}";
+    }
+
+}
