@@ -36,10 +36,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
             {
                 invitation = await _userInvitationRepository.GetAsync(input.UserInvitationId, cancellationToken);
             }
-            catch (DocumentNotFoundException e)
+            catch (DocumentNotFoundException)
             {
-                return Response.Fail(e.Message);
+                return Response.Fail("Invitation was not found.");
             }
+
+            if (invitation.ExpiresAt < _dateTimeProvider.UtcNow)
+                return Response.Fail("Invitation was not found.");
 
             input = new UserRegisterInput(invitation.Id, invitation.Username ?? input.Username,
                 invitation.FullName ?? input.Fullname, invitation.ContactEmail ?? input.ContactEmail, input.Password);
