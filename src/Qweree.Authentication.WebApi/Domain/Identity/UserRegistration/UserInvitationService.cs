@@ -6,6 +6,7 @@ using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
+using Qweree.Utils;
 using Qweree.Validator;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
@@ -14,11 +15,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
     {
         private readonly IValidator _validator;
         private readonly IUserInvitationRepository _userInvitationRepository;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public UserInvitationService(IValidator validator, IUserInvitationRepository userInvitationRepository)
+        public UserInvitationService(IValidator validator, IUserInvitationRepository userInvitationRepository, IDateTimeProvider dateTimeProvider)
         {
             _validator = validator;
             _userInvitationRepository = userInvitationRepository;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Response<UserInvitation>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
@@ -37,8 +40,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
 
         public async Task<Response<UserInvitation>> UserInvitationCreateAsync(UserInvitationInput input, CancellationToken cancellationToken = new())
         {
+            var expiresAt = _dateTimeProvider.UtcNow + TimeSpan.FromMinutes(15);
+
             var invitation = new UserInvitation(Guid.NewGuid(), input.Username, input.FullName, input.ContactEmail,
-                input.Roles);
+                input.Roles, expiresAt, _dateTimeProvider.UtcNow,_dateTimeProvider.UtcNow);
 
             var validationResult = await _validator.ValidateAsync(input, cancellationToken);
             if (validationResult.HasFailed)

@@ -6,13 +6,16 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
     public class UserInvitation
     {
         public UserInvitation(Guid id, string? username, string? fullName, string? contactEmail,
-            ImmutableArray<Guid>? roles)
+            ImmutableArray<Guid>? roles, DateTime expiresAt, DateTime createdAt, DateTime modifiedAt)
         {
             Id = id;
             Username = username;
             FullName = fullName;
             ContactEmail = contactEmail;
             Roles = roles;
+            ExpiresAt = expiresAt;
+            CreatedAt = createdAt;
+            ModifiedAt = modifiedAt;
         }
 
         public Guid Id { get; }
@@ -20,5 +23,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
         public string? FullName { get; }
         public string? ContactEmail { get; }
         public ImmutableArray<Guid>? Roles { get; }
+        public DateTime ExpiresAt { get; }
+        public DateTime CreatedAt { get; }
+        public DateTime ModifiedAt { get; }
     }
 }

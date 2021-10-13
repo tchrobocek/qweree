@@ -15,14 +15,18 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister
                 Username = userInvitation.Username,
                 Roles = (userInvitation.Roles ?? ImmutableArray<Guid>.Empty).ToArray(),
                 ContactEmail = userInvitation.ContactEmail,
-                FullName = userInvitation.FullName
+                FullName = userInvitation.FullName,
+                CreatedAt = userInvitation.CreatedAt,
+                ModifiedAt = userInvitation.ModifiedAt,
+                ExpiresAt = userInvitation.ExpiresAt
             };
         }
 
         public static UserInvitation FromDo(UserInvitationDo userInvitationDo)
         {
             return new UserInvitation(userInvitationDo.Id ?? Guid.Empty, userInvitationDo.Username,
-                userInvitationDo.FullName, userInvitationDo.ContactEmail, userInvitationDo.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+                userInvitationDo.FullName, userInvitationDo.ContactEmail, userInvitationDo.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
+                userInvitationDo.ExpiresAt ?? DateTime.MinValue, userInvitationDo.CreatedAt ?? DateTime.MinValue, userInvitationDo.ModifiedAt ?? DateTime.MinValue);
         }
     }
 }
