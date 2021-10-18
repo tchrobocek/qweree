@@ -11,52 +11,56 @@
 @inject NavigationManager _navigationManager;
 @inject ClaimsPrincipalStorage _session
 @inject IDialogService _dialogService
+@inject ISnackbar _snackbar
 
-<MudText Typo="Typo.h4" Class="mb-8">Add client</MudText>
-
-<MudPaper Class="pa-4">
-    @foreach(var error in _errors)
-    {
-        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-    }
-    <MudGrid>
-        <MudItem xs="12">
-            <MudTextField @bind-Value="_clientId" T="string" Label="Client id" Variant="Variant.Outlined" Class="my-3" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField @bind-Value="_applicationName" T="string" Label="Application name" Variant="Variant.Outlined" Class="my-3"/>
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField @bind-Value="_origin" T="string" Label="Origin" Variant="Variant.Outlined" Class="my-3"/>
-        </MudItem>
-        <MudItem xs="12">
-            <MudTextField @bind-Value="_ownerId" T="string" Label="Owner id" Variant="Variant.Outlined" Class="my-3"/>
-        </MudItem>
-        <MudItem xs="12">
-            <MudList Dense="true">
-                <MudList Dense="true">
-                    @foreach (var (userRole, _) in _clientRoles)
-                    {
-                        <MudListItem>
-                            <MudTooltip Text="@userRole.Description">
-                                <MudCheckBox @bind-Checked="@_clientRoles[userRole]" T="bool">@userRole.Label - @userRole.Key</MudCheckBox>
-                            </MudTooltip>
-                        </MudListItem>
-                    }
-                </MudList>
-            </MudList>
-        </MudItem>
-    </MudGrid>
-    <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Add</MudButton>
-</MudPaper>
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Add client</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        @foreach(var error in _errors)
+        {
+            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+        }
+        <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
+            <MudExpansionPanel Text="Client info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_clientId" T="string" Label="Client id" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_applicationName" T="string" Label="Application name" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_origin" T="string" Label="Origin" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_ownerId" T="string" Label="Owner id" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="Client roles" Class="mt-0" Style="margin: 0 !important;">
+                <ClientRoleSelectComponent SelectedRoles="_clientRoles" />
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
+                <UserRoleSelectComponent SelectedRoles="_userRoles" />
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+        <div style="text-align: right;" class="mt-4">
+        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Create</MudButton>
+        </div>
+    </MudCardContent>
+</MudCard>
 
 @code {
+    private readonly List<ClientRoleDto> _clientRoles = new();
+    private readonly List<UserRoleDto> _userRoles = new();
+    private readonly List<string> _errors = new();
+
     private string _clientId = string.Empty;
     private string _ownerId = string.Empty;
     private string _applicationName = string.Empty;
     private string _origin = string.Empty;
-    private readonly List<string> _errors = new();
-    private readonly IDictionary<ClientRoleDto, bool> _clientRoles = new Dictionary<ClientRoleDto, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,14 +68,6 @@
 
         if (!rolesResponse.IsSuccessful)
             return;
-
-        var roles = (await rolesResponse.ReadPayloadAsync() ?? new ClientRoleDto[0])
-            .ToArray();
-
-        foreach (var role in roles)
-        {
-            _clientRoles[role] = false;
-        }
 
         var user = await _session.GetUserAsync();
 
@@ -83,16 +79,17 @@
     {
         _errors.Clear();
 
-        var roles = _clientRoles.Where(r => r.Value).Select(kv => kv.Key.Id ?? Guid.Empty)
-            .ToArray();
+        var clientRoles = _clientRoles.Select(r => r.Id ?? Guid.Empty);
+        var userRoles = _userRoles.Select(r => r.Id ?? Guid.Empty);
 
         var input = new ClientCreateInputDto
         {
             Origin = _origin,
             ApplicationName = _applicationName,
             ClientId = _clientId,
-            ClientRoles = roles,
-            OwnerId = Guid.Parse(_ownerId)
+            ClientRoles = clientRoles.ToArray(),
+            OwnerId = Guid.Parse(_ownerId),
+            UserRoles = userRoles.ToArray()
         };
 
         var response = await _identityClient.ClientCreateAsync(input);
@@ -113,5 +110,6 @@
         var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Client secret: " + secret}});
         await result.Result;
         _navigationManager.NavigateTo("/services/auth/clients/list");
+        _snackbar.Add($"Client {_applicationName} ({_clientId}) was successfully created.", Severity.Success);
     }
 }
