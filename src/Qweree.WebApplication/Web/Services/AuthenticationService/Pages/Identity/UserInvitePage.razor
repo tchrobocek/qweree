@@ -1,0 +1,95 @@
+@page "/services/auth/users/invite"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
+@using Qweree.WebApplication.Infrastructure.Authentication
+@attribute [Authorize]
+@inject AuthorizationClient _authorizationClient;
+@inject IdentityClient _identityClient;
+@inject NavigationManager _navigationManager;
+@inject ClaimsPrincipalStorage _session
+@inject IDialogService _dialogService
+@inject ISnackbar _snackbar
+
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">Invite user</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        @foreach(var error in _errors)
+        {
+            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+        }
+        <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
+            <MudExpansionPanel Text="User info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_username" T="string" Label="Username" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_contactEmail" T="string" Label="Contact email" Variant="Variant.Outlined" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_fullName" T="string" Label="Full name" Variant="Variant.Outlined" />
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text="Roles" Class="mt-0" Style="margin: 0 !important;">
+                <UserRoleSelectComponent SelectedRoles="_roles" />
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+        <div style="text-align: right;" class="mt-4">
+        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Invite user</MudButton>
+        </div>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private readonly List<UserRoleDto> _roles = new();
+    private readonly List<string> _errors = new();
+
+    private string? _username;
+    private string? _fullName;
+    private string? _contactEmail;
+
+    public async Task CreateAsync()
+    {
+        _errors.Clear();
+
+        var roles = _roles.Select(r => r.Id ?? Guid.Empty);
+
+        var input = new UserInvitationInputDto
+        {
+            Username = _username,
+            Roles = roles.ToArray(),
+            ContactEmail = _contactEmail,
+            FullName = _fullName
+        };
+
+        var response = await _identityClient.UserInvitationCreateAsync(input);
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+
+            if (!_errors.Any())
+                _errors.Add(response.StatusCode.ToString());
+
+            return;
+        }
+
+        var userInvitationDto = (await response.ReadPayloadAsync())!;
+        var link = $"{_navigationManager.BaseUri}invite/{userInvitationDto.Id}";
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Invitation link: " + link}});
+        await result.Result;
+        _navigationManager.NavigateTo("/services/auth/users/list");
+
+        if (!string.IsNullOrWhiteSpace(_username))
+        {
+            _snackbar.Add($"User {_username} invited.", Severity.Success);
+        }
+    }
+}

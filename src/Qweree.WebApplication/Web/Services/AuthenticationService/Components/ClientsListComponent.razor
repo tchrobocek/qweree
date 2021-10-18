@@ -6,8 +6,8 @@
 <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<ClientDto>>>(LoadClients))">
     <ToolBarContent>
         <MudSpacer />
-        <MudButton OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh clients</MudButton>
-        <MudButton OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
+        <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh clients</MudButton>
+        <MudButton Size="Size.Small" OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
     </ToolBarContent>
     <HeaderContent>
         <MudTh Style="width: 150px;">Id</MudTh>
