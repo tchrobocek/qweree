@@ -1,104 +1,16 @@
 @page "/services/auth/clients/list"
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.AdminSdk.Identity
-@using Qweree.Authentication.AdminSdk.Identity.Clients
 @attribute [Authorize]
-@inject IdentityClient _identityClient
-@inject NavigationManager _navigationManager
-@inject IDialogService _dialogService
 
-<MudTable Items="@_clients" Hover="true" Class="pa-4">
-    <ToolBarContent>
+<MudCard>
+    <MudCardHeader>
         <MudText Typo="Typo.h6">Clients</MudText>
-        <MudIconButton Title="Refresh" OnClick="RefreshAsync" Icon="@Icons.Material.Filled.Refresh"></MudIconButton>
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddClient">Add client</MudButton>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>Name</MudTh>
-        <MudTh>Owner</MudTh>
-        <MudTh>Roles</MudTh>
-        <MudTh>Modified at</MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
-        <MudTd DataLabel="Role">@context.ApplicationName (@context.ClientId)</MudTd>
-        <MudTd DataLabel="Owner">@context.Owner?.Id (@context.Owner?.Username)</MudTd>
-        <MudTd DataLabel="Roles">@string.Join(", ", context.ClientRoles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
-        <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
-        <MudTd DataLabel="Actions" Style="text-align: right">
-            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
-        </MudTd>
-    </RowTemplate>
-</MudTable>
-<MudGrid>
-    <MudItem xs="6">
-        <MudIconButton OnClick="PrevPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateBefore"/>
-    </MudItem>
-    <MudItem xs="6" Style="text-align: right">
-        <MudIconButton OnClick="NextPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateNext"/>
-    </MudItem>
-</MudGrid>
+    </MudCardHeader>
+    <MudCardContent Class="py-6">
+        <ClientsListComponent />
+    </MudCardContent>
+</MudCard>
 
 @code {
-    private const int Batch = 30;
-    private int _pageIndex;
-    private readonly List<ClientDto> _clients = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshAsync();
-    }
-
-    private void AddClient()
-    {
-        _navigationManager.NavigateTo("/services/auth/clients/add");
-    }
-
-    private async Task DeleteAsync(Guid? contextId)
-    {
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
-        var delete = (bool)((await result.Result).Data ?? false);
-
-        if (!delete || contextId == null)
-            return;
-
-        await _identityClient.ClientDeleteAsync((Guid) contextId);
-        await RefreshAsync();
-    }
-
-
-    private async Task RefreshAsync()
-    {
-
-        var response = await _identityClient.ClientsPaginateAsync(_pageIndex * Batch, Batch, new Dictionary<string, int>());
-
-        if (response.IsSuccessful)
-        {
-            var payload = await response.ReadPayloadAsync();
-            _clients.Clear();
-            _clients.AddRange(payload ?? ArraySegment<ClientDto>.Empty);
-        }
-    }
-
-    private async Task NextPageAsync()
-    {
-        _pageIndex++;
-        await RefreshAsync();
-
-        if (_clients.Count == 0)
-            await PrevPageAsync();
-    }
-
-    private async Task PrevPageAsync()
-    {
-        _pageIndex--;
-
-        if (_pageIndex < 0)
-            _pageIndex = 0;
-
-        await RefreshAsync();
-    }
 }

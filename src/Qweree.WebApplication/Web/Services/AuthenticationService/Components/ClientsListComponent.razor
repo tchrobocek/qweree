@@ -1,0 +1,79 @@
+@using Qweree.Authentication.AdminSdk.Identity.Clients
+@using Qweree.Authentication.AdminSdk.Identity
+
+@inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
+
+<MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<ClientDto>>>(LoadClients))">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudButton OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh clients</MudButton>
+        <MudButton OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Modified at</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">
+            <ShortIdComponent Id="@context.Id"/>
+        </MudTd>
+        <MudTd DataLabel="Name">
+            @context.ApplicationName (@context.ClientId)
+        </MudTd>
+        <MudTd DataLabel="Modified at">@context.ModifiedAt</MudTd>
+        <MudTd>
+            <MudLink Class="cursor-pointer mx-2">View</MudLink>
+            <MudLink @onclick="() => DeleteAsync(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2" Color="Color.Secondary">Delete</MudLink>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No records.</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private MudTable<ClientDto>? _table;
+
+    private async Task<TableData<ClientDto>> LoadClients(TableState tableState)
+    {
+        var skip = tableState.Page * tableState.PageSize;
+        var response = await _identityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        if (!response.IsSuccessful)
+        {
+            return new TableData<ClientDto>();
+        }
+
+        var clients = (await response.ReadPayloadAsync())!;
+        return new TableData<ClientDto>
+        {
+            Items = clients,
+            TotalItems = response.DocumentCount
+        };
+    }
+
+    private void Refresh()
+    {
+        _table?.ReloadServerData();
+    }
+
+    private async Task DeleteAsync(Guid clientId)
+    {
+        await _identityClient.ClientDeleteAsync(clientId);
+        Refresh();
+    }
+
+    private void GoToAddClient()
+    {
+        _navigationManager.NavigateTo("services/auth/clients/add");
+    }
+
+}
