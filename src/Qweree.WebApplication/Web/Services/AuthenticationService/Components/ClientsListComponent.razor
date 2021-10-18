@@ -11,22 +11,19 @@
         <MudButton OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>Name</MudTh>
-        <MudTh>Modified at</MudTh>
+        <MudTh Style="width: 150px;">Id</MudTh>
+        <MudTh>Client</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">
             <ShortIdComponent Id="@context.Id"/>
         </MudTd>
-        <MudTd DataLabel="Name">
+        <MudTd DataLabel="Client">
             @context.ApplicationName (@context.ClientId)
         </MudTd>
-        <MudTd DataLabel="Modified at">@context.ModifiedAt</MudTd>
-        <MudTd>
-            <MudLink Class="cursor-pointer mx-2">View</MudLink>
-            <MudLink @onclick="() => DeleteAsync(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2" Color="Color.Secondary">Delete</MudLink>
+        <MudTd Style="text-align: right;">
+            <MudLink @onclick="() => GoToClient(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -65,15 +62,14 @@
         _table?.ReloadServerData();
     }
 
-    private async Task DeleteAsync(Guid clientId)
-    {
-        await _identityClient.ClientDeleteAsync(clientId);
-        Refresh();
-    }
-
     private void GoToAddClient()
     {
         _navigationManager.NavigateTo("services/auth/clients/add");
+    }
+
+    private void GoToClient(Guid contextId)
+    {
+        _navigationManager.NavigateTo($"services/auth/clients/{contextId}");
     }
 
 }
