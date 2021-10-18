@@ -37,15 +37,10 @@
 </MudTable>
 
 @code {
-    private int _page;
-    private int _pageSize;
     private MudTable<UserDto>? _table;
 
     private async Task<TableData<UserDto>> LoadUsers(TableState tableState)
     {
-        _page = tableState.Page;
-        _pageSize = tableState.PageSize;
-
         var skip = tableState.Page * tableState.PageSize;
         var response = await _identityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
