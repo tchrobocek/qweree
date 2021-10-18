@@ -1,7 +1,9 @@
 @page "/services/auth/clients/{ClientId}"
+@attribute [Authorize]
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Microsoft.AspNetCore.Authorization
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
 

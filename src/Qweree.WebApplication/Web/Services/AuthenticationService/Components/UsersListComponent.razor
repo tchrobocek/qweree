@@ -1,6 +1,7 @@
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Identity
 @inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
 
 <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<UserDto>>>(LoadUsers))">
     <ToolBarContent>
@@ -9,21 +10,23 @@
         <MudButton Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add user</MudButton>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh>Id</MudTh>
+        <MudTh Style="width: 150px;">Id</MudTh>
         <MudTh>Name</MudTh>
-        <MudTh>Modified at</MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">
             <ShortIdComponent Id="@context.Id"/>
         </MudTd>
         <MudTd DataLabel="Name">
-            <MudAvatar Style="height:32px; width:32px; font-size:1rem;" Color="Color.Primary" Class="my-1 mx-4">
+            <MudAvatar Style="height:32px; width:32px; font-size:1rem;" Color="Color.Primary" Class="my-1 mr-4">
                 @context.Username?.First().ToString().ToUpper()
             </MudAvatar>
             @context.FullName (@context.Username)
         </MudTd>
-        <MudTd DataLabel="Modified at">@context.ModifiedAt</MudTd>
+        <MudTd Style="text-align: right;">
+            <MudLink @onclick="() => GoToUser(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No records.</MudText>
@@ -59,6 +62,11 @@
     private void Refresh()
     {
         _table?.ReloadServerData();
+    }
+
+    private void GoToUser(Guid contextId)
+    {
+        _navigationManager.NavigateTo($"services/auth/users/{contextId}");
     }
 
 }
