@@ -11,16 +11,17 @@
     <HeaderContent>
         <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
-        <MudTh>Role</MudTh>
         <MudTh>Modified at</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">
             <ShortIdComponent Id="@context.Id"/>
         </MudTd>
-        <MudTd DataLabel="Name">@context.FullName (@context.Username)</MudTd>
-        <MudTd DataLabel="Role">
-            <AndMoreComponent DisplayItems="1" Values="@(context.Roles?.Select(r => $"{r.Label} ({r.Key})") ?? ArraySegment<string?>.Empty)" />
+        <MudTd DataLabel="Name">
+            <MudAvatar Style="height:32px; width:32px; font-size:1rem;" Color="Color.Primary" Class="my-1 mx-4">
+                @context.Username?.First().ToString().ToUpper()
+            </MudAvatar>
+            @context.FullName (@context.Username)
         </MudTd>
         <MudTd DataLabel="Modified at">@context.ModifiedAt</MudTd>
     </RowTemplate>
