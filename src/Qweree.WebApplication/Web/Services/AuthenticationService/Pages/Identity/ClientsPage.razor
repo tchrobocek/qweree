@@ -1,16 +1,84 @@
 @page "/services/auth/clients/list"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
+@using Qweree.Authentication.AdminSdk.Identity.Clients
+@using Qweree.Authentication.AdminSdk.Identity
+@inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
+
 
 <MudCard>
     <MudCardHeader>
         <MudText Typo="Typo.h6">Clients</MudText>
     </MudCardHeader>
     <MudCardContent Class="py-6">
-        <ClientsListComponent />
+        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<ClientDto>>>(LoadClients))">
+            <ToolBarContent>
+                <MudSpacer />
+                <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh clients</MudButton>
+                <MudButton Size="Size.Small" OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh Style="width: 150px;">Id</MudTh>
+                <MudTh>Client</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">
+                    <ShortIdComponent Id="@context.Id"/>
+                </MudTd>
+                <MudTd DataLabel="Client">
+                    @context.ApplicationName (@context.ClientId)
+                </MudTd>
+                <MudTd Style="text-align: right;" Class="mr-2">
+                    <MudLink @onclick="() => GoToClient(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No records.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
     </MudCardContent>
 </MudCard>
 
 @code {
+    private MudTable<ClientDto>? _table;
 
+    private async Task<TableData<ClientDto>> LoadClients(TableState tableState)
+    {
+        var skip = tableState.Page * tableState.PageSize;
+        var response = await _identityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        if (!response.IsSuccessful)
+        {
+            return new TableData<ClientDto>();
+        }
+
+        var clients = (await response.ReadPayloadAsync())!;
+        return new TableData<ClientDto>
+        {
+            Items = clients,
+            TotalItems = response.DocumentCount
+        };
+    }
+
+    private void Refresh()
+    {
+        _table?.ReloadServerData();
+    }
+
+    private void GoToAddClient()
+    {
+        _navigationManager.NavigateTo("services/auth/clients/add");
+    }
+
+    private void GoToClient(Guid contextId)
+    {
+        _navigationManager.NavigateTo($"services/auth/clients/{contextId}");
+    }
 }
