@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Sdk;
+using UserInvitationDto = Qweree.Authentication.Sdk.Account.UserInvitationDto;
 
 namespace Qweree.Authentication.WebApi.Web.Account
 {
@@ -55,7 +55,14 @@ namespace Qweree.Authentication.WebApi.Web.Account
             if (response.Status != ResponseStatus.Ok)
                 return response.ToErrorActionResult();
 
-            return NoContent();
+            return Ok(new UserInvitationDto
+            {
+                Id = response.Payload!.Id,
+                Username = response.Payload.Username,
+                ContactEmail = response.Payload.ContactEmail,
+                ExpiresAt = response.Payload.ExpiresAt,
+                FullName = response.Payload.FullName,
+            });
         }
     }
 }

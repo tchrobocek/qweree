@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -23,6 +24,18 @@ namespace Qweree.Authentication.Sdk.Account
                 new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json),
                 cancellationToken);
 
+            return ApiResponse.CreateApiResponse(response);
+        }
+
+        public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
+            return ApiResponse.CreateApiResponse<UserInvitationDto>(response);
+        }
+
+        public async Task<ApiResponse> UserRegisterAsync(UserRegisterInputDto input, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
             return ApiResponse.CreateApiResponse(response);
         }
     }

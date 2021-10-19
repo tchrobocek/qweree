@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
+using UserInvitation = Qweree.Authentication.AdminSdk.Identity.Users.UserRegister.UserInvitation;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
 {
