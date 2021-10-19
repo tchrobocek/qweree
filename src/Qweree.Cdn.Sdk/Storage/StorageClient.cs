@@ -15,10 +15,14 @@ namespace Qweree.Cdn.Sdk.Storage
             _httpClient = httpClient;
         }
 
-        public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream,
+        public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream, bool force = false,
             CancellationToken cancellationToken = new())
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, path.Trim('/'))
+            var method = HttpMethod.Post;
+            if (force)
+                method = HttpMethod.Put;
+
+            var request = new HttpRequestMessage(method, path.Trim('/'))
             {
                 Content = new StreamContent(stream)
                 {

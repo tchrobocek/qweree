@@ -25,6 +25,8 @@ users = [{
         "427f1ea4-5026-493b-999a-dc4f1f945ad4",
         "22803ef9-0179-4371-a40e-91b899a0c7f7",
         "1cc32e1e-7b61-445a-9410-c80afb91b06d",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ],
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
@@ -61,6 +63,8 @@ clients = [{
         "427f1ea4-5026-493b-999a-dc4f1f945ad4",
         "22803ef9-0179-4371-a40e-91b899a0c7f7",
         "1cc32e1e-7b61-445a-9410-c80afb91b06d",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
@@ -192,6 +196,24 @@ userRoles = [{
     "Key": "qweree.cdn.storage.store",
     "Label": "Cdn storage store",
     "Description": "Allows user to store files into cdn.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("bb19c0ef-839e-481f-96e0-cea1486bd3e6"),
+    "Key": "qweree.cdn.storage.store_force",
+    "Label": "Cdn storage replace",
+    "Description": "Allows user to overwrite files in cdn.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("8cae063d-c180-4c88-ba3f-9b999f6267b2"),
+    "Key": "qweree.cdn.storage.delete",
+    "Label": "Cdn storage delete",
+    "Description": "Allows user to delete files in cdn.",
     "Items": [],
     "IsGroup": false,
     "CreatedAt": ISODate("1970-01-01"),

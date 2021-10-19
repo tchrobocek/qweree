@@ -37,9 +37,15 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
 
             try
             {
-                if (await _storedObjectRepository.ExistsAsync(slug, cancellationToken))
+                var exists = await _storedObjectRepository.ExistsAsync(slug, cancellationToken);
+                if (input.Force && exists)
                 {
                     await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
+                }
+
+                if (!input.Force && exists)
+                {
+                    return Response.Fail<StoredObject>("Stored object already exists.");
                 }
 
                 await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);

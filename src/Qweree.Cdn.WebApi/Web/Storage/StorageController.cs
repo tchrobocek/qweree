@@ -41,6 +41,30 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             return File(response.Payload?.Stream, response.Payload?.Descriptor.MediaType);
         }
 
+        /// <summary>
+        ///     Store object.
+        /// </summary>
+        /// <param name="path">Object path.</param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        [HttpPost("{*path}")]
+        [Authorize(Policy = "StorageStore")]
+        [RequiresFileFromBody]
+        [RequestSizeLimit(1000 * 1000 * 1000)]
+        [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
+        public async Task<IActionResult> PostStoredObjectActionAsync(string path,
+            [FromHeader(Name = "Content-Type")] string contentType)
+        {
+            path = HttpUtility.UrlDecode(path);
+            var input = new StoreObjectInput(path, contentType, Request.Body, Request.Method.ToLower() == "put");
+            var response = await _service.StoreOrReplaceObjectAsync(input);
+
+            if (response.Status == ResponseStatus.Fail)
+                return BadRequest(response.ToErrorResponseDto());
+
+            return Created($"/api/v1/storage/{path.Trim('/')}",
+                StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
+        }
 
         /// <summary>
         ///     Store object.
@@ -49,7 +73,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="contentType"></param>
         /// <returns></returns>
         [HttpPut("{*path}")]
-        [Authorize]
+        [Authorize(Policy = "StorageStoreForce")]
         [RequiresFileFromBody]
         [RequestSizeLimit(1000 * 1000 * 1000)]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
@@ -57,7 +81,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             path = HttpUtility.UrlDecode(path);
-            var input = new StoreObjectInput(path, contentType, Request.Body);
+            var input = new StoreObjectInput(path, contentType, Request.Body, Request.Method.ToLower() == "put");
             var response = await _service.StoreOrReplaceObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)
@@ -74,7 +98,7 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="path">Object path.</param>
         /// <returns></returns>
         [HttpDelete("{*path}")]
-        [Authorize]
+        [Authorize(Policy = "StorageDelete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteStoredObjectActionAsync(string path)
         {

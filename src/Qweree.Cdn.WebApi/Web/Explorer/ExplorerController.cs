@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
@@ -28,6 +29,7 @@ namespace Qweree.Cdn.WebApi.Web.Explorer
         /// <returns></returns>
         [HttpGet]
         [HttpGet("{*path}")]
+        [Authorize(Policy = "StorageExplore")]
         [ProducesResponseType(typeof(IExplorerObjectDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ExplorerDirectoryDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ExplorerFileDto), StatusCodes.Status200OK)]
