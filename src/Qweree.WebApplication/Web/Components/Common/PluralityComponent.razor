@@ -11,11 +11,11 @@
     public string Plural { get; set; } = string.Empty;
 
     [Parameter]
-    public object? Value { get; set; }
+    public int? Value { get; set; }
 
     protected override void OnInitialized()
     {
-        _decision = Plurality.Decide((int)(Value ?? 0), Singular, Plural);
+        _decision = Plurality.Decide(Value ?? 0, Singular, Plural);
     }
 
 }
