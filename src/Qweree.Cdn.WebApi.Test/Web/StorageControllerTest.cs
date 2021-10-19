@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -35,7 +36,7 @@ namespace Qweree.Cdn.WebApi.Test.Web
         }
 
         [Fact]
-        public async Task TestStoreAndRead()
+        public async Task TestStoreAndReadAndDelete()
         {
             var passwordInput = new PasswordGrantInput("admin", "password");
             var clientCredentials = new ClientCredentials("test-cli", "password");
@@ -97,6 +98,16 @@ namespace Qweree.Cdn.WebApi.Test.Web
                 response.EnsureSuccessStatusCode();
                 Assert.Equal(MediaTypeNames.Text.Plain, response.Content.Headers.ContentType?.MediaType);
                 Assert.Equal(text2, await response.Content.ReadAsStringAsync());
+            }
+
+            {
+                var response = await client.DeleteAsync("/api/v1/storage/test/object.txt");
+                response.EnsureSuccessStatusCode();
+            }
+
+            {
+                var response = await client.GetAsync("/api/v1/storage/test/object.txt");
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             }
         }
     }

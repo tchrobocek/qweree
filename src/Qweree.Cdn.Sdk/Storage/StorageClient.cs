@@ -38,5 +38,11 @@ namespace Qweree.Cdn.Sdk.Storage
             var response = await _httpClient.GetAsync(path.Trim('/'), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             return ApiResponse.CreateApiResponse(response);
         }
+
+        public async Task<ApiResponse> DeleteAsync(string path, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.DeleteAsync(path.Trim('/'), cancellationToken);
+            return ApiResponse.CreateApiResponse(response);
+        }
     }
 }

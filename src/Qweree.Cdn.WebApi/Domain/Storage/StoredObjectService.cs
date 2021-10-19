@@ -70,5 +70,22 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
 
             return Response.Ok(storedObject);
         }
+
+        public async Task<Response> DeleteObjectAsync(string path,
+            CancellationToken cancellationToken = new())
+        {
+            var slug = SlugHelper.PathToSlug(path);
+
+            try
+            {
+                await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return Response.Fail<StoredObject>(e.Message);
+            }
+
+            return Response.Ok();
+        }
     }
 }

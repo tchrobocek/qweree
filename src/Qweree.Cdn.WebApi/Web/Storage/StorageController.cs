@@ -66,5 +66,25 @@ namespace Qweree.Cdn.WebApi.Web.Storage
             return Created($"/api/v1/storage/{path.Trim('/')}",
                 StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
         }
+
+
+        /// <summary>
+        ///     Store object.
+        /// </summary>
+        /// <param name="path">Object path.</param>
+        /// <returns></returns>
+        [HttpDelete("{*path}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> DeleteStoredObjectActionAsync(string path)
+        {
+            path = HttpUtility.UrlDecode(path);
+            var response = await _service.DeleteObjectAsync(path);
+
+            if (response.Status == ResponseStatus.Fail)
+                return BadRequest(response.ToErrorResponseDto());
+
+            return NoContent();
+        }
     }
 }
