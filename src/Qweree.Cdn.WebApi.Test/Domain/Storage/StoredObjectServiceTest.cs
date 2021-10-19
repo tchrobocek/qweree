@@ -25,7 +25,7 @@ namespace Qweree.Cdn.WebApi.Test.Domain.Storage
             var stream = new MemoryStream(new byte[] {0x1, 0x2, 0x3, 0x4, 0x5});
             const string slug = "test/object/slug";
             var input = new StoreObjectInput(slug, MediaTypeNames.Application.Octet, stream);
-            var response = await service.StoreObjectAsync(input);
+            var response = await service.StoreOrReplaceObjectAsync(input);
 
             Assert.Equal(ResponseStatus.Ok, response.Status);
             var storedObject = response.Payload ?? throw new ArgumentNullException();

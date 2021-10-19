@@ -45,19 +45,34 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
             return Task.FromResult((Stream) stream);
         }
 
-        public Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new CancellationToken())
+        public Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new())
         {
             var drive = new DriveInfo(Path.GetPathRoot(_rootPath) ?? string.Empty);
             return Task.FromResult(new StorageStats(drive.TotalSize, drive.AvailableFreeSpace));
         }
 
+        public Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new())
+        {
+            var path = GetPath(slug);
+
+            if (File.Exists(path))
+                File.Delete(path);
+
+            return Task.CompletedTask;
+        }
+
         private string GetPath(StoredObjectDescriptor descriptor)
+        {
+            return GetPath(descriptor.Slug);
+        }
+
+        private string GetPath(IEnumerable<string> slug)
         {
             var parts = new List<string>
             {
                 _rootPath
             };
-            parts.AddRange(descriptor.Slug);
+            parts.AddRange(slug);
 
             return Path.Combine(parts.ToArray());
         }

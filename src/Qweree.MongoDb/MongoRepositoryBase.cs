@@ -180,6 +180,11 @@ namespace Qweree.Mongo
             await Collection.DeleteOneAsync($@"{{""_id"": UUID(""{id}"")}}", cancellationToken);
         }
 
+        public async Task DeleteAsync(string query, CancellationToken cancellationToken = new())
+        {
+            await Collection.DeleteOneAsync(query, cancellationToken);
+        }
+
         public async Task DeleteAllAsync(CancellationToken cancellationToken = new())
         {
             await Collection.DeleteManyAsync(d => true, cancellationToken);

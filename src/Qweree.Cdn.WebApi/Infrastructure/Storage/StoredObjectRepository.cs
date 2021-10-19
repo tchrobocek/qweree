@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Cdn.WebApi.Domain.Storage;
+using Qweree.Mongo.Exception;
 
 namespace Qweree.Cdn.WebApi.Infrastructure.Storage
 {
@@ -15,6 +16,25 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
         {
             _descriptorRepository = descriptorRepository;
             _objectStorage = objectStorage;
+        }
+
+        public async Task<bool> ExistsAsync(string[] slug, CancellationToken cancellationToken = new())
+        {
+            try
+            {
+                await _descriptorRepository.GetBySlugAsync(slug, cancellationToken);
+                return true;
+            }
+            catch (DocumentNotFoundException)
+            {
+                return false;
+            }
+        }
+
+        public async Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new())
+        {
+            await _objectStorage.DeleteAsync(slug);
+            await _descriptorRepository.DeleteBySlugAsync(slug, cancellationToken);
         }
 
         public async Task StoreAsync(StoredObject storedObject, CancellationToken cancellationToken = new())

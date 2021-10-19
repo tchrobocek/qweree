@@ -48,17 +48,17 @@ namespace Qweree.Cdn.WebApi.Web.Storage
         /// <param name="path">Object path.</param>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        [HttpPost("{*path}")]
+        [HttpPut("{*path}")]
         [Authorize]
         [RequiresFileFromBody]
         [RequestSizeLimit(1000 * 1000 * 1000)]
         [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
-        public async Task<IActionResult> PostStoredObjectActionAsync(string path,
+        public async Task<IActionResult> PutStoredObjectActionAsync(string path,
             [FromHeader(Name = "Content-Type")] string contentType)
         {
             path = HttpUtility.UrlDecode(path);
             var input = new StoreObjectInput(path, contentType, Request.Body);
-            var response = await _service.StoreObjectAsync(input);
+            var response = await _service.StoreOrReplaceObjectAsync(input);
 
             if (response.Status == ResponseStatus.Fail)
                 return BadRequest(response.ToErrorResponseDto());

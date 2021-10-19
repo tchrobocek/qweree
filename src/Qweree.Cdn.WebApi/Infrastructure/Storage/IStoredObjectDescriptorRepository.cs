@@ -12,5 +12,6 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
         Task<IEnumerable<StoredPathDescriptorDo>> FindInSlugAsync(string[] slug,
             CancellationToken cancellationToken = new());
         Task<IEnumerable<StoredObjectStatsDo>> GetObjectsStatsAsync(CancellationToken cancellationToken = new());
+        Task DeleteBySlugAsync(string[] slug, CancellationToken cancellationToken = new());
     }
 }
