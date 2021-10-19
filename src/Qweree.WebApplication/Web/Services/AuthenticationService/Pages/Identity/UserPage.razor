@@ -16,15 +16,23 @@
         {
             <MudTabs>
                 <MudTabPanel Text="Info">
-                    <div class="mt-6 ml-6 mb-4">
-                        <div><label>Id: </label>@_user.Id</div>
-                        <div><label>Username: </label>@_user.Username</div>
-                        <div><label>Fullname: </label>@_user.FullName</div>
-                        <div><label>Contact email: </label>@_user.ContactEmail</div>
-                        <div><label>Creation time: </label>@_user.CreatedAt</div>
-                        <div><label>Last modification time: </label>@_user.ModifiedAt</div>
-                    </div>
-
+                    <MudGrid Class="mt-6 pl-6 mb-4">
+                        <MudItem xs="4">
+                            <div style="text-align: center">
+                                <MudAvatar Style="height:140px; width:140px; font-size:2rem;" Color="Color.Primary" Class="my-8">
+                                    @_user.Username?.First().ToString().ToUpper()
+                                </MudAvatar>
+                            </div>
+                        </MudItem>
+                        <MudItem xs="8" Class="my-8 pl-6">
+                            <div><label>Id: </label>@_user.Id</div>
+                            <div><label>Username: </label>@_user.Username</div>
+                            <div><label>Fullname: </label>@_user.FullName</div>
+                            <div><label>Contact email: </label>@_user.ContactEmail</div>
+                            <div><label>Creation time: </label>@_user.CreatedAt</div>
+                            <div><label>Last modification time: </label>@_user.ModifiedAt</div>
+                        </MudItem>
+                    </MudGrid>
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
                         <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
                             @foreach (var role in _user.Roles ?? Array.Empty<RoleDto>())
