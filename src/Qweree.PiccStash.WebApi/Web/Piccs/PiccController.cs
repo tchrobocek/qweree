@@ -215,7 +215,21 @@ namespace Qweree.PiccStash.WebApi.Web.Piccs
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PiccDeleteActionAsync(Guid piccId)
         {
-            await _piccRepository.DeleteAsync(piccId);
+            StashedPicc picc;
+
+            try
+            {
+                picc = await _piccRepository.GetAsync(piccId);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var response = await _storageClient.DeleteAsync(SlugHelper.SlugToPath(picc.StorageSlug ?? Array.Empty<string>()));
+            if (response.IsSuccessful)
+                await _piccRepository.DeleteAsync(piccId);
+
             return NoContent();
         }
 
