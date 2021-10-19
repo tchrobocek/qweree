@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
 using Qweree.Authentication.Sdk.Account;
+using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -18,14 +19,16 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IUserInvitationRepository _userInvitationRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordEncoder _passwordEncoder;
 
         public UserRegisterService(IValidator validator, IDateTimeProvider dateTimeProvider,
-            IUserInvitationRepository userInvitationRepository, IUserRepository userRepository)
+            IUserInvitationRepository userInvitationRepository, IUserRepository userRepository, IPasswordEncoder passwordEncoder)
         {
             _validator = validator;
             _dateTimeProvider = dateTimeProvider;
             _userInvitationRepository = userInvitationRepository;
             _userRepository = userRepository;
+            _passwordEncoder = passwordEncoder;
         }
 
         public async Task<Response> RegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())
@@ -52,7 +55,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
                 return result.ToErrorResponse();
 
             var user = new User(Guid.NewGuid(), input.Username, input.Fullname, input.ContactEmail,
-                input.Password, invitation.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
+                _passwordEncoder.EncodePassword(input.Password), invitation.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
                 _dateTimeProvider.UtcNow);
 
             await _userRepository.InsertAsync(user, cancellationToken);

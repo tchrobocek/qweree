@@ -1,11 +1,98 @@
 @page "/invite/{invitationId}"
+@using Qweree.Authentication.Sdk.Account
 @layout EmptyLayout
+@inject MyAccountClient _myAccountClient;
+@inject NavigationManager _navigationManager;
+@inject ISnackbar _snackbar;
 
-<h3>UserRegisterPage</h3>
+<MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%">
+            <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
+
+            @foreach(var error in _errors)
+            {
+                <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+            }
+
+            <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" />
+            <MudGrid>
+                <MudItem xs="6">
+                    <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <PasswordFieldComponent @bind-Value="_password2" Label="Repeat password" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+            <MudTextField T="string" @bind-Value="_contactEmail" Label="Contact email" Variant="Variant.Outlined" />
+            <MudTextField T="string" @bind-Value="_fullName" Label="Full name" Variant="Variant.Outlined" />
+            <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await RegisterAsync()" Size="Size.Large" FullWidth="true">Sign In</MudButton>
+        </MudPaper>
+    </div>
+</MudContainer>
 
 @code {
+    private readonly List<string> _errors = new();
+
+    private string _username = string.Empty;
+    private string _password = string.Empty;
+    private string _password2 = string.Empty;
+    private string _contactEmail = string.Empty;
+    private string _fullName = string.Empty;
+    private UserInvitationDto? _invitation;
+
     [Parameter]
     public string? InvitationId { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Guid.TryParse(InvitationId ?? string.Empty, out var id))
+        {
+            _navigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        var response = await _myAccountClient.UserInvitationGetAsync(id);
+
+        if (!response.IsSuccessful)
+        {
+            _navigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        _invitation = await response.ReadPayloadAsync();
+    }
+
+    private async Task RegisterAsync()
+    {
+        _errors.Clear();
+
+        if (_password != _password2)
+        {
+            _errors.Add("Passwords must match.");
+            return;
+        }
+
+        var input = new UserRegisterInputDto
+        {
+            Fullname = _fullName,
+            Password = _password,
+            Username = _username,
+            ContactEmail = _contactEmail,
+            UserInvitationId = _invitation!.Id
+        };
+
+        var response = await _myAccountClient.UserRegisterAsync(input);
+
+        if (!response.IsSuccessful)
+        {
+            var errors = await response.ReadErrorsAsync();
+            _errors.AddRange(errors.Errors?.Select(e => e.Message ?? "") ?? Array.Empty<string>());
+            return;
+        }
+
+        _snackbar.Add("Registration completed, now sign in!", Severity.Success);
+        _navigationManager.NavigateTo("/login");
+    }
 
 }
