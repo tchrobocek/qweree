@@ -3,7 +3,7 @@ using System.Linq;
 using Qweree.AspNet.Application;
 using Qweree.Validator;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Validations
+namespace Qweree.AspNet.Validations
 {
     public static class ValidationResultExtensions
     {

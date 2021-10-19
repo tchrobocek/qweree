@@ -1,104 +1,84 @@
 @page "/services/auth/clients/list"
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.AdminSdk.Identity
-@using Qweree.Authentication.AdminSdk.Identity.Clients
 @attribute [Authorize]
+@using Qweree.Authentication.AdminSdk.Identity.Clients
+@using Qweree.Authentication.AdminSdk.Identity
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
-@inject IDialogService _dialogService
 
-<MudTable Items="@_clients" Hover="true" Class="pa-4">
-    <ToolBarContent>
+
+<MudCard>
+    <MudCardHeader>
         <MudText Typo="Typo.h6">Clients</MudText>
-        <MudIconButton Title="Refresh" OnClick="RefreshAsync" Icon="@Icons.Material.Filled.Refresh"></MudIconButton>
-        <MudSpacer />
-        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddClient">Add client</MudButton>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Id</MudTh>
-        <MudTh>Name</MudTh>
-        <MudTh>Owner</MudTh>
-        <MudTh>Roles</MudTh>
-        <MudTh>Modified at</MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Id"><ShortIdComponent Id="@context.Id" /></MudTd>
-        <MudTd DataLabel="Role">@context.ApplicationName (@context.ClientId)</MudTd>
-        <MudTd DataLabel="Owner">@context.Owner?.Id (@context.Owner?.Username)</MudTd>
-        <MudTd DataLabel="Roles">@string.Join(", ", context.ClientRoles?.Select(r => r.Key) ?? ArraySegment<string?>.Empty)</MudTd>
-        <MudTd DataLabel="Modified at"><MudTooltip Text="@context.CreatedAt.ToString()">@context.ModifiedAt</MudTooltip></MudTd>
-        <MudTd DataLabel="Actions" Style="text-align: right">
-            <MudIconButton Title="Delete" OnClick="() => DeleteAsync(context.Id)" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
-        </MudTd>
-    </RowTemplate>
-</MudTable>
-<MudGrid>
-    <MudItem xs="6">
-        <MudIconButton OnClick="PrevPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateBefore"/>
-    </MudItem>
-    <MudItem xs="6" Style="text-align: right">
-        <MudIconButton OnClick="NextPageAsync" Color="Color.Primary" Icon="@Icons.Material.Filled.NavigateNext"/>
-    </MudItem>
-</MudGrid>
+    </MudCardHeader>
+    <MudCardContent Class="py-6">
+        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<ClientDto>>>(LoadClients))">
+            <ToolBarContent>
+                <MudSpacer />
+                <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh clients</MudButton>
+                <MudButton Size="Size.Small" OnClick="GoToAddClient" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add client</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh Style="width: 150px;">Id</MudTh>
+                <MudTh>Client</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">
+                    <ShortIdComponent Id="@context.Id"/>
+                </MudTd>
+                <MudTd DataLabel="Client">
+                    @context.ApplicationName (@context.ClientId)
+                </MudTd>
+                <MudTd Style="text-align: right;" Class="mr-2">
+                    <MudLink @onclick="() => GoToClient(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No records.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudCardContent>
+</MudCard>
 
 @code {
-    private const int Batch = 30;
-    private int _pageIndex;
-    private readonly List<ClientDto> _clients = new();
+    private MudTable<ClientDto>? _table;
 
-    protected override async Task OnInitializedAsync()
+    private async Task<TableData<ClientDto>> LoadClients(TableState tableState)
     {
-        await RefreshAsync();
-    }
-
-    private void AddClient()
-    {
-        _navigationManager.NavigateTo("/services/auth/clients/add");
-    }
-
-    private async Task DeleteAsync(Guid? contextId)
-    {
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
-        var delete = (bool)((await result.Result).Data ?? false);
-
-        if (!delete || contextId == null)
-            return;
-
-        await _identityClient.ClientDeleteAsync((Guid) contextId);
-        await RefreshAsync();
-    }
-
-
-    private async Task RefreshAsync()
-    {
-
-        var response = await _identityClient.ClientsPaginateAsync(_pageIndex * Batch, Batch, new Dictionary<string, int>());
-
-        if (response.IsSuccessful)
+        var skip = tableState.Page * tableState.PageSize;
+        var response = await _identityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        if (!response.IsSuccessful)
         {
-            var payload = await response.ReadPayloadAsync();
-            _clients.Clear();
-            _clients.AddRange(payload ?? ArraySegment<ClientDto>.Empty);
+            return new TableData<ClientDto>();
         }
+
+        var clients = (await response.ReadPayloadAsync())!;
+        return new TableData<ClientDto>
+        {
+            Items = clients,
+            TotalItems = response.DocumentCount
+        };
     }
 
-    private async Task NextPageAsync()
+    private void Refresh()
     {
-        _pageIndex++;
-        await RefreshAsync();
-
-        if (_clients.Count == 0)
-            await PrevPageAsync();
+        _table?.ReloadServerData();
     }
 
-    private async Task PrevPageAsync()
+    private void GoToAddClient()
     {
-        _pageIndex--;
+        _navigationManager.NavigateTo("services/auth/clients/add");
+    }
 
-        if (_pageIndex < 0)
-            _pageIndex = 0;
-
-        await RefreshAsync();
+    private void GoToClient(Guid contextId)
+    {
+        _navigationManager.NavigateTo($"services/auth/clients/{contextId}");
     }
 }

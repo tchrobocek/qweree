@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
 {
-    public class UserInvitationInputInputMapper
+    public class UserInvitationInputMapper
     {
         public static UserInvitationInputDto ToDto(UserInvitationInput userInvitationInput)
         {

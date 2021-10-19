@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
@@ -43,6 +44,38 @@ namespace Qweree.Authentication.AdminSdk.Identity
         public async Task<ApiResponse> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
         {
             var response = await _httpClient.DeleteAsync($"users/{id}", cancellationToken);
+            return new ApiResponse(response);
+        }
+
+        public async Task<ApiResponse<UserInvitationDto>> UserInvitationCreateAsync(UserInvitationInputDto input, CancellationToken cancellationToken = new())
+        {
+            var json = JsonUtils.Serialize(input);
+            var response = await _httpClient.PostAsync("user-invitations", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+            return new ApiResponse<UserInvitationDto>(response);
+        }
+
+        public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.GetAsync($"user-invitations/{id}", cancellationToken);
+            return new ApiResponse<UserInvitationDto>(response);
+        }
+
+        public async Task<PaginationApiResponse<UserInvitationDto>> UserInvitationsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        {
+            var sortString = "";
+            foreach (var (field, direction) in sort)
+            {
+                sortString += $"sort[{field}]={direction}&";
+            }
+            var queryString = $"?skip={skip}&take={take}&{sortString}";
+
+            var response = await _httpClient.GetAsync($"user-invitations/{queryString}", cancellationToken);
+            return new PaginationApiResponse<UserInvitationDto>(response);
+        }
+
+        public async Task<ApiResponse> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+        {
+            var response = await _httpClient.DeleteAsync($"user-invitations/{id}", cancellationToken);
             return new ApiResponse(response);
         }
 

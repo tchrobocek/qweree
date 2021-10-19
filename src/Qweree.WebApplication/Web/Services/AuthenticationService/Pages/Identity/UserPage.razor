@@ -1,0 +1,86 @@
+@page "/services/auth/users/{UserId}"
+@attribute [Authorize]
+@using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.AdminSdk.Identity.Users
+@using Qweree.Authentication.AdminSdk.Authorization.Roles
+@using Microsoft.AspNetCore.Authorization
+@inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
+
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">@_user?.FullName (@_user?.Username)</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_user != null)
+        {
+            <MudTabs>
+                <MudTabPanel Text="Info">
+                    <MudGrid Class="mt-6 pl-6 mb-4">
+                        <MudItem xs="4">
+                            <div style="text-align: center">
+                                <MudAvatar Style="height:140px; width:140px; font-size:2rem;" Color="Color.Primary" Class="my-8">
+                                    @_user.Username?.First().ToString().ToUpper()
+                                </MudAvatar>
+                            </div>
+                        </MudItem>
+                        <MudItem xs="8" Class="my-8 pl-6">
+                            <div><label>Id: </label>@_user.Id</div>
+                            <div><label>Username: </label>@_user.Username</div>
+                            <div><label>Fullname: </label>@_user.FullName</div>
+                            <div><label>Contact email: </label>@_user.ContactEmail</div>
+                            <div><label>Creation time: </label>@_user.CreatedAt</div>
+                            <div><label>Last modification time: </label>@_user.ModifiedAt</div>
+                        </MudItem>
+                    </MudGrid>
+                    <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
+                        <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
+                            @foreach (var role in _user.Roles ?? Array.Empty<RoleDto>())
+                            {
+                                <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
+                            }
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="Delete user" Class="mt-0" Style="margin: 0 !important;">
+                            <MudButton OnClick="DeleteAsync" Color="Color.Error">Delete</MudButton>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudTabPanel>
+                <MudTabPanel Text="Modify" Disabled></MudTabPanel>
+                <MudTabPanel Text="Activity log" Disabled></MudTabPanel>
+                <MudTabPanel Text="Comments" Disabled></MudTabPanel>
+                <MudTabPanel Text="Notes" Disabled></MudTabPanel>
+            </MudTabs>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private UserDto? _user;
+
+    [Parameter]
+    public string? UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Guid.TryParse(UserId, out var id))
+        {
+            _navigationManager.NavigateTo("/not-found");
+            return;
+        }
+
+        var userResponse = await _identityClient.UserGetAsync(id);
+
+        if (!userResponse.IsSuccessful)
+        {
+            _navigationManager.NavigateTo("/not-found");
+        }
+
+        _user = await userResponse.ReadPayloadAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        await _identityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
+    }
+
+}

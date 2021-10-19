@@ -26,13 +26,36 @@ namespace Qweree.Authentication.WebApi.Web.Identity
         }
 
         /// <summary>
+        ///     Create user invitation.
+        /// </summary>
+        /// <param name="userInvitation">User invitation.</param>
+        /// <returns>Created user invitation.</returns>
+        [HttpPost]
+        [Authorize(Policy = "UserInvitationCreate")]
+        [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UserInvitationCreateActionAsync(UserInvitationInputDto userInvitation)
+        {
+            var input = UserInvitationInputMapper.FromDto(userInvitation);
+            var userInvitationResponse = await _userInvitationService.UserInvitationCreateAsync(input);
+
+            if (userInvitationResponse.Status != ResponseStatus.Ok)
+                return userInvitationResponse.ToErrorActionResult();
+
+            var userInvitationDto = UserInvitationMapper.ToDto(userInvitationResponse.Payload!);
+
+            var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/admin/identity/user-invitations/{userInvitationDto.Id}");
+            return Created(uri, userInvitationDto);
+        }
+
+        /// <summary>
         ///     Get user invitation by id.
         /// </summary>
         /// <param name="id">User invitation id.</param>
         /// <returns>Found user invitation.</returns>
         [HttpGet("{id}")]
         [Authorize(Policy = "UserInvitationRead")]
-        [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
         {

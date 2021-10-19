@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
+using Qweree.AspNet.Validations;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
-using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -36,10 +36,13 @@ namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
             {
                 invitation = await _userInvitationRepository.GetAsync(input.UserInvitationId, cancellationToken);
             }
-            catch (DocumentNotFoundException e)
+            catch (DocumentNotFoundException)
             {
-                return Response.Fail(e.Message);
+                return Response.Fail("Invitation was not found.");
             }
+
+            if (invitation.ExpiresAt < _dateTimeProvider.UtcNow)
+                return Response.Fail("Invitation was not found.");
 
             input = new UserRegisterInput(invitation.Id, invitation.Username ?? input.Username,
                 invitation.FullName ?? input.Fullname, invitation.ContactEmail ?? input.ContactEmail, input.Password);

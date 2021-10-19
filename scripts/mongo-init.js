@@ -22,6 +22,11 @@ users = [{
         "98d7d3a1-bedd-4ee1-a633-a4217f5414ee",
         "145e1674-691a-4bd5-956b-4154bc4264da",
         "d98049ab-977e-42ef-bba6-05c16184d054",
+        "427f1ea4-5026-493b-999a-dc4f1f945ad4",
+        "22803ef9-0179-4371-a40e-91b899a0c7f7",
+        "1cc32e1e-7b61-445a-9410-c80afb91b06d",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ],
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
@@ -54,7 +59,12 @@ clients = [{
         "a1272efa-b687-4fda-a999-11b4b0acd414",
         "98d7d3a1-bedd-4ee1-a633-a4217f5414ee",
         "145e1674-691a-4bd5-956b-4154bc4264da",
-        "d98049ab-977e-42ef-bba6-05c16184d054"
+        "d98049ab-977e-42ef-bba6-05c16184d054",
+        "427f1ea4-5026-493b-999a-dc4f1f945ad4",
+        "22803ef9-0179-4371-a40e-91b899a0c7f7",
+        "1cc32e1e-7b61-445a-9410-c80afb91b06d",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
@@ -190,7 +200,52 @@ userRoles = [{
     "IsGroup": false,
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
-}];
+}, {
+    "_id": UUID("bb19c0ef-839e-481f-96e0-cea1486bd3e6"),
+    "Key": "qweree.cdn.storage.store_force",
+    "Label": "Cdn storage replace",
+    "Description": "Allows user to overwrite files in cdn.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("8cae063d-c180-4c88-ba3f-9b999f6267b2"),
+    "Key": "qweree.cdn.storage.delete",
+    "Label": "Cdn storage delete",
+    "Description": "Allows user to delete files in cdn.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("427f1ea4-5026-493b-999a-dc4f1f945ad4"),
+    "Key": "qweree.auth.userInvitations.create",
+    "Label": "Create user invitations",
+    "Description": "Allows user to create user invitations.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("22803ef9-0179-4371-a40e-91b899a0c7f7"),
+    "Key": "qweree.auth.userInvitations.read",
+    "Label": "Read user invitations",
+    "Description": "Allows user to read and filter user invitations.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("1cc32e1e-7b61-445a-9410-c80afb91b06d"),
+    "Key": "qweree.auth.userInvitations.delete",
+    "Label": "Delete user invitations",
+    "Description": "Allows user to delete user invitations.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, ];
 
 clientRoles = [{
     "_id": UUID("f946f6cd-5d17-4dc5-b383-af0201a8b431"),

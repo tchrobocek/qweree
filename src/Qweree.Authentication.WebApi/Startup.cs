@@ -146,6 +146,9 @@ namespace Qweree.Authentication.WebApi
                 options.AddPolicy("RoleRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.read"));
                 options.AddPolicy("RoleDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.delete"));
                 options.AddPolicy("RoleModify", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.modify"));
+                options.AddPolicy("UserInvitationCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.userInvitations.create"));
+                options.AddPolicy("UserInvitationRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.userInvitations.read"));
+                options.AddPolicy("UserInvitationDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.userInvitations.delete"));
             });
             services.Configure<ForwardedHeadersOptions>(options =>
             {

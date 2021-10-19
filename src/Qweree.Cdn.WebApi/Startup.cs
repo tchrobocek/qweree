@@ -167,7 +167,13 @@ namespace Qweree.Cdn.WebApi
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("StorageStore", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store"));
+                options.AddPolicy("StorageStoreForce", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store_force"));
+                options.AddPolicy("StorageExplore", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.explore"));
+                options.AddPolicy("StorageDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.delete"));
+            });
 
             // _
             services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));

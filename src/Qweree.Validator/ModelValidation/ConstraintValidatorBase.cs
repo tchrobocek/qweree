@@ -22,13 +22,18 @@ namespace Qweree.Validator.ModelValidation
         public Task ValidateAsync(ValidationContext validationContext, IConstraint constraint,
             ValidationBuilder builder, CancellationToken cancellationToken = new())
         {
-            if (!(validationContext.Subject is TSubjectType typedValue))
-                throw new InvalidCastException(@$"The value should be type of ""{typeof(TSubjectType)}"".");
+
+            if (validationContext.Subject is not TSubjectType)
+            {
+                if (default(TSubjectType) != null)
+                    throw new InvalidCastException(@$"The value should be type of ""{typeof(TSubjectType)}"".");
+            }
+
             if (!(constraint is TConstraintType typedConstraint))
                 throw new InvalidCastException(@$"The constraint should be type of ""{typeof(TConstraintType)}"".");
 
             return ValidateAsync(
-                new ValidationContext<TSubjectType>(validationContext.Path, typedValue, validationContext.MemberInfo),
+                new ValidationContext<TSubjectType>(validationContext.Path, (TSubjectType?)validationContext.Subject, validationContext.MemberInfo),
                 typedConstraint, builder, cancellationToken);
         }
 

@@ -14,7 +14,10 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
                 Roles = (userInvitation.Roles ?? ImmutableArray<Guid>.Empty).ToArray(),
                 Username = userInvitation.Username,
                 ContactEmail = userInvitation.ContactEmail,
-                FullName = userInvitation.FullName
+                FullName = userInvitation.FullName,
+                CreatedAt = userInvitation.CreatedAt,
+                ExpiresAt = userInvitation.ExpiresAt,
+                ModifiedAt = userInvitation.ModifiedAt,
             };
         }
 
@@ -22,7 +25,8 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
         {
             return new UserInvitation(userInvitationDto.Id ?? Guid.Empty, userInvitationDto.Username,
                 userInvitationDto.FullName, userInvitationDto.ContactEmail,
-                userInvitationDto.Roles?.ToImmutableArray());
+                userInvitationDto.Roles?.ToImmutableArray(), userInvitationDto.ExpiresAt ?? DateTime.MinValue, userInvitationDto.CreatedAt ?? DateTime.MinValue,
+                userInvitationDto.ModifiedAt ?? DateTime.MinValue);
         }
     }
 }

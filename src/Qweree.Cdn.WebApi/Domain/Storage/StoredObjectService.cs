@@ -20,7 +20,7 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
             _storedObjectRepository = storedObjectRepository;
         }
 
-        public async Task<Response<StoredObject>> StoreObjectAsync(StoreObjectInput input,
+        public async Task<Response<StoredObject>> StoreOrReplaceObjectAsync(StoreObjectInput input,
             CancellationToken cancellationToken = new())
         {
             var slug = SlugHelper.PathToSlug(input.Path);
@@ -37,6 +37,17 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
 
             try
             {
+                var exists = await _storedObjectRepository.ExistsAsync(slug, cancellationToken);
+                if (input.Force && exists)
+                {
+                    await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
+                }
+
+                if (!input.Force && exists)
+                {
+                    return Response.Fail<StoredObject>("Stored object already exists.");
+                }
+
                 await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
             }
             catch (Exception e)
@@ -64,6 +75,23 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
             }
 
             return Response.Ok(storedObject);
+        }
+
+        public async Task<Response> DeleteObjectAsync(string path,
+            CancellationToken cancellationToken = new())
+        {
+            var slug = SlugHelper.PathToSlug(path);
+
+            try
+            {
+                await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                return Response.Fail<StoredObject>(e.Message);
+            }
+
+            return Response.Ok();
         }
     }
 }

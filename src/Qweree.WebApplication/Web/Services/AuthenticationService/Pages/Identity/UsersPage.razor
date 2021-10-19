@@ -1,5 +1,10 @@
 @page "/services/auth/users/list"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Identity.Users
+@using Qweree.Authentication.AdminSdk.Identity
+@inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
+@inject IDialogService _dialogService
 @attribute [Authorize]
 
 <MudCard>
@@ -7,10 +12,76 @@
         <MudText Typo="Typo.h6">Users</MudText>
     </MudCardHeader>
     <MudCardContent Class="py-6">
-        <UsersListComponent />
+        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<UserDto>>>(LoadUsers))">
+            <ToolBarContent>
+                <MudSpacer />
+                <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh users</MudButton>
+                <MudButton Size="Size.Small" OnClick="GoToInvite" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add user</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh Style="width: 150px;">Id</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">
+                    <ShortIdComponent Id="@context.Id"/>
+                </MudTd>
+                <MudTd DataLabel="Name">
+                    <MudAvatar Style="height:32px; width:32px; font-size:1rem;" Color="Color.Primary" Class="my-1 mr-4">
+                        @context.Username?.First().ToString().ToUpper()
+                    </MudAvatar>
+                    @context.FullName (@context.Username)
+                </MudTd>
+                <MudTd Style="text-align: right;" Class="mr-2">
+                    <MudLink @onclick="() => GoToUser(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No records.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
     </MudCardContent>
 </MudCard>
 
 @code {
+    private MudTable<UserDto>? _table;
 
+    private async Task<TableData<UserDto>> LoadUsers(TableState tableState)
+    {
+        var skip = tableState.Page * tableState.PageSize;
+        var response = await _identityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        if (!response.IsSuccessful)
+        {
+            return new TableData<UserDto>();
+        }
+
+        var users = (await response.ReadPayloadAsync())!;
+        return new TableData<UserDto>
+        {
+            Items = users,
+            TotalItems = response.DocumentCount
+        };
+    }
+
+    private void Refresh()
+    {
+        _table?.ReloadServerData();
+    }
+
+    private void GoToUser(Guid contextId)
+    {
+        _navigationManager.NavigateTo($"services/auth/users/{contextId}");
+    }
+
+    private void GoToInvite()
+    {
+        _navigationManager.NavigateTo($"services/auth/users/invite");
+    }
 }

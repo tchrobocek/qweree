@@ -142,5 +142,16 @@ namespace Qweree.Cdn.WebApi.Infrastructure.Storage
 
             return await result.ToListAsync(cancellationToken);
         }
+
+        public async Task DeleteBySlugAsync(string[] slug, CancellationToken cancellationToken = new())
+        {
+            var slugInput = string.Join(@""", """, slug);
+
+            if (slug.Any())
+                slugInput = "\"" + slugInput + "\"";
+
+            var query = @$"{{""Slug"": {{""$eq"": [{slugInput}]}}}}";
+            await DeleteAsync(query, cancellationToken);
+        }
     }
 }
