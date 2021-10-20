@@ -8,7 +8,7 @@
     <div class="explorer-directory-total-count">
         @if (Item.TotalCount != null)
         {
-            @Item.TotalCount <PluralityComponent Value="Item.TotalCount ?? 0" Singular="item" Plural="items"/>
+            @Item.TotalCount <PluralityComponent Value="(int)(Item.TotalCount ?? 0)" Singular="item" Plural="items"/>
         }
     </div>
 
