@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Storage;
+using Qweree.Mongo.Exception;
 using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi.Domain.Storage
@@ -30,30 +31,29 @@ namespace Qweree.Cdn.WebApi.Domain.Storage
             await input.Stream.DisposeAsync();
             stream.Seek(0, SeekOrigin.Begin);
 
-            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, stream.Length,
-                _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow);
-
-            var storedObject = new StoredObject(descriptor, stream);
+            var created = _dateTimeProvider.UtcNow;
 
             try
             {
-                var exists = await _storedObjectRepository.ExistsAsync(slug, cancellationToken);
-                if (input.Force && exists)
-                {
-                    await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
-                }
+                var existing = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
 
-                if (!input.Force && exists)
+                if (!input.Force)
                 {
                     return Response.Fail<StoredObject>("Stored object already exists.");
                 }
 
-                await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
+                created = existing.Descriptor.CreatedAt;
+                await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
             }
-            catch (Exception e)
+            catch (DocumentNotFoundException)
             {
-                return Response.Fail<StoredObject>(e.Message);
             }
+
+            var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, stream.Length,
+                created, _dateTimeProvider.UtcNow);
+
+            StoredObject storedObject = new(descriptor, stream);
+            await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
 
             return Response.Ok(storedObject);
         }
