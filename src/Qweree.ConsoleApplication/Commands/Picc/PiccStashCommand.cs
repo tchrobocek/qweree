@@ -25,6 +25,17 @@ namespace Qweree.ConsoleApplication.Commands.Picc
 
         public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
         {
+            if (optionsBag.Options.ContainsKey("--uri") || optionsBag.Options.ContainsKey("-u"))
+            {
+                return await DownloadFromUri(optionsBag, cancellationToken);
+            }
+
+            Console.WriteLine("Did not provide any action.");
+            return -1;
+        }
+
+        private async Task<int> DownloadFromUri(OptionsBag optionsBag, CancellationToken cancellationToken = new())
+        {
             string? uri = null;
 
             if (optionsBag.Options.TryGetValue("--uri", out var uris))
