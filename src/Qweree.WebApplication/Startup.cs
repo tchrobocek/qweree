@@ -10,11 +10,13 @@ using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Authentication.AdminSdk.Identity;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Cdn.Sdk.Explorer;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.Sdk.System;
 using Qweree.Gateway.Sdk;
 using Qweree.PiccStash.Sdk;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
+using Qweree.WebApplication.Infrastructure.Notes;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
 
 namespace Qweree.WebApplication;
@@ -98,7 +100,16 @@ public class Startup
             };
             return new ExplorerClient(client);
         });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
+            {
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/storage/")
+            };
+            return new StorageClient(client);
+        });
         services.AddScoped<AuthenticationService>();
         services.AddScoped<SystemInfoClientFactory>();
+        services.AddScoped<NoteService>();
     }
 }

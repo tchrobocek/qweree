@@ -1,0 +1,65 @@
+@using Qweree.WebApplication.Infrastructure.Notes
+@inject NoteService _noteService
+
+<MudExpansionPanels Class="mt-6" MultiExpansion="true" Square="true" DisableBorders="true" Elevation="0">
+    <MudExpansionPanel IsInitiallyExpanded="false" Text="Add note" Class="mt-0" Style="margin: 0 !important;">
+        <MudTextField T="string" @bind-Value="_addNoteInput" Variant="Variant.Outlined" FullWidth="true" Label="Note" Lines="5"/>
+        <div class="mt-2" style="text-align: right">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddNoteAsync">Add note</MudButton>
+        </div>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+<div class="my-6 mx-6">
+    <MudText Class="mb-4" Typo="Typo.h6">My notes</MudText>
+    @for (var i = 0; i < _notes.Count; i++)
+    {
+        <div class="pl-4 my-2">
+            <div>@_notes[i].CreatedAt: @_notes[i].Text</div>
+        </div>
+
+        @if (i != _notes.Count - 1)
+        {
+            <MudDivider />
+        }
+    }
+    @if (_notes.Count == 0)
+    {
+        <div>
+           No notes
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<NoteDto> _notes = new();
+    private string _addNoteInput = string.Empty;
+
+    [Parameter]
+    public string? Entity { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshNotesAsync();
+    }
+
+    private async Task RefreshNotesAsync()
+    {
+        _notes.Clear();
+        var collection = await _noteService.GetMyNotesAsync(Entity!);
+        _notes.AddRange(collection.Notes ?? Array.Empty<NoteDto>());
+    }
+
+    private async Task AddNoteAsync()
+    {
+        var newNote = new NoteDto
+        {
+            Id = Guid.NewGuid(),
+            Text = _addNoteInput,
+            CreatedAt = DateTime.UtcNow
+        };
+        _notes.Add(newNote);
+
+        await _noteService.SetMyNotesAsync(Entity!, _notes);
+    }
+}
