@@ -48,7 +48,9 @@
                 <MudTabPanel Text="Modify" Disabled></MudTabPanel>
                 <MudTabPanel Text="Activity log" Disabled></MudTabPanel>
                 <MudTabPanel Text="Comments" Disabled></MudTabPanel>
-                <MudTabPanel Text="Notes" Disabled></MudTabPanel>
+                <MudTabPanel Text="Notes">
+                    <NotesComponent Entity="@UserId" />
+                </MudTabPanel>
             </MudTabs>
         }
     </MudCardContent>
