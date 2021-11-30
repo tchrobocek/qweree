@@ -147,10 +147,20 @@ namespace Qweree.ConsoleApplication.Commands.Picc
             string mimeType = mimeTypes.Single();
 
             await using var stream = await fileResponse.Content.ReadAsStreamAsync(cancellationToken);
-            var picc = await UploadAsync(piccClient, stream, mimeType, cancellationToken);
-
             var config = await _context.GetConfigurationAsync(cancellationToken);
-            Console.WriteLine(new Uri(new Uri(new Uri(config.PiccUri ?? string.Empty), "api/v1/picc/"), picc?.Id.ToString() ?? string.Empty));
+
+
+            try
+            {
+                var picc = await UploadAsync(piccClient, stream, mimeType, cancellationToken);
+                Console.WriteLine(new Uri(new Uri(new Uri(config.PiccUri ?? string.Empty), "api/v1/picc/"), picc?.Id.ToString() ?? string.Empty));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return -1;
+            }
+
             return 0;
         }
 
