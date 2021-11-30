@@ -77,7 +77,8 @@ namespace Qweree.Cdn.WebApi
                 {
                     builder.AllowAnyHeader()
                         .AllowAnyHeader()
-                        .AllowAnyOrigin();
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod();
                 });
             });
             services.AddSwaggerGen(options =>
