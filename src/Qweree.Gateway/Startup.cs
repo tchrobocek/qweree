@@ -19,7 +19,10 @@ public class Startup
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapReverseProxy();
+            endpoints.MapReverseProxy(pipeline =>
+            {
+                pipeline.UseSessionAffinity();
+            });
         });
     }
 

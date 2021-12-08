@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Qweree.WebApplication.Infrastructure.Authentication;
 
 namespace Qweree.WebApplication.Infrastructure.Browser
@@ -22,6 +23,7 @@ namespace Qweree.WebApplication.Infrastructure.Browser
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
             var response = await base.SendAsync(request, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.Unauthorized)
