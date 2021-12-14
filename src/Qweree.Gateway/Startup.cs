@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Qweree.Gateway;
 
 public class Startup
@@ -11,6 +13,12 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
     }
@@ -19,6 +27,7 @@ public class Startup
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapControllers();
             endpoints.MapReverseProxy(pipeline =>
             {
                 pipeline.UseSessionAffinity();
