@@ -187,7 +187,7 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new("userId", accessToken.UserId?.ToString() ?? string.Empty),
+                new("user_id", accessToken.UserId?.ToString() ?? string.Empty),
                 new("clientId", accessToken.ClientId),
                 new("username", accessToken.Username ?? string.Empty),
                 new("full_name", accessToken.FullName ?? string.Empty),
