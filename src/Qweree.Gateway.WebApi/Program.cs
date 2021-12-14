@@ -1,4 +1,4 @@
-namespace Qweree.Gateway;
+namespace Qweree.Gateway.WebApi;
 
 public class Program
 {

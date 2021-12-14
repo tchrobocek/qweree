@@ -50,7 +50,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Commands.Test", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.PiccStash.Sdk", "src\Qweree.PiccStash.Sdk\Qweree.PiccStash.Sdk.csproj", "{CBF658C0-1732-4F2D-A207-95A833B29DEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Gateway", "src\Qweree.Gateway\Qweree.Gateway.csproj", "{C25AF806-E1A2-4952-9B1D-9EEBFC2494E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Gateway.WebApi", "src\Qweree.Gateway.WebApi\Qweree.Gateway.WebApi.csproj", "{C25AF806-E1A2-4952-9B1D-9EEBFC2494E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

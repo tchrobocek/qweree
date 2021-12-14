@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Qweree.Gateway;
+namespace Qweree.Gateway.WebApi;
 
 public class Startup
 {
