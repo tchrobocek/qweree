@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
-using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -15,6 +14,7 @@ using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
 using User = Qweree.Authentication.AdminSdk.Identity.Users.User;
+using UserDto = Qweree.Authentication.AdminSdk.Identity.Users.UserDto;
 using UserMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserMapper;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity

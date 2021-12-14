@@ -17,11 +17,11 @@ namespace Qweree.Authentication.Sdk.OAuth2
             if (userDto.FullName != null)
                 claims.Add(new Claim("full_name", userDto.FullName));
             if (userDto.Email != null)
-                claims.Add(new Claim("full_name", userDto.Email));
+                claims.Add(new Claim("email", userDto.Email));
             if (userDto.Roles != null)
-                claims.AddRange(userDto.Roles.Select(r => new Claim("role", r)));
+                claims.AddRange(userDto.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
-            return new ClaimsPrincipal(new ClaimsIdentity(claims));
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, "auth"));
         }
 
         public static UserDto FromClaimsPrincipal(ClaimsPrincipal claimsPrincipal)
