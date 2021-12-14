@@ -1,8 +1,6 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Gateway.Sdk;
-using Qweree.Utils;
 using Qweree.WebApplication.Infrastructure.Browser;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication

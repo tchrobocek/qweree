@@ -1,10 +1,4 @@
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
@@ -62,7 +56,7 @@ public class Startup
             endpoints.MapReverseProxy(pipeline =>
             {
                 pipeline.UseSessionAffinity();
-                pipeline.Use((context, next) =>
+                pipeline.Use(async (context, next) =>
                 {
                     var storage = context.RequestServices.GetRequiredService<SessionStorage>();
 
@@ -72,18 +66,17 @@ public class Startup
                     {
                         try
                         {
-                            using var stream = storage.ReadAsync(cookie);
-                            using var reader = new StreamReader(stream);
-                            var tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(reader.ReadToEnd());
+                            await using var stream = storage.ReadAsync(cookie);
+                            var tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream);
                             context.Request.Headers.Authorization = $"Bearer {tokenInfo?.AccessToken}";
                         }
                         catch (Exception)
                         {
-                            // ignored
+                            context.Response.StatusCode = 401;
                         }
                     }
 
-                    return next();
+                    await next();
                 });
             });
         });

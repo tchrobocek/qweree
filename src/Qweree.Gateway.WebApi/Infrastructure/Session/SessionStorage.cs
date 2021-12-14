@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-
 namespace Qweree.Gateway.WebApi.Infrastructure.Session;
 
 public class SessionStorage : IDisposable
