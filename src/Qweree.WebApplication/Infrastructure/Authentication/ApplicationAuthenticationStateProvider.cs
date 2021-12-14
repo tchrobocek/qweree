@@ -1,48 +1,29 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.WebApplication.Infrastructure.Browser;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication
 {
     public class ApplicationAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly LocalTokenStorage _localTokenStorage;
+        private readonly LocalUserStorage _localUserStorage;
 
-        public ApplicationAuthenticationStateProvider(LocalTokenStorage localTokenStorage)
+        public ApplicationAuthenticationStateProvider(LocalUserStorage localUserStorage)
         {
-            _localTokenStorage = localTokenStorage;
+            _localUserStorage = localUserStorage;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var accessToken = await _localTokenStorage.GetAccessTokenAsync();
-
-            ClaimsIdentity user;
-
-            if (string.IsNullOrWhiteSpace(accessToken))
+            var user = await _localUserStorage.GetUserAsync();
+            if (user == null)
             {
-                user = new ClaimsIdentity(authenticationType: null);
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(authenticationType: null)));
             }
-            else
-            {
-                try
-                {
-                    List<Claim> claims = TokenDecoder.ReadClaims(accessToken)
-                        .ToList();
-                    claims.AddRange(claims.Where(c => c.Type == "role").Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
-                    user = new ClaimsIdentity(claims, "oauth2");
-                }
-                catch (Exception)
-                {
-                    user = new ClaimsIdentity(authenticationType: null);
-                }
-            }
-
-            return new AuthenticationState(new ClaimsPrincipal(user));
+            return new AuthenticationState(UserMapper.ToClaimsPrincipal(user));
         }
     }
 }

@@ -9,11 +9,10 @@ using MudBlazor.Services;
 using Qweree.Authentication.AdminSdk.Authorization;
 using Qweree.Authentication.AdminSdk.Identity;
 using Qweree.Authentication.Sdk.Account;
-using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.Sdk.Explorer;
 using Qweree.Cdn.Sdk.System;
+using Qweree.Gateway.Sdk;
 using Qweree.PiccStash.Sdk;
-using Qweree.Sdk.Http.HttpClient;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
@@ -36,23 +35,20 @@ namespace Qweree.WebApplication
             services.AddAuthorizationCore();
             services.AddMudServices();
             services.AddSingleton<LocalStorage>();
-            services.AddSingleton<LocalTokenStorage>();
-            services.AddSingleton(p => new QwereeHttpHandler(new HttpClientHandler(),
-                p.GetRequiredService<LocalTokenStorage>()));
+            services.AddSingleton<LocalUserStorage>();
             services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
             services.AddScoped<ClaimsPrincipalStorage>();
             services.AddScoped(p =>
             {
-                return new UnauthorizedHttpHandler(p.GetRequiredService<AuthenticationService>(),
-                    p.GetRequiredService<NavigationManager>(), p.GetRequiredService<QwereeHttpHandler>());
+                return new UnauthorizedHttpHandler(p.GetRequiredService<LocalUserStorage>(), p.GetRequiredService<NavigationManager>(), new HttpClientHandler());
             });
-            services.AddScoped(_ =>
+            services.AddScoped(p =>
             {
-                var client = new HttpClient
+                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
-                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]), "api/oauth2/auth/")
+                    BaseAddress = new Uri(new Uri("http://localhost:5002/"), "api/v1/auth/")
                 };
-                return new OAuth2Client(client);
+                return new AuthenticationClient(client);
             });
             services.AddScoped(p =>
             {

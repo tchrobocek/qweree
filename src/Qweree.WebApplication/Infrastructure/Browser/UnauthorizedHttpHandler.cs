@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -11,13 +10,13 @@ namespace Qweree.WebApplication.Infrastructure.Browser
 {
     public class UnauthorizedHttpHandler : DelegatingHandler
     {
-        private readonly AuthenticationService _authenticationService;
+        private readonly LocalUserStorage _localUserStorage;
         private readonly NavigationManager _navigationManager;
 
-        public UnauthorizedHttpHandler(AuthenticationService authenticationService, NavigationManager navigationManager, HttpMessageHandler innerHandler)
+        public UnauthorizedHttpHandler(LocalUserStorage localUserStorage, NavigationManager navigationManager, HttpMessageHandler innerHandler)
             :base(innerHandler)
         {
-            _authenticationService = authenticationService;
+            _localUserStorage = localUserStorage;
             _navigationManager = navigationManager;
         }
 
@@ -29,23 +28,7 @@ namespace Qweree.WebApplication.Infrastructure.Browser
             if (response.StatusCode != HttpStatusCode.Unauthorized)
                 return response;
 
-            try
-            {
-                await _authenticationService.RefreshAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await _authenticationService.LogoutAsync(cancellationToken);
-                _navigationManager.NavigateTo("/", true);
-                return response;
-            }
-
-            response = await base.SendAsync(request, cancellationToken);
-
-            if (response.StatusCode != HttpStatusCode.Unauthorized)
-                return response;
-
-            await _authenticationService.LogoutAsync(cancellationToken);
+            await _localUserStorage.RemoveUserAsync(cancellationToken);
             _navigationManager.NavigateTo("/", true);
 
             return response;
