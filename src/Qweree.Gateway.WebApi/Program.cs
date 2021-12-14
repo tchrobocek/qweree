@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
 namespace Qweree.Gateway.WebApi;
 
 public class Program

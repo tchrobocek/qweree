@@ -8,7 +8,13 @@
 
     <ItemGroup>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
         <PackageReference Include="Yarp.ReverseProxy" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
+      <ProjectReference Include="..\Qweree.Gateway.Sdk\Qweree.Gateway.Sdk.csproj" />
     </ItemGroup>
 
 </Project>
