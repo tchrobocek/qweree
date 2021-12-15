@@ -75,6 +75,21 @@ services:
     environment:
        ASPNETCORE_URLS: http://localhost:80
 
+  qweree-gateway:
+    container_name: qweree-gateway
+    build:
+      dockerfile: ./docker/Qweree.Gateway.WebApi.Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      AuthUri: "http://qweree-auth"
+      ReverseProxy__Clusters__qweree.authentication__Destinations__default__Address: "http://qweree-auth"
+      ReverseProxy__Clusters__qweree.cdn__Destinations__default__Address: "http://qweree-cdn"
+      ReverseProxy__Clusters__qweree.picc__Destinations__default__Address: "http://qweree-picc"
+      ReverseProxy__Clusters__qweree.webapp__Destinations__default__Address: "http://qweree-webapp"
+
 volumes:
   qweree-db:
   qweree-cdn:

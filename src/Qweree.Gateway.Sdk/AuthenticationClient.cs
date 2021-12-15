@@ -1,25 +1,30 @@
+using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
-namespace Qweree.Gateway.Sdk;
-
-public class AuthenticationClient
+namespace Qweree.Gateway.Sdk
 {
-    private readonly HttpClient _httpClient;
-
-    public AuthenticationClient(HttpClient httpClient)
+    public class AuthenticationClient
     {
-        _httpClient = httpClient;
-    }
+        private readonly HttpClient _httpClient;
 
-    public async Task<ApiResponse<UserDto>> LoginAsync(LoginInputDto input, CancellationToken cancellationToken = new())
-    {
-        var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
-        var response = await _httpClient.PostAsync("login", content, cancellationToken);
+        public AuthenticationClient(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
-        return ApiResponse.CreateApiResponse<UserDto>(response);
+        public async Task<ApiResponse<UserDto>> LoginAsync(LoginInputDto input,
+            CancellationToken cancellationToken = new())
+        {
+            var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await _httpClient.PostAsync("login", content, cancellationToken);
+
+            return ApiResponse.CreateApiResponse<UserDto>(response);
+        }
     }
 }

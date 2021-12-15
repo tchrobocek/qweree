@@ -27,7 +27,7 @@ public class Startup
         {
             options.AddPolicy("liberal", builder =>
             {
-                builder.WithOrigins("http://localhost:5000")
+                builder.WithOrigins(Configuration["Origin"])
                     .AllowCredentials()
                     .WithHeaders("Content-Type");
             });
@@ -35,13 +35,13 @@ public class Startup
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
-        services.AddSingleton(_ => new SessionStorage("~/Work/chrobo/temp/session"));
+        services.AddSingleton(_ => new SessionStorage(Configuration["SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddScoped(_ =>
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri(new Uri("http://localhost/auth/"), "api/oauth2/auth/")
+                BaseAddress = new Uri(new Uri(Configuration["AuthUri"]), "api/oauth2/auth/")
             };
             return new OAuth2Client(client);
         });

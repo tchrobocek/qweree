@@ -46,7 +46,7 @@ namespace Qweree.WebApplication
             {
                 var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
                 {
-                    BaseAddress = new Uri(new Uri("http://localhost:5002/"), "api/v1/auth/")
+                    BaseAddress = new Uri(new Uri("http://localhost/"), "api/v1/auth/")
                 };
                 return new AuthenticationClient(client);
             });

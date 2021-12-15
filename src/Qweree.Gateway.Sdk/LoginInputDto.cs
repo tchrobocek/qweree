@@ -1,7 +1,8 @@
-﻿namespace Qweree.Gateway.Sdk;
-
-public class LoginInputDto
+﻿namespace Qweree.Gateway.Sdk
 {
-    public string? Username { get; set; }
-    public string? Password { get; set; }
+    public class LoginInputDto
+    {
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+    }
 }
