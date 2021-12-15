@@ -1,14 +1,5 @@
 version: "2"
 services:
-  qweree-proxy:
-    container_name: qweree-proxy
-    image: nginx:latest
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - ./src/Qweree.ReverseProxy/config/nginx.conf:/etc/nginx/nginx.conf
-
   qweree-db:
     container_name: qweree-db
     image: mongo:latest
