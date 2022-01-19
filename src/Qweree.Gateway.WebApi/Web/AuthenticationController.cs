@@ -16,11 +16,13 @@ public class AuthenticationController : ControllerBase
     private readonly Random _random = new();
     private readonly OAuth2Client _oauthClient;
     private readonly SessionStorage _sessionStorage;
+    private readonly IWebHostEnvironment _environment;
 
-    public AuthenticationController(OAuth2Client oauthClient, SessionStorage sessionStorage)
+    public AuthenticationController(OAuth2Client oauthClient, SessionStorage sessionStorage, IWebHostEnvironment environment)
     {
         _oauthClient = oauthClient;
         _sessionStorage = sessionStorage;
+        _environment = environment;
     }
 
     [HttpPost]
@@ -38,6 +40,18 @@ public class AuthenticationController : ControllerBase
 
         var tokenInfo = (await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy))!;
         var cookie = GenerateCookie();
+
+        Response.Cookies.Delete("Session");
+        if (_environment.IsDevelopment())
+        {
+            Response.Cookies.Append("Session", cookie, new CookieOptions
+            {
+                HttpOnly = false,
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            });
+        }
+
         Response.Cookies.Append("Session", cookie, new CookieOptions
         {
             Expires = new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromHours(3)),

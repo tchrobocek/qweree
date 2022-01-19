@@ -46,9 +46,11 @@ public class Startup
             return new OAuth2Client(client);
         });
     }
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
-        app.UseCors("liberal");
+        if (environment.IsDevelopment())
+            app.UseCors("liberal");
+
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
