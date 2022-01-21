@@ -38,7 +38,7 @@
                 </MudTd>
                 <MudTd DataLabel="Actions" Style="text-align: right">
                     <MudLink @onclick="() => NavigateToEdit(context.Id)" Class="cursor-pointer mx-2">Edit</MudLink>
-                    <MudLink @onclick="() => DeleteAsync(context.Id)" Color="Color.Error" Class="cursor-pointer mx-2">Delete</MudLink>
+                    <MudLink @onclick="() => DeleteAsync(context)" Color="Color.Error" Class="cursor-pointer mx-2">Delete</MudLink>
                 </MudTd>
             </RowTemplate>
         </MudTable>
@@ -64,15 +64,15 @@
         _navigationManager.NavigateTo($"services/auth/client-roles/edit/{id.ToString()}");
     }
 
-    private async Task DeleteAsync(Guid? contextId)
+    private async Task DeleteAsync(ClientRoleDto context)
     {
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
+        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", $"Do you really want to delete role {context.Key}?"}});
         var delete = (bool)((await result.Result).Data ?? false);
 
-        if (!delete || contextId == null)
+        if (!delete)
             return;
 
-        await _authorizationClient.ClientRoleDeleteAsync((Guid) contextId);
+        await _authorizationClient.ClientRoleDeleteAsync((Guid) context.Id!);
         await RefreshAsync();
     }
 

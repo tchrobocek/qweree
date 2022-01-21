@@ -58,9 +58,11 @@
         var cdnUri = _configuration["CdnServiceUri"];
         var authUri = _configuration["TokenServiceUri"];
         var piccUri = _configuration["PiccServiceUri"];
+        var gatewayUri = _configuration["GatewayServiceUri"];
         _services.Add(new ServiceInfo {Label = "Authentication service", SwaggerUri = authUri + "swagger", Uri = authUri});
         _services.Add(new ServiceInfo {Label = "Cdn service", SwaggerUri = cdnUri + "swagger", Uri = cdnUri});
         _services.Add(new ServiceInfo {Label = "Picc service", SwaggerUri = piccUri + "swagger", Uri = piccUri});
+        _services.Add(new ServiceInfo {Label = "Gateway service", SwaggerUri = gatewayUri + "swagger", Uri = gatewayUri});
 
         await UpdateServicesAsync();
     }
