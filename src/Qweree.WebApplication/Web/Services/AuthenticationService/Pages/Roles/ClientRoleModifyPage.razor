@@ -20,13 +20,13 @@
             <MudExpansionPanel Text="Role info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
                 <MudGrid>
                     <MudItem xs="6">
-                        <MudTextFieldString Variant="Variant.Outlined" Label="Label" @bind-Value="_label" />
+                        <MudTextField T="string" Variant="Variant.Outlined" Label="Label" @bind-Value="_label" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextFieldString Disabled Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
+                        <MudTextField T="string" Disabled Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
                     </MudItem>
                 </MudGrid>
-                <MudTextFieldString Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
+                <MudTextField T="string" Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Group role" Class="mt-0" Style="margin: 0 !important;">
                 <ClientRoleSelectComponent SelectedRoles="_groupRoles" />

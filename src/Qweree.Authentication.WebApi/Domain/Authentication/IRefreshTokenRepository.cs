@@ -1,11 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Qweree.Authentication.WebApi.Domain.Authentication
+namespace Qweree.Authentication.WebApi.Domain.Authentication;
+
+public interface IRefreshTokenRepository
 {
-    public interface IRefreshTokenRepository
-    {
-        Task<RefreshToken> GetByTokenAsync(string token, CancellationToken cancellationToken = new());
-        Task InsertAsync(RefreshToken refreshToken, CancellationToken cancellationToken = new());
-    }
+    Task<RefreshToken> GetByTokenAsync(string token, CancellationToken cancellationToken = new());
+    Task InsertAsync(RefreshToken refreshToken, CancellationToken cancellationToken = new());
 }

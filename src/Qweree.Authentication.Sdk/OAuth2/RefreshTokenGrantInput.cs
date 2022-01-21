@@ -1,12 +1,11 @@
-namespace Qweree.Authentication.Sdk.OAuth2
-{
-    public class RefreshTokenGrantInput
-    {
-        public RefreshTokenGrantInput(string refreshToken)
-        {
-            RefreshToken = refreshToken;
-        }
+namespace Qweree.Authentication.Sdk.OAuth2;
 
-        public string RefreshToken { get; }
+public class RefreshTokenGrantInput
+{
+    public RefreshTokenGrantInput(string refreshToken)
+    {
+        RefreshToken = refreshToken;
     }
+
+    public string RefreshToken { get; }
 }

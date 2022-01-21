@@ -3,19 +3,18 @@ using DeepEqual.Syntax;
 using Qweree.Authentication.Sdk.Tokens;
 using Xunit;
 
-namespace Qweree.Authentication.Sdk.Test.Tokens
-{
-    [Trait("Category", "Unit test")]
-    public class TokenInfoMapperTest
-    {
-        [Fact]
-        public void TestTokenInfoMapper()
-        {
-            var expected = new TokenInfo("access", "refresh", DateTime.UtcNow);
-            var dto = TokenInfoMapper.ToDto(expected);
-            var actual = TokenInfoMapper.FromDto(dto);
+namespace Qweree.Authentication.Sdk.Test.Tokens;
 
-            actual.ShouldDeepEqual(expected);
-        }
+[Trait("Category", "Unit test")]
+public class TokenInfoMapperTest
+{
+    [Fact]
+    public void TestTokenInfoMapper()
+    {
+        var expected = new TokenInfo("access", "refresh", DateTime.UtcNow);
+        var dto = TokenInfoMapper.ToDto(expected);
+        var actual = TokenInfoMapper.FromDto(dto);
+
+        actual.ShouldDeepEqual(expected);
     }
 }

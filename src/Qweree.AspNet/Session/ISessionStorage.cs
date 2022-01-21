@@ -1,11 +1,10 @@
 using System;
 
-namespace Qweree.AspNet.Session
+namespace Qweree.AspNet.Session;
+
+public interface ISessionStorage
 {
-    public interface ISessionStorage
-    {
-        User? CurrentUser { get; }
-        Client CurrentClient { get; }
-        Guid Id { get; }
-    }
+    User? CurrentUser { get; }
+    Client CurrentClient { get; }
+    Guid Id { get; }
 }

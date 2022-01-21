@@ -1,14 +1,5 @@
 version: "2"
 services:
-  qweree-proxy:
-    container_name: qweree-proxy
-    image: nginx:latest
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - ./src/Qweree.ReverseProxy/config/nginx.conf:/etc/nginx/nginx.conf
-
   qweree-db:
     container_name: qweree-db
     image: mongo:latest
@@ -74,6 +65,22 @@ services:
     restart: always
     environment:
        ASPNETCORE_URLS: http://localhost:80
+
+  qweree-gateway:
+    container_name: qweree-gateway
+    build:
+      dockerfile: ./docker/Qweree.Gateway.WebApi.Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "80:80"
+    environment:
+      # ASPNETCORE_ENVIRONMENT: 'Development'
+      AuthUri: "http://qweree-auth"
+      ReverseProxy__Clusters__qweree.authentication__Destinations__default__Address: "http://qweree-auth"
+      ReverseProxy__Clusters__qweree.cdn__Destinations__default__Address: "http://qweree-cdn"
+      ReverseProxy__Clusters__qweree.picc__Destinations__default__Address: "http://qweree-picc"
+      ReverseProxy__Clusters__qweree.webapp__Destinations__default__Address: "http://qweree-webapp"
 
 volumes:
   qweree-db:

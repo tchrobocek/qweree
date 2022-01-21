@@ -17,7 +17,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using MongoDB.HealthCheck;
 using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
@@ -29,207 +28,195 @@ using Qweree.Sdk.Http.HttpClient;
 using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.Sdk.OAuth2.ClientCredentials;
 
-namespace Qweree.PiccStash.WebApi
+namespace Qweree.PiccStash.WebApi;
+
+public class Startup
 {
-    public class Startup
+    public const string Audience = "qweree";
+    public const string Issuer = "net.qweree";
+
+    public Startup(IConfiguration configuration)
     {
-        public const string Audience = "qweree";
-        public const string Issuer = "net.qweree";
+        Configuration = configuration;
+    }
 
-        public Startup(IConfiguration configuration)
+    public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
+    {
+        return new TokenValidationParameters
         {
-            Configuration = configuration;
-        }
+            ValidateIssuer = true,
+            ValidIssuer = Issuer,
+            ValidateAudience = true,
+            ValidAudience = Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+    }
 
-        public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
-        {
-            return new()
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddHealthChecks()
+            .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
+
+        services.AddControllers()
+            .AddJsonOptions(options =>
             {
-                ValidateIssuer = true,
-                ValidIssuer = Issuer,
-                ValidateAudience = true,
-                ValidAudience = Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(1)
-            };
-        }
-
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddHealthChecks()
-                .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
-
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("liberal", builder =>
-                {
-                    builder.AllowAnyHeader()
-                        .AllowAnyHeader()
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod();
-                });
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
-            services.AddSwaggerGen(options =>
+        services.AddSwaggerGen(options =>
+        {
+            options.OperationFilter<FileFromBodyOperationFilter>();
+            options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.PiccStash.WebApi", Version = "v1"});
+            options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
             {
-                options.OperationFilter<FileFromBodyOperationFilter>();
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.PiccStash.WebApi", Version = "v1"});
-                options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.OAuth2,
+                Scheme = "Bearer",
+                Flows = new OpenApiOAuthFlows
                 {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.OAuth2,
-                    Scheme = "Bearer",
-                    Flows = new OpenApiOAuthFlows
+                    Password = new OpenApiOAuthFlow
                     {
-                        Password = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
-                            RefreshUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
-                            TokenUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute)
-                        }
+                        AuthorizationUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
+                        RefreshUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
+                        TokenUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute)
                     }
-                });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "oauth2_password"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
+                }
             });
-
-            services.AddAuthentication(options =>
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.TokenValidationParameters =
-                    GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
-                options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context =>
+                    new OpenApiSecurityScheme
                     {
-                        string? token;
-
-                        if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
+                        Reference = new OpenApiReference
                         {
-                            context.Options.TokenValidationParameters =
-                                GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
-
-                            token = values.FirstOrDefault();
-
-                            if (token == null)
-                                return Task.CompletedTask;
-
-                            const string prefix = "Bearer ";
-
-                            if (token.StartsWith(prefix))
-                                token = token.Substring(prefix.Length);
-                            else
-                                token = null;
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "oauth2_password"
                         }
-                        else if (context.Request.Query.TryGetValue("access_token", out values))
-                        {
-                            token = values.FirstOrDefault();
-                        }
-                        else
-                        {
+                    },
+                    new List<string>()
+                }
+            });
+        });
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.SaveToken = true;
+            options.TokenValidationParameters =
+                GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    string? token;
+
+                    if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
+                    {
+                        context.Options.TokenValidationParameters =
+                            GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+
+                        token = values.FirstOrDefault();
+
+                        if (token == null)
                             return Task.CompletedTask;
-                        }
 
-                        context.Token = token;
+                        const string prefix = "Bearer ";
+
+                        if (token.StartsWith(prefix))
+                            token = token.Substring(prefix.Length);
+                        else
+                            token = null;
+                    }
+                    else if (context.Request.Query.TryGetValue("access_token", out values))
+                    {
+                        token = values.FirstOrDefault();
+                    }
+                    else
+                    {
                         return Task.CompletedTask;
                     }
-                };
-            });
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
 
-            services.AddAuthorization();
-
-            // _
-            services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
-            services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-            // Session
-            services.AddScoped(p =>
-                p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
-            services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
-            services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
-
-            // Database
-            services.Configure<DatabaseConfigurationDo>(Configuration.GetSection("Database"));
-            services.AddSingleton(p =>
-            {
-                var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
-                return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
-            });
-
-            // Http
-            services.AddSingleton<HttpClientHandler>();
-            services.AddSingleton(p =>
-            {
-                var httpHandler = p.GetRequiredService<HttpClientHandler>();
-                var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
-
-                return new QwereeHttpHandler(httpHandler,
-                        new ClientAuthenticationStorage(new ClientCredentials("admin-cli", "password"), oauth2Client));
-            });
-            services.AddScoped(p =>
-            {
-
-                var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
-                var httpClient = new HttpClient(httpHandler)
-                {
-                    BaseAddress = new Uri(Configuration["Storage:CdnUri"])
-                };
-                return new StorageClient(httpClient);
-            });
-
-            // Picc stash
-            services.AddScoped<StashedPiccRepository>();
-
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
+                    context.Token = token;
+                    return Task.CompletedTask;
+                }
+            };
+        });
+        services.Configure<ForwardedHeadersOptions>(options =>
         {
-            var pathBase = routingConfiguration.Value.PathBase;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        });
 
-            if (pathBase != null)
+        services.AddAuthorization();
+
+        // _
+        services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+        // Session
+        services.AddScoped(p =>
+            p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
+        services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
+        services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
+
+        // Database
+        services.Configure<DatabaseConfigurationDo>(Configuration.GetSection("Database"));
+        services.AddSingleton(p =>
+        {
+            var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
+            return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
+        });
+
+        // Http
+        services.AddSingleton<HttpClientHandler>();
+        services.AddSingleton(p =>
+        {
+            var httpHandler = p.GetRequiredService<HttpClientHandler>();
+            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
+
+            return new QwereeHttpHandler(httpHandler,
+                new ClientAuthenticationStorage(new ClientCredentials("admin-cli", "password"), oauth2Client));
+        });
+        services.AddScoped(p =>
+        {
+
+            var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
+            var httpClient = new HttpClient(httpHandler)
             {
-                app.UsePathBase(pathBase);
-            }
-            app.UseForwardedHeaders();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Picc Stash api"));
-            app.UseCors("liberal");
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+                BaseAddress = new Uri(Configuration["Storage:CdnUri"])
+            };
+            return new StorageClient(httpClient);
+        });
+
+        // Picc stash
+        services.AddScoped<StashedPiccRepository>();
+
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
+    {
+        var pathBase = routingConfiguration.Value.PathBase;
+
+        if (pathBase != null)
+        {
+            app.UsePathBase(pathBase);
         }
+        app.UseForwardedHeaders();
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Picc Stash api"));
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

@@ -4,49 +4,48 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Sdk.Http;
 
-namespace Qweree.Cdn.Sdk.Storage
+namespace Qweree.Cdn.Sdk.Storage;
+
+public class StorageClient
 {
-    public class StorageClient
+    private readonly HttpClient _httpClient;
+
+    public StorageClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public StorageClient(HttpClient httpClient)
+    public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream, bool force = false,
+        CancellationToken cancellationToken = new())
+    {
+        var method = HttpMethod.Post;
+        if (force)
+            method = HttpMethod.Put;
+
+        var request = new HttpRequestMessage(method, path.Trim('/'))
         {
-            _httpClient = httpClient;
-        }
-
-        public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream, bool force = false,
-            CancellationToken cancellationToken = new())
-        {
-            var method = HttpMethod.Post;
-            if (force)
-                method = HttpMethod.Put;
-
-            var request = new HttpRequestMessage(method, path.Trim('/'))
+            Content = new StreamContent(stream)
             {
-                Content = new StreamContent(stream)
+                Headers =
                 {
-                    Headers =
-                    {
-                        {"Content-Type", mediaType}
-                    }
+                    {"Content-Type", mediaType}
                 }
-            };
+            }
+        };
 
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-            return ApiResponse.CreateApiResponse<StoredObjectDescriptorDto>(response);
-        }
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        return ApiResponse.CreateApiResponse<StoredObjectDescriptorDto>(response);
+    }
 
-        public async Task<ApiResponse> RetrieveAsync(string path, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync(path.Trim('/'), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            return ApiResponse.CreateApiResponse(response);
-        }
+    public async Task<ApiResponse> RetrieveAsync(string path, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync(path.Trim('/'), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
+    }
 
-        public async Task<ApiResponse> DeleteAsync(string path, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.DeleteAsync(path.Trim('/'), cancellationToken);
-            return ApiResponse.CreateApiResponse(response);
-        }
+    public async Task<ApiResponse> DeleteAsync(string path, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync(path.Trim('/'), cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
     }
 }

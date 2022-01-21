@@ -11,57 +11,56 @@ using Qweree.Utils;
 using Qweree.Validator;
 using UserInvitation = Qweree.Authentication.AdminSdk.Identity.Users.UserRegister.UserInvitation;
 
-namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
+
+public class UserRegisterService
 {
-    public class UserRegisterService
+    private readonly IValidator _validator;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IUserInvitationRepository _userInvitationRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IPasswordEncoder _passwordEncoder;
+
+    public UserRegisterService(IValidator validator, IDateTimeProvider dateTimeProvider,
+        IUserInvitationRepository userInvitationRepository, IUserRepository userRepository, IPasswordEncoder passwordEncoder)
     {
-        private readonly IValidator _validator;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IUserInvitationRepository _userInvitationRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IPasswordEncoder _passwordEncoder;
+        _validator = validator;
+        _dateTimeProvider = dateTimeProvider;
+        _userInvitationRepository = userInvitationRepository;
+        _userRepository = userRepository;
+        _passwordEncoder = passwordEncoder;
+    }
 
-        public UserRegisterService(IValidator validator, IDateTimeProvider dateTimeProvider,
-            IUserInvitationRepository userInvitationRepository, IUserRepository userRepository, IPasswordEncoder passwordEncoder)
+    public async Task<Response> RegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())
+    {
+        UserInvitation invitation;
+
+        try
         {
-            _validator = validator;
-            _dateTimeProvider = dateTimeProvider;
-            _userInvitationRepository = userInvitationRepository;
-            _userRepository = userRepository;
-            _passwordEncoder = passwordEncoder;
+            invitation = await _userInvitationRepository.GetAsync(input.UserInvitationId, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail("Invitation was not found.");
         }
 
-        public async Task<Response> RegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())
-        {
-            UserInvitation invitation;
+        if (invitation.ExpiresAt < _dateTimeProvider.UtcNow)
+            return Response.Fail("Invitation was not found.");
 
-            try
-            {
-                invitation = await _userInvitationRepository.GetAsync(input.UserInvitationId, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                return Response.Fail("Invitation was not found.");
-            }
+        input = new UserRegisterInput(invitation.Id, invitation.Username ?? input.Username,
+            invitation.FullName ?? input.Fullname, invitation.ContactEmail ?? input.ContactEmail, input.Password);
 
-            if (invitation.ExpiresAt < _dateTimeProvider.UtcNow)
-                return Response.Fail("Invitation was not found.");
+        var result = await _validator.ValidateAsync(input, cancellationToken);
+        if (result.HasFailed)
+            return result.ToErrorResponse();
 
-            input = new UserRegisterInput(invitation.Id, invitation.Username ?? input.Username,
-                invitation.FullName ?? input.Fullname, invitation.ContactEmail ?? input.ContactEmail, input.Password);
+        var user = new User(Guid.NewGuid(), input.Username, input.Fullname, input.ContactEmail,
+            _passwordEncoder.EncodePassword(input.Password), invitation.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
+            _dateTimeProvider.UtcNow);
 
-            var result = await _validator.ValidateAsync(input, cancellationToken);
-            if (result.HasFailed)
-                return result.ToErrorResponse();
+        await _userRepository.InsertAsync(user, cancellationToken);
+        await _userInvitationRepository.DeleteAsync(invitation.Id, cancellationToken);
 
-            var user = new User(Guid.NewGuid(), input.Username, input.Fullname, input.ContactEmail,
-                _passwordEncoder.EncodePassword(input.Password), invitation.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
-                _dateTimeProvider.UtcNow);
-
-            await _userRepository.InsertAsync(user, cancellationToken);
-            await _userInvitationRepository.DeleteAsync(invitation.Id, cancellationToken);
-
-            return Response.Ok();
-        }
+        return Response.Ok();
     }
 }

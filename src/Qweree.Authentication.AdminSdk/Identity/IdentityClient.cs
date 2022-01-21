@@ -11,104 +11,103 @@ using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
-namespace Qweree.Authentication.AdminSdk.Identity
+namespace Qweree.Authentication.AdminSdk.Identity;
+
+public class IdentityClient
 {
-    public class IdentityClient
+    private readonly HttpClient _httpClient;
+
+    public IdentityClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public IdentityClient(HttpClient httpClient)
+    public async Task<ApiResponse<UserDto>> UserGetAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"users/{id}", cancellationToken);
+        return new ApiResponse<UserDto>(response);
+    }
+
+    public async Task<PaginationApiResponse<UserDto>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+    {
+        var sortString = "";
+        foreach (var (field, direction) in sort)
         {
-            _httpClient = httpClient;
+            sortString += $"sort[{field}]={direction}&";
         }
+        var queryString = $"?skip={skip}&take={take}&{sortString}";
 
-        public async Task<ApiResponse<UserDto>> UserGetAsync(Guid id, CancellationToken cancellationToken = new())
+        var response = await _httpClient.GetAsync($"users/{queryString}", cancellationToken);
+        return new PaginationApiResponse<UserDto>(response);
+    }
+
+    public async Task<ApiResponse> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync($"users/{id}", cancellationToken);
+        return new ApiResponse(response);
+    }
+
+    public async Task<ApiResponse<UserInvitationDto>> UserInvitationCreateAsync(UserInvitationInputDto input, CancellationToken cancellationToken = new())
+    {
+        var json = JsonUtils.Serialize(input);
+        var response = await _httpClient.PostAsync("user-invitations", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+        return new ApiResponse<UserInvitationDto>(response);
+    }
+
+    public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"user-invitations/{id}", cancellationToken);
+        return new ApiResponse<UserInvitationDto>(response);
+    }
+
+    public async Task<PaginationApiResponse<UserInvitationDto>> UserInvitationsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+    {
+        var sortString = "";
+        foreach (var (field, direction) in sort)
         {
-            var response = await _httpClient.GetAsync($"users/{id}", cancellationToken);
-            return new ApiResponse<UserDto>(response);
+            sortString += $"sort[{field}]={direction}&";
         }
+        var queryString = $"?skip={skip}&take={take}&{sortString}";
 
-        public async Task<PaginationApiResponse<UserDto>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+        var response = await _httpClient.GetAsync($"user-invitations/{queryString}", cancellationToken);
+        return new PaginationApiResponse<UserInvitationDto>(response);
+    }
+
+    public async Task<ApiResponse> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync($"user-invitations/{id}", cancellationToken);
+        return new ApiResponse(response);
+    }
+
+    public async Task<ApiResponse<ClientDto>> ClientGetAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"clients/{id}", cancellationToken);
+        return new ApiResponse<ClientDto>(response);
+    }
+
+    public async Task<ApiResponse<CreatedClientDto>> ClientCreateAsync(ClientCreateInputDto input, CancellationToken cancellationToken = new())
+    {
+        var json = JsonUtils.Serialize(input);
+        var response = await _httpClient.PostAsync("clients", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+        return new ApiResponse<CreatedClientDto>(response);
+    }
+
+    public async Task<PaginationApiResponse<ClientDto>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+    {
+        var sortString = "";
+        foreach (var (field, direction) in sort)
         {
-            var sortString = "";
-            foreach (var (field, direction) in sort)
-            {
-                sortString += $"sort[{field}]={direction}&";
-            }
-            var queryString = $"?skip={skip}&take={take}&{sortString}";
-
-            var response = await _httpClient.GetAsync($"users/{queryString}", cancellationToken);
-            return new PaginationApiResponse<UserDto>(response);
+            sortString += $"sort[{field}]={direction}&";
         }
+        var queryString = $"?skip={skip}&take={take}&{sortString}";
 
-        public async Task<ApiResponse> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.DeleteAsync($"users/{id}", cancellationToken);
-            return new ApiResponse(response);
-        }
+        var response = await _httpClient.GetAsync($"clients/{queryString}", cancellationToken);
+        return new PaginationApiResponse<ClientDto>(response);
+    }
 
-        public async Task<ApiResponse<UserInvitationDto>> UserInvitationCreateAsync(UserInvitationInputDto input, CancellationToken cancellationToken = new())
-        {
-            var json = JsonUtils.Serialize(input);
-            var response = await _httpClient.PostAsync("user-invitations", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-            return new ApiResponse<UserInvitationDto>(response);
-        }
-
-        public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync($"user-invitations/{id}", cancellationToken);
-            return new ApiResponse<UserInvitationDto>(response);
-        }
-
-        public async Task<PaginationApiResponse<UserInvitationDto>> UserInvitationsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
-        {
-            var sortString = "";
-            foreach (var (field, direction) in sort)
-            {
-                sortString += $"sort[{field}]={direction}&";
-            }
-            var queryString = $"?skip={skip}&take={take}&{sortString}";
-
-            var response = await _httpClient.GetAsync($"user-invitations/{queryString}", cancellationToken);
-            return new PaginationApiResponse<UserInvitationDto>(response);
-        }
-
-        public async Task<ApiResponse> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.DeleteAsync($"user-invitations/{id}", cancellationToken);
-            return new ApiResponse(response);
-        }
-
-        public async Task<ApiResponse<ClientDto>> ClientGetAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync($"clients/{id}", cancellationToken);
-            return new ApiResponse<ClientDto>(response);
-        }
-
-        public async Task<ApiResponse<CreatedClientDto>> ClientCreateAsync(ClientCreateInputDto input, CancellationToken cancellationToken = new())
-        {
-            var json = JsonUtils.Serialize(input);
-            var response = await _httpClient.PostAsync("clients", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-            return new ApiResponse<CreatedClientDto>(response);
-        }
-
-        public async Task<PaginationApiResponse<ClientDto>> ClientsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
-        {
-            var sortString = "";
-            foreach (var (field, direction) in sort)
-            {
-                sortString += $"sort[{field}]={direction}&";
-            }
-            var queryString = $"?skip={skip}&take={take}&{sortString}";
-
-            var response = await _httpClient.GetAsync($"clients/{queryString}", cancellationToken);
-            return new PaginationApiResponse<ClientDto>(response);
-        }
-
-        public async Task<ApiResponse> ClientDeleteAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.DeleteAsync($"clients/{id}", cancellationToken);
-            return new ApiResponse(response);
-        }
+    public async Task<ApiResponse> ClientDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync($"clients/{id}", cancellationToken);
+        return new ApiResponse(response);
     }
 }

@@ -1,39 +1,35 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Sdk.Http.HttpClient;
+using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Utils;
 
-namespace Qweree.WebApplication.Infrastructure.Browser
+namespace Qweree.WebApplication.Infrastructure.Browser;
+
+public class LocalUserStorage
 {
-    public class LocalTokenStorage : ITokenStorage
+    private readonly LocalStorage _localStorage;
+
+    public LocalUserStorage(LocalStorage localStorage)
     {
-        private readonly LocalStorage _localStorage;
+        _localStorage = localStorage;
+    }
 
-        public LocalTokenStorage(LocalStorage localStorage)
-        {
-            _localStorage = localStorage;
-        }
+    public async Task SetUserAsync(UserDto user, CancellationToken cancellationToken = new())
+    {
+        await _localStorage.SetItemAsync("user", JsonUtils.Serialize(user), cancellationToken);
+    }
 
-        public async Task SetAccessTokenAsync(string token, CancellationToken cancellationToken = new())
-        {
-            await _localStorage.SetItemAsync("access_token", token, cancellationToken);
-        }
+    public async Task<UserDto?> GetUserAsync(CancellationToken cancellationToken = new())
+    {
+        var item = await _localStorage.GetItemAsync("user", cancellationToken);
+        if (string.IsNullOrEmpty(item))
+            return null;
 
+        return JsonUtils.Deserialize<UserDto>(item);
+    }
 
-        public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = new())
-        {
-            var storedToken = await _localStorage.GetItemAsync("access_token", cancellationToken);
-            return storedToken ?? string.Empty;
-        }
-
-        public async Task SetRefreshTokenAsync(string token, CancellationToken cancellationToken = new())
-        {
-            await _localStorage.SetItemAsync("refresh_token", token, cancellationToken);
-        }
-
-        public async Task<string> GetRefreshTokenAsync(CancellationToken cancellationToken = new())
-        {
-            var storedToken = await _localStorage.GetItemAsync("refresh_token", cancellationToken);
-            return storedToken ?? string.Empty;
-        }
+    public async Task RemoveUserAsync(CancellationToken cancellationToken = new())
+    {
+        await _localStorage.RemoveItem("user", cancellationToken);
     }
 }

@@ -2,6 +2,7 @@
 @using Qweree.Cdn.Sdk.Explorer
 @using System.Text.Json
 @using System.Net.Mime
+@using System.Text.Json.Serialization
 @using Qweree.Cdn.Sdk
 
 @inject ExplorerClient _explorerClient;
@@ -74,7 +75,7 @@
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true,
-            IgnoreNullValues = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Converters = { new ExplorerObjectConverter() }
         });
         _items.Clear();
@@ -100,13 +101,13 @@
 
         var items = _items.ToArray();
 
-        return new(".", items.Length, null, created,
+        return new ExplorerDirectoryComponent.ExplorerDirectory(".", items.Length, null, created,
             modified);
     }
 
     private ExplorerDirectoryComponent.ExplorerDirectory CreateTopDirectory()
     {
-        return new("..", null, null, null, null);
+        return new ExplorerDirectoryComponent.ExplorerDirectory("..", null, null, null, null);
     }
 
     private async Task OnPathKeyPressedAsync(KeyboardEventArgs e)
@@ -126,14 +127,14 @@
     private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)
     {
         var label = (directory.Path?[(Path!.Length)..] ?? "unknown dir").TrimStart('/');
-        return new(label, directory.TotalCount ?? 0, directory.TotalSize ?? 0,
+        return new ExplorerDirectoryComponent.ExplorerDirectory(label, directory.TotalCount ?? 0, directory.TotalSize ?? 0,
             directory.CreatedAt ?? DateTime.MinValue, directory.ModifiedAt ?? DateTime.MinValue);
     }
 
     private ExplorerFileComponent.ExplorerFile ToExplorerFile(ExplorerFileDto file)
     {
         var label = (file.Path?[Path!.Length..] ?? "unknown file").TrimStart('/');
-        return new(label, file.MediaType ?? MediaTypeNames.Application.Octet, file.Size ?? 0,
+        return new ExplorerFileComponent.ExplorerFile(label, file.MediaType ?? MediaTypeNames.Application.Octet, file.Size ?? 0,
             file.CreatedAt ?? DateTime.MinValue, file.ModifiedAt ?? DateTime.MinValue);
     }
 

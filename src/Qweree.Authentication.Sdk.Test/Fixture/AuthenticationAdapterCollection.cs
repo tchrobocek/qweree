@@ -1,9 +1,8 @@
 using Xunit;
 
-namespace Qweree.Authentication.Sdk.Test.Fixture
+namespace Qweree.Authentication.Sdk.Test.Fixture;
+
+[CollectionDefinition("Authentication adapter collection")]
+public class AuthenticationAdapterCollection
 {
-    [CollectionDefinition("Authentication adapter collection")]
-    public class AuthenticationAdapterCollection
-    {
-    }
 }

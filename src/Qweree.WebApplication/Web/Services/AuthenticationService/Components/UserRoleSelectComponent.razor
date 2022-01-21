@@ -4,7 +4,7 @@
 
 <div>
     <MudAutocomplete T="UserRoleDto" Label="Search role"
-                     SearchFunc="@Search" ToStringFunc="@(r => $"{r.Label} ({r.Key})")"
+                     SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label} ({r?.Key})")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
                      @onfocus="OnFocus">

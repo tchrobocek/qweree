@@ -1,16 +1,15 @@
 using System;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity
+namespace Qweree.Authentication.WebApi.Infrastructure.Identity;
+
+public class UserDo
 {
-    public class UserDo
-    {
-        public Guid Id { get; set; }
-        public string? Username { get; set; }
-        public string? FullName { get; set; }
-        public string? ContactEmail { get; set; }
-        public string? Password { get; set; }
-        public Guid[]? Roles { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string? Username { get; set; }
+    public string? FullName { get; set; }
+    public string? ContactEmail { get; set; }
+    public string? Password { get; set; }
+    public Guid[]? Roles { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime ModifiedAt { get; set; }
 }

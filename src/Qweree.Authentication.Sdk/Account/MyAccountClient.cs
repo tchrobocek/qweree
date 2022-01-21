@@ -7,36 +7,35 @@ using System.Threading.Tasks;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
-namespace Qweree.Authentication.Sdk.Account
+namespace Qweree.Authentication.Sdk.Account;
+
+public class MyAccountClient
 {
-    public class MyAccountClient
+    private readonly HttpClient _httpClient;
+
+    public MyAccountClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public MyAccountClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+    public async Task<ApiResponse> ChangeMyPasswordAsync(ChangeMyPasswordInput input, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync("change-password",
+            new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json),
+            cancellationToken);
 
-        public async Task<ApiResponse> ChangeMyPasswordAsync(ChangeMyPasswordInput input, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.PostAsync("change-password",
-                new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json),
-                cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
+    }
 
-            return ApiResponse.CreateApiResponse(response);
-        }
+    public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
+        return ApiResponse.CreateApiResponse<UserInvitationDto>(response);
+    }
 
-        public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
-            return ApiResponse.CreateApiResponse<UserInvitationDto>(response);
-        }
-
-        public async Task<ApiResponse> UserRegisterAsync(UserRegisterInputDto input, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-            return ApiResponse.CreateApiResponse(response);
-        }
+    public async Task<ApiResponse> UserRegisterAsync(UserRegisterInputDto input, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
     }
 }

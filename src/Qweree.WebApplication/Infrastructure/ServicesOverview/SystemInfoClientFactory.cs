@@ -2,25 +2,24 @@ using System;
 using System.Net.Http;
 using Qweree.WebApplication.Infrastructure.Browser;
 
-namespace Qweree.WebApplication.Infrastructure.ServicesOverview
+namespace Qweree.WebApplication.Infrastructure.ServicesOverview;
+
+public class SystemInfoClientFactory
 {
-    public class SystemInfoClientFactory
+    private readonly UnauthorizedHttpHandler _httpHandler;
+
+    public SystemInfoClientFactory(UnauthorizedHttpHandler httpHandler)
     {
-        private readonly UnauthorizedHttpHandler _httpHandler;
+        _httpHandler = httpHandler;
+    }
 
-        public SystemInfoClientFactory(UnauthorizedHttpHandler httpHandler)
+    public SystemInfoClient Create(Uri baseUri)
+    {
+        var client = new HttpClient(_httpHandler)
         {
-            _httpHandler = httpHandler;
-        }
+            BaseAddress = new Uri(baseUri, "api/system/")
+        };
 
-        public SystemInfoClient Create(Uri baseUri)
-        {
-            var client = new HttpClient(_httpHandler)
-            {
-                BaseAddress = new Uri(baseUri, "api/system/")
-            };
-
-            return new SystemInfoClient(client);
-        }
+        return new SystemInfoClient(client);
     }
 }

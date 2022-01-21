@@ -7,33 +7,32 @@ using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity
+namespace Qweree.Authentication.WebApi.Infrastructure.Identity;
+
+public class ClientRepository : MongoRepositoryBase<Client, ClientDo>, IClientRepository, IUniqueConstraintValidatorRepository
 {
-    public class ClientRepository : MongoRepositoryBase<Client, ClientDo>, IClientRepository, IUniqueConstraintValidatorRepository
+    public ClientRepository(MongoContext context) : base("clients", context)
     {
-        public ClientRepository(MongoContext context) : base("clients", context)
-        {
-        }
+    }
 
-        protected override Func<Client, ClientDo> ToDocument => ClientMapper.ToDo;
-        protected override Func<ClientDo, Client> FromDocument => ClientMapper.FromDo;
-        public async Task<Client> GetByClientIdAsync(string clientId, CancellationToken cancellationToken)
-        {
-            var client = (await FindAsync($@"{{""ClientId"": ""{clientId}""}}", 0, 1, cancellationToken))
-                .FirstOrDefault();
+    protected override Func<Client, ClientDo> ToDocument => ClientMapper.ToDo;
+    protected override Func<ClientDo, Client> FromDocument => ClientMapper.FromDo;
+    public async Task<Client> GetByClientIdAsync(string clientId, CancellationToken cancellationToken)
+    {
+        var client = (await FindAsync($@"{{""ClientId"": ""{clientId}""}}", 0, 1, cancellationToken))
+            .FirstOrDefault();
 
-            if (client == null)
-                throw new DocumentNotFoundException(@$"Client ""{clientId}"" was not found.");
+        if (client == null)
+            throw new DocumentNotFoundException(@$"Client ""{clientId}"" was not found.");
 
-            return client;
-        }
+        return client;
+    }
 
-        public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
-        {
-            var client = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
-                .FirstOrDefault();
+    public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
+    {
+        var client = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
+            .FirstOrDefault();
 
-            return client != null;
-        }
+        return client != null;
     }
 }

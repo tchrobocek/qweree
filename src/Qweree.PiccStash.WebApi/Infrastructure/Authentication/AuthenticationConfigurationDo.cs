@@ -1,8 +1,7 @@
-namespace Qweree.PiccStash.WebApi.Infrastructure.Authentication
+namespace Qweree.PiccStash.WebApi.Infrastructure.Authentication;
+
+public class AuthenticationConfigurationDo
 {
-    public class AuthenticationConfigurationDo
-    {
-        public string? AccessTokenKey { get; set; }
-        public string? TokenUri { get; set; }
-    }
+    public string? AccessTokenKey { get; set; }
+    public string? TokenUri { get; set; }
 }

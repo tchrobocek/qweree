@@ -11,110 +11,109 @@ using Qweree.Utils;
 using Qweree.Validator;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 
-namespace Qweree.Authentication.WebApi.Domain.Identity
+namespace Qweree.Authentication.WebApi.Domain.Identity;
+
+public class ClientService
 {
-    public class ClientService
+    private readonly IValidator _validator;
+    private readonly IPasswordEncoder _passwordEncoder;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IClientRepository _clientRepository;
+    private readonly SdkMapperService _sdkMapperService;
+    private readonly Random _random;
+
+    public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
+        IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random)
     {
-        private readonly IValidator _validator;
-        private readonly IPasswordEncoder _passwordEncoder;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IClientRepository _clientRepository;
-        private readonly SdkMapperService _sdkMapperService;
-        private readonly Random _random;
+        _validator = validator;
+        _passwordEncoder = passwordEncoder;
+        _dateTimeProvider = dateTimeProvider;
+        _clientRepository = clientRepository;
+        _sdkMapperService = sdkMapperService;
+        _random = random;
+    }
 
-        public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-            IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random)
+    private string GenerateClientSecret()
+    {
+        const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$~&*#@";
+        const int secretLength = 40;
+        var result = string.Empty;
+
+        for (var i = 0; i < secretLength; i++)
         {
-            _validator = validator;
-            _passwordEncoder = passwordEncoder;
-            _dateTimeProvider = dateTimeProvider;
-            _clientRepository = clientRepository;
-            _sdkMapperService = sdkMapperService;
-            _random = random;
+            var index = _random.Next(chars.Length);
+            result += chars[index];
         }
 
-        private string GenerateClientSecret()
+        return result;
+    }
+
+    public async Task<Response<CreatedClient>> ClientCreateAsync(ClientCreateInput clientCreateInput,
+        CancellationToken cancellationToken = new())
+    {
+        var validationResult = await _validator.ValidateAsync(clientCreateInput, cancellationToken);
+        if (validationResult.HasFailed)
+            return validationResult.ToErrorResponse<CreatedClient>();
+
+        var id = clientCreateInput.Id;
+        if (id == Guid.Empty)
+            id = Guid.NewGuid();
+
+        var clientSecret = GenerateClientSecret();
+        var secret = _passwordEncoder.EncodePassword(clientSecret);
+        var client = new Client(id, clientCreateInput.ClientId, secret,
+            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+            clientCreateInput.OwnerId, clientCreateInput.Origin);
+
+        try
         {
-            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$~&*#@";
-            const int secretLength = 40;
-            var result = string.Empty;
-
-            for (var i = 0; i < secretLength; i++)
-            {
-                var index = _random.Next(chars.Length);
-                result += chars[index];
-            }
-
-            return result;
+            await _clientRepository.InsertAsync(client, cancellationToken);
+        }
+        catch (InsertDocumentException)
+        {
+            return Response.Fail<CreatedClient>("Client is a duplicate.");
         }
 
-        public async Task<Response<CreatedClient>> ClientCreateAsync(ClientCreateInput clientCreateInput,
-            CancellationToken cancellationToken = new())
+        var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientSecret,
+            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+            clientCreateInput.OwnerId, clientCreateInput.Origin);
+        return Response.Ok(await _sdkMapperService.ClientMapToCreatedClientAsync(clientToReturn, cancellationToken));
+    }
+
+    public async Task<Response<SdkClient>> ClientGetAsync(Guid id,
+        CancellationToken cancellationToken = new())
+    {
+        Client client;
+
+        try
         {
-            var validationResult = await _validator.ValidateAsync(clientCreateInput, cancellationToken);
-            if (validationResult.HasFailed)
-                return validationResult.ToErrorResponse<CreatedClient>();
-
-            var id = clientCreateInput.Id;
-            if (id == Guid.Empty)
-                id = Guid.NewGuid();
-
-            var clientSecret = GenerateClientSecret();
-            var secret = _passwordEncoder.EncodePassword(clientSecret);
-            var client = new Client(id, clientCreateInput.ClientId, secret,
-                clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
-                clientCreateInput.OwnerId, clientCreateInput.Origin);
-
-            try
-            {
-                await _clientRepository.InsertAsync(client, cancellationToken);
-            }
-            catch (InsertDocumentException)
-            {
-                return Response.Fail<CreatedClient>("Client is a duplicate.");
-            }
-
-            var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientSecret,
-                clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
-                clientCreateInput.OwnerId, clientCreateInput.Origin);
-            return Response.Ok(await _sdkMapperService.ClientMapToCreatedClientAsync(clientToReturn, cancellationToken));
+            client = await _clientRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<SdkClient>(new Error("Client was not found", 404));
         }
 
-        public async Task<Response<SdkClient>> ClientGetAsync(Guid id,
-            CancellationToken cancellationToken = new())
+        return Response.Ok(await _sdkMapperService.ClientMapAsync(client, cancellationToken));
+    }
+
+    public async Task<PaginationResponse<SdkClient>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
+        CancellationToken cancellationToken = new())
+    {
+        var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
+        var documents = new List<SdkClient>();
+
+        foreach (var document in pagination.Documents)
         {
-            Client client;
-
-            try
-            {
-                client = await _clientRepository.GetAsync(id, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                return Response.Fail<SdkClient>(new Error("Client was not found", 404));
-            }
-
-            return Response.Ok(await _sdkMapperService.ClientMapAsync(client, cancellationToken));
+            documents.Add(await _sdkMapperService.ClientMapAsync(document, cancellationToken));
         }
 
-        public async Task<PaginationResponse<SdkClient>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
-            CancellationToken cancellationToken = new())
-        {
-            var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
-            var documents = new List<SdkClient>();
+        return Response.Ok(documents, pagination.TotalCount);
+    }
 
-            foreach (var document in pagination.Documents)
-            {
-                documents.Add(await _sdkMapperService.ClientMapAsync(document, cancellationToken));
-            }
-
-            return Response.Ok(documents, pagination.TotalCount);
-        }
-
-        public async Task<Response> ClientDeleteAsync(Guid id)
-        {
-            await _clientRepository.DeleteAsync(id);
-            return Response.Ok();
-        }
+    public async Task<Response> ClientDeleteAsync(Guid id)
+    {
+        await _clientRepository.DeleteAsync(id);
+        return Response.Ok();
     }
 }

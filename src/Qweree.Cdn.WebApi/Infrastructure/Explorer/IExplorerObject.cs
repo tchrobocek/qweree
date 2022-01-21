@@ -1,7 +1,6 @@
-namespace Qweree.Cdn.WebApi.Infrastructure.Explorer
+namespace Qweree.Cdn.WebApi.Infrastructure.Explorer;
+
+public interface IExplorerObject
 {
-    public interface IExplorerObject
-    {
-        public string Path { get; }
-    }
+    public string Path { get; }
 }

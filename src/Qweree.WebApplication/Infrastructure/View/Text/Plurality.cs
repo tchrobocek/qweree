@@ -1,16 +1,15 @@
 using System;
 
-namespace Qweree.WebApplication.Infrastructure.View.Text
-{
-    public static class Plurality
-    {
-        public static string Decide(long value, string singular, string plural)
-        {
-            Console.WriteLine(value);
-            if (value == 1)
-                return singular;
+namespace Qweree.WebApplication.Infrastructure.View.Text;
 
-            return plural;
-        }
+public static class Plurality
+{
+    public static string Decide(long value, string singular, string plural)
+    {
+        Console.WriteLine(value);
+        if (value == 1)
+            return singular;
+
+        return plural;
     }
 }

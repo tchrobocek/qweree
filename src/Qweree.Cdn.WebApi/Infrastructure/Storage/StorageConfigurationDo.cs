@@ -1,7 +1,6 @@
-namespace Qweree.Cdn.WebApi.Infrastructure.Storage
+namespace Qweree.Cdn.WebApi.Infrastructure.Storage;
+
+public class StorageConfigurationDo
 {
-    public class StorageConfigurationDo
-    {
-        public string? FileSystemRoot { get; set; }
-    }
+    public string? FileSystemRoot { get; set; }
 }

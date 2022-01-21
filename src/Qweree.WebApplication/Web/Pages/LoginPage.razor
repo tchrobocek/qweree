@@ -31,6 +31,7 @@
     protected override async Task OnInitializedAsync()
     {
         var user = await _session.GetUserAsync();
+        Console.WriteLine(user?.FullName);
 
         if (user != null)
             _navigationManager.NavigateTo("/");

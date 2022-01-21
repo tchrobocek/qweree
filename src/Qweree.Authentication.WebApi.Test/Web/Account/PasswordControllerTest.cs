@@ -16,112 +16,111 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.Utils;
 using Xunit;
 
-namespace Qweree.Authentication.WebApi.Test.Web.Account
+namespace Qweree.Authentication.WebApi.Test.Web.Account;
+
+[Collection("Web api collection")]
+[Trait("Category", "Integration test")]
+[Trait("Category", "Web api test")]
+public class PasswordControllerTest : IClassFixture<WebApiFactory>, IDisposable
 {
-    [Collection("Web api collection")]
-    [Trait("Category", "Integration test")]
-    [Trait("Category", "Web api test")]
-    public class PasswordControllerTest : IClassFixture<WebApiFactory>, IDisposable
+    private readonly WebApiFactory _webApiFactory;
+    private readonly HttpClient _client;
+    private readonly IServiceScope _scope;
+    private readonly UserRepository _userRepository;
+    private readonly ClientRepository _clientRepository;
+
+    public PasswordControllerTest(WebApiFactory webApiFactory)
     {
-        private readonly WebApiFactory _webApiFactory;
-        private readonly HttpClient _client;
-        private readonly IServiceScope _scope;
-        private readonly UserRepository _userRepository;
-        private readonly ClientRepository _clientRepository;
+        _webApiFactory = webApiFactory;
+        _client = webApiFactory.CreateClient();
+        _scope = webApiFactory.Services.CreateScope();
 
-        public PasswordControllerTest(WebApiFactory webApiFactory)
+        _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        _userRepository.DeleteAllAsync()
+            .GetAwaiter()
+            .GetResult();
+        _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
+        _clientRepository.DeleteAllAsync()
+            .GetAwaiter()
+            .GetResult();
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _scope.Dispose();
+    }
+
+    [Fact]
+    public async Task TestChangeMyPassword()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+
         {
-            _webApiFactory = webApiFactory;
-            _client = webApiFactory.CreateClient();
-            _scope = webApiFactory.Services.CreateScope();
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new Sdk.OAuth2.ClientCredentials(client.ClientId, client.ClientSecret),
+                new Sdk.OAuth2.PasswordGrantInput(user.Username, user.Password));
+            var input = new ChangeMyPasswordInputDto
+            {
+                OldPassword = user.Password,
+                NewPassword = "xxx---pwd1122POsd"
+            };
 
-            _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
-            _userRepository.DeleteAllAsync()
-                .GetAwaiter()
-                .GetResult();
-            _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
-            _clientRepository.DeleteAllAsync()
-                .GetAwaiter()
-                .GetResult();
+            var response = await httpClient.PostAsync("/api/account/change-password",
+                new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json));
+
+            response.EnsureSuccessStatusCode();
         }
 
-        public void Dispose()
         {
-            _client.Dispose();
-            _scope.Dispose();
+            var input = new[]
+            {
+                new KeyValuePair<string?, string?>("grant_type", "password"),
+                new KeyValuePair<string?, string?>("username", user.Username),
+                new KeyValuePair<string?, string?>("password", user.Password),
+            };
+
+            var authHeaderEncoder = new AuthorizationHeaderEncoder();
+            var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+            var request = new FormUrlEncodedContent(input);
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
+            {
+                Content = request,
+                Headers =
+                {
+                    {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+                }
+            };
+
+            var response = await _client.SendAsync(message);
+            Assert.False(response.IsSuccessStatusCode);
         }
 
-        [Fact]
-        public async Task TestChangeMyPassword()
         {
-            var user = UserFactory.CreateDefault();
-            await _userRepository.InsertAsync(user);
-            var client = ClientFactory.CreateDefault(user.Id);
-            await _clientRepository.InsertAsync(client);
-
-
+            var input = new[]
             {
-                using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new Sdk.OAuth2.ClientCredentials(client.ClientId, client.ClientSecret),
-                    new Sdk.OAuth2.PasswordGrantInput(user.Username, user.Password));
-                var input = new ChangeMyPasswordInputDto
-                {
-                    OldPassword = user.Password,
-                    NewPassword = "xxx---pwd1122POsd"
-                };
+                new KeyValuePair<string?, string?>("grant_type", "password"),
+                new KeyValuePair<string?, string?>("username", user.Username),
+                new KeyValuePair<string?, string?>("password", "xxx---pwd1122POsd"),
+            };
 
-                var response = await httpClient.PostAsync("/api/account/change-password",
-                    new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json));
-
-                response.EnsureSuccessStatusCode();
-            }
-
+            var authHeaderEncoder = new AuthorizationHeaderEncoder();
+            var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+            var request = new FormUrlEncodedContent(input);
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
             {
-                var input = new[]
+                Content = request,
+                Headers =
                 {
-                    new KeyValuePair<string?, string?>("grant_type", "password"),
-                    new KeyValuePair<string?, string?>("username", user.Username),
-                    new KeyValuePair<string?, string?>("password", user.Password),
-                };
+                    {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+                }
+            };
 
-                var authHeaderEncoder = new AuthorizationHeaderEncoder();
-                var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
-                var request = new FormUrlEncodedContent(input);
-                var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
-                {
-                    Content = request,
-                    Headers =
-                    {
-                        {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
-                    }
-                };
-
-                var response = await _client.SendAsync(message);
-                Assert.False(response.IsSuccessStatusCode);
-            }
-
-            {
-                var input = new[]
-                {
-                    new KeyValuePair<string?, string?>("grant_type", "password"),
-                    new KeyValuePair<string?, string?>("username", user.Username),
-                    new KeyValuePair<string?, string?>("password", "xxx---pwd1122POsd"),
-                };
-
-                var authHeaderEncoder = new AuthorizationHeaderEncoder();
-                var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
-                var request = new FormUrlEncodedContent(input);
-                var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
-                {
-                    Content = request,
-                    Headers =
-                    {
-                        {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
-                    }
-                };
-
-                var response = await _client.SendAsync(message);
-                Assert.True(response.IsSuccessStatusCode);
-            }
+            var response = await _client.SendAsync(message);
+            Assert.True(response.IsSuccessStatusCode);
         }
     }
 }

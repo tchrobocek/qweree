@@ -5,31 +5,30 @@ using Qweree.Commands;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
 using Qweree.Utils;
 
-namespace Qweree.ConsoleApplication.Commands.Context
+namespace Qweree.ConsoleApplication.Commands.Context;
+
+public class ContextReadCommand : ICommand
 {
-    public class ContextReadCommand : ICommand
+    private readonly Infrastructure.RunContext.Context _context;
+    public string CommandPath => "context read";
+
+    public ContextReadCommand(Infrastructure.RunContext.Context context)
     {
-        private readonly Infrastructure.RunContext.Context _context;
-        public string CommandPath => "context read";
+        _context = context;
+    }
 
-        public ContextReadCommand(Infrastructure.RunContext.Context context)
+    public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
+    {
+        try
         {
-            _context = context;
+            var config = await _context.GetConfigurationAsync(cancellationToken);
+            Console.WriteLine(JsonUtils.Serialize(config));
         }
-
-        public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
+        catch (Exception e)
         {
-            try
-            {
-                var config = await _context.GetConfigurationAsync(cancellationToken);
-                Console.WriteLine(JsonUtils.Serialize(config));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return -1;
-            }
-            return 0;
+            Console.WriteLine(e.Message);
+            return -1;
         }
+        return 0;
     }
 }

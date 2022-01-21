@@ -8,37 +8,98 @@ using Qweree.Mongo.Exception;
 using Qweree.Validator;
 using ClientRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRole;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Validations
-{
-    public class CreateClientRoleValidator : ObjectValidatorBase<ClientRoleCreateInput>
-    {
-        private readonly IClientRoleRepository _clientRoleRepository;
+namespace Qweree.Authentication.WebApi.Infrastructure.Validations;
 
-        public CreateClientRoleValidator(IClientRoleRepository clientRoleRepository)
+public class CreateClientRoleValidator : ObjectValidatorBase<ClientRoleCreateInput>
+{
+    private readonly IClientRoleRepository _clientRoleRepository;
+
+    public CreateClientRoleValidator(IClientRoleRepository clientRoleRepository)
+    {
+        _clientRoleRepository = clientRoleRepository;
+    }
+
+    protected override async Task ValidateAsync(ValidationContext<ClientRoleCreateInput> validationContext,
+        ValidationBuilder builder, CancellationToken cancellationToken)
+    {
+        var input = validationContext.Subject;
+
+        if (input == null)
         {
-            _clientRoleRepository = clientRoleRepository;
+            return;
         }
 
-        protected override async Task ValidateAsync(ValidationContext<ClientRoleCreateInput> validationContext,
-            ValidationBuilder builder, CancellationToken cancellationToken)
+        if (input.IsGroup)
         {
-            var input = validationContext.Subject;
+            var parentRoles = (await _clientRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
+                .ToArray();
 
-            if (input == null)
+            if (parentRoles.Any())
+                builder.AddError(input.Key,
+                    $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
+
+            var items = new List<ClientRole>();
+            foreach (var itemId in input.Items)
             {
-                return;
+                if (itemId == input.Id)
+                {
+                    builder.AddError(validationContext.Path, @"Role cannot reference itself.");
+                    continue;
+                }
+
+                try
+                {
+                    items.Add(await _clientRoleRepository.GetAsync(itemId, cancellationToken));
+                }
+                catch (DocumentNotFoundException)
+                {
+                    builder.AddError(input.Key, @$"Role ""{itemId}"" was not found.");
+                }
             }
 
-            if (input.IsGroup)
+            var parentsInItems = items.Where(i => i.IsGroup)
+                .ToArray();
+
+            if (parentsInItems.Any())
+                builder.AddError(input.Key,
+                    @$"Role ""{input.Key}"" cannot contain a group. [{string.Join(", ", parentsInItems.Select(r => r.Key).ToArray())}]");
+        }
+    }
+}
+
+public class ModifyClientRoleValidator : ObjectValidatorBase<ClientRoleModifyInput>
+{
+    private readonly IClientRoleRepository _clientRoleRepository;
+
+    public ModifyClientRoleValidator(IClientRoleRepository clientRoleRepository)
+    {
+        _clientRoleRepository = clientRoleRepository;
+    }
+
+    protected override async Task ValidateAsync(ValidationContext<ClientRoleModifyInput> validationContext,
+        ValidationBuilder builder, CancellationToken cancellationToken)
+    {
+        var input = validationContext.Subject;
+
+        if (input == null)
+        {
+            return;
+        }
+
+        if (input.IsGroup ?? false)
+        {
+            var parentRoles = (await _clientRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
+                .ToArray();
+
+            if (parentRoles.Any())
+                builder.AddError(validationContext.Path,
+                    $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
+
+
+            if (input.Items != null)
             {
-                var parentRoles = (await _clientRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
-                    .ToArray();
-
-                if (parentRoles.Any())
-                    builder.AddError(input.Key,
-                        $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
-
                 var items = new List<ClientRole>();
+
                 foreach (var itemId in input.Items)
                 {
                     if (itemId == input.Id)
@@ -53,7 +114,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
                     }
                     catch (DocumentNotFoundException)
                     {
-                        builder.AddError(input.Key, @$"Role ""{itemId}"" was not found.");
+                        builder.AddError(validationContext.Path, @$"Role ""{itemId}"" was not found.");
                     }
                 }
 
@@ -61,70 +122,8 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Validations
                     .ToArray();
 
                 if (parentsInItems.Any())
-                    builder.AddError(input.Key,
-                        @$"Role ""{input.Key}"" cannot contain a group. [{string.Join(", ", parentsInItems.Select(r => r.Key).ToArray())}]");
-            }
-        }
-    }
-
-    public class ModifyClientRoleValidator : ObjectValidatorBase<ClientRoleModifyInput>
-    {
-        private readonly IClientRoleRepository _clientRoleRepository;
-
-        public ModifyClientRoleValidator(IClientRoleRepository clientRoleRepository)
-        {
-            _clientRoleRepository = clientRoleRepository;
-        }
-
-        protected override async Task ValidateAsync(ValidationContext<ClientRoleModifyInput> validationContext,
-            ValidationBuilder builder, CancellationToken cancellationToken)
-        {
-            var input = validationContext.Subject;
-
-            if (input == null)
-            {
-                return;
-            }
-
-            if (input.IsGroup ?? false)
-            {
-                var parentRoles = (await _clientRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
-                    .ToArray();
-
-                if (parentRoles.Any())
                     builder.AddError(validationContext.Path,
-                        $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
-
-
-                if (input.Items != null)
-                {
-                    var items = new List<ClientRole>();
-
-                    foreach (var itemId in input.Items)
-                    {
-                        if (itemId == input.Id)
-                        {
-                            builder.AddError(validationContext.Path, @"Role cannot reference itself.");
-                            continue;
-                        }
-
-                        try
-                        {
-                            items.Add(await _clientRoleRepository.GetAsync(itemId, cancellationToken));
-                        }
-                        catch (DocumentNotFoundException)
-                        {
-                            builder.AddError(validationContext.Path, @$"Role ""{itemId}"" was not found.");
-                        }
-                    }
-
-                    var parentsInItems = items.Where(i => i.IsGroup)
-                        .ToArray();
-
-                    if (parentsInItems.Any())
-                        builder.AddError(validationContext.Path,
-                            @$"Role cannot contain a group. [{string.Join(", ", parentsInItems.Select(r => r.Key).ToArray())}]");
-                }
+                        @$"Role cannot contain a group. [{string.Join(", ", parentsInItems.Select(r => r.Key).ToArray())}]");
             }
         }
     }

@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace Qweree.Validator.ModelValidation.Static
+namespace Qweree.Validator.ModelValidation.Static;
+
+/// <summary>
+///     Static configuration helper
+/// </summary>
+public static class StaticSettings
 {
     /// <summary>
-    ///     Static configuration helper
+    ///     Creates settings.
     /// </summary>
-    public static class StaticSettings
+    /// <param name="configureAction">Configure action.</param>
+    /// <returns>Settings.</returns>
+    public static IEnumerable<ModelSettings> CreateSettings(Action<ValidatorSettingsBuilder> configureAction)
     {
-        /// <summary>
-        ///     Creates settings.
-        /// </summary>
-        /// <param name="configureAction">Configure action.</param>
-        /// <returns>Settings.</returns>
-        public static IEnumerable<ModelSettings> CreateSettings(Action<ValidatorSettingsBuilder> configureAction)
-        {
-            var builder = new ValidatorSettingsBuilder();
-            configureAction(builder);
-            return builder.Build();
-        }
+        var builder = new ValidatorSettingsBuilder();
+        configureAction(builder);
+        return builder.Build();
     }
 }
