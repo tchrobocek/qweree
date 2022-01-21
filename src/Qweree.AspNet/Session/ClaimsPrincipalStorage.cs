@@ -26,7 +26,7 @@ public class ClaimsPrincipalStorage : ISessionStorage
         if (roles.Contains("CLIENT"))
             return null;
 
-        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value ?? Guid.Empty.ToString();
+        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value ?? Guid.Empty.ToString();
         var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value ?? "anonymous";
         var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "full_name")?.Value ?? "anonymous";
         var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
