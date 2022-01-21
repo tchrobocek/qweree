@@ -70,16 +70,6 @@ namespace Qweree.PiccStash.WebApi
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("liberal", builder =>
-                {
-                    builder.AllowAnyHeader()
-                        .AllowAnyHeader()
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod();
-                });
-            });
             services.AddSwaggerGen(options =>
             {
                 options.OperationFilter<FileFromBodyOperationFilter>();
@@ -225,7 +215,6 @@ namespace Qweree.PiccStash.WebApi
             app.UseForwardedHeaders();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Picc Stash api"));
-            app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

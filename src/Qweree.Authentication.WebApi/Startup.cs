@@ -75,16 +75,6 @@ namespace Qweree.Authentication.WebApi
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("liberal", builder =>
-                {
-                    builder.AllowAnyHeader()
-                        .AllowAnyHeader()
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod();
-                });
-            });
 
             var pathBase = Configuration["Routing:PathBase"];
             services.AddSwaggerGen(options =>
@@ -261,7 +251,6 @@ namespace Qweree.Authentication.WebApi
             app.UseForwardedHeaders();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree OAuth2 api"));
-            app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

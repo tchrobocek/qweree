@@ -71,16 +71,6 @@ namespace Qweree.Cdn.WebApi
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.Converters.Add(new ExplorerObjectConverter());
                 });
-            services.AddCors(options =>
-            {
-                options.AddPolicy("liberal", builder =>
-                {
-                    builder.AllowAnyHeader()
-                        .AllowAnyHeader()
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod();
-                });
-            });
             services.AddSwaggerGen(options =>
             {
                 options.OperationFilter<FileFromBodyOperationFilter>();
@@ -221,7 +211,6 @@ namespace Qweree.Cdn.WebApi
             app.UseForwardedHeaders();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Cdn api"));
-            app.UseCors("liberal");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
