@@ -23,6 +23,15 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+        services.AddCors(options =>
+        {
+            options.AddPolicy("liberal", builder =>
+            {
+                builder.WithOrigins(Configuration["Origin"])
+                    .AllowCredentials()
+                    .WithHeaders("Content-Type");
+            });
+        });
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
@@ -39,6 +48,9 @@ public class Startup
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
+        if (environment.IsDevelopment())
+            app.UseCors("liberal");
+
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
