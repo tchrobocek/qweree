@@ -1,8 +1,7 @@
-namespace Qweree.ConsoleApplication.Infrastructure.RunContext
+namespace Qweree.ConsoleApplication.Infrastructure.RunContext;
+
+public class ContextConfigurationDo
 {
-    public class ContextConfigurationDo
-    {
-        public string? AuthUri { get; set; }
-        public string? PiccUri { get; set; }
-    }
+    public string? AuthUri { get; set; }
+    public string? PiccUri { get; set; }
 }

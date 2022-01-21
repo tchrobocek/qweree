@@ -5,26 +5,25 @@ using Qweree.AspNet.Application;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 
-namespace Qweree.Cdn.WebApi.Infrastructure.Explorer
+namespace Qweree.Cdn.WebApi.Infrastructure.Explorer;
+
+public class ExplorerService
 {
-    public class ExplorerService
+    private readonly IStoredObjectDescriptorRepository _descriptorRepository;
+
+    public ExplorerService(IStoredObjectDescriptorRepository descriptorRepository)
     {
-        private readonly IStoredObjectDescriptorRepository _descriptorRepository;
+        _descriptorRepository = descriptorRepository;
+    }
 
-        public ExplorerService(IStoredObjectDescriptorRepository descriptorRepository)
-        {
-            _descriptorRepository = descriptorRepository;
-        }
+    public async Task<PaginationResponse<IExplorerObject>> ExplorePathAsync(ExplorerFilter filter,
+        CancellationToken cancellationToken = new())
+    {
+        var slug = SlugHelper.PathToSlug(filter.Path);
+        var explorerObjects = (await _descriptorRepository.FindInSlugAsync(slug, cancellationToken))
+            .Select(ExplorerObjectMapper.ToExplorerObject)
+            .ToArray();
 
-        public async Task<PaginationResponse<IExplorerObject>> ExplorePathAsync(ExplorerFilter filter,
-            CancellationToken cancellationToken = new())
-        {
-            var slug = SlugHelper.PathToSlug(filter.Path);
-            var explorerObjects = (await _descriptorRepository.FindInSlugAsync(slug, cancellationToken))
-                .Select(ExplorerObjectMapper.ToExplorerObject)
-                .ToArray();
-
-            return Response.Ok(explorerObjects, explorerObjects.Length);
-        }
+        return Response.Ok(explorerObjects, explorerObjects.Length);
     }
 }

@@ -1,8 +1,7 @@
-namespace Qweree.Cdn.WebApi.Infrastructure.Authentication
+namespace Qweree.Cdn.WebApi.Infrastructure.Authentication;
+
+public class AuthenticationConfigurationDo
 {
-    public class AuthenticationConfigurationDo
-    {
-        public string? AccessTokenKey { get; set; }
-        public string? TokenUri { get; set; }
-    }
+    public string? AccessTokenKey { get; set; }
+    public string? TokenUri { get; set; }
 }

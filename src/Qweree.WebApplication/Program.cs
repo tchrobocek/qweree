@@ -2,19 +2,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Qweree.WebApplication.Web;
 
-namespace Qweree.WebApplication
+namespace Qweree.WebApplication;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.RootComponents.Add<App>("#app");
 
-            var startup = new Startup(builder.HostEnvironment);
-            startup.ConfigureServices(builder.Configuration, builder.Services);
+        var startup = new Startup(builder.HostEnvironment);
+        startup.ConfigureServices(builder.Configuration, builder.Services);
 
-            await builder.Build().RunAsync();
-        }
+        await builder.Build().RunAsync();
     }
 }

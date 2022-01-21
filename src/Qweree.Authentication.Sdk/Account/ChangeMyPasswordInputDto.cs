@@ -1,8 +1,7 @@
-namespace Qweree.Authentication.Sdk.Account
+namespace Qweree.Authentication.Sdk.Account;
+
+public class ChangeMyPasswordInputDto
 {
-    public class ChangeMyPasswordInputDto
-    {
-        public string? OldPassword { get; set; } = null;
-        public string? NewPassword { get; set; } = null;
-    }
+    public string? OldPassword { get; set; }
+    public string? NewPassword { get; set; }
 }

@@ -1,7 +1,6 @@
-namespace Qweree.AspNet.Configuration
+namespace Qweree.AspNet.Configuration;
+
+public class RoutingConfigurationDo
 {
-    public class RoutingConfigurationDo
-    {
-        public string? PathBase { get; set; }
-    }
+    public string? PathBase { get; set; }
 }

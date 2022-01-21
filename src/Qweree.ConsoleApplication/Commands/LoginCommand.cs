@@ -7,40 +7,39 @@ using Qweree.Commands;
 using Qweree.ConsoleApplication.Infrastructure.Authentication;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
 
-namespace Qweree.ConsoleApplication.Commands
+namespace Qweree.ConsoleApplication.Commands;
+
+public class LoginCommand : ICommand
 {
-    public class LoginCommand : ICommand
+    private readonly AuthenticationService _authenticationService;
+
+    public LoginCommand(AuthenticationService authenticationService)
     {
-        private readonly AuthenticationService _authenticationService;
+        _authenticationService = authenticationService;
+    }
 
-        public LoginCommand(AuthenticationService authenticationService)
+    public string CommandPath => "login";
+
+    public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
+    {
+        if (!optionsBag.Options.TryGetValue("--username", out var userNameCollection))
+            return -1;
+
+        var username = userNameCollection.Single();
+
+        Console.WriteLine("Enter password:");
+        var password = Console.ReadLine() ?? string.Empty;
+
+        try
         {
-            _authenticationService = authenticationService;
+            await _authenticationService.AuthenticateAsync(new PasswordGrantInput(username, password), cancellationToken);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return -1;
         }
 
-        public string CommandPath => "login";
-
-        public async Task<int> ExecuteAsync(OptionsBag optionsBag, CancellationToken cancellationToken = new())
-        {
-            if (!optionsBag.Options.TryGetValue("--username", out var userNameCollection))
-                return -1;
-
-            var username = userNameCollection.Single();
-
-            Console.WriteLine("Enter password:");
-            var password = Console.ReadLine() ?? string.Empty;
-
-            try
-            {
-                await _authenticationService.AuthenticateAsync(new PasswordGrantInput(username, password), cancellationToken);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return -1;
-            }
-
-            return 0;
-        }
+        return 0;
     }
 }

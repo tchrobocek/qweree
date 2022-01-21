@@ -5,41 +5,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Commands.CommandLine;
 
-namespace Qweree.Commands
+namespace Qweree.Commands;
+
+public class CommandExecutor
 {
-    public class CommandExecutor
+    private readonly List<Command> _commands;
+
+    public CommandExecutor(IEnumerable<Command> commands)
     {
-        private readonly List<Command> _commands;
+        _commands = commands.ToList();
+    }
 
-        public CommandExecutor(IEnumerable<Command> commands)
+    public async Task<int> ExecuteCommandAsync(string[] args, CancellationToken cancellationToken = new())
+    {
+        var pipeline = CommandPipelineFactory.CreatePipeline(args);
+
+        var lastResult = -1;
+        foreach (var call in pipeline)
         {
-            _commands = commands.ToList();
+            var command = _commands.SingleOrDefault(c => c.CommandPath == call.CommandPath);
+
+            if (command == null)
+                return -4;
+
+            var options = call.Options.ToImmutableDictionary(o =>
+                o.OptionName, o => o.OptionValues);
+
+            var optionsBag = new OptionsBag(args.ToImmutableArray(), options);
+            var task = command.ExecuteFunc.Invoke(optionsBag, cancellationToken);
+            lastResult = await task;
+
+            if (lastResult != 0)
+                return lastResult;
         }
 
-        public async Task<int> ExecuteCommandAsync(string[] args, CancellationToken cancellationToken = new())
-        {
-            var pipeline = CommandPipelineFactory.CreatePipeline(args);
-
-            var lastResult = -1;
-            foreach (var call in pipeline)
-            {
-                var command = _commands.SingleOrDefault(c => c.CommandPath == call.CommandPath);
-
-                if (command == null)
-                    return -4;
-
-                var options = call.Options.ToImmutableDictionary(o =>
-                    o.OptionName, o => o.OptionValues);
-
-                var optionsBag = new OptionsBag(args.ToImmutableArray(), options);
-                var task = command.ExecuteFunc.Invoke(optionsBag, cancellationToken);
-                lastResult = await task;
-
-                if (lastResult != 0)
-                    return lastResult;
-            }
-
-            return lastResult;
-        }
+        return lastResult;
     }
 }

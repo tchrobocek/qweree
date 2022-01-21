@@ -5,76 +5,75 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Cdn.Sdk.Storage;
 
-namespace Qweree.Cdn.WebApi.Infrastructure.Storage
+namespace Qweree.Cdn.WebApi.Infrastructure.Storage;
+
+public class FileObjectStorage : IObjectStorage
 {
-    public class FileObjectStorage : IObjectStorage
+    private readonly string _rootPath;
+
+    public FileObjectStorage(string rootPath)
     {
-        private readonly string _rootPath;
+        _rootPath = rootPath;
+    }
 
-        public FileObjectStorage(string rootPath)
+    public async Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor,
+        CancellationToken cancellationToken = new())
+    {
+        var path = GetPath(descriptor);
+
+        if (File.Exists(path) || Directory.Exists(path))
+            throw new ArgumentException("Object already exists.");
+
+        var root = Path.GetDirectoryName(path);
+
+        if (!Directory.Exists(root))
+            Directory.CreateDirectory(root!);
+
+        await using var fileStream = File.Create(path);
+        await stream.CopyToAsync(fileStream, cancellationToken);
+    }
+
+    public Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,
+        CancellationToken cancellationToken = new())
+    {
+        var path = GetPath(descriptor);
+
+        if (!File.Exists(path))
+            throw new ArgumentException("File does not exist.");
+
+        var stream = File.OpenRead(path);
+        return Task.FromResult((Stream) stream);
+    }
+
+    public Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new())
+    {
+        var drive = new DriveInfo(Path.GetPathRoot(_rootPath) ?? string.Empty);
+        return Task.FromResult(new StorageStats(drive.TotalSize, drive.AvailableFreeSpace));
+    }
+
+    public Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new())
+    {
+        var path = GetPath(slug);
+
+        if (File.Exists(path))
+            File.Delete(path);
+
+        return Task.CompletedTask;
+    }
+
+    private string GetPath(StoredObjectDescriptor descriptor)
+    {
+        return GetPath(descriptor.Slug);
+    }
+
+    private string GetPath(IEnumerable<string> slug)
+    {
+        var parts = new List<string>
         {
-            _rootPath = rootPath;
-        }
+            _rootPath
+        };
+        parts.AddRange(slug);
 
-        public async Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor,
-            CancellationToken cancellationToken = new())
-        {
-            var path = GetPath(descriptor);
-
-            if (File.Exists(path) || Directory.Exists(path))
-                throw new ArgumentException("Object already exists.");
-
-            var root = Path.GetDirectoryName(path);
-
-            if (!Directory.Exists(root))
-                Directory.CreateDirectory(root!);
-
-            await using var fileStream = File.Create(path);
-            await stream.CopyToAsync(fileStream, cancellationToken);
-        }
-
-        public Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,
-            CancellationToken cancellationToken = new())
-        {
-            var path = GetPath(descriptor);
-
-            if (!File.Exists(path))
-                throw new ArgumentException("File does not exist.");
-
-            var stream = File.OpenRead(path);
-            return Task.FromResult((Stream) stream);
-        }
-
-        public Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new())
-        {
-            var drive = new DriveInfo(Path.GetPathRoot(_rootPath) ?? string.Empty);
-            return Task.FromResult(new StorageStats(drive.TotalSize, drive.AvailableFreeSpace));
-        }
-
-        public Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new())
-        {
-            var path = GetPath(slug);
-
-            if (File.Exists(path))
-                File.Delete(path);
-
-            return Task.CompletedTask;
-        }
-
-        private string GetPath(StoredObjectDescriptor descriptor)
-        {
-            return GetPath(descriptor.Slug);
-        }
-
-        private string GetPath(IEnumerable<string> slug)
-        {
-            var parts = new List<string>
-            {
-                _rootPath
-            };
-            parts.AddRange(slug);
-
-            return Path.Combine(parts.ToArray());
-        }
+        return Path.Combine(parts.ToArray());
     }
 }

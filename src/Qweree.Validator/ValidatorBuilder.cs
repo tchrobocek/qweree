@@ -1,48 +1,47 @@
 using System.Collections.Generic;
 using Qweree.Validator.ModelValidation;
 
-namespace Qweree.Validator
+namespace Qweree.Validator;
+
+public class ValidatorBuilder
 {
-    public class ValidatorBuilder
+    private readonly List<IConstraintValidator> _constraintValidators = new();
+    private readonly List<ModelSettings> _modelSettings = new();
+    private readonly List<IObjectValidator> _objectValidators = new();
+
+    private bool _withModelValidator;
+
+    public void WithObjectValidator(IObjectValidator objectValidator)
     {
-        private readonly List<IConstraintValidator> _constraintValidators = new();
-        private readonly List<ModelSettings> _modelSettings = new();
-        private readonly List<IObjectValidator> _objectValidators = new();
+        _objectValidators.Add(objectValidator);
+    }
 
-        private bool _withModelValidator;
+    public void WithConstraintValidator(IConstraintValidator constraintValidator)
+    {
+        _constraintValidators.Add(constraintValidator);
+    }
 
-        public void WithObjectValidator(IObjectValidator objectValidator)
-        {
-            _objectValidators.Add(objectValidator);
-        }
+    public void WithModelSettings(IEnumerable<ModelSettings> modelSettings)
+    {
+        _modelSettings.AddRange(modelSettings);
+    }
 
-        public void WithConstraintValidator(IConstraintValidator constraintValidator)
-        {
-            _constraintValidators.Add(constraintValidator);
-        }
+    public void WithModelValidator()
+    {
+        _withModelValidator = true;
+    }
 
-        public void WithModelSettings(IEnumerable<ModelSettings> modelSettings)
-        {
-            _modelSettings.AddRange(modelSettings);
-        }
+    public Validator Build()
+    {
+        if (_withModelValidator)
+            _objectValidators.Add(SetupModelValidator());
 
-        public void WithModelValidator()
-        {
-            _withModelValidator = true;
-        }
+        return new Validator(_objectValidators);
+    }
 
-        public Validator Build()
-        {
-            if (_withModelValidator)
-                _objectValidators.Add(SetupModelValidator());
-
-            return new Validator(_objectValidators);
-        }
-
-        private ModelValidator SetupModelValidator()
-        {
-            var constraintValidators = _constraintValidators.ToArray();
-            return new ModelValidator(_modelSettings, constraintValidators);
-        }
+    private ModelValidator SetupModelValidator()
+    {
+        var constraintValidators = _constraintValidators.ToArray();
+        return new ModelValidator(_modelSettings, constraintValidators);
     }
 }

@@ -6,28 +6,27 @@ using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.PiccStash.Sdk;
 using Qweree.Sdk.Http.HttpClient;
 
-namespace Qweree.ConsoleApplication.Infrastructure.Commands
+namespace Qweree.ConsoleApplication.Infrastructure.Commands;
+
+public class PiccClientFactory
 {
-    public class PiccClientFactory
+    private readonly Context _context;
+    private readonly QwereeHttpHandler _qwereeHandler;
+
+    public PiccClientFactory(HttpMessageHandler innerHandler, ITokenStorage tokenStorage, Context context)
     {
-        private readonly Context _context;
-        private readonly QwereeHttpHandler _qwereeHandler;
+        _context = context;
+        _qwereeHandler = new QwereeHttpHandler(innerHandler, tokenStorage);
+    }
 
-        public PiccClientFactory(HttpMessageHandler innerHandler, ITokenStorage tokenStorage, Context context)
+    public async Task<PiccClient> CreateClientAsync(CancellationToken cancellationToken = new())
+    {
+        var config = await _context.GetConfigurationAsync(cancellationToken);
+        var httpClient = new HttpClient(_qwereeHandler)
         {
-            _context = context;
-            _qwereeHandler = new QwereeHttpHandler(innerHandler, tokenStorage);
-        }
+            BaseAddress = new Uri(new Uri(config.PiccUri!), "api/v1/picc/")
+        };
 
-        public async Task<PiccClient> CreateClientAsync(CancellationToken cancellationToken = new())
-        {
-            var config = await _context.GetConfigurationAsync(cancellationToken);
-            var httpClient = new HttpClient(_qwereeHandler)
-            {
-                BaseAddress = new Uri(new Uri(config.PiccUri!), "api/v1/picc/")
-            };
-
-            return new PiccClient(httpClient);
-        }
+        return new PiccClient(httpClient);
     }
 }

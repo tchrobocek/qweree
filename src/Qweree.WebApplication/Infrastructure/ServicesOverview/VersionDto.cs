@@ -1,8 +1,6 @@
-namespace Qweree.WebApplication.Infrastructure.ServicesOverview
+namespace Qweree.WebApplication.Infrastructure.ServicesOverview;
+
+public class VersionDto
 {
-    public class VersionDto
-    {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string? Version { get; set; }
-    }
+    public string? Version { get; set; }
 }

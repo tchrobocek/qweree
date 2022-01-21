@@ -5,57 +5,56 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Sdk.Http;
 
-namespace Qweree.PiccStash.Sdk
+namespace Qweree.PiccStash.Sdk;
+
+public class PiccClient
 {
-    public class PiccClient
+    private readonly HttpClient _httpClient;
+
+    public PiccClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public PiccClient(HttpClient httpClient)
+    public async Task<PaginationApiResponse<PiccDto>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
+    {
+        var uri = CreatePaginateUri(skip, take);
+        var response = await _httpClient.GetAsync(uri, cancellationToken);
+
+        return new PaginationApiResponse<PiccDto>(response);
+    }
+
+    public async Task<ApiResponse<PiccDto>> PiccUploadAsync(Stream stream, string mediaType, CancellationToken cancellationToken = new())
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
         {
-            _httpClient = httpClient;
-        }
-
-        public async Task<PaginationApiResponse<PiccDto>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
-        {
-            var uri = CreatePaginateUri(skip, take);
-            var response = await _httpClient.GetAsync(uri, cancellationToken);
-
-            return new PaginationApiResponse<PiccDto>(response);
-        }
-
-        public async Task<ApiResponse<PiccDto>> PiccUploadAsync(Stream stream, string mediaType, CancellationToken cancellationToken = new())
-        {
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+            Content = new StreamContent(stream)
             {
-                Content = new StreamContent(stream)
+                Headers =
                 {
-                    Headers =
-                    {
-                        {"Content-Type", mediaType}
-                    }
+                    {"Content-Type", mediaType}
                 }
-            };
+            }
+        };
 
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-            return ApiResponse.CreateApiResponse<PiccDto>(response);
-        }
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        return ApiResponse.CreateApiResponse<PiccDto>(response);
+    }
 
-        public async Task<ApiResponse> PiccDeleteAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.DeleteAsync(id.ToString(), cancellationToken);
-            return ApiResponse.CreateApiResponse<PiccDto>(response);
-        }
+    public async Task<ApiResponse> PiccDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync(id.ToString(), cancellationToken);
+        return ApiResponse.CreateApiResponse<PiccDto>(response);
+    }
 
-        public async Task<ApiResponse> PiccReadAsync(Guid id, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync(id.ToString(), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            return ApiResponse.CreateApiResponse<PiccDto>(response);
-        }
+    public async Task<ApiResponse> PiccReadAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync(id.ToString(), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        return ApiResponse.CreateApiResponse<PiccDto>(response);
+    }
 
-        private string CreatePaginateUri(int skip, int take)
-        {
-            return $"?skip={skip}&take={take}&sort[CreatedAt]=-1";
-        }
+    private string CreatePaginateUri(int skip, int take)
+    {
+        return $"?skip={skip}&take={take}&sort[CreatedAt]=-1";
     }
 }

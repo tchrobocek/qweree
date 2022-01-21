@@ -14,69 +14,103 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.Utils;
 using Xunit;
 
-namespace Qweree.Authentication.WebApi.Test.Web.Authentication
+namespace Qweree.Authentication.WebApi.Test.Web.Authentication;
+
+[Collection("Web api collection")]
+[Trait("Category", "Integration test")]
+[Trait("Category", "Web api test")]
+public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
 {
-    [Collection("Web api collection")]
-    [Trait("Category", "Integration test")]
-    [Trait("Category", "Web api test")]
-    public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
+    private readonly HttpClient _client;
+    private readonly IServiceScope _scope;
+    private readonly UserRepository _userRepository;
+    private readonly ClientRepository _clientRepository;
+
+    public OAuth2ControllerTest(WebApiFactory webApiFactory)
     {
-        private readonly HttpClient _client;
-        private readonly IServiceScope _scope;
-        private readonly UserRepository _userRepository;
-        private readonly ClientRepository _clientRepository;
+        _client = webApiFactory.CreateClient();
+        _scope = webApiFactory.Services.CreateScope();
 
-        public OAuth2ControllerTest(WebApiFactory webApiFactory)
+        _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        _userRepository.DeleteAllAsync()
+            .GetAwaiter()
+            .GetResult();
+        _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
+        _clientRepository.DeleteAllAsync()
+            .GetAwaiter()
+            .GetResult();
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _scope.Dispose();
+    }
+
+    [Fact]
+    public async Task TestAuthenticatePassword_RequestBody()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+        var input = new[]
         {
-            _client = webApiFactory.CreateClient();
-            _scope = webApiFactory.Services.CreateScope();
+            new KeyValuePair<string?, string?>("grant_type", "password"),
+            new KeyValuePair<string?, string?>("username", user.Username),
+            new KeyValuePair<string?, string?>("password", user.Password),
+            new KeyValuePair<string?, string?>("client_id", client.ClientId),
+            new KeyValuePair<string?, string?>("client_secret", client.ClientSecret)
+        };
+        var request = new FormUrlEncodedContent(input);
 
-            _userRepository = (UserRepository) _scope.ServiceProvider.GetRequiredService<IUserRepository>();
-            _userRepository.DeleteAllAsync()
-                .GetAwaiter()
-                .GetResult();
-            _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
-            _clientRepository.DeleteAllAsync()
-                .GetAwaiter()
-                .GetResult();
-        }
+        var response = await _client.PostAsync("/api/oauth2/auth", request);
+        response.EnsureSuccessStatusCode();
+    }
 
-        public void Dispose()
+    [Fact]
+    public async Task TestAuthenticatePassword_Header()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+        var input = new[]
         {
-            _client.Dispose();
-            _scope.Dispose();
-        }
+            new KeyValuePair<string?, string?>("grant_type", "password"),
+            new KeyValuePair<string?, string?>("username", user.Username),
+            new KeyValuePair<string?, string?>("password", user.Password),
+        };
 
-        [Fact]
-        public async Task TestAuthenticatePassword_RequestBody()
+        var authHeaderEncoder = new AuthorizationHeaderEncoder();
+        var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+        var request = new FormUrlEncodedContent(input);
+        var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
         {
-            var user = UserFactory.CreateDefault();
-            await _userRepository.InsertAsync(user);
-            var client = ClientFactory.CreateDefault(user.Id);
-            await _clientRepository.InsertAsync(client);
-
-            var input = new[]
+            Content = request,
+            Headers =
             {
-                new KeyValuePair<string?, string?>("grant_type", "password"),
-                new KeyValuePair<string?, string?>("username", user.Username),
-                new KeyValuePair<string?, string?>("password", user.Password),
-                new KeyValuePair<string?, string?>("client_id", client.ClientId),
-                new KeyValuePair<string?, string?>("client_secret", client.ClientSecret)
-            };
-            var request = new FormUrlEncodedContent(input);
+                {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+            }
+        };
 
-            var response = await _client.PostAsync("/api/oauth2/auth", request);
-            response.EnsureSuccessStatusCode();
-        }
+        var response = await _client.SendAsync(message);
+        response.EnsureSuccessStatusCode();
+    }
 
-        [Fact]
-        public async Task TestAuthenticatePassword_Header()
+    [Fact]
+    public async Task TestRefresh()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+        string refreshToken;
+
         {
-            var user = UserFactory.CreateDefault();
-            await _userRepository.InsertAsync(user);
-            var client = ClientFactory.CreateDefault(user.Id);
-            await _clientRepository.InsertAsync(client);
-
             var input = new[]
             {
                 new KeyValuePair<string?, string?>("grant_type", "password"),
@@ -98,89 +132,54 @@ namespace Qweree.Authentication.WebApi.Test.Web.Authentication
 
             var response = await _client.SendAsync(message);
             response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            var tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
+
+            refreshToken = tokenInfo?.RefreshToken!;
         }
 
-        [Fact]
-        public async Task TestRefresh()
         {
-            var user = UserFactory.CreateDefault();
-            await _userRepository.InsertAsync(user);
-            var client = ClientFactory.CreateDefault(user.Id);
-            await _clientRepository.InsertAsync(client);
-
-            string refreshToken;
-
-            {
-                var input = new[]
-                {
-                    new KeyValuePair<string?, string?>("grant_type", "password"),
-                    new KeyValuePair<string?, string?>("username", user.Username),
-                    new KeyValuePair<string?, string?>("password", user.Password),
-                };
-
-                var authHeaderEncoder = new AuthorizationHeaderEncoder();
-                var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
-                var request = new FormUrlEncodedContent(input);
-                var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
-                {
-                    Content = request,
-                    Headers =
-                    {
-                        {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
-                    }
-                };
-
-                var response = await _client.SendAsync(message);
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync();
-                var tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
-
-                refreshToken = tokenInfo?.RefreshToken!;
-            }
-
-            {
-                var input = new[]
-                {
-                    new KeyValuePair<string?, string?>("grant_type", "refresh_token"),
-                    new KeyValuePair<string?, string?>("refresh_token", refreshToken),
-                };
-
-                var authHeaderEncoder = new AuthorizationHeaderEncoder();
-                var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
-                var request = new FormUrlEncodedContent(input);
-                var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
-                {
-                    Content = request,
-                    Headers =
-                    {
-                        {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
-                    }
-                };
-
-                var response = await _client.SendAsync(message);
-                response.EnsureSuccessStatusCode();
-            }
-        }
-
-        [Fact]
-        public async Task TestAuthenticateClientCredentials()
-        {
-            var user = UserFactory.CreateDefault();
-            await _userRepository.InsertAsync(user);
-            var client = ClientFactory.CreateDefault(user.Id);
-            await _clientRepository.InsertAsync(client);
-
             var input = new[]
             {
-                new KeyValuePair<string?, string?>("grant_type", "client_credentials"),
-                new KeyValuePair<string?, string?>("client_id", client.ClientId),
-                new KeyValuePair<string?, string?>("client_secret", client.ClientSecret)
+                new KeyValuePair<string?, string?>("grant_type", "refresh_token"),
+                new KeyValuePair<string?, string?>("refresh_token", refreshToken),
             };
-            var request = new FormUrlEncodedContent(input);
 
-            var response = await _client.PostAsync("/api/oauth2/auth", request);
+            var authHeaderEncoder = new AuthorizationHeaderEncoder();
+            var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+            var request = new FormUrlEncodedContent(input);
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
+            {
+                Content = request,
+                Headers =
+                {
+                    {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+                }
+            };
+
+            var response = await _client.SendAsync(message);
             response.EnsureSuccessStatusCode();
         }
+    }
+
+    [Fact]
+    public async Task TestAuthenticateClientCredentials()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+        var input = new[]
+        {
+            new KeyValuePair<string?, string?>("grant_type", "client_credentials"),
+            new KeyValuePair<string?, string?>("client_id", client.ClientId),
+            new KeyValuePair<string?, string?>("client_secret", client.ClientSecret)
+        };
+        var request = new FormUrlEncodedContent(input);
+
+        var response = await _client.PostAsync("/api/oauth2/auth", request);
+        response.EnsureSuccessStatusCode();
     }
 }

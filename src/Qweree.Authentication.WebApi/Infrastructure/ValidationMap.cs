@@ -8,109 +8,108 @@ using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Validator.Constraints;
 using Qweree.Validator.ModelValidation.Static;
 
-namespace Qweree.Authentication.WebApi.Infrastructure
+namespace Qweree.Authentication.WebApi.Infrastructure;
+
+public class ValidationMap
 {
-    public class ValidationMap
+    public static void ConfigureValidator(ValidatorSettingsBuilder builder)
     {
-        public static void ConfigureValidator(ValidatorSettingsBuilder builder)
+        builder.AddModel<ClientCreateInput>(c =>
         {
-            builder.AddModel<ClientCreateInput>(c =>
-            {
-                c.AddProperty(p => p.ClientId)
-                    .AddConstraint(new UniqueConstraint(typeof(ClientRepository)))
-                    .AddConstraint(new NotEmptyConstraint("Client id cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Client id has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Client id has to have up to 255 characters."));
-                c.AddProperty(p => p.Origin)
-                    .AddConstraint(new MaxLengthConstraint(255, "Origin has to have up to 255 characters."));
-                c.AddProperty(p => p.ApplicationName)
-                    .AddConstraint(new NotEmptyConstraint("Application name cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Application name has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Application name has to have up to 255 characters."));
-                c.AddProperty(p => p.ClientRoles)
-                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
-                c.AddProperty(p => p.UserRoles)
-                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
-                c.AddProperty(p => p.OwnerId)
-                    .AddConstraint(new ExistsConstraint(typeof(UserRepository)));
-            });
+            c.AddProperty(p => p.ClientId)
+                .AddConstraint(new UniqueConstraint(typeof(ClientRepository)))
+                .AddConstraint(new NotEmptyConstraint("Client id cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Client id has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Client id has to have up to 255 characters."));
+            c.AddProperty(p => p.Origin)
+                .AddConstraint(new MaxLengthConstraint(255, "Origin has to have up to 255 characters."));
+            c.AddProperty(p => p.ApplicationName)
+                .AddConstraint(new NotEmptyConstraint("Application name cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Application name has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Application name has to have up to 255 characters."));
+            c.AddProperty(p => p.ClientRoles)
+                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
+            c.AddProperty(p => p.UserRoles)
+                .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
+            c.AddProperty(p => p.OwnerId)
+                .AddConstraint(new ExistsConstraint(typeof(UserRepository)));
+        });
 
-            builder.AddModel<UserRoleCreateInput>(c =>
-            {
-                c.AddProperty(p => p.Key)
-                    .AddConstraint(new UniqueConstraint(typeof(UserRoleRepository)))
-                    .AddConstraint(new NotEmptyConstraint("Key cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Key has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
-                c.AddProperty(p => p.Label)
-                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-                c.AddProperty(p => p.Items)
-                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
-            });
+        builder.AddModel<UserRoleCreateInput>(c =>
+        {
+            c.AddProperty(p => p.Key)
+                .AddConstraint(new UniqueConstraint(typeof(UserRoleRepository)))
+                .AddConstraint(new NotEmptyConstraint("Key cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Key has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
+            c.AddProperty(p => p.Label)
+                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            c.AddProperty(p => p.Items)
+                .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
+        });
 
-            builder.AddModel<ClientRoleCreateInput>(c =>
-            {
-                c.AddProperty(p => p.Key)
-                    .AddConstraint(new UniqueConstraint(typeof(ClientRoleRepository)))
-                    .AddConstraint(new NotEmptyConstraint("Key cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Key has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
-                c.AddProperty(p => p.Label)
-                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-                c.AddProperty(p => p.Items)
-                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
-            });
+        builder.AddModel<ClientRoleCreateInput>(c =>
+        {
+            c.AddProperty(p => p.Key)
+                .AddConstraint(new UniqueConstraint(typeof(ClientRoleRepository)))
+                .AddConstraint(new NotEmptyConstraint("Key cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Key has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
+            c.AddProperty(p => p.Label)
+                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            c.AddProperty(p => p.Items)
+                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
+        });
 
-            builder.AddModel<UserRoleModifyInput>(c =>
-            {
-                c.AddProperty(p => p.Label)
-                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-                c.AddProperty(p => p.Items)
-                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
-            });
+        builder.AddModel<UserRoleModifyInput>(c =>
+        {
+            c.AddProperty(p => p.Label)
+                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            c.AddProperty(p => p.Items)
+                .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
+        });
 
-            builder.AddModel<ClientRoleModifyInput>(c =>
-            {
-                c.AddProperty(p => p.Label)
-                    .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-                c.AddProperty(p => p.Items)
-                    .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
-            });
+        builder.AddModel<ClientRoleModifyInput>(c =>
+        {
+            c.AddProperty(p => p.Label)
+                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
+            c.AddProperty(p => p.Items)
+                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
+        });
 
-            builder.AddModel<ChangeMyPasswordInput>(c =>
-            {
-                c.AddProperty(p => p.NewPassword)
-                    .AddConstraint(new NotEmptyConstraint("Password cannot be empty."))
-                    .AddConstraint(new PasswordConstraint());
-            });
+        builder.AddModel<ChangeMyPasswordInput>(c =>
+        {
+            c.AddProperty(p => p.NewPassword)
+                .AddConstraint(new NotEmptyConstraint("Password cannot be empty."))
+                .AddConstraint(new PasswordConstraint());
+        });
 
-            builder.AddModel<UserInvitationInput>(c =>
-            {
-                c.AddProperty(p => p.Username)
-                    .AddConstraint(new UniqueConstraint(typeof(UserRepository)))
-                    .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Username has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Username has to have up to 255 characters."));
-                c.AddProperty(p => p.ContactEmail)
-                    .AddConstraint(new NotEmptyConstraint("Email cannot be empty."))
-                    .AddConstraint(new EmailConstraint("Email cannot be empty.", "Email is not valid email address."));
-                c.AddProperty(p => p.Roles)
-                    .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
-            });
+        builder.AddModel<UserInvitationInput>(c =>
+        {
+            c.AddProperty(p => p.Username)
+                .AddConstraint(new UniqueConstraint(typeof(UserRepository)))
+                .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Username has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Username has to have up to 255 characters."));
+            c.AddProperty(p => p.ContactEmail)
+                .AddConstraint(new NotEmptyConstraint("Email cannot be empty."))
+                .AddConstraint(new EmailConstraint("Email cannot be empty.", "Email is not valid email address."));
+            c.AddProperty(p => p.Roles)
+                .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
+        });
 
-            builder.AddModel<UserRegisterInput>(c =>
-            {
-                c.AddProperty(p => p.Username)
-                    .AddConstraint(new UniqueConstraint(typeof(UserRepository)))
-                    .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
-                    .AddConstraint(new MinLengthConstraint(3, "Username has to have 3 or more characters."))
-                    .AddConstraint(new MaxLengthConstraint(255, "Username has to have up to 255 characters."));
-                c.AddProperty(p => p.ContactEmail)
-                    .AddConstraint(new NotEmptyConstraint("Email cannot be empty."))
-                    .AddConstraint(new EmailConstraint("Email cannot be empty.", "Email is not valid email address."));
-                c.AddProperty(p => p.Password)
-                    .AddConstraint(new PasswordConstraint());
-            });
-        }
+        builder.AddModel<UserRegisterInput>(c =>
+        {
+            c.AddProperty(p => p.Username)
+                .AddConstraint(new UniqueConstraint(typeof(UserRepository)))
+                .AddConstraint(new NotEmptyConstraint("Username cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Username has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Username has to have up to 255 characters."));
+            c.AddProperty(p => p.ContactEmail)
+                .AddConstraint(new NotEmptyConstraint("Email cannot be empty."))
+                .AddConstraint(new EmailConstraint("Email cannot be empty.", "Email is not valid email address."));
+            c.AddProperty(p => p.Password)
+                .AddConstraint(new PasswordConstraint());
+        });
     }
 }

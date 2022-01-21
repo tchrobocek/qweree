@@ -1,13 +1,12 @@
 using System;
 
-namespace Qweree.Cdn.Sdk.System
+namespace Qweree.Cdn.Sdk.System;
+
+public class CdnStatsDto
 {
-    public class CdnStatsDto
-    {
-        public long? DiskSpaceTotal { get; set; }
-        public long? DiskSpaceAvailable { get; set; }
-        public long? ItemsCount { get; set; }
-        public long? SpaceUsed { get; set; }
-        public MediaTypeStatsDto[] MediaTypes { get; set; } = Array.Empty<MediaTypeStatsDto>();
-    }
+    public long? DiskSpaceTotal { get; set; }
+    public long? DiskSpaceAvailable { get; set; }
+    public long? ItemsCount { get; set; }
+    public long? SpaceUsed { get; set; }
+    public MediaTypeStatsDto[] MediaTypes { get; set; } = Array.Empty<MediaTypeStatsDto>();
 }

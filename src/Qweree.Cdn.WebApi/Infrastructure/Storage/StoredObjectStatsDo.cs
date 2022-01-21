@@ -1,9 +1,8 @@
-namespace Qweree.Cdn.WebApi.Infrastructure.Storage
+namespace Qweree.Cdn.WebApi.Infrastructure.Storage;
+
+public class StoredObjectStatsDo
 {
-    public class StoredObjectStatsDo
-    {
-        public string? Id { get; set; }
-        public long? Count { get; set; }
-        public long? Used { get; set; }
-    }
+    public string? Id { get; set; }
+    public long? Count { get; set; }
+    public long? Used { get; set; }
 }

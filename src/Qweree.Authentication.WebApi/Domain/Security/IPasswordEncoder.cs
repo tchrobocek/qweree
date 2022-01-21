@@ -1,8 +1,7 @@
-namespace Qweree.Authentication.WebApi.Domain.Security
+namespace Qweree.Authentication.WebApi.Domain.Security;
+
+public interface IPasswordEncoder
 {
-    public interface IPasswordEncoder
-    {
-        string EncodePassword(string password);
-        bool VerifyPassword(string hash, string raw);
-    }
+    string EncodePassword(string password);
+    bool VerifyPassword(string hash, string raw);
 }

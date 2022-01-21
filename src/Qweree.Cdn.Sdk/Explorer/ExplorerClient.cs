@@ -3,21 +3,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Sdk.Http;
 
-namespace Qweree.Cdn.Sdk.Explorer
+namespace Qweree.Cdn.Sdk.Explorer;
+
+public class ExplorerClient
 {
-    public class ExplorerClient
+    private readonly HttpClient _httpClient;
+
+    public ExplorerClient(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+    }
 
-        public ExplorerClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
-        public async Task<ApiResponse<IExplorerObjectDto[]>> ExploreAsync(string path, CancellationToken cancellationToken = new())
-        {
-            var response = await _httpClient.GetAsync(path.Trim('/'), cancellationToken);
-            return new ApiResponse<IExplorerObjectDto[]>(response);
-        }
+    public async Task<ApiResponse<IExplorerObjectDto[]>> ExploreAsync(string path, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync(path.Trim('/'), cancellationToken);
+        return new ApiResponse<IExplorerObjectDto[]>(response);
     }
 }

@@ -1,8 +1,7 @@
-namespace Qweree.Mongo
+namespace Qweree.Mongo;
+
+public class DatabaseConfigurationDo
 {
-    public class DatabaseConfigurationDo
-    {
-        public string? ConnectionString { get; set; }
-        public string? DatabaseName { get; set; }
-    }
+    public string? ConnectionString { get; set; }
+    public string? DatabaseName { get; set; }
 }

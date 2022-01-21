@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Cdn.Sdk.Storage;
 
-namespace Qweree.Cdn.WebApi.Infrastructure.Storage
+namespace Qweree.Cdn.WebApi.Infrastructure.Storage;
+
+public interface IObjectStorage
 {
-    public interface IObjectStorage
-    {
-        Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor, CancellationToken cancellationToken = new());
-        Task<Stream> ReadAsync(StoredObjectDescriptor descriptor, CancellationToken cancellationToken = new());
-        Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new());
-        Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new());
-    }
+    Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor, CancellationToken cancellationToken = new());
+    Task<Stream> ReadAsync(StoredObjectDescriptor descriptor, CancellationToken cancellationToken = new());
+    Task<StorageStats> GetStatsAsync(CancellationToken cancellationToken = new());
+    Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new());
 }

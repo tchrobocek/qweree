@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 
-namespace Qweree.PiccStash.WebApi.Web.System
+namespace Qweree.PiccStash.WebApi.Web.System;
+
+public class HealthReportDto
 {
-    public class HealthReportDto
-    {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string? Status { get; set; }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? Status { get; set; }
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public Dictionary<string, HealthReportEntryDto>? Entries { get; set; }
-    }
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public Dictionary<string, HealthReportEntryDto>? Entries { get; set; }
+}
 
-    public class HealthReportEntryDto
-    {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string? Status { get; set; }
-    }
+public class HealthReportEntryDto
+{
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? Status { get; set; }
 }

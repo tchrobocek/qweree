@@ -17,89 +17,88 @@ using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
 
-namespace Qweree.WebApplication
+namespace Qweree.WebApplication;
+
+public class Startup
 {
-    public class Startup
+    // ReSharper disable once NotAccessedField.Local
+    private readonly IWebAssemblyHostEnvironment _hostEnvironment;
+
+    public Startup(IWebAssemblyHostEnvironment hostEnvironment)
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly IWebAssemblyHostEnvironment _hostEnvironment;
+        _hostEnvironment = hostEnvironment;
+    }
 
-        public Startup(IWebAssemblyHostEnvironment hostEnvironment)
+    public void ConfigureServices(IConfiguration configuration, IServiceCollection services)
+    {
+        services.AddOptions();
+        services.AddAuthorizationCore();
+        services.AddMudServices();
+        services.AddSingleton<LocalStorage>();
+        services.AddSingleton<LocalUserStorage>();
+        services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
+        services.AddScoped<ClaimsPrincipalStorage>();
+        services.AddScoped(p =>
         {
-            _hostEnvironment = hostEnvironment;
-        }
-
-        public void ConfigureServices(IConfiguration configuration, IServiceCollection services)
+            return new UnauthorizedHttpHandler(p.GetRequiredService<LocalUserStorage>(), p.GetRequiredService<NavigationManager>(), new HttpClientHandler());
+        });
+        services.AddScoped(p =>
         {
-            services.AddOptions();
-            services.AddAuthorizationCore();
-            services.AddMudServices();
-            services.AddSingleton<LocalStorage>();
-            services.AddSingleton<LocalUserStorage>();
-            services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
-            services.AddScoped<ClaimsPrincipalStorage>();
-            services.AddScoped(p =>
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                return new UnauthorizedHttpHandler(p.GetRequiredService<LocalUserStorage>(), p.GetRequiredService<NavigationManager>(), new HttpClientHandler());
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri("http://localhost/"), "api/v1/auth/")
+            };
+            return new AuthenticationClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri("http://localhost/"), "api/v1/auth/")
-                };
-                return new AuthenticationClient(client);
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]) , "api/v1/picc/")
+            };
+            return new PiccClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]) , "api/v1/picc/")
-                };
-                return new PiccClient(client);
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/account/")
+            };
+            return new MyAccountClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/account/")
-                };
-                return new MyAccountClient(client);
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/authorization/")
+            };
+            return new AuthorizationClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/authorization/")
-                };
-                return new AuthorizationClient(client);
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/identity/")
+            };
+            return new IdentityClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/identity/")
-                };
-                return new IdentityClient(client);
-            });
-            services.AddScoped(p =>
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/system/stats/")
+            };
+            return new StatsClient(client);
+        });
+        services.AddScoped(p =>
+        {
+            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/system/stats/")
-                };
-                return new StatsClient(client);
-            });
-            services.AddScoped(p =>
-            {
-                var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-                {
-                    BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/explorer/")
-                };
-                return new ExplorerClient(client);
-            });
-            services.AddScoped<AuthenticationService>();
-            services.AddScoped<SystemInfoClientFactory>();
-        }
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/explorer/")
+            };
+            return new ExplorerClient(client);
+        });
+        services.AddScoped<AuthenticationService>();
+        services.AddScoped<SystemInfoClientFactory>();
     }
 }

@@ -4,90 +4,89 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Qweree.Validator.ModelValidation
+namespace Qweree.Validator.ModelValidation;
+
+/// <summary>
+///     Validates configured Constraint settings.
+/// </summary>
+public class ModelValidator : IObjectValidator
 {
+    private readonly List<IConstraintValidator> _constraintValidators = new();
+    private readonly List<ModelSettings> _modelSettings = new();
+
     /// <summary>
-    ///     Validates configured Constraint settings.
+    ///     Ctor.
     /// </summary>
-    public class ModelValidator : IObjectValidator
+    /// <param name="modelSettings">Collection of settings.</param>
+    /// <param name="constraintValidators">Collection of constraint validators.</param>
+    public ModelValidator(IEnumerable<ModelSettings> modelSettings,
+        IEnumerable<IConstraintValidator> constraintValidators)
     {
-        private readonly List<IConstraintValidator> _constraintValidators = new();
-        private readonly List<ModelSettings> _modelSettings = new();
+        _modelSettings.AddRange(modelSettings);
+        _constraintValidators.AddRange(constraintValidators);
+    }
 
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
-        /// <param name="modelSettings">Collection of settings.</param>
-        /// <param name="constraintValidators">Collection of constraint validators.</param>
-        public ModelValidator(IEnumerable<ModelSettings> modelSettings,
-            IEnumerable<IConstraintValidator> constraintValidators)
+    public IConstraintValidator[] ConstraintValidators => _constraintValidators.ToArray();
+
+    public ModelSettings[] ModelSettings => _modelSettings.ToArray();
+
+
+    /// <summary>
+    ///     Validates given subject.
+    /// </summary>
+    /// <param name="validationContext">Validation context.</param>
+    /// <param name="builder">Validation builder.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
+        CancellationToken cancellationToken = new())
+    {
+        var modelSettings = _modelSettings.Where(s => s.SubjectType.FullName == (validationContext.MemberInfo?.DeclaringType?.FullName ?? validationContext.Subject?.GetType().FullName));
+
+        foreach (var settings in modelSettings)
+            await ValidateAsync(validationContext, builder, settings, cancellationToken)
+                .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    ///     Determines whether the type is validatable by this class.
+    /// </summary>
+    /// <param name="type">Subject type.</param>
+    /// <returns>True if it is validatable. False if it is not.</returns>
+    public bool Supports(Type type)
+    {
+        return true;
+    }
+
+
+    private async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
+        ModelSettings settings, CancellationToken cancellationToken = new())
+    {
+        foreach (var property in settings.PropertySettings)
         {
-            _modelSettings.AddRange(modelSettings);
-            _constraintValidators.AddRange(constraintValidators);
-        }
+            var propInfo = validationContext.Subject?.GetType().GetProperties()
+                .FirstOrDefault(p => p.Name == property.PropertyName);
 
-        public IConstraintValidator[] ConstraintValidators => _constraintValidators.ToArray();
+            if (propInfo == null)
+                continue;
 
-        public ModelSettings[] ModelSettings => _modelSettings.ToArray();
+            var value = propInfo.GetValue(validationContext.Subject);
 
-
-        /// <summary>
-        ///     Validates given subject.
-        /// </summary>
-        /// <param name="validationContext">Validation context.</param>
-        /// <param name="builder">Validation builder.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
-            CancellationToken cancellationToken = new())
-        {
-            var modelSettings = _modelSettings.Where(s => s.SubjectType.FullName == (validationContext.MemberInfo?.DeclaringType?.FullName ?? validationContext.Subject?.GetType().FullName));
-
-            foreach (var settings in modelSettings)
-                await ValidateAsync(validationContext, builder, settings, cancellationToken)
-                    .ConfigureAwait(false);
-        }
-
-        /// <summary>
-        ///     Determines whether the type is validatable by this class.
-        /// </summary>
-        /// <param name="type">Subject type.</param>
-        /// <returns>True if it is validatable. False if it is not.</returns>
-        public bool Supports(Type type)
-        {
-            return true;
-        }
-
-
-        private async Task ValidateAsync(ValidationContext validationContext, ValidationBuilder builder,
-            ModelSettings settings, CancellationToken cancellationToken = new())
-        {
-            foreach (var property in settings.PropertySettings)
+            foreach (var constraint in property.Constraints)
             {
-                var propInfo = validationContext.Subject?.GetType().GetProperties()
-                    .FirstOrDefault(p => p.Name == property.PropertyName);
+                var validator = _constraintValidators.FirstOrDefault(v => v.GetType() == constraint.ValidatorType);
 
-                if (propInfo == null)
-                    continue;
+                if (validator == null)
+                    throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
 
-                var value = propInfo.GetValue(validationContext.Subject);
+                var path = validationContext.Path;
+                if (!string.IsNullOrWhiteSpace(path))
+                    path += ".";
+                path += propInfo.Name;
 
-                foreach (var constraint in property.Constraints)
-                {
-                    var validator = _constraintValidators.FirstOrDefault(v => v.GetType() == constraint.ValidatorType);
-
-                    if (validator == null)
-                        throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
-
-                    var path = validationContext.Path;
-                    if (!string.IsNullOrWhiteSpace(path))
-                        path += ".";
-                    path += propInfo.Name;
-
-                    var context = new ValidationContext(path, value, propInfo);
-                    await validator.ValidateAsync(context,
-                            constraint, builder, cancellationToken)
-                        .ConfigureAwait(false);
-                }
+                var context = new ValidationContext(path, value, propInfo);
+                await validator.ValidateAsync(context,
+                        constraint, builder, cancellationToken)
+                    .ConfigureAwait(false);
             }
         }
     }
