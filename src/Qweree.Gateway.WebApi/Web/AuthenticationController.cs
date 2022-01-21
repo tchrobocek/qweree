@@ -25,8 +25,13 @@ public class AuthenticationController : ControllerBase
         _environment = environment;
     }
 
+    /// <summary>
+    ///     Get Version.
+    /// </summary>
+    /// <returns>Returns current project assembly version.</returns>
     [HttpPost]
     [Route("login")]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> LoginAsync(LoginInputDto input)
     {
         var grantInput = new PasswordGrantInput(input.Username ?? string.Empty, input.Password ?? string.Empty);
