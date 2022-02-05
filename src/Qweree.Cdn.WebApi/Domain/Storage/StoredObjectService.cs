@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
@@ -41,9 +42,10 @@ public class StoredObjectService
             var existing = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
 
             if (!input.Force)
-            {
                 return Response.Fail<StoredObject>("Stored object already exists.");
-            }
+
+            if (existing.Descriptor.OwnerId != _sessionStorage.Id)
+                return Response.Fail<StoredObject>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
 
             created = existing.Descriptor.CreatedAt;
             await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
