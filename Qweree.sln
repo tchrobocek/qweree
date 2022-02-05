@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Gateway.WebApi", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Gateway.Sdk", "src\Qweree.Gateway.Sdk\Qweree.Gateway.Sdk.csproj", "{238AFE8F-D1B7-4B73-97B9-24FC888D0F99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qweree.Cdn.Sdk.Extensions", "src\Qweree.Cdn.Sdk.Extensions\Qweree.Cdn.Sdk.Extensions.csproj", "{A917C85B-562D-49C6-83EC-5D628F3AEF1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,5 +170,9 @@ Global
 		{238AFE8F-D1B7-4B73-97B9-24FC888D0F99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{238AFE8F-D1B7-4B73-97B9-24FC888D0F99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{238AFE8F-D1B7-4B73-97B9-24FC888D0F99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A917C85B-562D-49C6-83EC-5D628F3AEF1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A917C85B-562D-49C6-83EC-5D628F3AEF1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A917C85B-562D-49C6-83EC-5D628F3AEF1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A917C85B-562D-49C6-83EC-5D628F3AEF1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
