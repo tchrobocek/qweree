@@ -13,7 +13,7 @@ using Qweree.Sdk;
 namespace Qweree.Authentication.WebApi.Web.Authorization;
 
 [ApiController]
-[Route("/api/admin/authorization/clientRoles")]
+[Route("/api/admin/authorization/client-roles")]
 public class ClientRoleController : ControllerBase
 {
     private readonly RoleService _roleService;
