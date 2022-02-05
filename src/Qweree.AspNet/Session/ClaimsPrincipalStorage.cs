@@ -20,7 +20,7 @@ public class ClaimsPrincipalStorage : ISessionStorage
 
     private static User? CreateUser(ClaimsPrincipal claimsPrincipal)
     {
-        var roles = claimsPrincipal.Claims.Where(c => c.Type == "roles").Select(c => c.Value)
+        var roles = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
             .ToArray();
 
         if (roles.Contains("CLIENT"))
