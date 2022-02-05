@@ -83,6 +83,11 @@ public class StoredObjectService
             return Response.Fail<StoredObject>(e.Message);
         }
 
+        if (storedObject.Descriptor.IsPrivate && _sessionStorage.Id != storedObject.Descriptor.OwnerId)
+        {
+            return Response.Fail<StoredObject>(new Error("Forbidden.", (int) HttpStatusCode.Forbidden));
+        }
+
         return Response.Ok(storedObject);
     }
 
