@@ -3,7 +3,7 @@
 @inject AuthorizationClient _authorizationClient;
 
 <div>
-    <MudAutocomplete T="UserRoleDto" Label="Search role"
+    <MudAutocomplete T="UserRoleDto" Label="Search role" @bind-Text="_searchText"
                      SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label} ({r?.Key})")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
@@ -22,6 +22,7 @@
 @code {
     private readonly List<UserRoleDto> _userRoles = new();
     private UserRoleDto? _selectValue;
+    private string _searchText = string.Empty;
 
     [Parameter]
     public List<UserRoleDto> SelectedRoles { get; set; } = new();
