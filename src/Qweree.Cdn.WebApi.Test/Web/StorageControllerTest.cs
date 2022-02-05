@@ -95,6 +95,7 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
             Assert.NotNull(descriptorDto?.OwnerId);
             Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
+            Assert.True(descriptorDto?.IsPrivate ?? false);
         }
 
         {
@@ -150,6 +151,7 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
             Assert.NotNull(descriptorDto?.OwnerId);
             Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
+            Assert.True(descriptorDto?.IsPrivate ?? false);
         }
 
         {
@@ -189,6 +191,7 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
             Assert.NotNull(descriptorDto?.OwnerId);
             Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
+            Assert.True(descriptorDto?.IsPrivate ?? false);
         }
 
         {

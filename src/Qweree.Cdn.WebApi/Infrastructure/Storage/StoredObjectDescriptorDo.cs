@@ -9,6 +9,7 @@ public class StoredObjectDescriptorDo
     public string[]? Slug { get; set; }
     public string? MediaType { get; set; }
     public long? Size { get; set; }
+    public bool? IsPrivate { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
 }

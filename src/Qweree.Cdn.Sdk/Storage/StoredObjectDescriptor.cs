@@ -7,13 +7,14 @@ namespace Qweree.Cdn.Sdk.Storage;
 public class StoredObjectDescriptor
 {
     public StoredObjectDescriptor(Guid id, Guid ownerId, IEnumerable<string> slug, string mediaType, long size,
-        DateTime createdAt, DateTime modifiedAt)
+        bool isPrivate, DateTime createdAt, DateTime modifiedAt)
     {
         Id = id;
         OwnerId = ownerId;
         Slug = slug.ToImmutableArray();
         MediaType = mediaType;
         Size = size;
+        IsPrivate = isPrivate;
         CreatedAt = createdAt;
         ModifiedAt = modifiedAt;
     }
@@ -23,6 +24,7 @@ public class StoredObjectDescriptor
     public ImmutableArray<string> Slug { get; }
     public string MediaType { get; }
     public long Size { get; }
+    public bool IsPrivate { get; }
     public DateTime CreatedAt { get; }
     public DateTime ModifiedAt { get; }
 }

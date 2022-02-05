@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,8 @@ public class StorageController : ControllerBase
     ///     Store object.
     /// </summary>
     /// <param name="path">Object path.</param>
-    /// <param name="contentType"></param>
+    /// <param name="contentType">Content type.</param>
+    /// <param name="privateString">Private resource flag.</param>
     /// <returns></returns>
     [HttpPost("{*path}")]
     [Authorize(Policy = "StorageStore")]
@@ -53,10 +55,15 @@ public class StorageController : ControllerBase
     [RequestSizeLimit(1000 * 1000 * 1000)]
     [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> PostStoredObjectActionAsync(string path,
-        [FromHeader(Name = "Content-Type")] string contentType)
+        [FromHeader(Name = "X-Private")] string? privateString,
+        [FromHeader(Name = "Content-Type")] string contentType = MediaTypeNames.Application.Octet)
     {
+        bool? isPrivate = null;
+        if (privateString != null)
+            isPrivate = privateString != "false";
+
         path = HttpUtility.UrlDecode(path);
-        var input = new StoreObjectInput(path, contentType, Request.Body, Request.Method.ToLower() == "put");
+        var input = new StoreObjectInput(path, contentType, Request.Body, false, isPrivate);
         var response = await _service.StoreOrReplaceObjectAsync(input);
 
         if (response.Status == ResponseStatus.Fail)
@@ -70,7 +77,8 @@ public class StorageController : ControllerBase
     ///     Store object.
     /// </summary>
     /// <param name="path">Object path.</param>
-    /// <param name="contentType"></param>
+    /// <param name="contentType">Content type.</param>
+    /// <param name="privateString">Private resource flag.</param>
     /// <returns></returns>
     [HttpPut("{*path}")]
     [Authorize(Policy = "StorageStoreForce")]
@@ -78,10 +86,15 @@ public class StorageController : ControllerBase
     [RequestSizeLimit(1000 * 1000 * 1000)]
     [ProducesResponseType(typeof(StoredObjectDescriptorDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> PutStoredObjectActionAsync(string path,
-        [FromHeader(Name = "Content-Type")] string contentType)
+        [FromHeader(Name = "X-Private")] string? privateString,
+        [FromHeader(Name = "Content-Type")] string contentType = MediaTypeNames.Application.Octet)
     {
+        bool? isPrivate = null;
+        if (privateString != null)
+            isPrivate = privateString != "false";
+
         path = HttpUtility.UrlDecode(path);
-        var input = new StoreObjectInput(path, contentType, Request.Body, Request.Method.ToLower() == "put");
+        var input = new StoreObjectInput(path, contentType, Request.Body, true, isPrivate);
         var response = await _service.StoreOrReplaceObjectAsync(input);
 
         if (response.Status == ResponseStatus.Fail)

@@ -36,7 +36,7 @@ public class StoredObjectService
         stream.Seek(0, SeekOrigin.Begin);
 
         var created = _dateTimeProvider.UtcNow;
-
+        var isPrivate = input.IsPrivate;
         try
         {
             var existing = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
@@ -48,6 +48,10 @@ public class StoredObjectService
                 return Response.Fail<StoredObject>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
 
             created = existing.Descriptor.CreatedAt;
+
+            if (isPrivate == null)
+                isPrivate = existing.Descriptor.IsPrivate;
+
             await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
         }
         catch (DocumentNotFoundException)
@@ -55,7 +59,7 @@ public class StoredObjectService
         }
 
         var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.Id, slug, input.MediaType, stream.Length,
-            created, _dateTimeProvider.UtcNow);
+            isPrivate ?? true, created, _dateTimeProvider.UtcNow);
 
         StoredObject storedObject = new(descriptor, stream);
         await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
