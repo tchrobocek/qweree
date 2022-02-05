@@ -17,4 +17,8 @@
       <ProjectReference Include="..\Qweree.Gateway.Sdk\Qweree.Gateway.Sdk.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Infrastructure\Authentication" />
+    </ItemGroup>
+
 </Project>

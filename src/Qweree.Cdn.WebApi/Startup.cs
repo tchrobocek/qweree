@@ -17,7 +17,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Configuration;
-using Qweree.AspNet.Session;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk.Explorer;
 using Qweree.Cdn.WebApi.Domain.Storage;
@@ -26,6 +25,7 @@ using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Cdn.WebApi.Infrastructure.System;
 using Qweree.Mongo;
+using Qweree.Session;
 using Qweree.Utils;
 
 namespace Qweree.Cdn.WebApi;

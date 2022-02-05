@@ -1,4 +1,5 @@
-﻿using Qweree.AspNet.Session;
+﻿
+using Qweree.Session;
 
 namespace Qweree.Cdn.Sdk.Extensions;
 
@@ -7,7 +8,7 @@ public static class SessionStorageExtensions
     public static string GetUserRootPath(this ISessionStorage @this)
     {
         var userId = @this.CurrentUser?.Id;
-        var clientId = @this.CurrentClient.ClientId;
+        var clientId = @this.CurrentClient.Id;
 
         if (userId == null && clientId == Guid.Empty)
             throw new ArgumentException("Client id is empty.");
@@ -23,8 +24,8 @@ public static class SessionStorageExtensions
     public static string GetUserDataPath(this ISessionStorage @this)
     {
         if (@this.CurrentUser == null)
-            return PathHelper.GetClientDataPath(@this.CurrentClient.ClientId);
+            return PathHelper.GetClientDataPath(@this.CurrentClient.Id);
 
-        return PathHelper.GetUserDataPath(@this.CurrentUser.Id, @this.CurrentClient.ClientId);
+        return PathHelper.GetUserDataPath(@this.CurrentUser.Id, @this.CurrentClient.Id);
     }
 }

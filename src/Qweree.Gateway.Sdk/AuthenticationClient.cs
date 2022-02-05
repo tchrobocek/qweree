@@ -18,12 +18,12 @@ public class AuthenticationClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<UserDto>> LoginAsync(LoginInputDto input,
+    public async Task<ApiResponse<IdentityDto>> LoginAsync(LoginInputDto input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PostAsync("login", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<UserDto>(response);
+        return ApiResponse.CreateApiResponse<IdentityDto>(response);
     }
 }

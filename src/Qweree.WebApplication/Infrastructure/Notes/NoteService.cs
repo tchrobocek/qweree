@@ -60,8 +60,8 @@ namespace Qweree.WebApplication.Infrastructure.Notes
 
         private async Task<string> GetPathAsync(string entity, CancellationToken cancellationToken = new())
         {
-            var user = await _claimsPrincipalStorage.GetUserAsync(cancellationToken);
-            return PathHelper.Combine(PathHelper.GetUserRootPath(user!.Id), "notes", $"{entity}.json");
+            var identity = await _claimsPrincipalStorage.GetIdentityAsync(cancellationToken);
+            return PathHelper.Combine(PathHelper.GetUserRootPath((Guid)identity?.User?.Id!), "notes", $"{entity}.json");
         }
     }
 }

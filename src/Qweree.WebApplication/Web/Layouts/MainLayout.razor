@@ -63,8 +63,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await _session.GetUserAsync();
-        _username = user?.FullName ?? string.Empty;
+        var identity = await _session.GetIdentityAsync();
+        _username = identity?.User?.FullName ?? string.Empty;
     }
 
     private async Task LogoutAsync()

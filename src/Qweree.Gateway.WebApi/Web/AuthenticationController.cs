@@ -31,7 +31,7 @@ public class AuthenticationController : ControllerBase
     /// <returns>Returns current project assembly version.</returns>
     [HttpPost]
     [Route("login")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IdentityDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> LoginAsync(LoginInputDto input)
     {
         var grantInput = new PasswordGrantInput(input.Username ?? string.Empty, input.Password ?? string.Empty);
@@ -97,7 +97,7 @@ public class AuthenticationController : ControllerBase
             }
         }
 
-        return Ok(UserMapper.FromClaimsPrincipal(new ClaimsPrincipal(user)));
+        return Ok(IdentityMapper.FromClaimsPrincipal(new ClaimsPrincipal(user)));
     }
 
     private string GenerateCookie()

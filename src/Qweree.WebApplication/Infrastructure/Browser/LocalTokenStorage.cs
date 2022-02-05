@@ -14,18 +14,18 @@ public class LocalUserStorage
         _localStorage = localStorage;
     }
 
-    public async Task SetUserAsync(UserDto user, CancellationToken cancellationToken = new())
+    public async Task SetUserAsync(IdentityDto identity, CancellationToken cancellationToken = new())
     {
-        await _localStorage.SetItemAsync("user", JsonUtils.Serialize(user), cancellationToken);
+        await _localStorage.SetItemAsync("identity", JsonUtils.Serialize(identity), cancellationToken);
     }
 
-    public async Task<UserDto?> GetUserAsync(CancellationToken cancellationToken = new())
+    public async Task<IdentityDto?> GetIdentityAsync(CancellationToken cancellationToken = new())
     {
-        var item = await _localStorage.GetItemAsync("user", cancellationToken);
+        var item = await _localStorage.GetItemAsync("identity", cancellationToken);
         if (string.IsNullOrEmpty(item))
             return null;
 
-        return JsonUtils.Deserialize<UserDto>(item);
+        return JsonUtils.Deserialize<IdentityDto>(item);
     }
 
     public async Task RemoveUserAsync(CancellationToken cancellationToken = new())

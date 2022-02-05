@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
-using Qweree.AspNet.Session;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
+using Qweree.Session;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity;

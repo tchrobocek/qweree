@@ -25,21 +25,36 @@ public static class PathHelper
 
     public static string GetUserRootPath(Guid userId)
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("User id is empty.");
+
         return $"/usr/{userId}/";
     }
 
     public static string GetClientRootPath(Guid clientId)
     {
+        if (clientId == Guid.Empty)
+            throw new ArgumentException("Client id is empty.");
+
         return $"/apps/{clientId}/";
     }
 
     public static string GetUserDataPath(Guid userId, Guid clientId)
     {
+        if (userId == Guid.Empty)
+            throw new ArgumentException("User id is empty.");
+
+        if (clientId == Guid.Empty)
+            throw new ArgumentException("Client id is empty.");
+
         return Combine(GetUserRootPath(userId), "apps", clientId.ToString());
     }
 
     public static string GetClientDataPath(Guid clientId)
     {
+        if (clientId == Guid.Empty)
+            throw new ArgumentException("Client id is empty.");
+
         return Combine(GetClientRootPath(clientId), "data");
     }
 }

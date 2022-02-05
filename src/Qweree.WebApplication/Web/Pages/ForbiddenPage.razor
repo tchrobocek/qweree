@@ -9,7 +9,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var user = await _session.GetUserAsync();
+        var user = await _session.GetIdentityAsync();
         if (user == null)
             _navigationManager.NavigateTo("/login");
     }

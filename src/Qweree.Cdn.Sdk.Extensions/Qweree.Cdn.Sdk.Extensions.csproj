@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Qweree.AspNet\Qweree.AspNet.csproj" />
       <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
+      <ProjectReference Include="..\Qweree.Session\Qweree.Session.csproj" />
     </ItemGroup>
 
 </Project>

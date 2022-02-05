@@ -69,10 +69,10 @@
         if (!rolesResponse.IsSuccessful)
             return;
 
-        var user = await _session.GetUserAsync();
+        var identity = await _session.GetIdentityAsync();
 
-        if (user != null)
-            _ownerId = user.Id.ToString();
+        if (identity != null)
+            _ownerId = identity.User?.Id?.ToString()!;
     }
 
     public async Task CreateAsync()

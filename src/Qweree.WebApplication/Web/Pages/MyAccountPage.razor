@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.Sdk.Account
 @using System.Net
+@using Qweree.Authentication.Sdk.OAuth2
 @inject ClaimsPrincipalStorage _storage
 @inject AuthenticationService _authenticationService
 @inject NavigationManager _navigationManager
@@ -11,7 +12,7 @@
 @inject ISnackbar _snackbar
 @attribute [Authorize]
 
-@if (_user != null && _claimsPrincipal != null)
+@if (_identity != null && _claimsPrincipal != null)
 {
     <MudText Typo="Typo.h4">My Account</MudText>
 
@@ -20,7 +21,7 @@
             <MudPaper Class="pa-4">
                 <div style="text-align: center">
                     <MudAvatar Style="height:140px; width:140px; font-size:2rem;" Color="Color.Primary" Class="ma-2 my-8">
-                        @_user.Username.First().ToString().ToUpper()
+                        @_identity!.User!.Username!.First().ToString().ToUpper()
                     </MudAvatar>
                 </div>
             </MudPaper>
@@ -28,11 +29,11 @@
         <MudItem xs="8">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-8">
                 <MudTabPanel Text="Personal info">
-                    <MudText Class="ma-4" Typo="Typo.body2">Id: @_user.Id</MudText>
-                    <MudText Class="ma-4" Typo="Typo.body2">Username: @_user.Username</MudText>
-                    <MudText Class="ma-4" Typo="Typo.body2">Full name: @_user.FullName</MudText>
-                    <MudText Class="ma-4" Typo="Typo.body2">Email: @_user.Email</MudText>
-                    <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _user.Roles)</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Id: @_identity?.User!.Id</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Username: @_identity.User!.Username</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Full name: @_identity.User!.FullName</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Email: @_identity.Email</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">
                     @foreach(var error in _errors)
@@ -57,7 +58,7 @@
 }
 
 @code {
-    private User? _user;
+    private IdentityDto? _identity;
     private ClaimsPrincipal? _claimsPrincipal;
 
     private string _oldPassword = string.Empty;
@@ -68,7 +69,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _user = await _storage.GetUserAsync();
+        _identity = await _storage.GetIdentityAsync();
         _claimsPrincipal = await _storage.GetClaimsPrincipalAsync();
     }
 

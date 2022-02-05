@@ -17,11 +17,11 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var user = await _localUserStorage.GetUserAsync();
-        if (user == null)
+        var identity = await _localUserStorage.GetIdentityAsync();
+        if (identity == null)
         {
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(authenticationType: null)));
         }
-        return new AuthenticationState(UserMapper.ToClaimsPrincipal(user));
+        return new AuthenticationState(IdentityMapper.ToClaimsPrincipal(identity));
     }
 }
