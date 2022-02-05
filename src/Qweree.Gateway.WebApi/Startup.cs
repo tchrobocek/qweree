@@ -30,7 +30,8 @@ public class Startup
             {
                 builder.WithOrigins(Configuration["Origin"])
                     .AllowCredentials()
-                    .WithHeaders("Content-Type");
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
         });
         var proxyBuilder = services.AddReverseProxy();
