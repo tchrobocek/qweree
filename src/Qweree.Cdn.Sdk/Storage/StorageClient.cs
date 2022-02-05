@@ -15,12 +15,16 @@ public class StorageClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream, bool force = false,
-        CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream,
+        bool force = false, bool isPrivateResource = true, CancellationToken cancellationToken = new())
     {
         var method = HttpMethod.Post;
         if (force)
             method = HttpMethod.Put;
+
+        var isPrivate = "true";
+        if (!isPrivateResource)
+            isPrivate = "false";
 
         var request = new HttpRequestMessage(method, path.Trim('/'))
         {
@@ -28,7 +32,8 @@ public class StorageClient
             {
                 Headers =
                 {
-                    {"Content-Type", mediaType}
+                    {"Content-Type", mediaType},
+                    {"X-Private", isPrivate}
                 }
             }
         };
