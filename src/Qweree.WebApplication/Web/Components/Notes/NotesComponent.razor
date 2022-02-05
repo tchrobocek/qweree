@@ -11,17 +11,16 @@
 </MudExpansionPanels>
 
 <div class="my-6 mx-6">
-    <MudText Class="mb-4" Typo="Typo.h6">My notes</MudText>
-    @for (var i = 0; i < _notes.Count; i++)
+    @foreach (var note in _notes)
     {
         <div class="pl-4 my-2">
-            <div>@_notes[i].CreatedAt: @_notes[i].Text</div>
+            <div class="note">
+                <MudLink @onclick="() => DeleteAsync(note)" Color="Color.Error" Class="cursor-pointer mx-2">X</MudLink>
+                @note.CreatedAt: @note.Text
+            </div>
         </div>
 
-        @if (i != _notes.Count - 1)
-        {
-            <MudDivider />
-        }
+        <MudDivider />
     }
     @if (_notes.Count == 0)
     {
@@ -60,6 +59,16 @@
         };
         _notes.Add(newNote);
 
+        var success = await _noteService.SetMyNotesAsync(Entity!, _notes);
+
+        if (success)
+            _addNoteInput = string.Empty;
+    }
+
+    private async Task DeleteAsync(NoteDto note)
+    {
+        _notes.Remove(note);
         await _noteService.SetMyNotesAsync(Entity!, _notes);
     }
+
 }

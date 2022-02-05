@@ -43,7 +43,7 @@ namespace Qweree.WebApplication.Infrastructure.Notes
         }
 
 
-        public async Task SetMyNotesAsync(string entity, IEnumerable<NoteDto> notes, CancellationToken cancellationToken = new())
+        public async Task<bool> SetMyNotesAsync(string entity, IEnumerable<NoteDto> notes, CancellationToken cancellationToken = new())
         {
             if (string.IsNullOrWhiteSpace(entity))
                 throw new ArgumentException("Invalid entity.");
@@ -52,7 +52,9 @@ namespace Qweree.WebApplication.Infrastructure.Notes
             await using var stream = new MemoryStream();
             await JsonUtils.SerializeAsync(stream, new NoteCollectionDto{Notes = notes.ToArray()}, cancellationToken);
             stream.Seek(0, SeekOrigin.Begin);
-            await _storageClient.StoreAsync(path, MediaTypeNames.Application.Json, stream, true, true, cancellationToken);
+            var response = await _storageClient.StoreAsync(path, MediaTypeNames.Application.Json, stream, true, true, cancellationToken);
+
+            return response.IsSuccessful;
         }
 
         private async Task<string> GetPathAsync(string entity, CancellationToken cancellationToken = new())
