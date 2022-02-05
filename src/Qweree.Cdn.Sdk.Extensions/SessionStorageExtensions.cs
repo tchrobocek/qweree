@@ -12,22 +12,19 @@ public static class SessionStorageExtensions
         if (userId == null && clientId == Guid.Empty)
             throw new ArgumentException("Client id is empty.");
         if (userId == null)
-            return $"/apps/{clientId}/";
+            return PathHelper.GetClientRootPath(clientId);
 
         if (userId == Guid.Empty)
             throw new ArgumentException("User id is empty.");
 
-        return $"/usr/{userId}/";
+        return PathHelper.GetUserRootPath(userId.Value);
     }
 
     public static string GetUserDataPath(this ISessionStorage @this)
     {
-        var root = @this.GetUserRootPath();
-        var dataFolder = "data";
+        if (@this.CurrentUser == null)
+            return PathHelper.GetClientDataPath(@this.CurrentClient.ClientId);
 
-        if (@this.CurrentUser != null)
-            dataFolder = $"apps/{@this.CurrentClient.ClientId}";
-
-        return PathHelper.Combine(root, dataFolder);
+        return PathHelper.GetUserDataPath(@this.CurrentUser.Id, @this.CurrentClient.ClientId);
     }
 }

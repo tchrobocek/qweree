@@ -22,4 +22,24 @@ public static class PathHelper
 
         return string.Join("/", paths.Select(p => p.Trim('/')));
     }
+
+    public static string GetUserRootPath(Guid userId)
+    {
+        return $"/usr/{userId}/";
+    }
+
+    public static string GetClientRootPath(Guid clientId)
+    {
+        return $"/apps/{clientId}/";
+    }
+
+    public static string GetUserDataPath(Guid userId, Guid clientId)
+    {
+        return Combine(GetUserRootPath(userId), "apps", clientId.ToString());
+    }
+
+    public static string GetClientDataPath(Guid clientId)
+    {
+        return Combine(GetClientRootPath(clientId), "data");
+    }
 }
