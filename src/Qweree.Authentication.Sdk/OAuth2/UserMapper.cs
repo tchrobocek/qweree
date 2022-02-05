@@ -31,7 +31,7 @@ public class UserMapper
             throw new ArgumentException("User is not authenticated.");
         }
 
-        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
+        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
         var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "username")?.Value;
         var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "full_name")?.Value;
         var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
