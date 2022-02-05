@@ -3,7 +3,7 @@ using Qweree.Authentication.WebApi.Domain.Persistence;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 
-public interface IUserInvitationRepository : IRepository<UserInvitation>
+public interface IUserInvitationRepository : IRepository<UserInvitationDescriptor>
 {
 
 }

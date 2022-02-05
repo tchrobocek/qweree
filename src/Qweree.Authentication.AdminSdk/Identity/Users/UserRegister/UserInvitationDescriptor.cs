@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 
-public class UserInvitation
+public class UserInvitationDescriptor
 {
-    public UserInvitation(Guid id, string? username, string? fullName, string? contactEmail,
+    public UserInvitationDescriptor(Guid id, string? username, string? fullName, string? contactEmail,
         ImmutableArray<Guid>? roles, DateTime expiresAt, DateTime createdAt, DateTime modifiedAt)
     {
         Id = id;

@@ -10,7 +10,6 @@ using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Sdk;
-using UserInvitationMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserRegister.UserInvitationMapper;
 
 namespace Qweree.Authentication.WebApi.Web.Identity;
 
@@ -32,7 +31,7 @@ public class UserInvitationController : ControllerBase
     /// <returns>Created user invitation.</returns>
     [HttpPost]
     [Authorize(Policy = "UserInvitationCreate")]
-    [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserInvitationDescriptorDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationCreateActionAsync(UserInvitationInputDto userInvitation)
     {
@@ -42,7 +41,7 @@ public class UserInvitationController : ControllerBase
         if (userInvitationResponse.Status != ResponseStatus.Ok)
             return userInvitationResponse.ToErrorActionResult();
 
-        var userInvitationDto = UserInvitationMapper.ToDto(userInvitationResponse.Payload!);
+        var userInvitationDto = UserInvitationDescriptorMapper.ToDto(userInvitationResponse.Payload!);
 
         var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/admin/identity/user-invitations/{userInvitationDto.Id}");
         return Created(uri, userInvitationDto);
@@ -55,7 +54,7 @@ public class UserInvitationController : ControllerBase
     /// <returns>Found user invitation.</returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "UserInvitationRead")]
-    [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserInvitationDescriptorDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
     {
@@ -64,7 +63,7 @@ public class UserInvitationController : ControllerBase
         if (userInvitationResponse.Status != ResponseStatus.Ok)
             return userInvitationResponse.ToErrorActionResult();
 
-        var userInvitationDto = UserInvitationMapper.ToDto(userInvitationResponse.Payload!);
+        var userInvitationDto = UserInvitationDescriptorMapper.ToDto(userInvitationResponse.Payload!);
 
         return Ok(userInvitationDto);
     }
@@ -82,7 +81,7 @@ public class UserInvitationController : ControllerBase
     /// <returns>Collection of user invitations.</returns>
     [HttpGet]
     [Authorize(Policy = "UserInvitationRead")]
-    [ProducesResponseType(typeof(List<UserInvitationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<UserInvitationDescriptorDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationsPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
@@ -102,7 +101,7 @@ public class UserInvitationController : ControllerBase
 
         Response.Headers.Add("q-document-count", new[] { userInvitationsResponse.DocumentCount.ToString() });
 
-        var usersDto = userInvitationsResponse.Payload?.Select(UserInvitationMapper.ToDto);
+        var usersDto = userInvitationsResponse.Payload?.Select(UserInvitationDescriptorMapper.ToDto);
         return Ok(usersDto);
     }
 

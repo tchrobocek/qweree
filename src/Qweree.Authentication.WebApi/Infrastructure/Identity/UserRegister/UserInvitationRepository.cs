@@ -5,12 +5,12 @@ using Qweree.Mongo;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 
-public class UserInvitationRepository : MongoRepositoryBase<UserInvitation, UserInvitationDo>, IUserInvitationRepository
+public class UserInvitationRepository : MongoRepositoryBase<UserInvitationDescriptor, UserInvitationDescriptorDo>, IUserInvitationRepository
 {
     public UserInvitationRepository(MongoContext context) : base("user_invitations", context)
     {
     }
 
-    protected override Func<UserInvitation, UserInvitationDo> ToDocument => UserInvitationMapper.ToDo;
-    protected override Func<UserInvitationDo, UserInvitation> FromDocument => UserInvitationMapper.FromDo;
+    protected override Func<UserInvitationDescriptor, UserInvitationDescriptorDo> ToDocument => UserInvitationMapper.ToDo;
+    protected override Func<UserInvitationDescriptorDo, UserInvitationDescriptor> FromDocument => UserInvitationMapper.FromDo;
 }

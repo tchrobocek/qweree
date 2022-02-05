@@ -24,30 +24,30 @@ public class UserInvitationService
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task<Response<UserInvitation>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<Response<UserInvitationDescriptor>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
     {
-        UserInvitation invitation;
+        UserInvitationDescriptor invitationDescriptor;
         try
         {
-            invitation = await _userInvitationRepository.GetAsync(id, cancellationToken);
+            invitationDescriptor = await _userInvitationRepository.GetAsync(id, cancellationToken);
         }
         catch (DocumentNotFoundException)
         {
-            return Response.Fail<UserInvitation>("User invitation was not found.");
+            return Response.Fail<UserInvitationDescriptor>("User invitation was not found.");
         }
-        return Response.Ok(invitation);
+        return Response.Ok(invitationDescriptor);
     }
 
-    public async Task<Response<UserInvitation>> UserInvitationCreateAsync(UserInvitationInput input, CancellationToken cancellationToken = new())
+    public async Task<Response<UserInvitationDescriptor>> UserInvitationCreateAsync(UserInvitationInput input, CancellationToken cancellationToken = new())
     {
         var expiresAt = _dateTimeProvider.UtcNow + TimeSpan.FromMinutes(15);
 
-        var invitation = new UserInvitation(Guid.NewGuid(), input.Username, input.FullName, input.ContactEmail,
+        var invitation = new UserInvitationDescriptor(Guid.NewGuid(), input.Username, input.FullName, input.ContactEmail,
             input.Roles, expiresAt, _dateTimeProvider.UtcNow,_dateTimeProvider.UtcNow);
 
         var validationResult = await _validator.ValidateAsync(input, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<UserInvitation>();
+            return validationResult.ToErrorResponse<UserInvitationDescriptor>();
 
         try
         {
@@ -55,16 +55,16 @@ public class UserInvitationService
         }
         catch (InsertDocumentException)
         {
-            return Response.Fail<UserInvitation>("User invitation is a duplicate.");
+            return Response.Fail<UserInvitationDescriptor>("User invitation is a duplicate.");
         }
 
         return Response.Ok(invitation);
     }
 
-    public async Task<PaginationResponse<UserInvitation>> UserInvitationsPaginateAsync(UserInvitationsFindInput input,
+    public async Task<PaginationResponse<UserInvitationDescriptor>> UserInvitationsPaginateAsync(UserInvitationsFindInput input,
         CancellationToken cancellationToken = new())
     {
-        Pagination<UserInvitation> pagination;
+        Pagination<UserInvitationDescriptor> pagination;
 
         try
         {
@@ -72,7 +72,7 @@ public class UserInvitationService
         }
         catch (Exception e)
         {
-            return Response.FailPagination<UserInvitation>(e.Message);
+            return Response.FailPagination<UserInvitationDescriptor>(e.Message);
         }
 
 

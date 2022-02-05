@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 
-public class UserInvitationDo
+public class UserInvitationDescriptorDo
 {
     public Guid? Id { get; set; }
     public string? Username { get; set; }

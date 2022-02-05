@@ -7,25 +7,25 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
 
 public static class UserInvitationMapper
 {
-    public static UserInvitationDo ToDo(UserInvitation userInvitation)
+    public static UserInvitationDescriptorDo ToDo(UserInvitationDescriptor userInvitationDescriptor)
     {
-        return new UserInvitationDo
+        return new UserInvitationDescriptorDo
         {
-            Id = userInvitation.Id,
-            Username = userInvitation.Username,
-            Roles = (userInvitation.Roles ?? ImmutableArray<Guid>.Empty).ToArray(),
-            ContactEmail = userInvitation.ContactEmail,
-            FullName = userInvitation.FullName,
-            CreatedAt = userInvitation.CreatedAt,
-            ModifiedAt = userInvitation.ModifiedAt,
-            ExpiresAt = userInvitation.ExpiresAt
+            Id = userInvitationDescriptor.Id,
+            Username = userInvitationDescriptor.Username,
+            Roles = (userInvitationDescriptor.Roles ?? ImmutableArray<Guid>.Empty).ToArray(),
+            ContactEmail = userInvitationDescriptor.ContactEmail,
+            FullName = userInvitationDescriptor.FullName,
+            CreatedAt = userInvitationDescriptor.CreatedAt,
+            ModifiedAt = userInvitationDescriptor.ModifiedAt,
+            ExpiresAt = userInvitationDescriptor.ExpiresAt
         };
     }
 
-    public static UserInvitation FromDo(UserInvitationDo userInvitationDo)
+    public static UserInvitationDescriptor FromDo(UserInvitationDescriptorDo userInvitationDescriptorDo)
     {
-        return new UserInvitation(userInvitationDo.Id ?? Guid.Empty, userInvitationDo.Username,
-            userInvitationDo.FullName, userInvitationDo.ContactEmail, userInvitationDo.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
-            userInvitationDo.ExpiresAt ?? DateTime.MinValue, userInvitationDo.CreatedAt ?? DateTime.MinValue, userInvitationDo.ModifiedAt ?? DateTime.MinValue);
+        return new UserInvitationDescriptor(userInvitationDescriptorDo.Id ?? Guid.Empty, userInvitationDescriptorDo.Username,
+            userInvitationDescriptorDo.FullName, userInvitationDescriptorDo.ContactEmail, userInvitationDescriptorDo.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
+            userInvitationDescriptorDo.ExpiresAt ?? DateTime.MinValue, userInvitationDescriptorDo.CreatedAt ?? DateTime.MinValue, userInvitationDescriptorDo.ModifiedAt ?? DateTime.MinValue);
     }
 }

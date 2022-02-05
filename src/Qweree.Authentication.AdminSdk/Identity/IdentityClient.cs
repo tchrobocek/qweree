@@ -47,20 +47,20 @@ public class IdentityClient
         return new ApiResponse(response);
     }
 
-    public async Task<ApiResponse<UserInvitationDto>> UserInvitationCreateAsync(UserInvitationInputDto input, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<UserInvitationDescriptorDto>> UserInvitationCreateAsync(UserInvitationInputDto input, CancellationToken cancellationToken = new())
     {
         var json = JsonUtils.Serialize(input);
         var response = await _httpClient.PostAsync("user-invitations", new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-        return new ApiResponse<UserInvitationDto>(response);
+        return new ApiResponse<UserInvitationDescriptorDto>(response);
     }
 
-    public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<UserInvitationDescriptorDto>> UserInvitationGetAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"user-invitations/{id}", cancellationToken);
-        return new ApiResponse<UserInvitationDto>(response);
+        return new ApiResponse<UserInvitationDescriptorDto>(response);
     }
 
-    public async Task<PaginationApiResponse<UserInvitationDto>> UserInvitationsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
+    public async Task<PaginationApiResponse<UserInvitationDescriptorDto>> UserInvitationsPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())
     {
         var sortString = "";
         foreach (var (field, direction) in sort)
@@ -70,7 +70,7 @@ public class IdentityClient
         var queryString = $"?skip={skip}&take={take}&{sortString}";
 
         var response = await _httpClient.GetAsync($"user-invitations/{queryString}", cancellationToken);
-        return new PaginationApiResponse<UserInvitationDto>(response);
+        return new PaginationApiResponse<UserInvitationDescriptorDto>(response);
     }
 
     public async Task<ApiResponse> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
