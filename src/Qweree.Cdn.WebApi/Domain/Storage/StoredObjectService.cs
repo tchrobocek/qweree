@@ -98,6 +98,22 @@ public class StoredObjectService
 
         try
         {
+            var storedObject = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
+            if (storedObject.Descriptor.OwnerId != _sessionStorage.Id)
+            {
+                return Response.Fail<StoredObject>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
+            }
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Ok();
+        }
+        catch (Exception e)
+        {
+            return Response.Fail<StoredObject>(e.Message);
+        }
+        try
+        {
             await _storedObjectRepository.DeleteAsync(slug, cancellationToken);
         }
         catch (Exception e)
