@@ -206,11 +206,20 @@ public class Startup
         var pathBase = routingConfiguration.Value.PathBase;
 
         if (pathBase != null)
-        {
             app.UsePathBase(pathBase);
-        }
-        app.UseForwardedHeaders();
-        app.UseSwagger();
+
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.All,
+
+        });
+        app.UseSwagger(c =>
+        {
+            c.PreSerializeFilters.Add((swaggerDoc, _) =>
+            {
+                swaggerDoc.Servers = new List<OpenApiServer> { new(){ Url = $"{pathBase ?? "/"}" } };
+            });
+        });
         app.UseSwaggerUI(c => c.SwaggerEndpoint((pathBase ?? "") + "/swagger/v1/swagger.json", "Qweree Cdn api"));
         app.UseRouting();
         app.UseAuthentication();

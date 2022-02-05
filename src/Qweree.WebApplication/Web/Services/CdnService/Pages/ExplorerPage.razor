@@ -140,7 +140,7 @@
 
     private async Task GoToPrevDirectoryAsync()
     {
-        var items = SlugHelper.PathToSlug(Path ?? "/")
+        var items = PathHelper.PathToSlug(Path ?? "/")
             .ToList();
 
         var i = items.Count - 1;
@@ -148,7 +148,7 @@
         if (i >= 0)
             items.RemoveAt(i);
 
-        Path = SlugHelper.SlugToPath(items.ToArray());
+        Path = PathHelper.SlugToPath(items.ToArray());
         await LoadCurrentItemsAsync();
     }
 

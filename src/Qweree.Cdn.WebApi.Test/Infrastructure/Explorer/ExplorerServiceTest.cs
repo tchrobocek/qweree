@@ -108,7 +108,7 @@ public class ExplorerServiceTest
             .ReturnsAsync(() => storedObjects);
 
         var service = new ExplorerService(repositoryMock.Object);
-        var response = await service.ExplorePathAsync(new ExplorerFilter(SlugHelper.SlugToPath(slug)));
+        var response = await service.ExplorePathAsync(new ExplorerFilter(PathHelper.SlugToPath(slug)));
 
         Assert.Equal(expected.Length, response.DocumentCount);
         response.Payload.WithDeepEqual(expected)

@@ -10,12 +10,12 @@ public static class ExplorerObjectMapper
     {
         if (descriptor.TotalCount == 1)
             return new ExplorerFile(descriptor.FirstId ?? Guid.Empty,
-                SlugHelper.SlugToPath(descriptor.FirstSlug ?? Array.Empty<string>()),
+                PathHelper.SlugToPath(descriptor.FirstSlug ?? Array.Empty<string>()),
                 descriptor.FirstMediaType ?? "", descriptor.FirstSize ?? 0,
                 descriptor.FirstModifiedAt ?? DateTime.MinValue, descriptor.FirstCreatedAt ?? DateTime.MinValue);
 
         if (descriptor.TotalCount > 1)
-            return new ExplorerDirectory(SlugHelper.SlugToPath(descriptor.Id ?? Array.Empty<string>()),
+            return new ExplorerDirectory(PathHelper.SlugToPath(descriptor.Id ?? Array.Empty<string>()),
                 descriptor.TotalCount ?? 0, descriptor.TotalSize ?? 0, descriptor.MinCreatedAt ?? DateTime.MinValue,
                 descriptor.MaxModifiedAt ?? DateTime.MinValue);
 

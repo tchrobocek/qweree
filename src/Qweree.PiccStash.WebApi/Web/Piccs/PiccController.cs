@@ -56,7 +56,7 @@ public class PiccController : ControllerBase
         var piccId = Guid.NewGuid();
 
         var slug = new[] {"apps", "picc", "stash", piccId.ToString()};
-        var response = await _storageClient.StoreAsync(SlugHelper.SlugToPath(slug), contentType, Request.Body);
+        var response = await _storageClient.StoreAsync(PathHelper.SlugToPath(slug), contentType, Request.Body);
 
         if (!response.IsSuccessful)
         {
@@ -110,7 +110,7 @@ public class PiccController : ControllerBase
             return NotFound();
         }
 
-        var response = await _storageClient.RetrieveAsync(SlugHelper.SlugToPath(picc.StorageSlug!));
+        var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!));
 
         if (!response.IsSuccessful)
         {
@@ -151,7 +151,7 @@ public class PiccController : ControllerBase
             return NotFound();
         }
 
-        var response = await _storageClient.RetrieveAsync(SlugHelper.SlugToPath(picc.StorageSlug!));
+        var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!));
 
         if (!response.IsSuccessful)
         {
@@ -226,7 +226,7 @@ public class PiccController : ControllerBase
             return NotFound();
         }
 
-        var response = await _storageClient.DeleteAsync(SlugHelper.SlugToPath(picc.StorageSlug ?? Array.Empty<string>()));
+        var response = await _storageClient.DeleteAsync(PathHelper.SlugToPath(picc.StorageSlug ?? Array.Empty<string>()));
         if (response.IsSuccessful)
             await _piccRepository.DeleteAsync(piccId);
 

@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Cdn.Sdk;
 
-public static class SlugHelper
+public static class PathHelper
 {
     public static string[] PathToSlug(string path)
     {

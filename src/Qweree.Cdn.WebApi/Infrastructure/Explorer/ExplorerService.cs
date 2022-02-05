@@ -19,7 +19,7 @@ public class ExplorerService
     public async Task<PaginationResponse<IExplorerObject>> ExplorePathAsync(ExplorerFilter filter,
         CancellationToken cancellationToken = new())
     {
-        var slug = SlugHelper.PathToSlug(filter.Path);
+        var slug = PathHelper.PathToSlug(filter.Path);
         var explorerObjects = (await _descriptorRepository.FindInSlugAsync(slug, cancellationToken))
             .Select(ExplorerObjectMapper.ToExplorerObject)
             .ToArray();

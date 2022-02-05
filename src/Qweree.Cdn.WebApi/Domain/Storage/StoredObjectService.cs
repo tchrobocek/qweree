@@ -28,7 +28,7 @@ public class StoredObjectService
     public async Task<Response<StoredObject>> StoreOrReplaceObjectAsync(StoreObjectInput input,
         CancellationToken cancellationToken = new())
     {
-        var slug = SlugHelper.PathToSlug(input.Path);
+        var slug = PathHelper.PathToSlug(input.Path);
 
         await using var stream = new MemoryStream();
         await input.Stream.CopyToAsync(stream, cancellationToken);
@@ -70,7 +70,7 @@ public class StoredObjectService
     public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input,
         CancellationToken cancellationToken = new())
     {
-        var slug = SlugHelper.PathToSlug(input.Path);
+        var slug = PathHelper.PathToSlug(input.Path);
 
         StoredObject storedObject;
 
@@ -94,7 +94,7 @@ public class StoredObjectService
     public async Task<Response> DeleteObjectAsync(string path,
         CancellationToken cancellationToken = new())
     {
-        var slug = SlugHelper.PathToSlug(path);
+        var slug = PathHelper.PathToSlug(path);
 
         try
         {
