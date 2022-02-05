@@ -6,10 +6,11 @@ namespace Qweree.Cdn.Sdk.Storage;
 
 public class StoredObjectDescriptor
 {
-    public StoredObjectDescriptor(Guid id, IEnumerable<string> slug, string mediaType, long size,
+    public StoredObjectDescriptor(Guid id, Guid ownerId, IEnumerable<string> slug, string mediaType, long size,
         DateTime createdAt, DateTime modifiedAt)
     {
         Id = id;
+        OwnerId = ownerId;
         Slug = slug.ToImmutableArray();
         MediaType = mediaType;
         Size = size;
@@ -18,6 +19,7 @@ public class StoredObjectDescriptor
     }
 
     public Guid Id { get; }
+    public Guid OwnerId { get; }
     public ImmutableArray<string> Slug { get; }
     public string MediaType { get; }
     public long Size { get; }

@@ -23,6 +23,7 @@ public class StoredObjectDescriptorRepository :
         descriptor => new StoredObjectDescriptorDo
         {
             Id = descriptor.Id,
+            OwnerId = descriptor.OwnerId,
             Size = descriptor.Size,
             CreatedAt = descriptor.CreatedAt,
             Slug = descriptor.Slug.ToArray(),
@@ -31,8 +32,8 @@ public class StoredObjectDescriptorRepository :
         };
 
     protected override Func<StoredObjectDescriptorDo, StoredObjectDescriptor> FromDocument =>
-        descriptor => new StoredObjectDescriptor(descriptor.Id, descriptor.Slug ?? ArraySegment<string>.Empty,
-            descriptor.MediaType ?? "", descriptor.Size, descriptor.CreatedAt, descriptor.ModifiedAt);
+        descriptor => new StoredObjectDescriptor(descriptor.Id ?? Guid.Empty, descriptor.OwnerId ?? Guid.Empty, descriptor.Slug ?? ArraySegment<string>.Empty,
+            descriptor.MediaType ?? "", descriptor.Size ?? 0, descriptor.CreatedAt ?? DateTime.MinValue, descriptor.ModifiedAt ?? DateTime.MinValue);
 
     public async Task<StoredObjectDescriptor> GetBySlugAsync(string[] slug,
         CancellationToken cancellationToken = new())

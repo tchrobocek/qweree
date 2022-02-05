@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
+using Qweree.AspNet.Session;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo.Exception;
@@ -14,11 +15,13 @@ public class StoredObjectService
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IStoredObjectRepository _storedObjectRepository;
+    private readonly ISessionStorage _sessionStorage;
 
-    public StoredObjectService(IDateTimeProvider dateTimeProvider, IStoredObjectRepository storedObjectRepository)
+    public StoredObjectService(IDateTimeProvider dateTimeProvider, IStoredObjectRepository storedObjectRepository, ISessionStorage sessionStorage)
     {
         _dateTimeProvider = dateTimeProvider;
         _storedObjectRepository = storedObjectRepository;
+        _sessionStorage = sessionStorage;
     }
 
     public async Task<Response<StoredObject>> StoreOrReplaceObjectAsync(StoreObjectInput input,
@@ -49,7 +52,7 @@ public class StoredObjectService
         {
         }
 
-        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), slug, input.MediaType, stream.Length,
+        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.Id, slug, input.MediaType, stream.Length,
             created, _dateTimeProvider.UtcNow);
 
         StoredObject storedObject = new(descriptor, stream);

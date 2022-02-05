@@ -63,6 +63,8 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(stream.Length, descriptorDto?.Size!);
             Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
+            Assert.NotNull(descriptorDto?.OwnerId);
+            Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
         }
 
         {
@@ -91,6 +93,8 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(stream.Length, descriptorDto?.Size!);
             Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
+            Assert.NotNull(descriptorDto?.OwnerId);
+            Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
         }
 
         {
@@ -144,6 +148,8 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(stream.Length, descriptorDto?.Size!);
             Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
+            Assert.NotNull(descriptorDto?.OwnerId);
+            Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
         }
 
         {
@@ -181,6 +187,8 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
             Assert.Equal(stream.Length, descriptorDto?.Size!);
             Assert.Equal(new[] {"test", "object.txt"}, descriptorDto?.Slug!);
             Assert.Equal(MediaTypeNames.Text.Plain, descriptorDto?.MediaType!);
+            Assert.NotNull(descriptorDto?.OwnerId);
+            Assert.NotEqual(Guid.Empty, descriptorDto?.OwnerId);
         }
 
         {

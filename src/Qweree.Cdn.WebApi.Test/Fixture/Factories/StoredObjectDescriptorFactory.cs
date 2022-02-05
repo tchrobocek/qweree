@@ -14,6 +14,6 @@ public class StoredObjectDescriptorFactory
 
     public static StoredObjectDescriptor CreateDefault(string path, string mediaType, long size)
     {
-        return new StoredObjectDescriptor(Guid.NewGuid(), SlugHelper.PathToSlug(path), mediaType, size, DateTime.UtcNow, DateTime.UtcNow);
+        return new StoredObjectDescriptor(Guid.NewGuid(), Guid.NewGuid(), SlugHelper.PathToSlug(path), mediaType, size, DateTime.UtcNow, DateTime.UtcNow);
     }
 }

@@ -10,6 +10,7 @@ public static class StoredObjectDescriptorMapper
         return new StoredObjectDescriptorDto
         {
             Id = storedObject.Id,
+            OwnerId = storedObject.OwnerId,
             Slug = storedObject.Slug.ToArray(),
             Size = storedObject.Size,
             CreatedAt = storedObject.CreatedAt,
@@ -20,8 +21,7 @@ public static class StoredObjectDescriptorMapper
 
     public static StoredObjectDescriptor FromDto(StoredObjectDescriptorDto storedObject)
     {
-        return new StoredObjectDescriptor(storedObject.Id,
-            storedObject.Slug ?? ArraySegment<string>.Empty, storedObject.MediaType ?? "", storedObject.Size,
-            storedObject.CreatedAt, storedObject.ModifiedAt);
+        return new StoredObjectDescriptor(storedObject.Id ?? Guid.Empty, storedObject.OwnerId ?? Guid.Empty, storedObject.Slug ?? ArraySegment<string>.Empty, storedObject.MediaType ?? "",
+            storedObject.Size ?? 0, storedObject.CreatedAt ?? DateTime.MinValue, storedObject.ModifiedAt ?? DateTime.MinValue);
     }
 }
