@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Utils;
 using Qweree.WebApplication.Infrastructure.Authentication;
@@ -60,8 +61,7 @@ namespace Qweree.WebApplication.Infrastructure.Notes
         private async Task<string> GetPathAsync(string entity, CancellationToken cancellationToken = new())
         {
             var user = await _claimsPrincipalStorage.GetUserAsync(cancellationToken);
-
-            return $"/apps/auth/{user!.Id}/{entity}.json";
+            return PathHelper.Combine(PathHelper.GetUserRootPath(user!.Id), "notes", $"{entity}.json");
         }
     }
 }

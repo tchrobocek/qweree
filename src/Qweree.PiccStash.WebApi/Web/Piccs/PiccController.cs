@@ -10,6 +10,7 @@ using Qweree.AspNet.Session;
 using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk;
+using Qweree.Cdn.Sdk.Extensions;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.PiccStash.Sdk;
 using Qweree.PiccStash.WebApi.Domain;
@@ -55,8 +56,8 @@ public class PiccController : ControllerBase
         var userId = _sessionStorage.Id;
         var piccId = Guid.NewGuid();
 
-        var slug = new[] {"apps", "picc", "stash", piccId.ToString()};
-        var response = await _storageClient.StoreAsync(PathHelper.SlugToPath(slug), contentType, Request.Body);
+        var path = PathHelper.Combine(_sessionStorage.GetUserDataPath(), "piccdata", piccId.ToString());
+        var response = await _storageClient.StoreAsync(path, contentType, Request.Body);
 
         if (!response.IsSuccessful)
         {
@@ -73,7 +74,7 @@ public class PiccController : ControllerBase
             CreatedAt = _dateTimeProvider.UtcNow,
             ModifiedAt = _dateTimeProvider.UtcNow,
             OwnerId = userId,
-            StorageSlug = slug,
+            StorageSlug = PathHelper.PathToSlug(path),
             Size = descriptor?.Size,
             MediaType = descriptor?.MediaType
         };
