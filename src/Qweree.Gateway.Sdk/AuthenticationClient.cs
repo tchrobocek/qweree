@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -25,5 +26,11 @@ public class AuthenticationClient
         var response = await _httpClient.PostAsync("login", content, cancellationToken);
 
         return ApiResponse.CreateApiResponse<IdentityDto>(response);
+    }
+
+    public async Task<ApiResponse> LogoutAsync(CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync("logout", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
     }
 }
