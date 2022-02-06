@@ -28,6 +28,17 @@ public class SessionStorage : IDisposable
         return File.OpenRead(path);
     }
 
+    public Task DeleteAsync(string key)
+    {
+        var path = Path.Combine(_rootDir, key);
+
+        if (!File.Exists(path))
+            return Task.CompletedTask;
+
+        File.Delete(path);
+        return Task.CompletedTask;
+    }
+
     public void Dispose()
     {
         if (Directory.Exists(_rootDir))

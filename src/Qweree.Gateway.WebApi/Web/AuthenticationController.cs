@@ -31,9 +31,9 @@ public class AuthenticationController : ControllerBase
     }
 
     /// <summary>
-    ///     Get Version.
+    ///     Login.
     /// </summary>
-    /// <returns>Returns current project assembly version.</returns>
+    /// <returns>Identity.</returns>
     [HttpPost]
     [Route("login")]
     [ProducesResponseType(typeof(IdentityDto), StatusCodes.Status200OK)]
@@ -103,6 +103,23 @@ public class AuthenticationController : ControllerBase
         }
 
         return Ok(IdentityMapper.FromClaimsPrincipal(new ClaimsPrincipal(user)));
+    }
+
+    /// <summary>
+    ///     Logout, removes cookie and all the leftovers.
+    /// </summary>
+    [HttpPost]
+    [Route("logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> LogoutAsync(LoginInputDto input)
+    {
+        var cookie = Request.Cookies["Session"];
+        if (cookie == null)
+            return NoContent();
+
+        Response.Cookies.Delete("Session");
+        await _sessionStorage.DeleteAsync(cookie);
+        return NoContent();
     }
 
     private string GenerateCookie()
