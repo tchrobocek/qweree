@@ -7,7 +7,7 @@ public class MillisecondDateTimeComparison : IComparison
 {
     private readonly int _tolerance;
 
-    public MillisecondDateTimeComparison(int tolerance)
+    public MillisecondDateTimeComparison(int tolerance = 0)
     {
         _tolerance = tolerance;
     }
