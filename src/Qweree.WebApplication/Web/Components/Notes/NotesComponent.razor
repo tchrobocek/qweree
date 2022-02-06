@@ -1,23 +1,24 @@
 @using Qweree.WebApplication.Infrastructure.Notes
 @inject NoteService _noteService
 
-<div class="my-6 mx-6">
-    @foreach (var note in _notes)
-    {
-        <div class="pl-4 my-2">
-            <div class="note">
-                <MudLink @onclick="() => DeleteAsync(note)" Color="Color.Error" Class="cursor-pointer mx-2">X</MudLink>
-                @note.CreatedAt: @note.Text
-            </div>
+@foreach (var note in _notes)
+{
+    <div class="pl-4 my-2">
+        <div>
+            <MudLink @onclick="() => DeleteAsync(note)" Color="Color.Error" Class="cursor-pointer mx-2">X</MudLink>
+            @note.CreatedAt: @note.Text
         </div>
-
-        <MudDivider />
-    }
-    <div>
-        <MudInput @bind-Value="_addNoteInput" Style="width: 100%"  T="string" Placeholder="Add new note" Variant="Variant.Filled" FullWidth="true" />
-        <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="AddNoteAsync">Add note</MudButton>
-        <MudText Typo="Typo.body2">* Only you can see these notes.</MudText>
     </div>
+    <MudDivider />
+}
+<div>
+    <MudInput @bind-Value="_addNoteInput" Style="width: 100%"  T="string" Placeholder="Add new note" Variant="Variant.Filled" FullWidth="true" />
+    <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="AddNoteAsync">Add note</MudButton>
+
+    @if (ViewDisclaimer)
+    {
+        <MudText Typo="Typo.body2">* Only you can see these notes.</MudText>
+    }
 </div>
 
 @code {
@@ -26,6 +27,9 @@
 
     [Parameter]
     public string? Entity { get; set; }
+
+    [Parameter]
+    public bool ViewDisclaimer { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {

@@ -32,6 +32,29 @@
                 </MudTable>
             </MudCardContent>
         </MudCard>
+        <MudCard Class="mt-4">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Class="pl-4 pt-4" Typo="Typo.h6">Notes</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    @if (_notesOpen)
+                    {
+                        <MudIconButton Class="mr-4 mt-4" OnClick="() => _notesOpen = false" Icon="@Icons.Filled.KeyboardArrowUp" Color="Color.Default"/>
+                    }
+                    else
+                    {
+                        <MudIconButton Class="mr-4 mt-4" OnClick="() => _notesOpen = true" Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"/>
+                    }
+                </CardHeaderActions>
+            </MudCardHeader>
+            @if (_notesOpen)
+            {
+                <MudCardContent>
+                    <NotesComponent ViewDisclaimer="false" Entity="my_dashboard" />
+                </MudCardContent>
+            }
+        </MudCard>
     </MudItem>
     <MudItem xs="6">
         <MudCard Class="pa-4">
@@ -49,6 +72,7 @@
 @code {
     private readonly List<ServiceInfo> _services = new();
     private string _username = string.Empty;
+    private bool _notesOpen;
 
     protected override async Task OnInitializedAsync()
     {
