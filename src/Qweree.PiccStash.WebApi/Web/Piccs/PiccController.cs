@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk;
-using Qweree.Cdn.Sdk.Extensions;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.PiccStash.Sdk;
 using Qweree.PiccStash.WebApi.Domain;
+using Qweree.PiccStash.WebApi.Infrastructure;
 using Qweree.Sdk;
 using Qweree.Session;
 using Qweree.Utils;
@@ -27,13 +28,15 @@ public class PiccController : ControllerBase
     private readonly StorageClient _storageClient;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly StashedPiccRepository _piccRepository;
+    private readonly IOptions<QwereeConfigurationDo> _qwereeConfiguration;
 
-    public PiccController(ISessionStorage sessionStorage, StorageClient storageClient, IDateTimeProvider dateTimeProvider, StashedPiccRepository piccRepository)
+    public PiccController(ISessionStorage sessionStorage, StorageClient storageClient, IDateTimeProvider dateTimeProvider, StashedPiccRepository piccRepository, IOptions<QwereeConfigurationDo> qwereeConfiguration)
     {
         _sessionStorage = sessionStorage;
         _storageClient = storageClient;
         _dateTimeProvider = dateTimeProvider;
         _piccRepository = piccRepository;
+        _qwereeConfiguration = qwereeConfiguration;
     }
 
     /// <summary>
@@ -56,7 +59,7 @@ public class PiccController : ControllerBase
         var userId = _sessionStorage.Id;
         var piccId = Guid.NewGuid();
 
-        var path = PathHelper.Combine(_sessionStorage.GetUserDataPath(), "piccdata", piccId.ToString());
+        var path = PathHelper.Combine(PathHelper.GetClientDataPath(_qwereeConfiguration.Value.ClientId ?? string.Empty), "piccs", piccId.ToString());
         var response = await _storageClient.StoreAsync(path, contentType, Request.Body);
 
         if (!response.IsSuccessful)
