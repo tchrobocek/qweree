@@ -32,6 +32,7 @@ public class AuthenticationService
 
     public async Task LogoutAsync(CancellationToken cancellationToken = new())
     {
+        await _authenticationClient.LogoutAsync(cancellationToken);
         await _localUserStorage.RemoveUserAsync(cancellationToken);
     }
 }
