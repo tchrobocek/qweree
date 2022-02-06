@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
-using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
@@ -15,6 +11,7 @@ using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Session;
+using Qweree.Session.Tokens;
 using Qweree.Utils;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
@@ -23,11 +20,8 @@ namespace Qweree.Authentication.WebApi.Domain.Authentication;
 
 public class AuthenticationService
 {
-    public const string Audience = "qweree";
-    public const string Issuer = "net.qweree";
     private const string AccessDeniedMessage = "Access denied.";
     private const int RefreshTokenLength = 16;
-    private readonly string _accessTokenKey;
 
     private readonly int _accessTokenValiditySeconds;
     private readonly IDateTimeProvider _datetimeProvider;
@@ -39,23 +33,24 @@ public class AuthenticationService
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly AuthorizationService _authorizationService;
     private readonly IClientRoleRepository _clientRoleRepository;
+    private readonly ITokenEncoder _tokenEncoder;
 
     private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public AuthenticationService(IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository,
         IDateTimeProvider datetimeProvider, Random random,
-        int accessTokenValiditySeconds, int refreshTokenValiditySeconds, string accessTokenKey, IPasswordEncoder passwordEncoder,
-        IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository)
+        int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
+        IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository, ITokenEncoder tokenEncoder)
     {
         _userRepository = userRepository;
         _refreshTokenRepository = refreshTokenRepository;
         _datetimeProvider = datetimeProvider;
         _accessTokenValiditySeconds = accessTokenValiditySeconds;
-        _accessTokenKey = accessTokenKey;
         _passwordEncoder = passwordEncoder;
         _clientRepository = clientRepository;
         _authorizationService = authorizationService;
         _clientRoleRepository = clientRoleRepository;
+        _tokenEncoder = tokenEncoder;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -85,11 +80,14 @@ public class AuthenticationService
             effectiveRoles.Add(role.Key);
         }
 
+        effectiveRoles.Add("USER");
+
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.FullName),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
-        var jwt = EncodeAccessToken(identity, now, expiresAt, true);
+        var accessToken = new AccessToken(identity, now, expiresAt);
+        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
         var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
 
@@ -127,11 +125,14 @@ public class AuthenticationService
             effectiveRoles.Add(role.Key);
         }
 
+        effectiveRoles.Add("USER");
+
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.FullName),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
-        var jwt = EncodeAccessToken(identity, now, expiresAt, true);
+        var accessToken = new AccessToken(identity, now, expiresAt);
+        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
         var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
         return Response.Ok(tokenInfo);
@@ -161,11 +162,13 @@ public class AuthenticationService
             effectiveRoles.Add(role.Key);
         }
 
+        effectiveRoles.Add("CLIENT");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             owner.ContactEmail, effectiveRoles.ToImmutableArray());
-        var jwt = EncodeAccessToken(identity, now, expiresAt, false);
+        var accessToken = new AccessToken(identity, now, expiresAt);
+        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
         var tokenInfo = new TokenInfo(jwt, null, expiresAt);
         return Response.Ok(tokenInfo);
@@ -184,29 +187,6 @@ public class AuthenticationService
         await _refreshTokenRepository.InsertAsync(refreshToken, cancellationToken);
 
         return token;
-    }
-
-    private string EncodeAccessToken(Session.Identity identity, DateTime issuedAt, DateTime expiresAt, bool isUser)
-    {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var identityPrincipal = ClaimsPrincipalMapper.CreateClaimsPrincipal(identity);
-        var claims = new List<Claim>(identityPrincipal.Claims)
-        {
-            new("iat", issuedAt.Ticks.ToString()),
-            new("jti", Guid.NewGuid().ToString())
-        };
-
-        if (isUser)
-            claims.Add(new Claim("role", "USER"));
-        else
-            claims.Add(new Claim("role", "CLIENT"));
-
-        var token = new JwtSecurityToken(Issuer, Audience, claims,
-            expires: expiresAt, signingCredentials: credentials, notBefore: _datetimeProvider.UtcNow);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private async Task<User> AuthenticateUserAsync(PasswordGrantInput passwordGrantInput,

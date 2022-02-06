@@ -31,6 +31,8 @@ using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Session;
+using Qweree.Session.Tokens;
+using Qweree.Session.Tokens.Jwt;
 using Qweree.Utils;
 using Qweree.Validator;
 using Qweree.Validator.Extensions;
@@ -40,6 +42,9 @@ namespace Qweree.Authentication.WebApi;
 
 public class Startup
 {
+    public const string Audience = "qweree";
+    public const string Issuer = "net.qweree";
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -52,9 +57,9 @@ public class Startup
         return new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = AuthenticationService.Issuer,
+            ValidIssuer = Issuer,
             ValidateAudience = true,
-            ValidAudience = AuthenticationService.Audience,
+            ValidAudience = Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromMinutes(1)
@@ -196,10 +201,15 @@ public class Startup
             var clientRepository = p.GetRequiredService<IClientRepository>();
             var authorizationService = p.GetRequiredService<AuthorizationService>();
             var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
+            var tokenEncoder = p.GetRequiredService<ITokenEncoder>();
 
             return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
-                config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0,
-                config.AccessTokenKey ?? "", passwordEncoder, clientRepository, authorizationService, clientRoleRepository);
+                config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, authorizationService, clientRoleRepository, tokenEncoder);
+        });
+        services.AddSingleton<ITokenEncoder>(p =>
+        {
+            var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+            return new JwtEncoder(Issuer, Audience, config?.AccessTokenKey ?? string.Empty);
         });
 
         // Identity
