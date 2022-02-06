@@ -23,6 +23,7 @@ using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo;
 using Qweree.PiccStash.WebApi.Domain;
+using Qweree.PiccStash.WebApi.Infrastructure;
 using Qweree.Sdk.Http.HttpClient;
 using Qweree.Session;
 using Qweree.Utils;
@@ -59,6 +60,8 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<QwereeConfigurationDo>(Configuration.GetSection("Qweree"));
+
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddHealthChecks()
             .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
@@ -183,8 +186,9 @@ public class Startup
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
             var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
 
+            var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
             return new QwereeHttpHandler(httpHandler,
-                new ClientAuthenticationStorage(new ClientCredentials("admin-cli", "password"), oauth2Client));
+                new ClientAuthenticationStorage(new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,  qwereeConfig.Value.ClientSecret ?? string.Empty), oauth2Client));
         });
         services.AddScoped(p =>
         {

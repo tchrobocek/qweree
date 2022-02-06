@@ -2,8 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Gateway.Sdk;
+using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
 using Qweree.Utils;
 
@@ -17,12 +19,15 @@ public class AuthenticationController : ControllerBase
     private readonly OAuth2Client _oauthClient;
     private readonly SessionStorage _sessionStorage;
     private readonly IWebHostEnvironment _environment;
+    private readonly IOptions<QwereeConfigurationDo> _qwereeConfig;
 
-    public AuthenticationController(OAuth2Client oauthClient, SessionStorage sessionStorage, IWebHostEnvironment environment)
+    public AuthenticationController(OAuth2Client oauthClient, SessionStorage sessionStorage,
+        IWebHostEnvironment environment, IOptions<QwereeConfigurationDo> qwereeConfig)
     {
         _oauthClient = oauthClient;
         _sessionStorage = sessionStorage;
         _environment = environment;
+        _qwereeConfig = qwereeConfig;
     }
 
     /// <summary>
@@ -35,7 +40,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> LoginAsync(LoginInputDto input)
     {
         var grantInput = new PasswordGrantInput(input.Username ?? string.Empty, input.Password ?? string.Empty);
-        var clientCredentials = new ClientCredentials("admin-cli", "password");
+        var clientCredentials = new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty, _qwereeConfig.Value.ClientSecret ?? string.Empty);
         var response = await _oauthClient.SignInAsync(grantInput, clientCredentials);
 
         if (!response.IsSuccessful)

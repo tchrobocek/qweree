@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
 using Qweree.Utils;
 
@@ -17,6 +18,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<QwereeConfigurationDo>(Configuration.GetSection("Qweree"));
+
         services.AddHealthChecks();
         services.AddControllers()
             .AddJsonOptions(options =>

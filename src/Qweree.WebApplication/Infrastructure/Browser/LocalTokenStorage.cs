@@ -30,6 +30,6 @@ public class LocalUserStorage
 
     public async Task RemoveUserAsync(CancellationToken cancellationToken = new())
     {
-        await _localStorage.RemoveItem("user", cancellationToken);
+        await _localStorage.RemoveItem("identity", cancellationToken);
     }
 }

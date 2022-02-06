@@ -67,6 +67,37 @@ clients = [{
         "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ]
 }, {
+    "_id": UUID("a25acc07-7246-4e8e-9291-4ee30b18c168"),
+    "ClientId": "picc-cli",
+    "ClientSecret": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
+    "ApplicationName": "Picc CLI",
+    "Origin": "localhost",
+    "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01"),
+    "ClientRoles": [
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+    ],
+    "UserRoles": [
+        "d98049ab-977e-42ef-bba6-05c16184d054",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2"
+    ]
+}, {
+    "_id": UUID("eadde137-61cf-4fd8-9725-15d417cf5906"),
+    "ClientId": "gateway-cli",
+    "ClientSecret": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
+    "ApplicationName": "Gateway CLI",
+    "Origin": "localhost",
+    "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01"),
+    "ClientRoles": [
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e"
+    ],
+    "UserRoles": []
+}, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
     "ClientId": "test-cli",
     "ClientSecret": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
