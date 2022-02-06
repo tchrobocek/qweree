@@ -16,6 +16,7 @@ public static class ClaimsPrincipalMapper
         };
 
         claims.AddRange(identity.Roles.Select(r => new Claim("role", r)));
+        claims.AddRange(identity.Roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         if (identity.User != null)
         {
@@ -37,7 +38,9 @@ public static class ClaimsPrincipalMapper
         claims = claims.ToArray();
 
         var email = claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
-        var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
+        var roles = claims.Where(c => c.Type is ClaimTypes.Role or "role")
+            .Select(c => c.Value)
+            .Distinct()
             .ToArray();
 
         var client = CreateClient(claims);
