@@ -42,9 +42,10 @@ public class Startup
 
         services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
-        services.AddScoped(_ =>
+        services.AddSingleton(p =>
         {
-            var client = new HttpClient
+            var handler = p.GetRequiredService<HttpMessageHandler>();
+            var client = new HttpClient(handler)
             {
                 BaseAddress = new Uri(new Uri(Configuration["AuthUri"]), "api/oauth2/auth/")
             };
