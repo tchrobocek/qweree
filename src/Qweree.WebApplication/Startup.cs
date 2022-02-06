@@ -40,13 +40,15 @@ public class Startup
         services.AddSingleton<LocalUserStorage>();
         services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
         services.AddScoped<ClaimsPrincipalStorage>();
+        services.AddScoped<HttpMessageHandler, HttpClientHandler>();
+        services.AddScoped<BrowserCredentialsHandler>();
         services.AddScoped(p =>
         {
-            return new UnauthorizedHttpHandler(p.GetRequiredService<LocalUserStorage>(), p.GetRequiredService<NavigationManager>(), new HttpClientHandler());
+            return new UnauthorizedHttpHandler(p.GetRequiredService<AuthenticationService>(), p.GetRequiredService<NavigationManager>(), p.GetRequiredService<BrowserCredentialsHandler>());
         });
         services.AddScoped(p =>
         {
-            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
+            var client = new HttpClient(p.GetRequiredService<BrowserCredentialsHandler>())
             {
                 BaseAddress = new Uri(new Uri(configuration["GatewayServiceUri"]), "api/v1/auth/")
             };
