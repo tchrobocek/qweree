@@ -34,7 +34,7 @@
                         </MudItem>
                     </MudGrid>
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
-                        <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
+                        <MudExpansionPanel Disabled="!_user.Roles.Any()" Text="User roles" Class="mt-0" Style="margin: 0 !important;">
                             @foreach (var role in _user.Roles ?? Array.Empty<RoleDto>())
                             {
                                 <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
