@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Qweree.Session;
 
-public class ClaimsPrincipalMapper
+public static class ClaimsPrincipalMapper
 {
     public static ClaimsPrincipal CreateClaimsPrincipal(Identity identity)
     {
