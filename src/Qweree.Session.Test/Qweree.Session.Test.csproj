@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Qweree.Session\Qweree.Session.csproj" />
+      <ProjectReference Include="..\Qweree.TestUtils\Qweree.TestUtils.csproj" />
     </ItemGroup>
 
 </Project>

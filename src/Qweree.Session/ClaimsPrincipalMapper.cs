@@ -29,15 +29,22 @@ public static class ClaimsPrincipalMapper
 
     public static Identity CreateIdentity(ClaimsPrincipal claimsPrincipal)
     {
-        var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
-        var roles = claimsPrincipal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
+        return CreateIdentity(claimsPrincipal.Claims);
+    }
+
+    public static Identity CreateIdentity(IEnumerable<Claim> claims)
+    {
+        claims = claims.ToArray();
+
+        var email = claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "anonymous";
+        var roles = claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
             .ToArray();
 
-        var client = CreateClient(claimsPrincipal);
+        var client = CreateClient(claims);
 
         if (!roles.Contains("CLIENT"))
         {
-            var user = CreateUser(claimsPrincipal);
+            var user = CreateUser(claims);
             return new Identity(client, user, email, roles.ToImmutableArray());
         }
 
@@ -46,17 +53,31 @@ public static class ClaimsPrincipalMapper
 
     private static IdentityUser CreateUser(ClaimsPrincipal claimsPrincipal)
     {
-        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "user.id")?.Value ?? Guid.Empty.ToString();
-        var username = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "user.username")?.Value ?? "anonymous";
-        var fullName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "user.full_name")?.Value ?? "anonymous";
+        return CreateUser(claimsPrincipal.Claims);
+    }
+
+    private static IdentityUser CreateUser(IEnumerable<Claim> claims)
+    {
+        claims = claims.ToArray();
+
+        var id = claims.FirstOrDefault(c => c.Type == "user.id")?.Value ?? Guid.Empty.ToString();
+        var username = claims.FirstOrDefault(c => c.Type == "user.username")?.Value ?? "anonymous";
+        var fullName = claims.FirstOrDefault(c => c.Type == "user.full_name")?.Value ?? "anonymous";
         return new IdentityUser(Guid.Parse(id), username, fullName);
     }
 
     private static IdentityClient CreateClient(ClaimsPrincipal claimsPrincipal)
     {
-        var id = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "client.id")?.Value ?? Guid.Empty.ToString();
-        var clientId = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "client.client_id")?.Value ?? "anonymous";
-        var appName = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "client.application_name")?.Value ?? "anonymous";
+        return CreateClient(claimsPrincipal.Claims);
+    }
+
+    private static IdentityClient CreateClient(IEnumerable<Claim> claims)
+    {
+        claims = claims.ToArray();
+
+        var id = claims.FirstOrDefault(c => c.Type == "client.id")?.Value ?? Guid.Empty.ToString();
+        var clientId = claims.FirstOrDefault(c => c.Type == "client.client_id")?.Value ?? "anonymous";
+        var appName = claims.FirstOrDefault(c => c.Type == "client.application_name")?.Value ?? "anonymous";
         return new IdentityClient(Guid.Parse(id), clientId, appName);
     }
 }
