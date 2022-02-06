@@ -11,6 +11,23 @@ public class JwtEncoder : ITokenEncoder
     private readonly string _audience;
     private readonly string _accessTokenKey;
 
+    public static AccessToken Decode(string accessToken)
+    {
+        var token = (JwtSecurityToken)new JwtSecurityTokenHandler()
+            .ReadToken(accessToken);
+        var claims = token.Claims.ToList();
+        claims.AddRange(token.Claims.Where(c => c.Type == "role")
+            .Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
+
+        var expClaim = claims.FirstOrDefault(c => c.Type == "exp");
+        var exp = expClaim?.Value ?? "0";
+        var expTime = DateTime.UnixEpoch;
+        expTime = expTime.AddSeconds(int.Parse(exp));
+
+        var identity = ClaimsPrincipalMapper.CreateIdentity(claims);
+        return new AccessToken(identity, token.IssuedAt, expTime);
+    }
+
     public JwtEncoder(string issuer, string audience, string accessTokenKey)
     {
         _issuer = issuer;
@@ -39,18 +56,6 @@ public class JwtEncoder : ITokenEncoder
 
     public AccessToken DecodeAccessToken(string accessToken)
     {
-        var token = (JwtSecurityToken)new JwtSecurityTokenHandler()
-            .ReadToken(accessToken);
-        var claims = token.Claims.ToList();
-        claims.AddRange(token.Claims.Where(c => c.Type == "role")
-            .Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
-
-        var expClaim = claims.FirstOrDefault(c => c.Type == "exp");
-        var exp = expClaim?.Value ?? "0";
-        var expTime = DateTime.UnixEpoch;
-        expTime = expTime.AddSeconds(int.Parse(exp));
-
-        var identity = ClaimsPrincipalMapper.CreateIdentity(claims);
-        return new AccessToken(identity, token.IssuedAt, expTime);
+        return Decode(accessToken);
     }
 }
