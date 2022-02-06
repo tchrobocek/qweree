@@ -7,7 +7,7 @@ public class MillisecondDateTimeComparison : IComparison
 {
     private readonly int _tolerance;
 
-    public MillisecondDateTimeComparison(int tolerance = 1)
+    public MillisecondDateTimeComparison(int tolerance)
     {
         _tolerance = tolerance;
     }
@@ -23,7 +23,7 @@ public class MillisecondDateTimeComparison : IComparison
         var dateTime1 = (DateTime) value1;
         var dateTime2 = (DateTime) value2;
 
-        if ((dateTime1 - dateTime2).TotalMilliseconds > _tolerance)
+        if (Math.Abs((dateTime1 - dateTime2).TotalMilliseconds) > _tolerance)
         {
             context = context.AddDifference(dateTime1, dateTime2);
             return (ComparisonResult.Fail, context);
