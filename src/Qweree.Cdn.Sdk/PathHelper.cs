@@ -23,36 +23,36 @@ public static class PathHelper
         return string.Join("/", paths.Select(p => p.Trim('/')));
     }
 
-    public static string GetUserRootPath(Guid userId)
+    public static string GetUserRootPath(string username)
     {
-        if (userId == Guid.Empty)
+        if (string.IsNullOrEmpty(username))
             throw new ArgumentException("User id is empty.");
 
-        return $"/usr/{userId}/";
+        return $"/usr/{username}/";
     }
 
-    public static string GetClientRootPath(Guid clientId)
+    public static string GetClientRootPath(string clientId)
     {
-        if (clientId == Guid.Empty)
+        if (string.IsNullOrEmpty(clientId))
             throw new ArgumentException("Client id is empty.");
 
         return $"/apps/{clientId}/";
     }
 
-    public static string GetUserDataPath(Guid userId, Guid clientId)
+    public static string GetUserDataPath(string username, string clientId)
     {
-        if (userId == Guid.Empty)
+        if (string.IsNullOrEmpty(username))
             throw new ArgumentException("User id is empty.");
 
-        if (clientId == Guid.Empty)
+        if (string.IsNullOrEmpty(clientId))
             throw new ArgumentException("Client id is empty.");
 
-        return Combine(GetUserRootPath(userId), "apps", clientId.ToString());
+        return Combine(GetUserRootPath(username), "apps", clientId);
     }
 
-    public static string GetClientDataPath(Guid clientId)
+    public static string GetClientDataPath(string clientId)
     {
-        if (clientId == Guid.Empty)
+        if (string.IsNullOrEmpty(clientId))
             throw new ArgumentException("Client id is empty.");
 
         return Combine(GetClientRootPath(clientId), "data");
