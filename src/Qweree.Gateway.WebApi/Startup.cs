@@ -43,11 +43,12 @@ public class Startup
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
+        // services.AddSingleton<ISessionStorage, QwereeSessionStorage>();
         services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddSingleton(p =>
         {
-            var httpHandler = p.GetRequiredService<HttpClientHandler>();
+            var httpHandler = p.GetRequiredService<HttpMessageHandler>();
             var oauth2Client = p.GetRequiredService<OAuth2Client>();
 
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();

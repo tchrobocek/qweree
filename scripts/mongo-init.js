@@ -94,9 +94,14 @@ clients = [{
     "ModifiedAt": ISODate("1970-01-01"),
     "ClientRoles": [
         "f946f6cd-5d17-4dc5-b383-af0201a8b431",
-        "92024488-4c7d-42a9-8fc5-19fc73853c8e"
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
     ],
-    "UserRoles": []
+    "UserRoles": [
+        "d98049ab-977e-42ef-bba6-05c16184d054",
+        "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2"
+    ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
     "ClientId": "test-cli",
