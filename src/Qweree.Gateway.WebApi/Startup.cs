@@ -40,7 +40,7 @@ public class Startup
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
-        services.AddSingleton(_ => new SessionStorage(Configuration["SessionStorage"]));
+        services.AddSingleton<ISessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddScoped(_ =>
         {
@@ -65,7 +65,7 @@ public class Startup
                 pipeline.UseSessionAffinity();
                 pipeline.Use(async (context, next) =>
                 {
-                    var storage = context.RequestServices.GetRequiredService<SessionStorage>();
+                    var storage = context.RequestServices.GetRequiredService<ISessionStorage>();
 
                     var cookie = context.Request.Cookies["Session"];
 
@@ -73,7 +73,7 @@ public class Startup
                     {
                         try
                         {
-                            await using var stream = storage.ReadAsync(cookie);
+                            await using var stream = await storage.ReadAsync(cookie);
                             var tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream);
                             context.Request.Headers.Authorization = $"Bearer {tokenInfo?.AccessToken}";
                         }

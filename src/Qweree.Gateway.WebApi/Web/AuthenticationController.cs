@@ -17,15 +17,15 @@ public class AuthenticationController : ControllerBase
 {
     private readonly Random _random = new();
     private readonly OAuth2Client _oauthClient;
-    private readonly SessionStorage _sessionStorage;
+    private readonly FileSystemSessionStorage _fileSystemSessionStorage;
     private readonly IWebHostEnvironment _environment;
     private readonly IOptions<QwereeConfigurationDo> _qwereeConfig;
 
-    public AuthenticationController(OAuth2Client oauthClient, SessionStorage sessionStorage,
+    public AuthenticationController(OAuth2Client oauthClient, FileSystemSessionStorage fileSystemSessionStorage,
         IWebHostEnvironment environment, IOptions<QwereeConfigurationDo> qwereeConfig)
     {
         _oauthClient = oauthClient;
-        _sessionStorage = sessionStorage;
+        _fileSystemSessionStorage = fileSystemSessionStorage;
         _environment = environment;
         _qwereeConfig = qwereeConfig;
     }
@@ -75,7 +75,7 @@ public class AuthenticationController : ControllerBase
         await memoryStream.WriteAsync(Encoding.UTF8.GetBytes(JsonUtils.Serialize(tokenInfo)));
         memoryStream.Seek(0, SeekOrigin.Begin);
 
-        await _sessionStorage.WriteAsync(cookie, memoryStream);
+        await _fileSystemSessionStorage.WriteAsync(cookie, memoryStream);
 
         var accessToken = tokenInfo.AccessToken!;
 
@@ -118,7 +118,7 @@ public class AuthenticationController : ControllerBase
             return NoContent();
 
         Response.Cookies.Delete("Session");
-        await _sessionStorage.DeleteAsync(cookie);
+        await _fileSystemSessionStorage.DeleteAsync(cookie);
         return NoContent();
     }
 

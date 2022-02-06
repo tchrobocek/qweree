@@ -1,15 +1,15 @@
 namespace Qweree.Gateway.WebApi.Infrastructure.Session;
 
-public class SessionStorage : IDisposable
+public class FileSystemSessionStorage : ISessionStorage
 {
     private readonly string _rootDir;
 
-    public SessionStorage(string rootDir)
+    public FileSystemSessionStorage(string rootDir)
     {
         _rootDir = rootDir;
     }
 
-    public async Task WriteAsync(string key, Stream data)
+    public async Task WriteAsync(string key, Stream data, CancellationToken cancellationToken = new())
     {
         if (!Directory.Exists(_rootDir))
             Directory.CreateDirectory(_rootDir);
@@ -18,17 +18,18 @@ public class SessionStorage : IDisposable
         await data.CopyToAsync(stream);
     }
 
-    public Stream ReadAsync(string key)
+    public Task<Stream> ReadAsync(string key, CancellationToken cancellationToken = new())
     {
         var path = Path.Combine(_rootDir, key);
 
         if (!File.Exists(path))
             throw new ArgumentException("Key is not present in the storage.");
 
-        return File.OpenRead(path);
+        var stream = File.OpenRead(path);
+        return Task.FromResult((Stream) stream);
     }
 
-    public Task DeleteAsync(string key)
+    public Task DeleteAsync(string key, CancellationToken cancellationToken = new())
     {
         var path = Path.Combine(_rootDir, key);
 
