@@ -1,8 +1,11 @@
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
+using Qweree.Sdk.Http.HttpClient;
 using Qweree.Utils;
 
 namespace Qweree.Gateway.WebApi;
@@ -44,12 +47,31 @@ public class Startup
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddSingleton(p =>
         {
+            var httpHandler = p.GetRequiredService<HttpClientHandler>();
+            var oauth2Client = p.GetRequiredService<OAuth2Client>();
+
+            var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
+            return new QwereeHttpHandler(httpHandler,
+                new ClientAuthenticationStorage(new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,  qwereeConfig.Value.ClientSecret ?? string.Empty), oauth2Client));
+        });
+        services.AddSingleton(p =>
+        {
             var handler = p.GetRequiredService<HttpMessageHandler>();
             var client = new HttpClient(handler)
             {
                 BaseAddress = new Uri(new Uri(Configuration["AuthUri"]), "api/oauth2/auth/")
             };
             return new OAuth2Client(client);
+        });
+        services.AddSingleton(p =>
+        {
+
+            var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
+            var httpClient = new HttpClient(httpHandler)
+            {
+                BaseAddress = new Uri(Configuration["Storage:CdnUri"])
+            };
+            return new StorageClient(httpClient);
         });
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
