@@ -28,6 +28,12 @@ public class AuthenticationClient
         return ApiResponse.CreateApiResponse<IdentityDto>(response);
     }
 
+    public async Task<ApiResponse<IdentityDto>> RefreshAsync(CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync("refresh", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
+        return ApiResponse.CreateApiResponse<IdentityDto>(response);
+    }
+
     public async Task<ApiResponse> LogoutAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("logout", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);

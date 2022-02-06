@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Gateway.Sdk;
 using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
@@ -119,6 +120,41 @@ public class AuthenticationController : ControllerBase
 
         Response.Cookies.Delete("Session");
         await _sessionStorage.DeleteAsync(cookie);
+        return NoContent();
+    }
+
+    /// <summary>
+    ///     Refresh access token.
+    /// </summary>
+    [HttpPost]
+    [Route("refresh")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RefreshAsync()
+    {
+        var cookie = Request.Cookies["Session"];
+        if (cookie == null)
+            return Unauthorized();
+
+        TokenInfoDto? tokenInfo;
+
+        try
+        {
+            await using var stream = await _sessionStorage.ReadAsync(cookie);
+            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream);
+        }
+        catch (ArgumentException)
+        {
+            Response.Cookies.Delete("Session");
+            return Unauthorized();
+        }
+        var response = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput(tokenInfo!.RefreshToken ?? string.Empty),
+            new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty,
+                _qwereeConfig.Value.ClientSecret ?? string.Empty));
+
+        if (!response.IsSuccessful)
+            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
+
+        await _sessionStorage.WriteAsync(cookie, await response.ReadPayloadAsStreamAsync());
         return NoContent();
     }
 
