@@ -1,4 +1,5 @@
 @using Qweree.WebApplication.Infrastructure.Notes
+@using Qweree.WebApplication.Infrastructure.Browser
 @inject NoteService _noteService
 
 @foreach (var note in _notes)
@@ -12,7 +13,7 @@
     <MudDivider />
 }
 <div>
-    <MudInput @bind-Value="_addNoteInput" Style="width: 100%"  T="string" Placeholder="Add new note" Variant="Variant.Filled" FullWidth="true" />
+    <MudInput @onkeyup="OnInputUpAsync" @bind-Value="_addNoteInput" Style="width: 100%"  T="string" Placeholder="Add new note" Variant="Variant.Filled" FullWidth="true" />
     <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="AddNoteAsync">Add note</MudButton>
 
     @if (ViewDisclaimer)
@@ -45,6 +46,9 @@
 
     private async Task AddNoteAsync()
     {
+        if (string.IsNullOrEmpty(_addNoteInput))
+            return;
+
         var newNote = new NoteDto
         {
             Id = Guid.NewGuid(),
@@ -63,6 +67,12 @@
     {
         _notes.Remove(note);
         await _noteService.SetMyNotesAsync(Entity!, _notes);
+    }
+
+    private async Task OnInputUpAsync(KeyboardEventArgs e)
+    {
+        if (e.IsEnter())
+            await AddNoteAsync();
     }
 
 }
