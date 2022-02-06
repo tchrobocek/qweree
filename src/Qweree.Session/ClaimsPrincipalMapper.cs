@@ -51,7 +51,7 @@ public static class ClaimsPrincipalMapper
         return new Identity(client, email, roles.ToImmutableArray());
     }
 
-    private static IdentityUser CreateUser(ClaimsPrincipal claimsPrincipal)
+    public static IdentityUser CreateUser(ClaimsPrincipal claimsPrincipal)
     {
         return CreateUser(claimsPrincipal.Claims);
     }
@@ -66,12 +66,12 @@ public static class ClaimsPrincipalMapper
         return new IdentityUser(Guid.Parse(id), username, fullName);
     }
 
-    private static IdentityClient CreateClient(ClaimsPrincipal claimsPrincipal)
+    public static IdentityClient CreateClient(ClaimsPrincipal claimsPrincipal)
     {
         return CreateClient(claimsPrincipal.Claims);
     }
 
-    private static IdentityClient CreateClient(IEnumerable<Claim> claims)
+    public static IdentityClient CreateClient(IEnumerable<Claim> claims)
     {
         claims = claims.ToArray();
 
