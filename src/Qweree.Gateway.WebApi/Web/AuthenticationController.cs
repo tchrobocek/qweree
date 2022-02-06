@@ -111,7 +111,7 @@ public class AuthenticationController : ControllerBase
     [HttpPost]
     [Route("logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> LogoutAsync(LoginInputDto input)
+    public async Task<IActionResult> LogoutAsync()
     {
         var cookie = Request.Cookies["Session"];
         if (cookie == null)
