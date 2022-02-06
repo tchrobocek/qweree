@@ -48,7 +48,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri("http://localhost/"), "api/v1/auth/")
+                BaseAddress = new Uri(new Uri(configuration["GatewayServiceUri"]), "api/v1/auth/")
             };
             return new AuthenticationClient(client);
         });

@@ -40,7 +40,7 @@ public class Startup
         var proxyBuilder = services.AddReverseProxy();
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
-        services.AddSingleton<ISessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
+        services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddScoped(_ =>
         {
