@@ -5,12 +5,14 @@
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister
 @using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
 @inject AuthorizationClient _authorizationClient;
 @inject IdentityClient _identityClient;
 @inject NavigationManager _navigationManager;
 @inject ClaimsPrincipalStorage _session
-@inject IDialogService _dialogService
+@inject DialogService _dialogService
 @inject ISnackbar _snackbar
 
 <MudCard>
@@ -83,8 +85,7 @@
 
         var userInvitationDto = (await response.ReadPayloadAsync())!;
         var link = $"{_navigationManager.BaseUri}invite/{userInvitationDto.Id}";
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Invitation link: " + link}});
-        await result.Result;
+        await _dialogService.AlertAsync("Invitation link", link);
         _navigationManager.NavigateTo("/services/auth/users/list");
 
         if (!string.IsNullOrWhiteSpace(_username))

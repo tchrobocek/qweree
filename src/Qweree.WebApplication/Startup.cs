@@ -18,6 +18,7 @@ using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
 using Qweree.WebApplication.Infrastructure.Notes;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
+using Qweree.WebApplication.Infrastructure.View;
 
 namespace Qweree.WebApplication;
 
@@ -113,5 +114,6 @@ public class Startup
         services.AddScoped<AuthenticationService>();
         services.AddScoped<SystemInfoClientFactory>();
         services.AddScoped<NoteService>();
+        services.AddScoped<DialogService>();
     }
 }

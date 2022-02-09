@@ -2,9 +2,10 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Identity
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
-@inject IDialogService _dialogService
+@inject DialogService _dialogService
 @attribute [Authorize]
 
 <MudCard>

@@ -3,8 +3,7 @@
         <MudText Typo="Typo.body1">@Text</MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="No">No</MudButton>
-        <MudButton OnClick="Yes">Yes</MudButton>
+        <MudButton OnClick="Ok">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -14,12 +13,7 @@
     [Parameter]
     public string Text { get; set; } = string.Empty;
 
-    private void Yes()
-    {
-        MudDialog.Close(DialogResult.Ok(true));
-    }
-
-    private void No()
+    private void Ok()
     {
         MudDialog.Close(DialogResult.Ok(false));
     }

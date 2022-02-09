@@ -3,7 +3,9 @@
 @attribute [Authorize]
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
-@inject IDialogService _dialogService
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
+@inject DialogService _dialogService
 @inject AuthorizationClient _authorizationClient
 @inject NavigationManager _navigationManager
 
@@ -66,8 +68,7 @@
 
     private async Task DeleteAsync(ClientRoleDto context)
     {
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", $"Do you really want to delete role {context.Key}?"}});
-        var delete = (bool)((await result.Result).Data ?? false);
+        var delete = await _dialogService.ConfirmAsync($"Delete client role", $"Do you really wish to delete role {context.Key}?");
 
         if (!delete)
             return;

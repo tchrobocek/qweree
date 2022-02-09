@@ -5,12 +5,14 @@
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
 @inject AuthorizationClient _authorizationClient;
 @inject IdentityClient _identityClient;
 @inject NavigationManager _navigationManager;
 @inject ClaimsPrincipalStorage _session
-@inject IDialogService _dialogService
+@inject DialogService _dialogService
 @inject ISnackbar _snackbar
 
 <MudCard>
@@ -107,8 +109,7 @@
 
         var client = (await response.ReadPayloadAsync())!;
         var secret = client.ClientSecret;
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Client secret: " + secret}});
-        await result.Result;
+        await _dialogService.AlertAsync("Client secret", secret ?? "Error: secret is empty.");
         _navigationManager.NavigateTo("/services/auth/clients/list");
         _snackbar.Add($"Client {_applicationName} ({_clientId}) was successfully created.", Severity.Success);
     }

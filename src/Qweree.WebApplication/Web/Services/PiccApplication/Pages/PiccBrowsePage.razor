@@ -2,8 +2,11 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Configuration
 @using Qweree.PiccStash.Sdk
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject IDialogService _dialogService
+
+@inject DialogService _dialogService
 @inject PiccClient _piccClient
 @inject IJSRuntime _jsRuntime
 @inject IConfiguration _configuration
@@ -80,15 +83,13 @@
 
     private async Task OpenUploadDialogAsync()
     {
-        var result = _dialogService.Show<UploadPiccDialogComponent>("Upload piccs",  new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
-        await result.Result;
+        await _dialogService.ShowAndWaitAsync<UploadPiccDialogComponent>("Upload piccs",  new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
         await RefreshAsync();
     }
 
     private async Task DeletePiccAsync(PiccDto item)
     {
-        var result = _dialogService.Show<ConfirmDialogComponent>("Confirm", new DialogParameters{{"text", "Do you really want to delete the object?"}});
-        var delete = (bool)((await result.Result).Data ?? false);
+        var delete = await _dialogService.ConfirmAsync("Delete picc", "Do you really wish to delete picc?");
 
         if (!delete || item.Id == null)
             return;
