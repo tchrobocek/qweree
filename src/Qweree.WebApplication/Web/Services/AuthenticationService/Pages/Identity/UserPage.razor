@@ -96,8 +96,7 @@
         var result = await _identityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
         if (!result.IsSuccessful)
         {
-            var errors = await result.ReadErrorsAsync();
-            _snackbar.Add(string.Join(". ", errors.Errors?.Select(e => e.Message) ?? Array.Empty<string>()), Severity.Error);
+            _snackbar.AddErrors(await result.ReadErrorsAsync());
         }
     }
 
