@@ -9,6 +9,7 @@
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
 @inject DialogService _dialogService
+@inject ISnackbar _snackbar
 
 <MudCard>
     <MudCardHeader>
@@ -89,8 +90,15 @@
     {
         var isDeleting = await _dialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_user?.Username}?");
 
-        if (isDeleting)
-            await _identityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
+        if (!isDeleting)
+            return;
+
+        var result = await _identityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
+        if (!result.IsSuccessful)
+        {
+            var errors = await result.ReadErrorsAsync();
+            _snackbar.Add(string.Join(". ", errors.Errors?.Select(e => e.Message) ?? Array.Empty<string>()), Severity.Error);
+        }
     }
 
 }
