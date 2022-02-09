@@ -81,7 +81,7 @@ public class UserInvitationService
 
     public async Task<Response> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
-        await _userInvitationRepository.DeleteAsync(id, cancellationToken);
+        await _userInvitationRepository.DeleteOneAsync(id, cancellationToken);
         return Response.Ok();
     }
 }

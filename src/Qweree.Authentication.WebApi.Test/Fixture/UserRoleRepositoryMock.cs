@@ -64,7 +64,7 @@ public class UserRoleRepositoryMock : IUserRoleRepository
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    public Task DeleteOneAsync(Guid id, CancellationToken cancellationToken = new())
     {
         throw new NotImplementedException();
     }

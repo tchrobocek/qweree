@@ -232,7 +232,7 @@ public class PiccController : ControllerBase
 
         var response = await _storageClient.DeleteAsync(PathHelper.SlugToPath(picc.StorageSlug ?? Array.Empty<string>()));
         if (response.IsSuccessful)
-            await _piccRepository.DeleteAsync(piccId);
+            await _piccRepository.DeleteOneAsync(piccId);
 
         return NoContent();
     }

@@ -175,12 +175,12 @@ public abstract class MongoRepositoryBase<TPublicType, TDocumentType>
         }
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task DeleteOneAsync(Guid id, CancellationToken cancellationToken = new())
     {
         await Collection.DeleteOneAsync($@"{{""_id"": UUID(""{id}"")}}", cancellationToken);
     }
 
-    public async Task DeleteAsync(string query, CancellationToken cancellationToken = new())
+    public async Task DeleteOneAsync(string query, CancellationToken cancellationToken = new())
     {
         await Collection.DeleteOneAsync(query, cancellationToken);
     }

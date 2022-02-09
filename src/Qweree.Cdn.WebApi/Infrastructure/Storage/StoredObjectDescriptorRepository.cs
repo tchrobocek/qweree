@@ -153,6 +153,6 @@ public class StoredObjectDescriptorRepository :
             slugInput = "\"" + slugInput + "\"";
 
         var query = @$"{{""Slug"": {{""$eq"": [{slugInput}]}}}}";
-        await DeleteAsync(query, cancellationToken);
+        await DeleteOneAsync(query, cancellationToken);
     }
 }

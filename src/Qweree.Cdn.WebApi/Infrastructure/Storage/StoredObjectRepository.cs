@@ -47,7 +47,7 @@ public class StoredObjectRepository : IStoredObjectRepository
         }
         catch (Exception)
         {
-            await _descriptorRepository.DeleteAsync(storedObject.Descriptor.Id, cancellationToken);
+            await _descriptorRepository.DeleteOneAsync(storedObject.Descriptor.Id, cancellationToken);
             throw;
         }
     }

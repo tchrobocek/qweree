@@ -113,7 +113,7 @@ public class ClientService
 
     public async Task<Response> ClientDeleteAsync(Guid id)
     {
-        await _clientRepository.DeleteAsync(id);
+        await _clientRepository.DeleteOneAsync(id);
         return Response.Ok();
     }
 }

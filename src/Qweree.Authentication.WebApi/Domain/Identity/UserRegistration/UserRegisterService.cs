@@ -59,7 +59,7 @@ public class UserRegisterService
             _dateTimeProvider.UtcNow);
 
         await _userRepository.InsertAsync(user, cancellationToken);
-        await _userInvitationRepository.DeleteAsync(invitationDescriptor.Id, cancellationToken);
+        await _userInvitationRepository.DeleteOneAsync(invitationDescriptor.Id, cancellationToken);
 
         return Response.Ok();
     }

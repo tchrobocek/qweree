@@ -111,13 +111,13 @@ public class RoleService
 
     public async Task<Response> UserRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
-        await _userRoleRepository.DeleteAsync(id, cancellationToken);
+        await _userRoleRepository.DeleteOneAsync(id, cancellationToken);
         return Response.Ok();
     }
 
     public async Task<Response> ClientRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
-        await _clientRoleRepository.DeleteAsync(id, cancellationToken);
+        await _clientRoleRepository.DeleteOneAsync(id, cancellationToken);
         return Response.Ok();
     }
 

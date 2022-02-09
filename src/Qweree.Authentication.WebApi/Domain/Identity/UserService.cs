@@ -73,7 +73,7 @@ public class UserService
 
         try
         {
-            await _userRepository.DeleteAsync(id, cancellationToken);
+            await _userRepository.DeleteOneAsync(id, cancellationToken);
         }
         catch (Exception)
         {
