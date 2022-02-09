@@ -20,36 +20,33 @@
         <MudText Typo="Typo.h6">Add client</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @foreach(var error in _errors)
-        {
-            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-        }
+        <ErrorsComponent Errors="_errors" />
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="Client info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="_clientId" T="string" Label="Client id" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_clientId" T="string" Label="Client id" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField @bind-Value="_applicationName" T="string" Label="Application name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_applicationName" T="string" Label="Application name" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField @bind-Value="_origin" T="string" Label="Origin" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_origin" T="string" Label="Origin" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="_ownerId" T="string" Label="Owner id" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_ownerId" T="string" Label="Owner id" Variant="Variant.Outlined"/>
                     </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
             <MudExpansionPanel Text="Client roles" Class="mt-0" Style="margin: 0 !important;">
-                <ClientRoleSelectComponent SelectedRoles="_clientRoles" />
+                <ClientRoleSelectComponent SelectedRoles="_clientRoles"/>
             </MudExpansionPanel>
             <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent SelectedRoles="_userRoles" />
+                <UserRoleSelectComponent SelectedRoles="_userRoles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
-        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Create</MudButton>
+            <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Create</MudButton>
         </div>
     </MudCardContent>
 </MudCard>

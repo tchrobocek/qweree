@@ -20,30 +20,27 @@
         <MudText Typo="Typo.h6">Invite user</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @foreach(var error in _errors)
-        {
-            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-        }
+        <ErrorsComponent Errors="_errors" />
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="User info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="_username" T="string" Label="Username" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_username" T="string" Label="Username" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField @bind-Value="_contactEmail" T="string" Label="Contact email" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_contactEmail" T="string" Label="Contact email" Variant="Variant.Outlined"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField @bind-Value="_fullName" T="string" Label="Full name" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_fullName" T="string" Label="Full name" Variant="Variant.Outlined"/>
                     </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
             <MudExpansionPanel Text="Roles" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent SelectedRoles="_roles" />
+                <UserRoleSelectComponent SelectedRoles="_roles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
-        <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Invite user</MudButton>
+            <MudButton Class="my-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick="CreateAsync">Invite user</MudButton>
         </div>
     </MudCardContent>
 </MudCard>

@@ -1,0 +1,22 @@
+
+@if (!string.IsNullOrWhiteSpace(Error))
+{
+    <MudAlert Class="my-4" Severity="Severity.Error">@Error</MudAlert>
+}
+
+@if (Errors?.Any() ?? false)
+{
+    @foreach(var error in Errors)
+    {
+        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public List<string>? Errors { get; set; } = new();
+    [Parameter]
+    public string Error { get; set; } = string.Empty;
+
+}

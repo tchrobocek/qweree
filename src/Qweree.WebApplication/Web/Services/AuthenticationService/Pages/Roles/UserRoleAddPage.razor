@@ -12,10 +12,7 @@
         <MudText Typo="Typo.h6">Add user role</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @foreach(var error in _errors)
-        {
-            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-        }
+        <ErrorsComponent Errors="_errors" />
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="Role info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
                 <MudTextField T="string" Variant="Variant.Outlined" Label="Id" @bind-Value="_idString" />

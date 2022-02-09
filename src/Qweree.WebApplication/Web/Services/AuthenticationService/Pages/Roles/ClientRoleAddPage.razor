@@ -12,25 +12,22 @@
         <MudText Typo="Typo.h6">Add client role</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @foreach(var error in _errors)
-        {
-            <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-        }
+        <ErrorsComponent Errors="_errors" />
         <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
             <MudExpansionPanel Text="Role info" IsInitiallyExpanded="true" Class="mt-0" Style="margin: 0 !important;">
-                <MudTextField T="string" Variant="Variant.Outlined" Label="Id" @bind-Value="_idString" />
+                <MudTextField T="string" Variant="Variant.Outlined" Label="Id" @bind-Value="_idString"/>
                 <MudGrid>
                     <MudItem xs="6">
-                        <MudTextField T="string" Variant="Variant.Outlined" Label="Label" @bind-Value="_label" />
+                        <MudTextField T="string" Variant="Variant.Outlined" Label="Label" @bind-Value="_label"/>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField T="string" Variant="Variant.Outlined" Label="Key" @bind-Value="_key" />
+                        <MudTextField T="string" Variant="Variant.Outlined" Label="Key" @bind-Value="_key"/>
                     </MudItem>
                 </MudGrid>
-                <MudTextField T="string" Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
+                <MudTextField T="string" Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description"/>
             </MudExpansionPanel>
             <MudExpansionPanel Text="Group role" Class="mt-0" Style="margin: 0 !important;">
-                <ClientRoleSelectComponent SelectedRoles="_groupRoles" />
+                <ClientRoleSelectComponent SelectedRoles="_groupRoles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">

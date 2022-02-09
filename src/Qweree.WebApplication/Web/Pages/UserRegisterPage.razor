@@ -9,12 +9,7 @@
     <div class="d-flex flex-column mud-width-full">
         <MudPaper Elevation="25" Class="pa-8" Width="100%">
             <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
-
-            @foreach(var error in _errors)
-            {
-                <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-            }
-
+            <ErrorsComponent Errors="_errors" />
             <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" />
             <MudGrid>
                 <MudItem xs="6">

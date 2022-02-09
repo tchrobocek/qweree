@@ -36,11 +36,7 @@
                     <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">
-                    @foreach(var error in _errors)
-                    {
-                        <MudAlert Class="my-4" Severity="Severity.Error">@error</MudAlert>
-                    }
-
+                    <ErrorsComponent Errors="_errors" />
                     <PasswordFieldComponent @bind-Value="_oldPassword" Label="Old password" Variant="Variant.Outlined" Class="my-6"></PasswordFieldComponent>
                     <MudGrid>
                         <MudItem xs="6">

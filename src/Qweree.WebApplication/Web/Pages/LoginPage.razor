@@ -10,11 +10,7 @@
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
     <div class="d-flex flex-column mud-width-full">
         <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
-            @if (!string.IsNullOrWhiteSpace(_authMessage))
-            {
-                <MudAlert Severity="Severity.Error">@_authMessage</MudAlert>
-            }
-
+            <ErrorsComponent Error="@_authMessage" />
             <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
             <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
             <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined"/>
