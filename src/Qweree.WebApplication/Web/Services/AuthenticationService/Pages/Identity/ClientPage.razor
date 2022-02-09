@@ -4,8 +4,11 @@
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
+@inject DialogService _dialogService
 
 <MudCard>
     <MudCardHeader>
@@ -83,7 +86,10 @@
 
     private async Task DeleteAsync()
     {
-        await _identityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
+        var isDeleting = await _dialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_client?.ClientId}?");
+
+        if (isDeleting)
+            await _identityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
     }
 
 }
