@@ -11,12 +11,12 @@ namespace Qweree.ConsoleApplication.Infrastructure.Commands;
 public class PiccClientFactory
 {
     private readonly Context _context;
-    private readonly QwereeHttpHandler _qwereeHandler;
+    private readonly AuthorizationHeaderHandler _qwereeHandler;
 
     public PiccClientFactory(HttpMessageHandler innerHandler, ITokenStorage tokenStorage, Context context)
     {
         _context = context;
-        _qwereeHandler = new QwereeHttpHandler(innerHandler, tokenStorage);
+        _qwereeHandler = new AuthorizationHeaderHandler(innerHandler, tokenStorage);
     }
 
     public async Task<PiccClient> CreateClientAsync(CancellationToken cancellationToken = new())

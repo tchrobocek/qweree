@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Tokens;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.Utils;
 
@@ -27,11 +28,7 @@ public class AuthenticationService
         response.EnsureSuccessStatusCode();
 
         var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-
-        var accessToken = token?.AccessToken!;
-        var refreshToken = token?.RefreshToken!;
-
-        await _context.SetCredentialsAsync(accessToken, refreshToken, cancellationToken);
+        await _context.SetCredentialsAsync(TokenInfoMapper.FromDto(token!), cancellationToken);
     }
 
     public async Task AuthenticateAsync(RefreshTokenGrantInput refreshTokenGrantInput, CancellationToken cancellationToken = new())
@@ -44,10 +41,6 @@ public class AuthenticationService
         response.EnsureSuccessStatusCode();
 
         var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-
-        var accessToken = token?.AccessToken!;
-        var refreshToken = token?.RefreshToken!;
-
-        await _context.SetCredentialsAsync(accessToken, refreshToken, cancellationToken);
+        await _context.SetCredentialsAsync(TokenInfoMapper.FromDto(token!), cancellationToken);
     }
 }

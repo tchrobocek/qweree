@@ -185,15 +185,16 @@ public class Startup
         {
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
             var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Authentication:TokenUri"])});
-
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
-            return new QwereeHttpHandler(httpHandler,
-                new ClientAuthenticationStorage(new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,  qwereeConfig.Value.ClientSecret ?? string.Empty), oauth2Client));
+            var clientCredentials = new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,
+                qwereeConfig.Value.ClientSecret ?? string.Empty);
+
+            return new QwereeClientCredentialsHandler(httpHandler, oauth2Client, clientCredentials, new MemoryTokenStorage());
         });
         services.AddScoped(p =>
         {
 
-            var httpHandler = p.GetRequiredService<QwereeHttpHandler>();
+            var httpHandler = p.GetRequiredService<QwereeClientCredentialsHandler>();
             var httpClient = new HttpClient(httpHandler)
             {
                 BaseAddress = new Uri(Configuration["Storage:CdnUri"])

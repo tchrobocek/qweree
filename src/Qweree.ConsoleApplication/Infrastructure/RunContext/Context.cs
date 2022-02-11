@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.Http;
+using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Utils;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext;
@@ -71,7 +72,7 @@ public class Context
         await JsonUtils.SerializeAsync(stream, configuration, cancellationToken);
     }
 
-    public async Task SetCredentialsAsync(string accessToken, string refreshToken, CancellationToken cancellationToken = new())
+    public async Task SetCredentialsAsync(TokenInfo tokenInfo, CancellationToken cancellationToken = new())
     {
         var configFilePath = Path.Combine(RootDirectory, "config", "rft");
 
@@ -80,10 +81,10 @@ public class Context
         if (dirName != null && !Directory.Exists(dirName))
             Directory.CreateDirectory(dirName);
 
-        await File.WriteAllTextAsync(configFilePath, refreshToken, cancellationToken);
+        await File.WriteAllTextAsync(configFilePath, tokenInfo.RefreshToken, cancellationToken);
 
         if (_tokenStorage != null)
-            await _tokenStorage.SetAccessTokenAsync(accessToken, cancellationToken);
+            await _tokenStorage.SetTokenInfoAsync(tokenInfo, cancellationToken);
     }
 
     public async Task<string> GetRefreshTokenAsync(CancellationToken cancellationToken = new())

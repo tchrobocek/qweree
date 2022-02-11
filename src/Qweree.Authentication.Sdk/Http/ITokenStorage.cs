@@ -1,25 +1,27 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Tokens;
 
 namespace Qweree.Authentication.Sdk.Http;
 
 public interface ITokenStorage
 {
-    Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = new());
+    Task SetTokenInfoAsync(TokenInfo? tokenInfo, CancellationToken cancellationToken = new());
+    Task<TokenInfo?> GetTokenInfoAsync(CancellationToken cancellationToken = new());
 }
 
 public class MemoryTokenStorage : ITokenStorage
 {
-    private string _token = string.Empty;
+    private TokenInfo? _tokenInfo;
 
-    public Task SetAccessTokenAsync(string token, CancellationToken cancellationToken = new())
+    public Task SetTokenInfoAsync(TokenInfo? tokenInfo, CancellationToken cancellationToken = new())
     {
-        _token = token;
+        _tokenInfo = tokenInfo;
         return Task.CompletedTask;
     }
 
-    public Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = new())
+    public Task<TokenInfo?> GetTokenInfoAsync(CancellationToken cancellationToken = new())
     {
-        return Task.FromResult(_token);
+        return Task.FromResult(_tokenInfo);
     }
 }
