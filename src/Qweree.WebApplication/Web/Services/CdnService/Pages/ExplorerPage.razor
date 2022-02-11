@@ -4,9 +4,11 @@
 @using System.Net.Mime
 @using System.Text.Json.Serialization
 @using Qweree.Cdn.Sdk
+@using Qweree.WebApplication.Infrastructure.View
 
 @inject ExplorerClient _explorerClient;
 @inject NavigationManager _navigationManager;
+@inject ISnackbar _snackbar;
 
 <MudCard Elevation="1" Class="pa-4">
     <MudCardHeader>
@@ -66,10 +68,14 @@
 
     private async Task LoadCurrentItemsAsync()
     {
-        var exploreResult = await _explorerClient.ExploreAsync(Path ?? "/");
+        _items.Clear();
 
+        var exploreResult = await _explorerClient.ExploreAsync(Path ?? "/");
         if (!exploreResult.IsSuccessful)
+        {
+            _snackbar.AddErrors(await exploreResult.ReadErrorsAsync());
             return;
+        }
 
         var items = await exploreResult.ReadPayloadAsync(new JsonSerializerOptions
         {
@@ -78,7 +84,7 @@
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
             Converters = { new ExplorerObjectConverter() }
         });
-        _items.Clear();
+
         _items.AddRange(items!);
 
         _currentDirectory = CreateThisDirectory();
@@ -126,7 +132,7 @@
 
     private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)
     {
-        var label = (directory.Path?[(Path!.Length)..] ?? "unknown dir").TrimStart('/');
+        var label = (directory.Path?[Path!.Length..] ?? "unknown dir").TrimStart('/');
         return new ExplorerDirectoryComponent.ExplorerDirectory(label, directory.TotalCount ?? 0, directory.TotalSize ?? 0,
             directory.CreatedAt ?? DateTime.MinValue, directory.ModifiedAt ?? DateTime.MinValue);
     }
