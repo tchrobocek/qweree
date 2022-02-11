@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Configuration
 @using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.WebApplication.Infrastructure.Browser
 @using Qweree.WebApplication.Infrastructure.ServicesOverview
 @attribute [Authorize]
 @inject ClaimsPrincipalStorage _session
@@ -9,6 +10,7 @@
 @inject SystemInfoClientFactory _systemInfoClientFactory
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navManager
+@inject WindowService _windowService
 
 <MudText Typo="Typo.h4" Class="mb-8">Hello @_username</MudText>
 <MudGrid>
@@ -25,7 +27,7 @@
                         <MudTd Class="pa-1" DataLabel="Status">@context.HealthReport.Status</MudTd>
                         <MudTd Class="pa-1" DataLabel="Label">@context.Label (@context.Version)</MudTd>
                         <MudTd Class="pa-1" DataLabel="Actions">
-                            <MudIconButton @onclick="() => GoToSwagger(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
+                            <MudIconButton @onclick="() => GoToSwaggerAsync(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
                             <MudIconButton @onclick="() => CopyLinkAsync(context)" Title="Copy link" Icon="@Icons.Material.Filled.Link"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
@@ -147,9 +149,9 @@
         }
     }
 
-    private void GoToSwagger(ServiceInfo context)
+    private async Task GoToSwaggerAsync(ServiceInfo context)
     {
-        _navManager.NavigateTo(new Uri(new Uri(context.Uri), "swagger").ToString());
+        await _windowService.OpenInNewTabAsync(new Uri(new Uri(context.Uri), "swagger"));
     }
 
 }

@@ -37,6 +37,7 @@ public class Startup
         services.AddOptions();
         services.AddAuthorizationCore();
         services.AddMudServices();
+        services.AddSingleton<WindowService>();
         services.AddSingleton<LocalStorage>();
         services.AddSingleton<LocalUserStorage>();
         services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
