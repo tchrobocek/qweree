@@ -9,13 +9,13 @@ using Qweree.Utils;
 
 namespace Qweree.Authentication.Sdk.Http;
 
-public class QwereeClientCredentialsHandler : DelegatingHandler
+public class ClientCredentialsHandler : DelegatingHandler
 {
     private readonly OAuth2Client _oauthClient;
     private readonly ClientCredentials _clientCredentials;
     private readonly ITokenStorage _tokenStorage;
 
-    public QwereeClientCredentialsHandler(HttpMessageHandler innerHandler, OAuth2Client oauthClient, ClientCredentials clientCredentials, ITokenStorage tokenStorage)
+    public ClientCredentialsHandler(HttpMessageHandler innerHandler, OAuth2Client oauthClient, ClientCredentials clientCredentials, ITokenStorage tokenStorage)
         : base(innerHandler)
     {
         _oauthClient = oauthClient;

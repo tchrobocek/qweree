@@ -54,7 +54,7 @@ public class Startup
             var clientCredentials = new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,
                 qwereeConfig.Value.ClientSecret ?? string.Empty);
 
-            return new QwereeClientCredentialsHandler(httpHandler, oauth2Client, clientCredentials, new MemoryTokenStorage());
+            return new ClientCredentialsHandler(httpHandler, oauth2Client, clientCredentials, new MemoryTokenStorage());
         });
         services.AddSingleton(p =>
         {
@@ -68,7 +68,7 @@ public class Startup
         services.AddSingleton(p =>
         {
 
-            var httpHandler = p.GetRequiredService<QwereeClientCredentialsHandler>();
+            var httpHandler = p.GetRequiredService<ClientCredentialsHandler>();
             var httpClient = new HttpClient(httpHandler)
             {
                 BaseAddress = new Uri(Configuration["Storage:CdnUri"])
