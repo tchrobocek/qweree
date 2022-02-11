@@ -154,7 +154,11 @@ public class AuthenticationController : ControllerBase
         if (!response.IsSuccessful)
             return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
 
-        await _sessionStorage.WriteAsync(cookie, await response.ReadPayloadAsStreamAsync());
+        var dto = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy);
+        await using var memoryStream = new MemoryStream();
+        await JsonUtils.SerializeAsync(memoryStream, dto!);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        await _sessionStorage.WriteAsync(cookie, memoryStream);
         return NoContent();
     }
 
