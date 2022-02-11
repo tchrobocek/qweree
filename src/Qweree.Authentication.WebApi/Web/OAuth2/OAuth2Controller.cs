@@ -12,7 +12,7 @@ using Qweree.Utils;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
 using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
 
-namespace Qweree.Authentication.WebApi.Web.Authentication;
+namespace Qweree.Authentication.WebApi.Web.OAuth2;
 
 [ApiController]
 [Route("/api/oauth2/auth")]

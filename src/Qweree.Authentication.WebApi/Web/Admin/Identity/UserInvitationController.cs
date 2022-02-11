@@ -11,7 +11,7 @@ using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
 using Qweree.Sdk;
 
-namespace Qweree.Authentication.WebApi.Web.Identity;
+namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 
 [ApiController]
 [Route("/api/admin/identity/user-invitations")]

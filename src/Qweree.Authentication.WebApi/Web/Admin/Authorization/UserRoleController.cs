@@ -10,7 +10,7 @@ using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Sdk;
 
-namespace Qweree.Authentication.WebApi.Web.Authorization;
+namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
 
 [ApiController]
 [Route("/api/admin/authorization/user-roles")]
