@@ -20,6 +20,9 @@
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Service info</MudText>
                 </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Class="mr-4 mt-4" OnClick="UpdateServicesAsync" Icon="@Icons.Filled.Refresh" Color="Color.Default"/>
+                </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
                 <MudTable Elevation="0" Items="_services">
@@ -99,7 +102,7 @@
         foreach (var service in _services)
         {
             service.HealthReport.Status = "Loading";
-            service.Version = "0.0.0";
+            service.Version = "-.-.-.-";
 
             var client = _systemInfoClientFactory.Create(new Uri(service.Uri));
 
