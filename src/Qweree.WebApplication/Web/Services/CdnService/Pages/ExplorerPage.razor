@@ -3,12 +3,16 @@
 @using System.Text.Json
 @using System.Net.Mime
 @using System.Text.Json.Serialization
+@using Microsoft.Extensions.Configuration
 @using Qweree.Cdn.Sdk
+@using Qweree.WebApplication.Infrastructure.Browser
 @using Qweree.WebApplication.Infrastructure.View
 
 @inject ExplorerClient _explorerClient;
 @inject NavigationManager _navigationManager;
 @inject ISnackbar _snackbar;
+@inject WindowService _windowService;
+@inject IConfiguration _configuration
 
 <MudCard Elevation="1" Class="pa-4">
     <MudCardHeader>
@@ -31,7 +35,7 @@
         {
             if (item is ExplorerFileDto file)
             {
-                <ExplorerFileComponent Item="ToExplorerFile(file)" />
+                <ExplorerFileComponent OnClick="() => OpenFileAsync(file.Path)" Item="ToExplorerFile(file)" />
             }
             if (item is ExplorerDirectoryDto directory)
             {
@@ -128,6 +132,16 @@
     {
         Path = path ?? "/";
         await LoadCurrentItemsAsync();
+    }
+
+    private async Task OpenFileAsync(string? path)
+    {
+        var cdnUri = _configuration["CdnServiceUri"];
+
+        if (path is null || cdnUri is null)
+            return;
+
+        await _windowService.OpenInNewTabAsync(new Uri(new Uri(new Uri(cdnUri), "api/v1/storage/"), path.TrimStart('/')));
     }
 
     private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)

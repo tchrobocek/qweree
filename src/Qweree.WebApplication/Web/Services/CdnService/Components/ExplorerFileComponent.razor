@@ -1,6 +1,6 @@
 @using Qweree.Cdn.Sdk.Explorer
 
-<div class="explorer-file">
+<div class="explorer-file" @onclick="() => OnClick.InvokeAsync()">
     <div class="explorer-file-icon"><MudIcon Icon="@Icons.Filled.InsertDriveFile" /></div>
     <div class="explorer-file-path">@Item!.Label</div>
     <div class="explorer-file-media-type">@Item.MediaType[(Item.MediaType.LastIndexOf("/", StringComparison.Ordinal) + 1)..]</div>
@@ -14,5 +14,7 @@
 
     [Parameter]
     public ExplorerFile? Item { get; set; }
+    [Parameter]
+    public EventCallback OnClick { get; set; }
 
 }
