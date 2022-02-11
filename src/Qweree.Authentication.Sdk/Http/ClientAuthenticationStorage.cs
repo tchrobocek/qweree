@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Sdk.Http.HttpClient;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Utils;
 
-namespace Qweree.Authentication.Sdk.OAuth2;
+namespace Qweree.Authentication.Sdk.Http;
 
 public class ClientAuthenticationStorage : ITokenStorage
 {

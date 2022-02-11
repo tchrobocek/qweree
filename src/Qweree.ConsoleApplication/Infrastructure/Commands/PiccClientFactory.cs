@@ -2,9 +2,9 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Http;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.PiccStash.Sdk;
-using Qweree.Sdk.Http.HttpClient;
 
 namespace Qweree.ConsoleApplication.Infrastructure.Commands;
 

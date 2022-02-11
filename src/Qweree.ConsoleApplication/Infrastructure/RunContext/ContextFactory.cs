@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Qweree.Sdk.Http.HttpClient;
+using Qweree.Authentication.Sdk.Http;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext;
 

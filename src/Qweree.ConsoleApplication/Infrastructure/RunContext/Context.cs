@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Sdk.Http.HttpClient;
+using Qweree.Authentication.Sdk.Http;
 using Qweree.Utils;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext;

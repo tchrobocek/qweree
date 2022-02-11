@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using Qweree.Authentication.Sdk.Http;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
-using Qweree.Sdk.Http.HttpClient;
 using Qweree.Utils;
 
 namespace Qweree.Gateway.WebApi;

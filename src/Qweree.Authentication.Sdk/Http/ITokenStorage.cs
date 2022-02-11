@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Qweree.Sdk.Http.HttpClient;
+namespace Qweree.Authentication.Sdk.Http;
 
 public interface ITokenStorage
 {

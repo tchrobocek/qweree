@@ -1,5 +1,6 @@
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Qweree.Authentication.Sdk.Http;
 using Qweree.ConsoleApplication.Commands;
 using Qweree.ConsoleApplication.Commands.Context;
 using Qweree.ConsoleApplication.Commands.Picc;
@@ -9,7 +10,6 @@ using Qweree.ConsoleApplication.Infrastructure.ErrorHandling;
 using Qweree.ConsoleApplication.Infrastructure.RunContext;
 using Qweree.ConsoleHost;
 using Qweree.ConsoleHost.Extensions;
-using Qweree.Sdk.Http.HttpClient;
 
 namespace Qweree.ConsoleApplication;
 
