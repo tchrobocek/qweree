@@ -33,7 +33,7 @@ public class StoredObjectRepository : IStoredObjectRepository
 
     public async Task DeleteAsync(string[] slug, CancellationToken cancellationToken = new())
     {
-        await _objectStorage.DeleteAsync(slug);
+        await _objectStorage.DeleteAsync(slug, cancellationToken);
         await _descriptorRepository.DeleteBySlugAsync(slug, cancellationToken);
     }
 
