@@ -16,6 +16,7 @@ using Qweree.Gateway.Sdk;
 using Qweree.PiccStash.Sdk;
 using Qweree.WebApplication.Infrastructure.Authentication;
 using Qweree.WebApplication.Infrastructure.Browser;
+using Qweree.WebApplication.Infrastructure.Configuration;
 using Qweree.WebApplication.Infrastructure.Notes;
 using Qweree.WebApplication.Infrastructure.ServicesOverview;
 using Qweree.WebApplication.Infrastructure.View;
@@ -116,5 +117,6 @@ public class Startup
         services.AddScoped<SystemInfoClientFactory>();
         services.AddScoped<NoteService>();
         services.AddScoped<DialogService>();
+        services.AddScoped<ConfigurationService>();
     }
 }

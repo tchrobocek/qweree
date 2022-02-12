@@ -3,6 +3,7 @@
 @using Microsoft.Extensions.Configuration
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.WebApplication.Infrastructure.Browser
+@using Qweree.WebApplication.Infrastructure.Configuration
 @using Qweree.WebApplication.Infrastructure.ServicesOverview
 @attribute [Authorize]
 @inject ClaimsPrincipalStorage _session
@@ -11,6 +12,7 @@
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navManager
 @inject WindowService _windowService
+@inject ConfigurationService _configurationService
 
 <MudText Typo="Typo.h4" Class="mb-8">Hello @_username</MudText>
 <MudGrid>
@@ -37,29 +39,33 @@
                 </MudTable>
             </MudCardContent>
         </MudCard>
-        <MudCard Class="mt-4">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Class="pl-4 pt-4" Typo="Typo.h6">Notes</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    @if (_notesOpen)
-                    {
-                        <MudIconButton Class="mr-4 mt-4" OnClick="() => _notesOpen = false" Icon="@Icons.Filled.KeyboardArrowUp" Color="Color.Default"/>
-                    }
-                    else
-                    {
-                        <MudIconButton Class="mr-4 mt-4" OnClick="() => _notesOpen = true" Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"/>
-                    }
-                </CardHeaderActions>
-            </MudCardHeader>
-            @if (_notesOpen)
-            {
-                <MudCardContent>
-                    <NotesComponent ViewDisclaimer="false" Entity="my_dashboard" />
-                </MudCardContent>
-            }
-        </MudCard>
+
+        @if (_dashboardConfig != null)
+        {
+            <MudCard Class="mt-4">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Class="pl-4 pt-4" Typo="Typo.h6">Notes</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @if (_dashboardConfig.NotesOpened)
+                        {
+                            <MudIconButton Class="mr-4 mt-4" OnClick="CloseNotesAsync" Icon="@Icons.Filled.KeyboardArrowUp" Color="Color.Default"/>
+                        }
+                        else
+                        {
+                            <MudIconButton Class="mr-4 mt-4" OnClick="OpenNotesAsync" Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"/>
+                        }
+                    </CardHeaderActions>
+                </MudCardHeader>
+                @if (_dashboardConfig.NotesOpened)
+                {
+                    <MudCardContent>
+                        <NotesComponent ViewDisclaimer="false" Entity="my_dashboard"/>
+                    </MudCardContent>
+                }
+            </MudCard>
+        }
     </MudItem>
     <MudItem xs="6">
         <MudCard Class="pa-4">
@@ -77,7 +83,7 @@
 @code {
     private readonly List<ServiceInfo> _services = new();
     private string _username = string.Empty;
-    private bool _notesOpen;
+    private DashboardConfigurationDto? _dashboardConfig;
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,6 +100,7 @@
         _services.Add(new ServiceInfo {Label = "Gateway service", SwaggerUri = gatewayUri + "swagger", Uri = gatewayUri});
 
         await UpdateServicesAsync();
+        _dashboardConfig = await _configurationService.GetDashboardConfigAsync();
     }
 
     private async Task UpdateServicesAsync()
@@ -155,6 +162,24 @@
     private async Task GoToSwaggerAsync(ServiceInfo context)
     {
         await _windowService.OpenInNewTabAsync(new Uri(new Uri(context.Uri), "swagger"));
+    }
+
+    private async Task CloseNotesAsync()
+    {
+        if (_dashboardConfig != null)
+        {
+            _dashboardConfig.NotesOpened = false;
+            await _configurationService.SetDashboardConfigAsync(_dashboardConfig);
+        }
+    }
+
+    private async Task OpenNotesAsync()
+    {
+        if (_dashboardConfig != null)
+        {
+            _dashboardConfig.NotesOpened = true;
+            await _configurationService.SetDashboardConfigAsync(_dashboardConfig);
+        }
     }
 
 }
