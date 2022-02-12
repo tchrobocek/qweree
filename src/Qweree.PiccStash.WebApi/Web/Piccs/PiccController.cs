@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -110,16 +111,23 @@ public class PiccController : ControllerBase
             return NotFound();
         }
 
-        var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!));
+        var ifNoneMatchValue = Request.Headers.IfNoneMatch.FirstOrDefault();
+
+        var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!), ifNoneMatchValue);
         response.EnsureSuccessStatusCode();
 
-        string mimeType = MediaTypeNames.Application.Octet;
-
+        var mimeType = MediaTypeNames.Application.Octet;
         if (response.ContentHeaders.TryGetValues("Content-Type", out var mimeTypes))
-        {
             mimeType = mimeTypes.Single();
-        }
 
+        if (response.ResponseHeaders.TryGetValues("ETag", out var etags))
+            Response.Headers.ETag = etags.FirstOrDefault();
+
+        if (response.StatusCode == HttpStatusCode.NotModified)
+        {
+            response.Dispose();
+            return StatusCode((int)HttpStatusCode.NotModified);
+        }
 
         var stream = await response.ReadPayloadAsStreamAsync();
         return File(stream, mimeType);

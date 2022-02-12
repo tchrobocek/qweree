@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Microsoft.Extensions.Options;
 using Qweree.Cdn.Sdk;
+using Qweree.Cdn.Sdk.Extensions;
 using Qweree.Cdn.Sdk.Storage;
 
 namespace Qweree.Gateway.WebApi.Infrastructure.Session;

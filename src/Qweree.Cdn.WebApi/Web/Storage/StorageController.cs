@@ -43,10 +43,11 @@ public class StorageController : ControllerBase
         if (response.Status == ResponseStatus.Fail)
             return response.ToErrorActionResult();
 
-        Response.Headers.ETag = new StringValues(EtagHelper.ComputeEtag(response.Payload?.Descriptor!));
+        var descriptor = response.Payload?.Descriptor!;
+        Response.Headers.ETag = new StringValues(EtagHelper.ComputeEtag(descriptor));
 
         var ifNoneMatchValues = Request.Headers.IfNoneMatch.ToArray();
-        if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v, response.Payload?.Descriptor!)))
+        if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v, descriptor)))
         {
             var stream = response.Payload?.Stream;
             if (stream != null)

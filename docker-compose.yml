@@ -32,7 +32,7 @@ services:
       context: .
     restart: always
     volumes:
-      - qweree-cdn:/storage
+      - qweree-cdn:/qweree-storage
     environment:
       Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"

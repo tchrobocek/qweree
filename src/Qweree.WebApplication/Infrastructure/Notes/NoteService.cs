@@ -26,7 +26,7 @@ namespace Qweree.WebApplication.Infrastructure.Notes
         public async Task<NoteCollectionDto> GetMyNotesAsync(string entity, CancellationToken cancellationToken = new())
         {
             var path = await GetPathAsync(entity, cancellationToken);
-            using var response = await _storageClient.RetrieveAsync(path, cancellationToken);
+            using var response = await _storageClient.RetrieveAsync(path, cancellationToken: cancellationToken);
 
             if (!response.IsSuccessful)
                 return new NoteCollectionDto();

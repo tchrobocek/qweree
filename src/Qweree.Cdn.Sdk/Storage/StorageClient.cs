@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Sdk.Http;
@@ -42,9 +43,14 @@ public class StorageClient
         return ApiResponse.CreateApiResponse<StoredObjectDescriptorDto>(response);
     }
 
-    public async Task<ApiResponse> RetrieveAsync(string path, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse> RetrieveAsync(string path, string? ifNoneMatch = null, CancellationToken cancellationToken = new())
     {
-        var response = await _httpClient.GetAsync(path.Trim('/'), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        var request = new HttpRequestMessage(HttpMethod.Get, path.Trim('/'));
+
+        if (ifNoneMatch != null)
+            request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue($@"""{ifNoneMatch.Trim('"')}"""));
+
+        var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         return ApiResponse.CreateApiResponse(response);
     }
 
