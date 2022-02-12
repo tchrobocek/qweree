@@ -70,7 +70,7 @@ public class StorageController : ControllerBase
             return BadRequest(response.ToErrorResponseDto());
 
         return Created($"/api/v1/storage/{path.Trim('/')}",
-            StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
+            StoredObjectDescriptorMapper.ToDto(response.Payload!));
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public class StorageController : ControllerBase
             return BadRequest(response.ToErrorResponseDto());
 
         return Created($"/api/v1/storage/{path.Trim('/')}",
-            StoredObjectDescriptorMapper.ToDto(response.Payload?.Descriptor!));
+            StoredObjectDescriptorMapper.ToDto(response.Payload!));
     }
 
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Cdn.Sdk.Storage;
+using Qweree.Cdn.WebApi.Domain.Storage;
 
 namespace Qweree.Cdn.WebApi.Infrastructure.Storage;
 
@@ -16,7 +17,7 @@ public class FileObjectStorage : IObjectStorage
         _rootPath = rootPath;
     }
 
-    public async Task StoreAsync(Stream stream, StoredObjectDescriptor descriptor,
+    public async Task StoreAsync(IBufferItem bufferItem, StoredObjectDescriptor descriptor,
         CancellationToken cancellationToken = new())
     {
         var path = GetPath(descriptor);
@@ -29,8 +30,7 @@ public class FileObjectStorage : IObjectStorage
         if (!Directory.Exists(root))
             Directory.CreateDirectory(root!);
 
-        await using var fileStream = File.Create(path);
-        await stream.CopyToAsync(fileStream, cancellationToken);
+        await bufferItem.StoreAsync(path, cancellationToken);
     }
 
     public Task<Stream> ReadAsync(StoredObjectDescriptor descriptor,

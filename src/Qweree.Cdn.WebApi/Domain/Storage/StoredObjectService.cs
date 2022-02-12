@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,23 +16,23 @@ public class StoredObjectService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IStoredObjectRepository _storedObjectRepository;
     private readonly ISessionStorage _sessionStorage;
+    private readonly IStorageBuffer _buffer;
 
-    public StoredObjectService(IDateTimeProvider dateTimeProvider, IStoredObjectRepository storedObjectRepository, ISessionStorage sessionStorage)
+    public StoredObjectService(IDateTimeProvider dateTimeProvider, IStoredObjectRepository storedObjectRepository, ISessionStorage sessionStorage, IStorageBuffer buffer)
     {
         _dateTimeProvider = dateTimeProvider;
         _storedObjectRepository = storedObjectRepository;
         _sessionStorage = sessionStorage;
+        _buffer = buffer;
     }
 
-    public async Task<Response<StoredObject>> StoreOrReplaceObjectAsync(StoreObjectInput input,
+    public async Task<Response<StoredObjectDescriptor>> StoreOrReplaceObjectAsync(StoreObjectInput input,
         CancellationToken cancellationToken = new())
     {
         var slug = PathHelper.PathToSlug(input.Path);
 
-        await using var stream = new MemoryStream();
-        await input.Stream.CopyToAsync(stream, cancellationToken);
+        await using var bufferItem = await _buffer.AddToBufferAsync(input.Stream, cancellationToken);
         await input.Stream.DisposeAsync();
-        stream.Seek(0, SeekOrigin.Begin);
 
         var created = _dateTimeProvider.UtcNow;
         var isPrivate = input.IsPrivate;
@@ -42,10 +41,10 @@ public class StoredObjectService
             var existing = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
 
             if (!input.Force)
-                return Response.Fail<StoredObject>("Stored object already exists.");
+                return Response.Fail<StoredObjectDescriptor>("Stored object already exists.");
 
             if (existing.Descriptor.OwnerId != _sessionStorage.Id)
-                return Response.Fail<StoredObject>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
+                return Response.Fail<StoredObjectDescriptor>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
 
             created = existing.Descriptor.CreatedAt;
 
@@ -58,13 +57,11 @@ public class StoredObjectService
         {
         }
 
-        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.Id, slug, input.MediaType, stream.Length,
+        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.Id, slug, input.MediaType, bufferItem.Length,
             isPrivate ?? true, created, _dateTimeProvider.UtcNow);
 
-        StoredObject storedObject = new(descriptor, stream);
-        await _storedObjectRepository.StoreAsync(storedObject, cancellationToken);
-
-        return Response.Ok(storedObject);
+        await _storedObjectRepository.StoreAsync(descriptor, bufferItem, cancellationToken);
+        return Response.Ok(descriptor);
     }
 
     public async Task<Response<StoredObject>> ReadObjectAsync(ReadObjectInput input,

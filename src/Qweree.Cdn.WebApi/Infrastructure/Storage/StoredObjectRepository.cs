@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
 using Qweree.Mongo.Exception;
 
@@ -37,17 +38,18 @@ public class StoredObjectRepository : IStoredObjectRepository
         await _descriptorRepository.DeleteBySlugAsync(slug, cancellationToken);
     }
 
-    public async Task StoreAsync(StoredObject storedObject, CancellationToken cancellationToken = new())
+    public async Task StoreAsync(StoredObjectDescriptor descriptor, IBufferItem bufferItem,
+        CancellationToken cancellationToken = new CancellationToken())
     {
-        await _descriptorRepository.InsertAsync(storedObject.Descriptor, cancellationToken);
+        await _descriptorRepository.InsertAsync(descriptor, cancellationToken);
 
         try
         {
-            await _objectStorage.StoreAsync(storedObject.Stream, storedObject.Descriptor, cancellationToken);
+            await _objectStorage.StoreAsync(bufferItem, descriptor, cancellationToken);
         }
         catch (Exception)
         {
-            await _descriptorRepository.DeleteOneAsync(storedObject.Descriptor.Id, cancellationToken);
+            await _descriptorRepository.DeleteOneAsync(descriptor.Id, cancellationToken);
             throw;
         }
     }

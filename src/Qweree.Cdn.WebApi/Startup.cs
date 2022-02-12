@@ -194,6 +194,7 @@ public class Startup
         services.AddScoped<StoredObjectService>();
         services.AddScoped<ExplorerService>();
         services.AddScoped<StatsService>();
+        services.AddScoped<IStorageBuffer, MemoryBuffer>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

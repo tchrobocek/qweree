@@ -33,7 +33,7 @@ public class FileObjectStorageTest : IDisposable
 
         var bytes = new byte[] {0x1, 0x2, 0x3};
         await using var stream = new MemoryStream(bytes);
-        await _fileStorage.StoreAsync(stream, descriptor);
+        await _fileStorage.StoreAsync(new MemoryBufferItem(stream), descriptor);
 
         await using var actualStream = await _fileStorage.ReadAsync(descriptor);
         var actualBytes = new BinaryReader(actualStream).ReadBytes((int) actualStream.Length);
