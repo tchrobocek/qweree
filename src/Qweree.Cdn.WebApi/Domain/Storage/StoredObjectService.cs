@@ -82,6 +82,9 @@ public class StoredObjectService
 
         if (storedObject.Descriptor.IsPrivate && _sessionStorage.Id != storedObject.Descriptor.OwnerId)
         {
+            if (_sessionStorage.IsAnonymous)
+                return Response.Fail<StoredObject>(new Error("Unauthorized.", (int) HttpStatusCode.Unauthorized));
+
             return Response.Fail<StoredObject>(new Error("Forbidden.", (int) HttpStatusCode.Forbidden));
         }
 

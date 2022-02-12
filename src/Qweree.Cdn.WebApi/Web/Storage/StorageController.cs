@@ -37,7 +37,7 @@ public class StorageController : ControllerBase
         var response = await _service.ReadObjectAsync(input);
 
         if (response.Status == ResponseStatus.Fail)
-            return BadRequest(response.ToErrorResponseDto());
+            return response.ToErrorActionResult();
 
         return File(response.Payload!.Stream, response.Payload.Descriptor.MediaType);
     }
@@ -67,7 +67,7 @@ public class StorageController : ControllerBase
         var response = await _service.StoreOrReplaceObjectAsync(input);
 
         if (response.Status == ResponseStatus.Fail)
-            return BadRequest(response.ToErrorResponseDto());
+            return response.ToErrorActionResult();
 
         return Created($"/api/v1/storage/{path.Trim('/')}",
             StoredObjectDescriptorMapper.ToDto(response.Payload!));
@@ -98,7 +98,7 @@ public class StorageController : ControllerBase
         var response = await _service.StoreOrReplaceObjectAsync(input);
 
         if (response.Status == ResponseStatus.Fail)
-            return BadRequest(response.ToErrorResponseDto());
+            return response.ToErrorActionResult();
 
         return Created($"/api/v1/storage/{path.Trim('/')}",
             StoredObjectDescriptorMapper.ToDto(response.Payload!));
@@ -119,7 +119,7 @@ public class StorageController : ControllerBase
         var response = await _service.DeleteObjectAsync(path);
 
         if (response.Status == ResponseStatus.Fail)
-            return BadRequest(response.ToErrorResponseDto());
+            return response.ToErrorActionResult();
 
         return NoContent();
     }

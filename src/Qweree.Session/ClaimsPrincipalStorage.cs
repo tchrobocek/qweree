@@ -8,16 +8,11 @@ public class ClaimsPrincipalStorage : ISessionStorage
     public ClaimsPrincipalStorage(ClaimsPrincipal claimsPrincipal)
     {
         ClaimsPrincipal = claimsPrincipal;
-        _identity = CreateIdentity(claimsPrincipal);
+        _identity = ClaimsPrincipalMapper.CreateIdentity(claimsPrincipal);
     }
     public ClaimsPrincipal ClaimsPrincipal { get; }
     public IdentityUser? CurrentUser => _identity.User;
     public IdentityClient CurrentClient => _identity.Client;
     public Guid Id => CurrentUser?.Id ?? CurrentClient.Id;
-
-
-    private Identity CreateIdentity(ClaimsPrincipal claimsPrincipal)
-    {
-        return ClaimsPrincipalMapper.CreateIdentity(claimsPrincipal);
-    }
+    public bool IsAnonymous => Id == Guid.Empty;
 }
