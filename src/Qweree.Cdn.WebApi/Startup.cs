@@ -194,11 +194,11 @@ public class Startup
         services.AddScoped<StoredObjectService>();
         services.AddScoped<ExplorerService>();
         services.AddScoped<StatsService>();
-        // services.AddScoped<IStorageBuffer, MemoryBuffer>();
-        services.AddScoped<IStorageBuffer>(p =>
+        // services.AddSingleton<IStorageBuffer, MemoryBuffer>();
+        services.AddSingleton<IStorageBuffer>(p =>
         {
-            var config = p.GetRequiredService<QwereeConfigurationDo>();
-            return new TempFolderBuffer(config.FileSystemTemp!);
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
+            return new TempFolderBuffer(config.Value.FileSystemTemp!);
         });
     }
 
