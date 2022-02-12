@@ -1,14 +1,18 @@
+using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Cdn.WebApi.Domain.Storage;
+using Qweree.Cdn.WebApi.Infrastructure.Storage;
 
 namespace Qweree.Cdn.WebApi.Web.Storage;
 
@@ -38,6 +42,18 @@ public class StorageController : ControllerBase
 
         if (response.Status == ResponseStatus.Fail)
             return response.ToErrorActionResult();
+
+        Response.Headers.ETag = new StringValues(EtagHelper.ComputeEtag(response.Payload?.Descriptor!));
+
+        var ifNoneMatchValues = Request.Headers.IfNoneMatch.ToArray();
+        if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v, response.Payload?.Descriptor!)))
+        {
+            var stream = response.Payload?.Stream;
+            if (stream != null)
+                await stream.DisposeAsync();
+
+            return StatusCode((int)HttpStatusCode.NotModified);
+        }
 
         return File(response.Payload!.Stream, response.Payload.Descriptor.MediaType);
     }
