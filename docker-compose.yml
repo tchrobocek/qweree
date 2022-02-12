@@ -38,7 +38,8 @@ services:
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
       Qweree__AuthTokenUri: "http://localhost/auth/api/oauth2/auth"
       Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
-      Qweree__FileSystemRoot: "/storage"
+      Qweree__FileSystemRoot: "/qweree-storage"
+      Qweree__FileSystemTemp: "/qweree-temp"
       Qweree__PathBase: "/cdn"
 
   qweree-picc:

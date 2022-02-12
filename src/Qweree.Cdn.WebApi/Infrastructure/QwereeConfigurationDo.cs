@@ -8,6 +8,7 @@ public class QwereeConfigurationDo
     public string? AccessTokenKey { get; set; }
     public string? PathBase { get; set; }
     public string? FileSystemRoot { get; set; }
+    public string? FileSystemTemp { get; set; }
     public string? SwaggerTokenUri { get; set; }
     public string? AuthTokenUri { get; set; }
 }

@@ -194,7 +194,12 @@ public class Startup
         services.AddScoped<StoredObjectService>();
         services.AddScoped<ExplorerService>();
         services.AddScoped<StatsService>();
-        services.AddScoped<IStorageBuffer, MemoryBuffer>();
+        // services.AddScoped<IStorageBuffer, MemoryBuffer>();
+        services.AddScoped<IStorageBuffer>(p =>
+        {
+            var config = p.GetRequiredService<QwereeConfigurationDo>();
+            return new TempFolderBuffer(config.FileSystemTemp!);
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
