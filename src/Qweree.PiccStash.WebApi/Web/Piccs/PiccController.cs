@@ -61,11 +61,7 @@ public class PiccController : ControllerBase
 
         var path = PathHelper.Combine(PathHelper.GetClientDataPath(_qwereeConfiguration.Value.ClientId ?? string.Empty), "piccs", piccId.ToString());
         var response = await _storageClient.StoreAsync(path, contentType, Request.Body);
-
-        if (!response.IsSuccessful)
-        {
-            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
-        }
+        response.EnsureSuccessStatusCode();
 
         var descriptor = await response.ReadPayloadAsync();
         var extension = contentType["image/".Length..];
@@ -115,11 +111,7 @@ public class PiccController : ControllerBase
         }
 
         var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!));
-
-        if (!response.IsSuccessful)
-        {
-            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
-        }
+        response.EnsureSuccessStatusCode();
 
         string mimeType = MediaTypeNames.Application.Octet;
 
@@ -156,11 +148,7 @@ public class PiccController : ControllerBase
         }
 
         var response = await _storageClient.RetrieveAsync(PathHelper.SlugToPath(picc.StorageSlug!));
-
-        if (!response.IsSuccessful)
-        {
-            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
-        }
+        response.EnsureSuccessStatusCode();
 
         string mimeType = MediaTypeNames.Application.Octet;
 
@@ -231,8 +219,8 @@ public class PiccController : ControllerBase
         }
 
         var response = await _storageClient.DeleteAsync(PathHelper.SlugToPath(picc.StorageSlug ?? Array.Empty<string>()));
-        if (response.IsSuccessful)
-            await _piccRepository.DeleteOneAsync(piccId);
+        response.EnsureSuccessStatusCode();
+        await _piccRepository.DeleteOneAsync(piccId);
 
         return NoContent();
     }
