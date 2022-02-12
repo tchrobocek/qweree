@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Qweree.Authentication.WebApi.Domain.Identity;
 
@@ -10,8 +11,13 @@ public static class UserMapper
     {
         return new User(databaseObject.Id, databaseObject.Username ?? "", databaseObject.FullName ?? "",
             databaseObject.ContactEmail ?? "", databaseObject.Password ?? "",
-            databaseObject.Roles ?? Array.Empty<Guid>(),
+            databaseObject.Properties?.Select(FromDo).ToImmutableArray() ?? ImmutableArray<UserProperty>.Empty,
+            databaseObject.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
             databaseObject.CreatedAt, databaseObject.ModifiedAt);
+    }
+    public static UserProperty FromDo(UserPropertyDo databaseObject)
+    {
+        return new UserProperty(databaseObject.Key ?? string.Empty, databaseObject.Value ?? string.Empty);
     }
 
     public static UserDo ToDo(User user)
@@ -23,9 +29,19 @@ public static class UserMapper
             FullName = user.FullName,
             Password = user.Password,
             ContactEmail = user.ContactEmail,
+            Properties = user.Properties.Select(ToDo).ToArray(),
             Roles = user.Roles.ToArray(),
             CreatedAt = user.CreatedAt,
             ModifiedAt = user.ModifiedAt
+        };
+    }
+
+    public static UserPropertyDo ToDo(UserProperty property)
+    {
+        return new UserPropertyDo
+        {
+            Key = property.Key,
+            Value = property.Value
         };
     }
 }

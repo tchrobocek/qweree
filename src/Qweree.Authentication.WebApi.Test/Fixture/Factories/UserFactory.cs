@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using Qweree.Authentication.WebApi.Domain.Identity;
 
 namespace Qweree.Authentication.WebApi.Test.Fixture.Factories;
@@ -8,13 +9,13 @@ public static class UserFactory
     public static User CreateDefault(string username = "user")
     {
         return new User(Guid.NewGuid(), username, "User Userov", "user@example.com",
-            "pwd", Array.Empty<Guid>(), DateTime.UtcNow, DateTime.UtcNow);
+            "pwd", ImmutableArray<UserProperty>.Empty, ImmutableArray<Guid>.Empty, DateTime.UtcNow, DateTime.UtcNow);
     }
 
     public static User CreateAdmin()
     {
         return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com",
-            "pwd", new[] {Guid.Parse("d0a77eeb-972e-4337-a62e-493b3e59f214"),
+            "pwd", ImmutableArray<UserProperty>.Empty, new[] {Guid.Parse("d0a77eeb-972e-4337-a62e-493b3e59f214"),
                 Guid.Parse("c990cc7b-7415-4836-8468-b48c67dd9e45"),
                 Guid.Parse("66a81b6b-fd91-4338-8ca3-e4aed14dd868"),
                 Guid.Parse("20352123-e4c1-4e37-affa-e136d9a66d02"),
@@ -26,6 +27,6 @@ public static class UserFactory
                 Guid.Parse("a1272efa-b687-4fda-a999-11b4b0acd414"),
                 Guid.Parse("98d7d3a1-bedd-4ee1-a633-a4217f5414ee"),
                 Guid.Parse("145e1674-691a-4bd5-956b-4154bc4264da"),
-                Guid.Parse("d98049ab-977e-42ef-bba6-05c16184d054")}, DateTime.UtcNow, DateTime.UtcNow);
+                Guid.Parse("d98049ab-977e-42ef-bba6-05c16184d054")}.ToImmutableArray(), DateTime.UtcNow, DateTime.UtcNow);
     }
 }

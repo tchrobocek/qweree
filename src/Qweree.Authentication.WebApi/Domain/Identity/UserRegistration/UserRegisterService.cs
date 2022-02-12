@@ -55,7 +55,8 @@ public class UserRegisterService
             return result.ToErrorResponse();
 
         var user = new User(Guid.NewGuid(), input.Username, input.Fullname, input.ContactEmail,
-            _passwordEncoder.EncodePassword(input.Password), invitationDescriptor.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
+            _passwordEncoder.EncodePassword(input.Password), ImmutableArray<UserProperty>.Empty,
+            invitationDescriptor.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
             _dateTimeProvider.UtcNow);
 
         await _userRepository.InsertAsync(user, cancellationToken);
