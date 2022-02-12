@@ -19,9 +19,9 @@ services:
       context: .
     restart: always
     environment:
-      Database__ConnectionString: "mongodb://qweree-db:27017"
-      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Routing__PathBase: "/auth"
+      Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
+      Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
+      Qwereee__PathBase: "/auth"
 
   qweree-cdn:
     container_name: qweree-cdn
@@ -34,12 +34,12 @@ services:
     volumes:
       - qweree-cdn:/storage
     environment:
-      Database__ConnectionString: "mongodb://qweree-db:27017"
-      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Authentication__TokenUri: "http://localhost/auth/api/oauth2/auth"
-      Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
-      Storage__FileSystemRoot: "/storage"
-      Routing__PathBase: "/cdn"
+      Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
+      Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
+      Qweree__AuthTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__FileSystemRoot: "/storage"
+      Qweree__PathBase: "/cdn"
 
   qweree-picc:
     container_name: qweree-picc
@@ -50,12 +50,12 @@ services:
       context: .
     restart: always
     environment:
-      Database__ConnectionString: "mongodb://qweree-db:27017"
-      HealthChecks__Database__ConnectionString: "mongodb://qweree-db:27017"
-      Authentication__TokenUri: "http://qweree-auth/api/oauth2/auth"
-      Swagger__TokenUri: "http://localhost/auth/api/oauth2/auth"
-      Storage__CdnUri: "http://qweree-cdn/api/v1/storage/"
-      Routing__PathBase: "/picc"
+      Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
+      Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
+      Qweree__AuthTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__PathBase: "/picc"
+      Qweree__CdnUri: "http://qweree-cdn/api/v1/storage/"
 
   qweree-webapp:
     container_name: qweree-webapp
@@ -76,7 +76,7 @@ services:
       - "80:80"
     environment:
       ASPNETCORE_ENVIRONMENT: 'Development'
-      AuthUri: "http://qweree-auth"
+      Qweree__AuthTokenUri: "http://qweree-auth"
       ReverseProxy__Clusters__qweree.authentication__Destinations__default__Address: "http://qweree-auth"
       ReverseProxy__Clusters__qweree.cdn__Destinations__default__Address: "http://qweree-cdn"
       ReverseProxy__Clusters__qweree.picc__Destinations__default__Address: "http://qweree-picc"

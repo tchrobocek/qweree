@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Qweree.AspNet.Configuration;
 using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Domain.Authentication;
@@ -72,7 +71,7 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
+            .AddMongoHealthCheck("Database", Configuration["Qweree:HealthCheckConnectionString"]);
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -80,7 +79,7 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
-        var pathBase = Configuration["Routing:PathBase"];
+        var pathBase = Configuration["Qweree:PathBase"];
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Authentication.WebApi", Version = "v1"});
@@ -124,7 +123,7 @@ public class Startup
         {
             options.SaveToken = true;
             options.TokenValidationParameters =
-                GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+                GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
         });
         services.AddAuthorization(options =>
         {
@@ -177,26 +176,24 @@ public class Startup
         });
 
         // _
-        services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
+        services.Configure<QwereeConfigurationDo>(Configuration.GetSection("Qweree"));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // Database
-        services.Configure<DatabaseConfigurationDo>(Configuration.GetSection("Database"));
         services.AddSingleton(p =>
         {
-            var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
-            return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
+            return new MongoContext(config.MongoConnectionString ?? "", config.DatabaseName ?? "");
         });
 
         // Authentication
-        services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
         services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton(p =>
         {
             var userRepository = p.GetRequiredService<IUserRepository>();
             var refreshTokenRepository = p.GetRequiredService<IRefreshTokenRepository>();
             var dateTimeProvider = p.GetRequiredService<IDateTimeProvider>();
-            var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
             var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
             var clientRepository = p.GetRequiredService<IClientRepository>();
             var authorizationService = p.GetRequiredService<AuthorizationService>();
@@ -208,7 +205,7 @@ public class Startup
         });
         services.AddSingleton<ITokenEncoder>(p =>
         {
-            var config = p.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
             return new JwtEncoder(Issuer, Audience, config?.AccessTokenKey ?? string.Empty);
         });
 
@@ -249,9 +246,9 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<QwereeConfigurationDo> qwereeConfig)
     {
-        var pathBase = routingConfiguration.Value.PathBase;
+        var pathBase = qwereeConfig.Value.PathBase;
 
         if (pathBase != null)
             app.UsePathBase(pathBase);

@@ -44,7 +44,7 @@ public class Startup
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
 
         services.AddSingleton<ISessionStorage, QwereeSessionStorage>();
-        // services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["SessionStorage"]));
+        // services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["Qweree:SessionStorage"]));
         services.AddSingleton<HttpMessageHandler, HttpClientHandler>();
         services.AddSingleton(p =>
         {
@@ -61,7 +61,7 @@ public class Startup
             var handler = p.GetRequiredService<HttpMessageHandler>();
             var client = new HttpClient(handler)
             {
-                BaseAddress = new Uri(new Uri(Configuration["AuthUri"]), "api/oauth2/auth/")
+                BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthTokenUri"]), "api/oauth2/auth/")
             };
             return new OAuth2Client(client);
         });
@@ -71,7 +71,7 @@ public class Startup
             var httpHandler = p.GetRequiredService<ClientCredentialsHandler>();
             var httpClient = new HttpClient(httpHandler)
             {
-                BaseAddress = new Uri(Configuration["Storage:CdnUri"])
+                BaseAddress = new Uri(Configuration["Qweree:CdnUri"])
             };
             return new StorageClient(httpClient);
         });

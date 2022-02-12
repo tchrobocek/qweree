@@ -16,11 +16,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using Qweree.AspNet.Configuration;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Cdn.Sdk.Explorer;
 using Qweree.Cdn.WebApi.Domain.Storage;
-using Qweree.Cdn.WebApi.Infrastructure.Authentication;
+using Qweree.Cdn.WebApi.Infrastructure;
 using Qweree.Cdn.WebApi.Infrastructure.Explorer;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Cdn.WebApi.Infrastructure.System;
@@ -63,7 +62,7 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Database", Configuration["HealthChecks:Database:ConnectionString"]);
+            .AddMongoHealthCheck("Database", Configuration["Qweree:HealthCheckConnectionString"]);
 
         services.AddControllers()
             .AddJsonOptions(options =>
@@ -86,9 +85,9 @@ public class Startup
                 {
                     Password = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
-                        RefreshUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute),
-                        TokenUrl = new Uri(Configuration["Swagger:TokenUri"], UriKind.Absolute)
+                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
+                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
+                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute)
                     }
                 }
             });
@@ -116,7 +115,7 @@ public class Startup
         {
             options.SaveToken = true;
             options.TokenValidationParameters =
-                GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+                GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
             options.Events = new JwtBearerEvents
             {
                 OnMessageReceived = context =>
@@ -126,7 +125,7 @@ public class Startup
                     if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
                     {
                         context.Options.TokenValidationParameters =
-                            GetValidationParameters(Configuration["Authentication:AccessTokenKey"]);
+                            GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
 
                         token = values.FirstOrDefault();
 
@@ -168,31 +167,28 @@ public class Startup
         });
 
         // _
-        services.Configure<RoutingConfigurationDo>(Configuration.GetSection("Routing"));
+        services.Configure<QwereeConfigurationDo>(Configuration.GetSection("Qweree"));
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         // Session
-        services.Configure<AuthenticationConfigurationDo>(Configuration.GetSection("Authentication"));
         services.AddScoped(p =>
             p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
         services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
         services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
 
         // Database
-        services.Configure<DatabaseConfigurationDo>(Configuration.GetSection("Database"));
         services.AddSingleton(p =>
         {
-            var config = p.GetRequiredService<IOptions<DatabaseConfigurationDo>>().Value;
-            return new MongoContext(config.ConnectionString ?? "", config.DatabaseName ?? "");
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
+            return new MongoContext(config.MongoConnectionString ?? "", config.DatabaseName ?? "");
         });
 
         // Storage
-        services.Configure<StorageConfigurationDo>(Configuration.GetSection("Storage"));
         services.AddScoped<IStoredObjectRepository, StoredObjectRepository>();
         services.AddScoped<IStoredObjectDescriptorRepository, StoredObjectDescriptorRepository>();
         services.AddScoped<IObjectStorage, FileObjectStorage>(p =>
         {
-            var config = p.GetRequiredService<IOptions<StorageConfigurationDo>>().Value;
+            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
             return new FileObjectStorage(config.FileSystemRoot!);
         });
         services.AddScoped<StoredObjectService>();
@@ -201,9 +197,9 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<RoutingConfigurationDo> routingConfiguration)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<QwereeConfigurationDo> config)
     {
-        var pathBase = routingConfiguration.Value.PathBase;
+        var pathBase = config.Value.PathBase;
 
         if (pathBase != null)
             app.UsePathBase(pathBase);

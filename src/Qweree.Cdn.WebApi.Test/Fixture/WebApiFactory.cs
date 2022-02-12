@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Cdn.WebApi.Infrastructure.Authentication;
+using Qweree.Cdn.WebApi.Infrastructure;
 using Qweree.Cdn.WebApi.Infrastructure.Storage;
 using Qweree.Mongo;
 using Qweree.TestUtils.IO;
@@ -42,11 +42,11 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
     public async Task<HttpClient> CreateAuthenticatedClientAsync(PasswordGrantInput passwordInput, ClientCredentials clientCredentials)
     {
-        var authConfig = Services.GetRequiredService<IOptions<AuthenticationConfigurationDo>>().Value;
+        var authConfig = Services.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
         var client = CreateClient();
         var oauthClient = new HttpClient
         {
-            BaseAddress = new Uri(authConfig.TokenUri!)
+            BaseAddress = new Uri(authConfig.AuthTokenUri!)
         };
         var oAuth2Client = new OAuth2Client(oauthClient);
         var response = await oAuth2Client.SignInAsync(passwordInput, clientCredentials);
