@@ -89,7 +89,13 @@
         var isDeleting = await _dialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_client?.ClientId}?");
 
         if (isDeleting)
-            await _identityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
+        {
+            var response = await _identityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
+            response.EnsureSuccessStatusCode();
+
+            if (response.IsSuccessful)
+                _navigationManager.NavigateTo("/services/auth/clients/list");
+        }
     }
 
 }

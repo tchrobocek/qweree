@@ -98,6 +98,10 @@
         {
             _snackbar.AddErrors(await result.ReadErrorsAsync());
         }
+        else
+        {
+            _navigationManager.NavigateTo("/services/auth/clients/list");
+        }
     }
 
 }
