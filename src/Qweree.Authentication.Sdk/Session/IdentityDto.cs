@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.Sdk.Session;
 
@@ -20,4 +22,5 @@ public class IdentityUserDto
     public Guid? Id { get; set; }
     public string? Username { get; set; }
     public string? FullName { get; set; }
+    public UserPropertyDto[]? Properties { get; set; }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.Sdk.Session;
 
@@ -26,16 +27,18 @@ public class Identity
 
 public class IdentityUser
 {
-    public IdentityUser(Guid id, string username, string fullName)
+    public IdentityUser(Guid id, string username, string fullName, ImmutableArray<UserProperty> properties)
     {
         Id = id;
         Username = username;
         FullName = fullName;
+        Properties = properties;
     }
 
     public Guid Id { get; }
     public string Username { get; }
     public string FullName { get; }
+    public ImmutableArray<UserProperty> Properties { get; }
 }
 
 public class IdentityClient

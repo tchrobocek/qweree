@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Qweree.Utils;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
+using UserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
 
 namespace Qweree.Authentication.WebApi.Domain.Authentication;
 
@@ -84,7 +86,7 @@ public class AuthenticationService
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
-            new IdentityUser(user.Id, user.Username, user.FullName),
+            new IdentityUser(user.Id, user.Username, user.FullName, user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
@@ -129,7 +131,8 @@ public class AuthenticationService
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
-            new IdentityUser(user.Id, user.Username, user.FullName),
+            new IdentityUser(user.Id, user.Username, user.FullName,
+                user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);

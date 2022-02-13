@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
+using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.Sdk.Session;
 
@@ -26,6 +27,7 @@ public static class IdentityMapper
             claims.Add(new Claim("user.id", identity.User.Id.ToString()));
             claims.Add(new Claim("user.username", identity.User.Username));
             claims.Add(new Claim("user.full_name", identity.User.FullName));
+            claims.AddRange(identity.User.Properties.Select(prop => new Claim($"user.property.{prop.Key}", prop.Value)));
         }
 
         return new ClaimsPrincipal(new ClaimsIdentity(claims, "qweree"));
@@ -69,7 +71,12 @@ public static class IdentityMapper
         var id = claims.FirstOrDefault(c => c.Type == "user.id")?.Value ?? Guid.Empty.ToString();
         var username = claims.FirstOrDefault(c => c.Type == "user.username")?.Value ?? "anonymous";
         var fullName = claims.FirstOrDefault(c => c.Type == "user.full_name")?.Value ?? "anonymous";
-        return new IdentityUser(Guid.Parse(id), username, fullName);
+
+        var properties = claims.Where(c => c.Type.StartsWith("user.property."))
+            .Select(c => new UserProperty(c.Type["user.property.".Length..], c.Value))
+            .ToImmutableArray();
+
+        return new IdentityUser(Guid.Parse(id), username, fullName, properties);
     }
 
     public static IdentityClient ToIdentityClient(ClaimsPrincipal claimsPrincipal)
@@ -110,7 +117,8 @@ public static class IdentityMapper
     public static IdentityUser ToDto(IdentityUserDto identityDto)
     {
         return new IdentityUser(identityDto.Id ?? Guid.Empty, identityDto.Username ?? string.Empty,
-            identityDto.FullName ?? string.Empty);
+            identityDto.FullName ?? string.Empty,
+            identityDto.Properties?.Select(UserPropertyMapper.FromDto).ToImmutableArray() ?? ImmutableArray<UserProperty>.Empty);
     }
 
     public static IdentityDto ToDto(Identity identity)
@@ -144,7 +152,8 @@ public static class IdentityMapper
         {
             Id = identity.Id,
             Username = identity.Username,
-            FullName = identity.FullName
+            FullName = identity.FullName,
+            Properties = identity.Properties.Select(UserPropertyMapper.ToDto).ToArray()
         };
     }
 
