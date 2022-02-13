@@ -37,6 +37,7 @@ public class IdentityUser
     public string Username { get; }
     public string FullName { get; }
 }
+
 public class IdentityClient
 {
     public IdentityClient(Guid id, string clientId, string applicationName)

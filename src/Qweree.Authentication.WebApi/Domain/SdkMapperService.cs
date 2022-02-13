@@ -16,6 +16,7 @@ using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
 using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
+using SdkUserProperty = Qweree.Authentication.AdminSdk.Identity.Users.UserProperty;
 using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
 
 namespace Qweree.Authentication.WebApi.Domain;
@@ -50,8 +51,8 @@ public class SdkMapperService
             }
         }
 
-        return new SdkUser(user.Id, user.Username, user.FullName, user.ContactEmail, roles.Select(FromUserRole)
-            .ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
+        return new SdkUser(user.Id, user.Username, user.FullName, user.ContactEmail, user.Properties.Select(FromUserProperty)
+            .ToImmutableArray(), roles.Select(FromUserRole).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
     }
 
     public async Task<SdkClient> ClientMapAsync(Client client, CancellationToken cancellationToken = new())
@@ -218,5 +219,10 @@ public class SdkMapperService
     private Role FromClientRole(ClientRole role)
     {
         return new Role(role.Id, role.Key, role.Label, role.Description);
+    }
+
+    private SdkUserProperty FromUserProperty(UserProperty userProperty)
+    {
+        return new SdkUserProperty(userProperty.Key, userProperty.Value);
     }
 }

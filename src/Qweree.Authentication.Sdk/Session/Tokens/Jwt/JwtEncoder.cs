@@ -27,7 +27,7 @@ public class JwtEncoder : ITokenEncoder
         var expTime = DateTime.UnixEpoch;
         expTime = expTime.AddSeconds(int.Parse(exp));
 
-        var identity = ClaimsPrincipalMapper.CreateIdentity(claims);
+        var identity = IdentityMapper.ToIdentity(claims);
         return new AccessToken(identity, token.IssuedAt, expTime);
     }
 
@@ -43,7 +43,7 @@ public class JwtEncoder : ITokenEncoder
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var identityPrincipal = ClaimsPrincipalMapper.CreateClaimsPrincipal(accessToken.Identity);
+        var identityPrincipal = IdentityMapper.ToClaimsPrincipal(accessToken.Identity);
         var claims = new List<Claim>(identityPrincipal.Claims)
         {
             new("iat", new DateTimeOffset(accessToken.IssuedAt).ToUnixTimeSeconds().ToString()),

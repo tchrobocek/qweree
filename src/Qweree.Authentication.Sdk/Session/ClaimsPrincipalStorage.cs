@@ -9,7 +9,7 @@ public class ClaimsPrincipalStorage : ISessionStorage
     public ClaimsPrincipalStorage(ClaimsPrincipal claimsPrincipal)
     {
         ClaimsPrincipal = claimsPrincipal;
-        _identity = ClaimsPrincipalMapper.CreateIdentity(claimsPrincipal);
+        _identity = IdentityMapper.ToIdentity(claimsPrincipal);
     }
     public ClaimsPrincipal ClaimsPrincipal { get; }
     public IdentityUser? CurrentUser => _identity.User;

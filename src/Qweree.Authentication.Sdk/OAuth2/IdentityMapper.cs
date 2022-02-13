@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
-using ClaimsPrincipalMapper = Qweree.Authentication.Sdk.Session.ClaimsPrincipalMapper;
 using Identity = Qweree.Authentication.Sdk.Session.Identity;
 using IdentityClient = Qweree.Authentication.Sdk.Session.IdentityClient;
 using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
@@ -74,11 +73,11 @@ public class IdentityMapper
 
     public static ClaimsPrincipal ToClaimsPrincipal(IdentityDto identityDto)
     {
-        return ClaimsPrincipalMapper.CreateClaimsPrincipal(Map(identityDto));
+        return Session.IdentityMapper.ToClaimsPrincipal(Map(identityDto));
     }
 
     public static IdentityDto FromClaimsPrincipal(ClaimsPrincipal claimsPrincipal)
     {
-        return Map(ClaimsPrincipalMapper.CreateIdentity(claimsPrincipal));
+        return Map(Session.IdentityMapper.ToIdentity(claimsPrincipal));
     }
 }

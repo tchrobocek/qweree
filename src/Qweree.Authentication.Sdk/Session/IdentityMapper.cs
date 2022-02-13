@@ -6,9 +6,9 @@ using System.Security.Claims;
 
 namespace Qweree.Authentication.Sdk.Session;
 
-public static class ClaimsPrincipalMapper
+public static class IdentityMapper
 {
-    public static ClaimsPrincipal CreateClaimsPrincipal(Identity identity)
+    public static ClaimsPrincipal ToClaimsPrincipal(Identity identity)
     {
         var claims = new List<Claim>
         {
@@ -31,12 +31,12 @@ public static class ClaimsPrincipalMapper
         return new ClaimsPrincipal(new ClaimsIdentity(claims, "qweree"));
     }
 
-    public static Identity CreateIdentity(ClaimsPrincipal claimsPrincipal)
+    public static Identity ToIdentity(ClaimsPrincipal claimsPrincipal)
     {
-        return CreateIdentity(claimsPrincipal.Claims);
+        return ToIdentity(claimsPrincipal.Claims);
     }
 
-    public static Identity CreateIdentity(IEnumerable<Claim> claims)
+    public static Identity ToIdentity(IEnumerable<Claim> claims)
     {
         claims = claims.ToArray();
 
@@ -46,23 +46,23 @@ public static class ClaimsPrincipalMapper
             .Distinct()
             .ToArray();
 
-        var client = CreateClient(claims);
+        var client = ToIdentityClient(claims);
 
         if (!roles.Contains("CLIENT"))
         {
-            var user = CreateUser(claims);
+            var user = ToIdentityUser(claims);
             return new Identity(client, user, email, roles.ToImmutableArray());
         }
 
         return new Identity(client, email, roles.ToImmutableArray());
     }
 
-    public static IdentityUser CreateUser(ClaimsPrincipal claimsPrincipal)
+    public static IdentityUser ToIdentityUser(ClaimsPrincipal claimsPrincipal)
     {
-        return CreateUser(claimsPrincipal.Claims);
+        return ToIdentityUser(claimsPrincipal.Claims);
     }
 
-    private static IdentityUser CreateUser(IEnumerable<Claim> claims)
+    private static IdentityUser ToIdentityUser(IEnumerable<Claim> claims)
     {
         claims = claims.ToArray();
 
@@ -72,12 +72,12 @@ public static class ClaimsPrincipalMapper
         return new IdentityUser(Guid.Parse(id), username, fullName);
     }
 
-    public static IdentityClient CreateClient(ClaimsPrincipal claimsPrincipal)
+    public static IdentityClient ToIdentityClient(ClaimsPrincipal claimsPrincipal)
     {
-        return CreateClient(claimsPrincipal.Claims);
+        return ToIdentityClient(claimsPrincipal.Claims);
     }
 
-    public static IdentityClient CreateClient(IEnumerable<Claim> claims)
+    public static IdentityClient ToIdentityClient(IEnumerable<Claim> claims)
     {
         claims = claims.ToArray();
 

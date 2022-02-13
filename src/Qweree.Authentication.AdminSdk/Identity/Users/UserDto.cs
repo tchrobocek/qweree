@@ -9,7 +9,14 @@ public class UserDto
     public string? Username { get; set; }
     public string? FullName { get; set; }
     public string? ContactEmail { get; set; }
+    public UserPropertyDto[]? Properties { get; set; }
     public RoleDto[]? Roles { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
+}
+
+public class UserPropertyDto
+{
+    public string? Key { get; set; }
+    public string? Value { get; set; }
 }
