@@ -8,7 +8,6 @@ public class UserDto
 {
     public Guid? Id { get; set; }
     public string? Username { get; set; }
-    public string? FullName { get; set; }
     public string? ContactEmail { get; set; }
     public UserPropertyDto[]? Properties { get; set; }
     public RoleDto[]? Roles { get; set; }

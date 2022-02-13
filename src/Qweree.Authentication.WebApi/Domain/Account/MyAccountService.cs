@@ -57,7 +57,7 @@ public class MyAccountService
 
         var passwordHash = _passwordEncoder.EncodePassword(input.NewPassword);
 
-        user = new User(user.Id, user.Username, user.FullName, user.ContactEmail, passwordHash, user.Properties, user.Roles,
+        user = new User(user.Id, user.Username, user.ContactEmail, passwordHash, user.Properties, user.Roles,
             user.CreatedAt, _dateTimeProvider.UtcNow);
 
         await _userRepository.ReplaceAsync(id.ToString(), user, cancellationToken);

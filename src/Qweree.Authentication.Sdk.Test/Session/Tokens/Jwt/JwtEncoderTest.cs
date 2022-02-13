@@ -24,7 +24,7 @@ public class JwtEncoderTest
             new UserProperty("+12345678=", "bar"),
             new UserProperty("+12345678=", "baz"),
         };
-        var identity = new Identity(new(Guid.NewGuid(), "client", "app"), new(Guid.NewGuid(), "user", "full name", properties.ToImmutableArray()), "email", new[] {"role1", "role2"}.ToImmutableArray());
+        var identity = new Identity(new(Guid.NewGuid(), "client", "app"), new(Guid.NewGuid(), "user", properties.ToImmutableArray()), "email", new[] {"role1", "role2"}.ToImmutableArray());
         var accessToken = new AccessToken(identity, DateTime.UtcNow, DateTime.UtcNow + TimeSpan.FromSeconds(1));
         var jwt = encoder.EncodeAccessToken(accessToken);
 

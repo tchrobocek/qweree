@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.Sdk.Users
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject IdentityClient _identityClient
 @inject NavigationManager _navigationManager
@@ -32,7 +33,7 @@
                     <MudAvatar Style="height:32px; width:32px; font-size:1rem;" Color="Color.Primary" Class="my-1 mr-4">
                         @context.Username?.First().ToString().ToUpper()
                     </MudAvatar>
-                    @context.FullName (@context.Username)
+                    @context.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName)?.Value (@context.Username)
                 </MudTd>
                 <MudTd Style="text-align: right;" Class="mr-2">
                     <MudLink @onclick="() => GoToUser(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">View</MudLink>

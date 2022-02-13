@@ -21,7 +21,7 @@ public class ClaimsPrincipalMapperTest
             new UserProperty("+12345678=", "baz"),
         };
         var identity = new Identity(new IdentityClient(Guid.NewGuid(), "client", "app"),
-            new(Guid.NewGuid(), "user", "full name", properties.ToImmutableArray()),
+            new(Guid.NewGuid(), "user", properties.ToImmutableArray()),
             "email", ImmutableArray<string>.Empty);
         var claimsPrincipal = IdentityMapper.FromDto(identity);
         var actualIdentity = IdentityMapper.ToIdentity(claimsPrincipal);

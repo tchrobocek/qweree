@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Sdk;
 
@@ -49,7 +50,9 @@ public class UserController : ControllerBase
         if (!result.Succeeded)
         {
             userDto.ContactEmail = "***";
-            userDto.FullName = "***";
+            var fullNameProperty = userDto.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
+            if (fullNameProperty != null)
+                fullNameProperty.Value = "***";
         }
 
         return Ok(userDto);

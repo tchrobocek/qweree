@@ -32,8 +32,12 @@
                 <MudTabPanel Text="Personal info">
                     <MudText Class="ma-4" Typo="Typo.body2">Id: @_identity?.User!.Id</MudText>
                     <MudText Class="ma-4" Typo="Typo.body2">Username: @_identity.User!.Username</MudText>
-                    <MudText Class="ma-4" Typo="Typo.body2">Full name: @_identity.User!.FullName</MudText>
                     <MudText Class="ma-4" Typo="Typo.body2">Email: @_identity.Email</MudText>
+                    <MudText Class="ma-4" Typo="Typo.body2">Properties:</MudText>
+                    @foreach (var property in _identity.User?.Properties!)
+                    {
+                        <MudText Class="ma-4 ml-6" Typo="Typo.body2">@property.Key: @property.Value</MudText>
+                    }
                     <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">

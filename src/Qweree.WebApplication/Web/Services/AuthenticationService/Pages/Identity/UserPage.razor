@@ -4,6 +4,7 @@
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.Sdk.Users
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject IdentityClient _identityClient
@@ -13,7 +14,7 @@
 
 <MudCard>
     <MudCardHeader>
-        <MudText Typo="Typo.h6">@_user?.FullName (@_user?.Username)</MudText>
+        <MudText Typo="Typo.h6">@_fullName (@_user?.Username)</MudText>
     </MudCardHeader>
     <MudCardContent>
         @if (_user != null)
@@ -31,10 +32,14 @@
                         <MudItem xs="8" Class="my-8 pl-6">
                             <div><label>Id: </label>@_user.Id</div>
                             <div><label>Username: </label>@_user.Username</div>
-                            <div><label>Fullname: </label>@_user.FullName</div>
                             <div><label>Contact email: </label>@_user.ContactEmail</div>
                             <div><label>Creation time: </label>@_user.CreatedAt</div>
                             <div><label>Last modification time: </label>@_user.ModifiedAt</div>
+                            <div><label>Properties: </label></div>
+                            @foreach (var property in _user.Properties)
+                            {
+                                <div class="ml-2"><label>@property.Key: </label>@property.Value</div>
+                            }
                         </MudItem>
                     </MudGrid>
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
@@ -63,6 +68,7 @@
 </MudCard>
 
 @code {
+    private string _fullName = string.Empty;
     private UserDto? _user;
 
     [Parameter]
@@ -84,6 +90,8 @@
         }
 
         _user = await userResponse.ReadPayloadAsync();
+        var fullNameProperty = _user?.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
+        _fullName = fullNameProperty?.Value ?? string.Empty;
     }
 
     private async Task DeleteAsync()

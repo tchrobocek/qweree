@@ -9,7 +9,7 @@ public static class UserMapper
 {
     public static User FromDo(UserDo databaseObject)
     {
-        return new User(databaseObject.Id, databaseObject.Username ?? "", databaseObject.FullName ?? "",
+        return new User(databaseObject.Id, databaseObject.Username ?? "",
             databaseObject.ContactEmail ?? "", databaseObject.Password ?? "",
             databaseObject.Properties?.Select(FromDo).ToImmutableArray() ?? ImmutableArray<UserProperty>.Empty,
             databaseObject.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
@@ -26,7 +26,6 @@ public static class UserMapper
         {
             Id = user.Id,
             Username = user.Username,
-            FullName = user.FullName,
             Password = user.Password,
             ContactEmail = user.ContactEmail,
             Properties = user.Properties.Select(ToDo).ToArray(),

@@ -8,13 +8,13 @@ public static class UserFactory
 {
     public static User CreateDefault(string username = "user")
     {
-        return new User(Guid.NewGuid(), username, "User Userov", "user@example.com",
+        return new User(Guid.NewGuid(), username, "user@example.com",
             "pwd", ImmutableArray<UserProperty>.Empty, ImmutableArray<Guid>.Empty, DateTime.UtcNow, DateTime.UtcNow);
     }
 
     public static User CreateAdmin()
     {
-        return new User(Guid.NewGuid(), "user", "User Userov", "user@example.com",
+        return new User(Guid.NewGuid(), "user", "user@example.com",
             "pwd", ImmutableArray<UserProperty>.Empty, new[] {Guid.Parse("d0a77eeb-972e-4337-a62e-493b3e59f214"),
                 Guid.Parse("c990cc7b-7415-4836-8468-b48c67dd9e45"),
                 Guid.Parse("66a81b6b-fd91-4338-8ca3-e4aed14dd868"),

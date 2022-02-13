@@ -86,7 +86,7 @@ public class AuthenticationService
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
-            new IdentityUser(user.Id, user.Username, user.FullName, user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
+            new IdentityUser(user.Id, user.Username, user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
@@ -131,7 +131,7 @@ public class AuthenticationService
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
-            new IdentityUser(user.Id, user.Username, user.FullName,
+            new IdentityUser(user.Id, user.Username,
                 user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);

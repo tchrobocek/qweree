@@ -51,7 +51,7 @@ public class SdkMapperService
             }
         }
 
-        return new SdkUser(user.Id, user.Username, user.FullName, user.ContactEmail, user.Properties.Select(FromUserProperty)
+        return new SdkUser(user.Id, user.Username, user.ContactEmail, user.Properties.Select(FromUserProperty)
             .ToImmutableArray(), roles.Select(FromUserRole).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
     }
 

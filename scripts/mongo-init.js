@@ -7,7 +7,6 @@ users = [{
     "Username": "admin",
     "Password": "$2a$11$BwiSQi56B5UkW4SywF07g.jB3AA0GzHD1YsCWPLMzUlJi9UQUborC",
     "ContactEmail": "admin@admin.com",
-    "FullName": "Admin Adminowitch",
     "Roles": [
         "d0a77eeb-972e-4337-a62e-493b3e59f214",
         "c990cc7b-7415-4836-8468-b48c67dd9e45",
@@ -28,6 +27,10 @@ users = [{
         "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
         "8cae063d-c180-4c88-ba3f-9b999f6267b2",
     ],
+    "Properties": [{
+        "Key": "full_name",
+        "Value": "Admin Adminowitch"
+    }],
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
 }];

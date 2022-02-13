@@ -27,17 +27,15 @@ public class Identity
 
 public class IdentityUser
 {
-    public IdentityUser(Guid id, string username, string fullName, ImmutableArray<UserProperty> properties)
+    public IdentityUser(Guid id, string username, ImmutableArray<UserProperty> properties)
     {
         Id = id;
         Username = username;
-        FullName = fullName;
         Properties = properties;
     }
 
     public Guid Id { get; }
     public string Username { get; }
-    public string FullName { get; }
     public ImmutableArray<UserProperty> Properties { get; }
 }
 

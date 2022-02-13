@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
 using Qweree.Authentication.Sdk.Account;
+using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
@@ -54,8 +56,12 @@ public class UserRegisterService
         if (result.HasFailed)
             return result.ToErrorResponse();
 
-        var user = new User(Guid.NewGuid(), input.Username, input.Fullname, input.ContactEmail,
-            _passwordEncoder.EncodePassword(input.Password), ImmutableArray<UserProperty>.Empty,
+        var properties = new List<UserProperty>
+        {
+            new(UserProperties.FullName, input.Fullname)
+        };
+        var user = new User(Guid.NewGuid(), input.Username, input.ContactEmail,
+            _passwordEncoder.EncodePassword(input.Password), properties.ToImmutableArray(),
             invitationDescriptor.Roles ?? ImmutableArray<Guid>.Empty, _dateTimeProvider.UtcNow,
             _dateTimeProvider.UtcNow);
 
