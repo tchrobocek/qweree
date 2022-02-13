@@ -20,11 +20,11 @@ using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Authentication.Sdk.Http;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo;
 using Qweree.PiccStash.WebApi.Domain;
 using Qweree.PiccStash.WebApi.Infrastructure;
-using Qweree.Session;
 using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.Sdk.OAuth2.ClientCredentials;
 

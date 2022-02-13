@@ -2,7 +2,10 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
-using Qweree.Session;
+using ClaimsPrincipalMapper = Qweree.Authentication.Sdk.Session.ClaimsPrincipalMapper;
+using Identity = Qweree.Authentication.Sdk.Session.Identity;
+using IdentityClient = Qweree.Authentication.Sdk.Session.IdentityClient;
+using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
 
 namespace Qweree.Authentication.Sdk.OAuth2;
 

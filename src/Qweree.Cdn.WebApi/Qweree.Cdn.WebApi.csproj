@@ -13,9 +13,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Qweree.AspNet\Qweree.AspNet.csproj" />
+      <ProjectReference Include="..\Qweree.Authentication.Sdk\Qweree.Authentication.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.Cdn.Sdk\Qweree.Cdn.Sdk.csproj" />
       <ProjectReference Include="..\Qweree.MongoDb\Qweree.MongoDb.csproj" />
-      <ProjectReference Include="..\Qweree.Session\Qweree.Session.csproj" />
     </ItemGroup>
 
 </Project>

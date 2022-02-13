@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Claims;
 
-namespace Qweree.Session;
+namespace Qweree.Authentication.Sdk.Session;
 
 public static class ClaimsPrincipalMapper
 {

@@ -6,14 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
-using Qweree.Session;
-using Qweree.Session.Tokens;
 using Qweree.Utils;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
+using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Authentication;
@@ -83,7 +83,7 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.FullName),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
@@ -128,7 +128,7 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.FullName),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
@@ -165,7 +165,7 @@ public class AuthenticationService
         effectiveRoles.Add("CLIENT");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             owner.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);

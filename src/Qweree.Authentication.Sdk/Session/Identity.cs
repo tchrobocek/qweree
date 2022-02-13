@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Session;
+namespace Qweree.Authentication.Sdk.Session;
 
 public class Identity
 {

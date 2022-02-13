@@ -1,6 +1,7 @@
+using System;
 using System.Security.Claims;
 
-namespace Qweree.Session;
+namespace Qweree.Authentication.Sdk.Session;
 
 public class ClaimsPrincipalStorage : ISessionStorage
 {

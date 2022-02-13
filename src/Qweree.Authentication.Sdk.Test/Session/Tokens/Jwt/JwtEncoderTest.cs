@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Immutable;
 using DeepEqual.Syntax;
-using Qweree.Session.Tokens;
-using Qweree.Session.Tokens.Jwt;
+using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.Sdk.Session.Tokens;
+using Qweree.Authentication.Sdk.Session.Tokens.Jwt;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
-namespace Qweree.Session.Test.Tokens.Jwt;
+namespace Qweree.Authentication.Sdk.Test.Session.Tokens.Jwt;
 
 public class JwtEncoderTest
 {

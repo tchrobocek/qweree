@@ -1,4 +1,6 @@
-namespace Qweree.Session.Tokens;
+using System;
+
+namespace Qweree.Authentication.Sdk.Session.Tokens;
 
 public class AccessToken
 {

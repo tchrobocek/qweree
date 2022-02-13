@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Immutable;
 using DeepEqual.Syntax;
+using Qweree.Authentication.Sdk.Session;
 using Xunit;
 
-namespace Qweree.Session.Test;
+namespace Qweree.Authentication.Sdk.Test.Session;
 
 public class ClaimsPrincipalMapperTest
 {

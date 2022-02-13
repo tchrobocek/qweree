@@ -1,4 +1,4 @@
-namespace Qweree.Session.Tokens;
+namespace Qweree.Authentication.Sdk.Session.Tokens;
 
 public interface ITokenEncoder
 {

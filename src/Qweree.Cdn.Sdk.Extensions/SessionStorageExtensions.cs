@@ -1,5 +1,5 @@
 ﻿
-using Qweree.Session;
+using Qweree.Authentication.Sdk.Session;
 
 namespace Qweree.Cdn.Sdk.Extensions;
 

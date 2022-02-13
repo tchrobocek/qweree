@@ -1,4 +1,6 @@
-namespace Qweree.Session;
+using System;
+
+namespace Qweree.Authentication.Sdk.Session;
 
 public interface ISessionStorage
 {
