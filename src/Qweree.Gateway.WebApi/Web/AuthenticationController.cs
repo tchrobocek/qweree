@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Gateway.Sdk;
 using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;

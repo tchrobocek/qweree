@@ -1,6 +1,6 @@
 using System;
 using DeepEqual.Syntax;
-using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Authentication.Sdk.OAuth2;
 using Xunit;
 
 namespace Qweree.Authentication.Sdk.Test.Tokens;

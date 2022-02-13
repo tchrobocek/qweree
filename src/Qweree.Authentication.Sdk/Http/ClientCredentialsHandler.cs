@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Utils;
 
 namespace Qweree.Authentication.Sdk.Http;

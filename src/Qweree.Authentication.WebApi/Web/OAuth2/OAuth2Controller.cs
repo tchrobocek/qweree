@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Utils;
+using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
 using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
 

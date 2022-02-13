@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.Sdk.Tokens;
+namespace Qweree.Authentication.Sdk.OAuth2;
 
 public class TokenInfoDto
 {

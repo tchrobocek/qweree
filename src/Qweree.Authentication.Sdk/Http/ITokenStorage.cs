@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Authentication.Sdk.OAuth2;
 
 namespace Qweree.Authentication.Sdk.Http;
 

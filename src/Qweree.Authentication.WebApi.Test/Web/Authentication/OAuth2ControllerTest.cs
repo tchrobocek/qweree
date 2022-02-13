@@ -4,8 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
-using Qweree.Authentication.Sdk.Tokens;
-using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
@@ -13,6 +12,7 @@ using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.Utils;
 using Xunit;
+using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Authentication;
 

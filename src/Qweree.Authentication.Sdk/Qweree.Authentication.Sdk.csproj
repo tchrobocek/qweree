@@ -12,4 +12,8 @@
       <ProjectReference Include="..\Qweree.Utils\Qweree.Utils.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tokens" />
+    </ItemGroup>
+
 </Project>

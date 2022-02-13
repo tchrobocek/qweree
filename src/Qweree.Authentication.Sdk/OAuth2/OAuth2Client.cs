@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Authentication.Sdk.Tokens;
 using Qweree.Sdk.Http;
 
 namespace Qweree.Authentication.Sdk.OAuth2;

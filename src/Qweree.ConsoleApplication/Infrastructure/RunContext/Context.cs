@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.Http;
-using Qweree.Authentication.Sdk.Tokens;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Utils;
 
 namespace Qweree.ConsoleApplication.Infrastructure.RunContext;
