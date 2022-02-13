@@ -43,7 +43,7 @@ public class JwtEncoder : ITokenEncoder
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var identityPrincipal = IdentityMapper.ToClaimsPrincipal(accessToken.Identity);
+        var identityPrincipal = IdentityMapper.FromDto(accessToken.Identity);
         var claims = new List<Claim>(identityPrincipal.Claims)
         {
             new("iat", new DateTimeOffset(accessToken.IssuedAt).ToUnixTimeSeconds().ToString()),

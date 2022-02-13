@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.WebApplication.Infrastructure.Browser;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication;
@@ -22,6 +22,6 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
         {
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(authenticationType: null)));
         }
-        return new AuthenticationState(IdentityMapper.ToClaimsPrincipal(identity));
+        return new AuthenticationState(IdentityMapper.FromDto(identity));
     }
 }

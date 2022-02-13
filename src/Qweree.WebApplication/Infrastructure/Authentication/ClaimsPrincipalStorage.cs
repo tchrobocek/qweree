@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 
 namespace Qweree.WebApplication.Infrastructure.Authentication;
 
@@ -24,7 +24,7 @@ public class ClaimsPrincipalStorage
             return null;
         }
 
-        return IdentityMapper.FromClaimsPrincipal(authenticationState.User);
+        return IdentityMapper.ToDto(authenticationState.User);
     }
 
     public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(CancellationToken cancellationToken = new())

@@ -8,7 +8,7 @@ namespace Qweree.Authentication.Sdk.Session;
 
 public static class IdentityMapper
 {
-    public static ClaimsPrincipal ToClaimsPrincipal(Identity identity)
+    public static ClaimsPrincipal FromDto(Identity identity)
     {
         var claims = new List<Claim>
         {
@@ -85,5 +85,76 @@ public static class IdentityMapper
         var clientId = claims.FirstOrDefault(c => c.Type == "client.client_id")?.Value ?? "anonymous";
         var appName = claims.FirstOrDefault(c => c.Type == "client.application_name")?.Value ?? "anonymous";
         return new IdentityClient(Guid.Parse(id), clientId, appName);
+    }
+
+    public static Identity ToDto(IdentityDto identityDto)
+    {
+        var client = ToDto(identityDto.Client!);
+
+        if (identityDto.User != null)
+        {
+            return new Identity(client, ToDto(identityDto.User), identityDto.Email ?? string.Empty,
+                identityDto.Roles?.ToImmutableArray() ?? ImmutableArray<string>.Empty);
+        }
+
+        return new Identity(client, identityDto.Email ?? string.Empty,
+            identityDto.Roles?.ToImmutableArray() ?? ImmutableArray<string>.Empty);
+    }
+
+    public static IdentityClient ToDto(IdentityClientDto identityDto)
+    {
+        return new IdentityClient(identityDto.Id ?? Guid.Empty, identityDto.ClientId ?? string.Empty,
+            identityDto.ApplicationName ?? string.Empty);
+    }
+
+    public static IdentityUser ToDto(IdentityUserDto identityDto)
+    {
+        return new IdentityUser(identityDto.Id ?? Guid.Empty, identityDto.Username ?? string.Empty,
+            identityDto.FullName ?? string.Empty);
+    }
+
+    public static IdentityDto ToDto(Identity identity)
+    {
+        var dto = new IdentityDto
+        {
+            Client = ToDto(identity.Client),
+            Email = identity.Email,
+            Roles = identity.Roles.ToArray()
+        };
+
+        if (identity.User != null)
+            dto.User = ToDto(identity.User);
+
+        return dto;
+    }
+
+    public static IdentityClientDto ToDto(IdentityClient identity)
+    {
+        return new IdentityClientDto
+        {
+            Id = identity.Id,
+            ApplicationName = identity.ApplicationName,
+            ClientId = identity.ClientId
+        };
+    }
+
+    public static IdentityUserDto ToDto(IdentityUser identity)
+    {
+        return new IdentityUserDto
+        {
+            Id = identity.Id,
+            Username = identity.Username,
+            FullName = identity.FullName
+        };
+    }
+
+    public static ClaimsPrincipal FromDto(IdentityDto identityDto)
+    {
+        return FromDto(ToDto(identityDto));
+    }
+
+    public static IdentityDto ToDto(ClaimsPrincipal claimsPrincipal)
+    {
+        return ToDto(ToIdentity(claimsPrincipal));
     }
 }

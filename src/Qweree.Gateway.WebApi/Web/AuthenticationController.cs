@@ -4,10 +4,11 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Gateway.Sdk;
 using Qweree.Gateway.WebApi.Infrastructure;
-using Qweree.Gateway.WebApi.Infrastructure.Session;
 using Qweree.Utils;
+using ISessionStorage = Qweree.Gateway.WebApi.Infrastructure.Session.ISessionStorage;
 
 namespace Qweree.Gateway.WebApi.Web;
 
@@ -102,7 +103,7 @@ public class AuthenticationController : ControllerBase
             }
         }
 
-        return Ok(IdentityMapper.FromClaimsPrincipal(new ClaimsPrincipal(user)));
+        return Ok(IdentityMapper.ToDto(new ClaimsPrincipal(user)));
     }
 
     /// <summary>

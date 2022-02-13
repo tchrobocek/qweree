@@ -4,7 +4,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.Sdk.Account
 @using System.Net
-@using Qweree.Authentication.Sdk.OAuth2
+@using Qweree.Authentication.Sdk.Session
+@using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
 @inject ClaimsPrincipalStorage _storage
 @inject AuthenticationService _authenticationService
 @inject NavigationManager _navigationManager

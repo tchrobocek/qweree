@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.Sdk.OAuth2;
+namespace Qweree.Authentication.Sdk.Session;
 
 public class IdentityDto
 {

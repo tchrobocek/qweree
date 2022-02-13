@@ -4,7 +4,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
