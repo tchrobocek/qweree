@@ -33,7 +33,7 @@
                         <MudTd Class="pa-1" DataLabel="Status">@context.HealthReport.Status</MudTd>
                         <MudTd Class="pa-1" DataLabel="Label">@context.Label (@context.Version)</MudTd>
                         <MudTd Class="pa-1" DataLabel="Actions">
-                            <MudIconButton @onclick="() => GoToSwaggerAsync(context)" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
+                            <MudIconButton @onclick="() => GoToSwaggerAsync(context)" Disabled="context.SwaggerUri is null" Title="Open swagger" Icon="@Icons.Material.Filled.Code"></MudIconButton>
                             <MudIconButton @onclick="() => CopyLinkAsync(context)" Title="Copy link" Icon="@Icons.Material.Filled.Link"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
@@ -98,7 +98,7 @@
         _services.Add(new ServiceInfo {Label = "Authentication service", SwaggerUri = authUri + "swagger", Uri = authUri});
         _services.Add(new ServiceInfo {Label = "Cdn service", SwaggerUri = cdnUri + "swagger", Uri = cdnUri});
         _services.Add(new ServiceInfo {Label = "Picc service", SwaggerUri = piccUri + "swagger", Uri = piccUri});
-        _services.Add(new ServiceInfo {Label = "Gateway service", SwaggerUri = gatewayUri + "swagger", Uri = gatewayUri});
+        _services.Add(new ServiceInfo {Label = "Gateway service", Uri = gatewayUri});
 
         await UpdateServicesAsync();
         _dashboardConfig = await _configurationService.GetDashboardConfigAsync();
