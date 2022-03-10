@@ -86,7 +86,7 @@
 
     private async Task DeleteAsync()
     {
-        var isDeleting = await _dialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_client?.ClientId}?");
+        var isDeleting = await _dialogService.ConfirmAsync("Remove client", $"Do you really wish to delete client {_client?.ClientId}?");
 
         if (isDeleting)
         {
