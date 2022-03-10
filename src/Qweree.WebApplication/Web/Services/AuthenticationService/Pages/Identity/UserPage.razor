@@ -4,6 +4,7 @@
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.Sdk.Users
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
@@ -30,15 +31,16 @@
                             </div>
                         </MudItem>
                         <MudItem xs="8" Class="my-8 pl-6">
-                            <div><label>Id: </label>@_user.Id</div>
-                            <div><label>Username: </label>@_user.Username</div>
-                            <div><label>Contact email: </label>@_user.ContactEmail</div>
-                            <div><label>Creation time: </label>@_user.CreatedAt</div>
-                            <div><label>Last modification time: </label>@_user.ModifiedAt</div>
-                            <div><label>Properties: </label></div>
-                            @foreach (var property in _user.Properties)
+                            <MudText Typo="Typo.body2">Id: @_user.Id</MudText>
+                            <MudText Typo="Typo.body2">Username: @_user.Username</MudText>
+                            <MudText Typo="Typo.body2">Contact email: @_user.ContactEmail</MudText>
+                            <MudText Typo="Typo.body2">Full name: @_user.GetFullName()</MudText>
+                            <MudText Typo="Typo.body2">Creation time: @_user.CreatedAt</MudText>
+                            <MudText Typo="Typo.body2">Last modification time: @_user.ModifiedAt</MudText>
+                            <MudText Typo="Typo.body2">Properties: </MudText>
+                            @foreach (var property in _user.Properties ?? Array.Empty<UserPropertyDto>())
                             {
-                                <div class="ml-2"><label>@property.Key: </label>@property.Value</div>
+                                <MudText class="ml-4" Typo="Typo.body2">- @property.Key: @property.Value</MudText>
                             }
                         </MudItem>
                     </MudGrid>
