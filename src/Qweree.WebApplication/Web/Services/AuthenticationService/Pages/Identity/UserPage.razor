@@ -51,6 +51,12 @@
                                 <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
                             }
                         </MudExpansionPanel>
+                        <MudExpansionPanel Disabled="@(!_user.EffectiveRoles?.Any() ?? false)" Text="@($"Effective roles ({_user.EffectiveRoles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
+                            @foreach (var role in _user.EffectiveRoles ?? Array.Empty<RoleDto>())
+                            {
+                                <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
+                            }
+                        </MudExpansionPanel>
                         <MudExpansionPanel Text="Delete user" Class="mt-0" Style="margin: 0 !important;">
                             <MudButton OnClick="DeleteAsync" Color="Color.Error">Delete</MudButton>
                         </MudExpansionPanel>
