@@ -16,6 +16,10 @@
     @foreach (var selectedRole in SelectedRoles)
     {
         <MudChip Color="Color.Default" OnClose="() => RoleRemoved(selectedRole)">@($"{selectedRole.Label} ({selectedRole.Key})")</MudChip>
+        @foreach (var effectiveRole in selectedRole.EffectiveRoles?.Where(r => r.Id != selectedRole.Id) ?? Array.Empty<RoleDto>())
+        {
+            <MudChip Color="Color.Dark">@($"{effectiveRole.Label} ({effectiveRole.Key})")</MudChip>
+        }
     }
 </div>
 
