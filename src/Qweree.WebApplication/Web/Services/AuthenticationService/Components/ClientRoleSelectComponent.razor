@@ -27,17 +27,22 @@
     [Parameter]
     public List<ClientRoleDto> SelectedRoles { get; set; } = new();
 
+    [Parameter]
+    public bool ExcludeGroupRoles { get; set; } = true;
+
     protected override async Task OnInitializedAsync()
     {
         var response = await _authorizationClient.ClientRolesFindAsync();
 
         if (!response.IsSuccessful)
-        {
             return;
-        }
 
         var roles = await response.ReadPayloadAsync() ?? Array.Empty<ClientRoleDto>();
-        _clientRoles.AddRange(roles.Where(r => !(r.IsGroup ?? true)).OrderBy(r => r.Key));
+
+        if (ExcludeGroupRoles)
+            roles = roles.Where(r => !(r.IsGroup ?? true));
+
+        _clientRoles.AddRange(roles.OrderBy(r => r.Key));
     }
 
     private Task<IEnumerable<ClientRoleDto>> Search(string? arg)
