@@ -137,7 +137,10 @@ public class AuthenticationService
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
-        var tokenInfo = new TokenInfo(jwt, input.RefreshToken, expiresAt);
+        await _refreshTokenRepository.DeleteOneAsync(token.Id, cancellationToken);
+        var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
+
+        var tokenInfo = new TokenInfo(jwt, refreshToken, expiresAt);
         return Response.Ok(tokenInfo);
     }
 
@@ -177,7 +180,7 @@ public class AuthenticationService
         return Response.Ok(tokenInfo);
     }
 
-    private async Task<string?> GenerateRefreshTokenAsync(User user, Client client,
+    private async Task<string> GenerateRefreshTokenAsync(User user, Client client,
         CancellationToken cancellationToken = new())
     {
         var token = "";
