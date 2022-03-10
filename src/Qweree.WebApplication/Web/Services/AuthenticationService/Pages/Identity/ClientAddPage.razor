@@ -39,10 +39,10 @@
                 </MudGrid>
             </MudExpansionPanel>
             <MudExpansionPanel Text="Client roles" Class="mt-0" Style="margin: 0 !important;">
-                <ClientRoleSelectComponent SelectedRoles="_clientRoles"/>
+                <ClientRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_clientRoles"/>
             </MudExpansionPanel>
             <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent SelectedRoles="_userRoles"/>
+                <UserRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_userRoles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
