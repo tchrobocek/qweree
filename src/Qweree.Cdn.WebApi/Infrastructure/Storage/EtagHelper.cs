@@ -19,7 +19,7 @@ public static class EtagHelper
             builder.Append(t.ToString("x2"));
 
         // Return the hexadecimal string.
-        return builder.ToString();
+        return $@"""{builder}""";
     }
 
     public static bool ValidateEtag(string etag, StoredObjectDescriptor descriptor)
