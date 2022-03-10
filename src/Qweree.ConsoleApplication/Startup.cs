@@ -4,6 +4,7 @@ using Qweree.Authentication.Sdk.Http;
 using Qweree.ConsoleApplication.Commands;
 using Qweree.ConsoleApplication.Commands.Context;
 using Qweree.ConsoleApplication.Commands.Picc;
+using Qweree.ConsoleApplication.Infrastructure;
 using Qweree.ConsoleApplication.Infrastructure.Authentication;
 using Qweree.ConsoleApplication.Infrastructure.Commands;
 using Qweree.ConsoleApplication.Infrastructure.ErrorHandling;
@@ -19,7 +20,6 @@ public static class Startup
     {
         services.AddSingleton<ErrorHandlingMiddleware>();
         services.AddSingleton<CommandExecutorMiddleware>();
-        services.AddSingleton<RefreshTokenMiddleware>();
         services.AddSingleton<ITokenStorage, MemoryTokenStorage>();
         services.AddSingleton(p =>
         {
@@ -30,6 +30,7 @@ public static class Startup
         services.AddSingleton<OAuth2ClientFactory>();
         services.AddSingleton<PiccClientFactory>();
         services.AddSingleton<AuthenticationService>();
+        services.AddSingleton<HttpMessageHandlerFactory>();
         services.AddSingleton<ICommand, RootCommand>();
         services.AddSingleton<ICommand, ContextInitCommand>();
         services.AddSingleton<ICommand, ContextReadCommand>();
@@ -41,7 +42,6 @@ public static class Startup
     public static void Configure(ConsoleApplicationBuilder app)
     {
         app.UseMiddleware<ErrorHandlingMiddleware>();
-        app.UseMiddleware<RefreshTokenMiddleware>();
         app.UseMiddleware<CommandExecutorMiddleware>();
     }
 }
