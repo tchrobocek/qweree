@@ -94,11 +94,27 @@ public class SdkMapperService
             }
         }
 
+        var effectiveUserRoles = new List<Role>();
+
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            effectiveUserRoles.Add(effectiveRole);
+        }
+
+        var effectiveClientRoles = new List<Role>();
+
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveClientRoles(client, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            effectiveClientRoles.Add(effectiveRole);
+        }
+
         var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
         return new SdkClient(client.Id, client.ClientId, client.ApplicationName, client.Origin,
             await UserMapAsync(owner, cancellationToken), clientRoles.Select(FromClientRole).ToImmutableArray(),
-            userRoles.Select(FromUserRole).ToImmutableArray(),
-            client.CreatedAt, client.ModifiedAt);
+            effectiveClientRoles.ToImmutableArray(), userRoles.Select(FromUserRole).ToImmutableArray(),
+            effectiveUserRoles.ToImmutableArray(), client.CreatedAt, client.ModifiedAt);
     }
 
     public async Task<CreatedClient> ClientMapToCreatedClientAsync(Client client,

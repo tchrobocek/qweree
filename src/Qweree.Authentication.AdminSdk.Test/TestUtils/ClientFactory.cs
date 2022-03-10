@@ -9,7 +9,8 @@ public static class ClientFactory
 {
     public static Client CreateValid()
     {
-        return new Client(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(), ImmutableArray<Role>.Empty, ImmutableArray<Role>.Empty,
+        return new Client(Guid.NewGuid(), "client", "application", "http://yomom.com", UserFactory.CreateValid(), ImmutableArray<Role>.Empty,ImmutableArray<Role>.Empty,
+            ImmutableArray<Role>.Empty, ImmutableArray<Role>.Empty,
             DateTime.UtcNow, DateTime.UtcNow);
     }
 
