@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 
 public class UserInvitationInputMapper
 {

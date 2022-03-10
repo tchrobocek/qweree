@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 

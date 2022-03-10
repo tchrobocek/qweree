@@ -1,6 +1,6 @@
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;

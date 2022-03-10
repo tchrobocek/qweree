@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
-using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
+using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;

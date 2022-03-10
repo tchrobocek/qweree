@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
+namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
 
 public class UserInvitationDescriptorDo
 {

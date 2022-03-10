@@ -16,7 +16,8 @@
     <MudCardContent Class="py-6">
         <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<UserDto>>>(LoadUsers))">
             <ToolBarContent>
-                <MudSpacer />
+                <MudLink Color="Color.Default" Typo="Typo.body2" Href="/services/auth/user-invitations/list">Show user invitations</MudLink>
+                <MudSpacer/>
                 <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh users</MudButton>
                 <MudButton Size="Size.Small" OnClick="GoToInvite" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add user</MudButton>
             </ToolBarContent>

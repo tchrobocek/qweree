@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 
 public class UserInvitationDescriptor
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 
-namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserRegister;
+namespace Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
 
 public static class UserInvitationMapper
 {

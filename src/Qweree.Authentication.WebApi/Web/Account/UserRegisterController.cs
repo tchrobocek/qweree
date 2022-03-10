@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.Sdk.Account;
-using Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
+using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Sdk;
 using UserInvitationDto = Qweree.Authentication.Sdk.Account.UserInvitationDto;
 

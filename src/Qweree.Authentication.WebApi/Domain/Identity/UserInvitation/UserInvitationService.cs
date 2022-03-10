@@ -3,13 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserRegister;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
 
-namespace Qweree.Authentication.WebApi.Domain.Identity.UserRegistration;
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 
 public class UserInvitationService
 {
