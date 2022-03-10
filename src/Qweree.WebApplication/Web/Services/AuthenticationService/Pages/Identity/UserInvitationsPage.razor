@@ -1,0 +1,121 @@
+@page "/services/auth/user-invitations/list"
+@using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation
+@using Qweree.WebApplication.Infrastructure.View
+@using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
+@inject IdentityClient _identityClient
+@inject NavigationManager _navigationManager
+@inject DialogService _dialogService
+@inject ISnackbar _snackbar
+@inject IJSRuntime _jsRuntime
+@attribute [Authorize]
+
+<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">User invitations</MudText>
+    </MudCardHeader>
+    <MudCardContent Class="py-6">
+        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<UserInvitationDescriptorDto>>>(LoadUserInvitations))">
+            <ToolBarContent>
+                <MudLink Color="Color.Default" Typo="Typo.body2" Href="/services/auth/users/list">Show users</MudLink>
+                <MudSpacer/>
+                <MudButton Size="Size.Small" OnClick="Refresh" Class="ma-2" Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Primary">Refresh invitations</MudButton>
+                <MudButton Size="Size.Small" OnClick="GoToInvite" Class="ma-2" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary">Add user</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh Style="width: 150px;">Id</MudTh>
+                <MudTh>Username</MudTh>
+                <MudTh>Roles</MudTh>
+                <MudTh>Expiration date</MudTh>
+                <MudTh>Creation date</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">
+                    <ShortIdComponent Id="@context.Id"/>
+                </MudTd>
+                <MudTd DataLabel="Username">
+                    @context.FullName (@context.Username)
+                </MudTd>
+                <MudTd DataLabel="Roles">
+                    @context.Roles?.Length <PluralityComponent Value="context.Roles?.Length" Singular="role" Plural="roles" />
+                </MudTd>
+                <MudTd DataLabel="Expiration date">
+                    @context.ExpiresAt
+                </MudTd>
+                <MudTd DataLabel="Creation time">
+                    @context.CreatedAt
+                </MudTd>
+                <MudTd Style="text-align: right;" Class="mr-2">
+                    <MudLink @onclick="() => CopyLinkAsync(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2">Copy link</MudLink>
+                    <MudLink @onclick="() => DeleteUserInvitationAsync(context.Id ?? Guid.Empty)" Class="cursor-pointer mx-2" Color="Color.Error">Delete</MudLink>
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No records.</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private MudTable<UserInvitationDescriptorDto>? _table;
+
+    private async Task<TableData<UserInvitationDescriptorDto>> LoadUserInvitations(TableState tableState)
+    {
+        var skip = tableState.Page * tableState.PageSize;
+        var response = await _identityClient.UserInvitationsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        if (!response.IsSuccessful)
+        {
+            return new TableData<UserInvitationDescriptorDto>();
+        }
+
+        var invitations = (await response.ReadPayloadAsync())!;
+        return new TableData<UserInvitationDescriptorDto>
+        {
+            Items = invitations,
+            TotalItems = response.DocumentCount
+        };
+    }
+
+    private void Refresh()
+    {
+        _table?.ReloadServerData();
+    }
+
+    private async Task DeleteUserInvitationAsync(Guid id)
+    {
+        var result = await _dialogService.ConfirmAsync("Remove user invitation", $"Do you really wish to delete user invitation {id}?");
+
+        if (!result)
+        {
+            return;
+        }
+        var response = await _identityClient.UserInvitationDeleteAsync(id);
+        if (!response.IsSuccessful)
+        {
+            _snackbar.AddErrors(await response.ReadErrorsAsync());
+            return;
+        }
+
+        _snackbar.Add("User invitation deleted", Severity.Success);
+        Refresh();
+    }
+    private void GoToInvite()
+    {
+        _navigationManager.NavigateTo($"services/auth/users/invite");
+    }
+
+    private async Task CopyLinkAsync(Guid id)
+    {
+        var link = $"{_navigationManager.BaseUri}invite/{id}";
+        await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", link);
+    }
+}
