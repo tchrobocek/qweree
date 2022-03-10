@@ -42,17 +42,30 @@ public class SdkMapperService
         var roles = new List<UserRole>();
         foreach (var role in user.Roles)
         {
+            UserRole userRole;
             try
             {
-                roles.Add(await _userRoleRepository.GetAsync(role, cancellationToken));
+                userRole = await _userRoleRepository.GetAsync(role, cancellationToken);
             }
             catch (DocumentNotFoundException)
             {
+                continue;
             }
+
+            roles.Add(userRole);
+        }
+
+
+        var effectiveRoles = new List<Role>();
+
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            effectiveRoles.Add(effectiveRole);
         }
 
         return new SdkUser(user.Id, user.Username, user.ContactEmail, user.Properties.Select(FromUserProperty)
-            .ToImmutableArray(), roles.Select(FromUserRole).ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
+            .ToImmutableArray(), roles.Select(FromUserRole).ToImmutableArray(), effectiveRoles.ToImmutableArray(), user.CreatedAt, user.ModifiedAt);
     }
 
     public async Task<SdkClient> ClientMapAsync(Client client, CancellationToken cancellationToken = new())
