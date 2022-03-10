@@ -1,5 +1,5 @@
 ﻿@using Qweree.WebApplication.Infrastructure.Authentication
-@using Qweree.Authentication.Sdk.Users
+@using Qweree.WebApplication.Infrastructure.Extensions
 @inherits LayoutComponentBase
 @inject ClaimsPrincipalStorage _session
 @inject AuthenticationService _authenticationService
@@ -65,9 +65,7 @@
     protected override async Task OnInitializedAsync()
     {
         var identity = await _session.GetIdentityAsync();
-        var fullNameProperty = identity?.User?.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
-
-        _username = fullNameProperty?.Value ?? identity?.User?.Username ?? string.Empty;
+        _username = identity?.User?.GetFullName() ?? identity?.User?.Username ?? string.Empty;
     }
 
     private async Task LogoutAsync()

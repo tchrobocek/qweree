@@ -1,10 +1,10 @@
 @page "/home"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Configuration
-@using Qweree.Authentication.Sdk.Users
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.WebApplication.Infrastructure.Browser
 @using Qweree.WebApplication.Infrastructure.Configuration
+@using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.ServicesOverview
 @attribute [Authorize]
 @inject ClaimsPrincipalStorage _session
@@ -89,8 +89,7 @@
     protected override async Task OnInitializedAsync()
     {
         var identity = (await _session.GetIdentityAsync())!;
-        var fullNameProperty = identity.User?.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
-        _username = fullNameProperty?.Value ?? identity.User?.Username ?? string.Empty;
+        _username = identity.User?.GetFullName() ?? identity.User?.Username ?? string.Empty;
 
         var cdnUri = _configuration["CdnServiceUri"];
         var authUri = _configuration["TokenServiceUri"];

@@ -4,7 +4,7 @@
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.Sdk.Users
+@using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject IdentityClient _identityClient
@@ -90,8 +90,7 @@
         }
 
         _user = await userResponse.ReadPayloadAsync();
-        var fullNameProperty = _user?.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
-        _fullName = fullNameProperty?.Value ?? string.Empty;
+        _fullName = _user?.GetFullName() ?? string.Empty;
     }
 
     private async Task DeleteAsync()
