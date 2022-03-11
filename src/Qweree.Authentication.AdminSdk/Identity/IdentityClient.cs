@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
@@ -26,6 +27,12 @@ public class IdentityClient
     {
         var response = await _httpClient.GetAsync($"users/{id}", cancellationToken);
         return new ApiResponse<UserDto>(response);
+    }
+
+    public async Task<ApiResponse<IEnumerable<RoleDto>>> UserEffectiveRolesGetAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"users/{id}/effective-roles", cancellationToken);
+        return new ApiResponse<IEnumerable<RoleDto>>(response);
     }
 
     public async Task<PaginationApiResponse<UserDto>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort, CancellationToken cancellationToken = new())

@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
@@ -16,12 +18,14 @@ public class UserService
     private readonly IUserRepository _userRepository;
     private readonly ISessionStorage _sessionStorage;
     private readonly SdkMapperService _sdkMapperService;
+    private readonly AuthorizationService _authorizationService;
 
-    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, SdkMapperService sdkMapperService)
+    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, SdkMapperService sdkMapperService, AuthorizationService authorizationService)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
         _sdkMapperService = sdkMapperService;
+        _authorizationService = authorizationService;
     }
 
     public async Task<Response<SdkUser>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())
@@ -81,5 +85,30 @@ public class UserService
         }
 
         return Response.Ok();
+    }
+
+    public async Task<CollectionResponse<Role>> UserGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        User user;
+
+        try
+        {
+            user = await _userRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.FailCollection<Role>(new Error($@"User ""{id}"" was not found.",
+                StatusCodes.Status404NotFound));
+        }
+
+        var effectiveRoles = new List<Role>();
+
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            effectiveRoles.Add(effectiveRole);
+        }
+
+        return Response.Ok((IEnumerable<Role>)effectiveRoles);
     }
 }

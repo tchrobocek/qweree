@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Identity;
@@ -34,7 +35,7 @@ public class UserController : ControllerBase
     /// <returns>Found user.</returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserGetActionAsync(Guid id)
     {
@@ -56,6 +57,25 @@ public class UserController : ControllerBase
         }
 
         return Ok(userDto);
+    }
+
+    /// <summary>
+    ///     Get user effective roles.
+    /// </summary>
+    /// <param name="id">User id.</param>
+    /// <returns>Found effective user roles.</returns>
+    [HttpGet("{id}/effective-roles")]
+    [Authorize(Policy = "UserRead")]
+    [ProducesResponseType(typeof(List<RoleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UserGetEffectiveRolesActionAsync(Guid id)
+    {
+        var userRolesResponse = await _userService.UserGetEffectiveRolesAsync(id);
+
+        if (userRolesResponse.Status != ResponseStatus.Ok)
+            return userRolesResponse.ToErrorActionResult();
+
+        return Ok(userRolesResponse.Payload!.Select(RoleMapper.ToDto));
     }
 
     /// <summary>
