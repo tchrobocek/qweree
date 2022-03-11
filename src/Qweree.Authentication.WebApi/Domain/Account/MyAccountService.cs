@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Utils;
@@ -20,15 +22,18 @@ public class MyAccountService
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IValidator _validator;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
-        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator)
+        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator,
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
@@ -63,5 +68,14 @@ public class MyAccountService
         await _userRepository.ReplaceAsync(id.ToString(), user, cancellationToken);
 
         return Response.Ok();
+    }
+
+    public async Task<CollectionResponse<Sdk.Account.DeviceInfo>> FindMyDevicesAsync(CancellationToken cancellationToken = new())
+    {
+        var items = await _refreshTokenRepository.FindValidForUser(_sessionStorage.Id, cancellationToken);
+        var result = items.Where(r => r.Device != null)
+            .Select(r => new Sdk.Account.DeviceInfo(r.Id, r.Device!.Client, r.Device.Os, r.Device.Device,
+                r.Device.Brand, r.Device.Model));
+        return Response.Ok(result);
     }
 }

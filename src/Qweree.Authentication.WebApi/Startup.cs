@@ -240,7 +240,6 @@ public class Startup
         services.AddSingleton<RoleService, RoleService>();
         services.AddSingleton<AuthorizationService>();
         services.AddScoped<MyAccountService>();
-        services.AddScoped<PrivacyService>();
 
         // Security
         services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
