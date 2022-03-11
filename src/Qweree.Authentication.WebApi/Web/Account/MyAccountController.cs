@@ -45,7 +45,7 @@ public class MyAccountController : ControllerBase
     /// </summary>
     [HttpGet("my-devices")]
     [ProducesResponseType(typeof(DeviceInfoDto[]), StatusCodes.Status200OK)]
-    public async Task<IActionResult> MyDevicesFindActionAsync()
+    public async Task<IActionResult> MyDevicesGetActionAsync()
     {
         var response = await _myAccountService.FindMyDevicesAsync();
 
@@ -60,13 +60,13 @@ public class MyAccountController : ControllerBase
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IdentityUserDto), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMeActionAsync()
+    public async Task<IActionResult> MyProfileGetActionAsync()
     {
         var response = await _myAccountService.GetMeAsync();
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(IdentityMapper.ToDto(response.Payload!));
+        return Ok(MyProfileMapper.ToDto(response.Payload!));
     }
 }

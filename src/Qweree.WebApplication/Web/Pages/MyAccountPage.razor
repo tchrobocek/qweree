@@ -3,17 +3,14 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.Sdk.Account
 @using System.Net
-@using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.Sdk.Session
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
-@using IdentityClient = Qweree.Authentication.AdminSdk.Identity.IdentityClient
 @inject ClaimsPrincipalStorage _storage
 @inject AuthenticationService _authenticationService
 @inject NavigationManager _navigationManager
 @inject MyAccountClient _myAccountClient
 @inject ISnackbar _snackbar
-@inject IdentityClient _identityClient
 @attribute [Authorize]
 
 @if (_identity != null)
@@ -76,7 +73,7 @@
 
 @code {
     private IdentityDto? _identity;
-    private UserDto? _user;
+    private MyProfileDto? _user;
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -92,7 +89,7 @@
 
         if (id != null)
         {
-            var userResponse = await _identityClient.UserGetAsync((Guid)id);
+            var userResponse = await _myAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
         }

@@ -83,16 +83,16 @@ public class MyAccountService
         return Response.Ok(result);
     }
 
-    public async Task<Response<IdentityUser>> GetMeAsync(CancellationToken cancellationToken = new())
+    public async Task<Response<MyProfile>> GetMeAsync(CancellationToken cancellationToken = new())
     {
         try
         {
             var item = await _userRepository.GetAsync(_sessionStorage.Id, cancellationToken);
-            return Response.Ok(new IdentityUser(item.Id, item.Username, item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
+            return Response.Ok(new MyProfile(item.Id, item.Username, item.ContactEmail, item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
         }
         catch (DocumentNotFoundException)
         {
-            return Response.Fail<IdentityUser>(new Error("User was not found.", StatusCodes.Status404NotFound));
+            return Response.Fail<MyProfile>(new Error("User was not found.", StatusCodes.Status404NotFound));
         }
     }
 }

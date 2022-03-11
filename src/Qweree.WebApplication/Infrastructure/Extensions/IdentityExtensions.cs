@@ -1,5 +1,6 @@
 using System.Linq;
 using Qweree.Authentication.AdminSdk.Identity.Users;
+using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Users;
 
@@ -13,6 +14,11 @@ public static class IdentityExtensions
         return fullNameProperty?.Value;
     }
     public static string? GetFullName(this IdentityUserDto @this)
+    {
+        var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
+        return fullNameProperty?.Value;
+    }
+    public static string? GetFullName(this MyProfileDto @this)
     {
         var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
         return fullNameProperty?.Value;
