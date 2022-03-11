@@ -20,13 +20,13 @@
             <MudTabs>
                 <MudTabPanel Text="Info">
                     <div class="mt-6 ml-6 mb-4">
-                        <div><label>Id: </label>@_client.Id</div>
-                        <div><label>Client id: </label>@_client.ClientId</div>
-                        <div><label>Application name: </label>@_client.ApplicationName</div>
-                        <div><label>Origin: </label>@_client.Origin</div>
-                        <div><label>Owner: </label>@_client.Owner?.Username</div>
-                        <div><label>Creation time: </label>@_client.CreatedAt</div>
-                        <div><label>Last modification time: </label>@_client.ModifiedAt</div>
+                        <MudText Typo="Typo.body1">Id: @_client.Id</MudText>
+                        <MudText Typo="Typo.body1">Client id: @_client.ClientId</MudText>
+                        <MudText Typo="Typo.body1">Application name: @_client.ApplicationName</MudText>
+                        <MudText Typo="Typo.body1">Origin: @_client.Origin</MudText>
+                        <MudText Typo="Typo.body1">Owner: @_client.Owner?.Username (<MudLink Color="Color.Default" Underline="Underline.Always" Href="@("/services/auth/users/" + _client.Owner?.Id)">@_client.Owner?.Id</MudLink>)</MudText>
+                        <MudText Typo="Typo.body1">Creation time: @_client.CreatedAt</MudText>
+                        <MudText Typo="Typo.body1">Last modification time: @_client.ModifiedAt</MudText>
                     </div>
 
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
