@@ -6,6 +6,7 @@ using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Mongo;
 using Qweree.TestUtils.DeepEqual;
+using Qweree.Utils;
 using Xunit;
 
 namespace Qweree.Authentication.WebApi.Test.Infrastructure.Authentication;
@@ -20,7 +21,7 @@ public class RefreshTokenRepositoryTest
     public RefreshTokenRepositoryTest()
     {
         var context = new MongoContext(Settings.Database.ConnectionString, Settings.Database.DatabaseName);
-        _repository = new RefreshTokenRepository(context);
+        _repository = new RefreshTokenRepository(context, new DateTimeProvider());
         _repository.DeleteAllAsync()
             .GetAwaiter()
             .GetResult();
