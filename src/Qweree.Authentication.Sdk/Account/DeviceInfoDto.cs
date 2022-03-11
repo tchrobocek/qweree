@@ -10,4 +10,6 @@ public class DeviceInfoDto
     public string? Device { get; set; }
     public string? Brand { get; set; }
     public string? Model { get; set; }
+    public DateTime? IssuedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

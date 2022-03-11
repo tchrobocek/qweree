@@ -4,7 +4,7 @@ namespace Qweree.Authentication.Sdk.Account;
 
 public class DeviceInfo
 {
-    public DeviceInfo(Guid id, string client, string os, string device, string brand, string model)
+    public DeviceInfo(Guid id, string client, string os, string device, string brand, string model, DateTime issuedAt, DateTime expiresAt)
     {
         Id = id;
         Client = client;
@@ -12,6 +12,8 @@ public class DeviceInfo
         Device = device;
         Brand = brand;
         Model = model;
+        IssuedAt = issuedAt;
+        ExpiresAt = expiresAt;
     }
 
     public Guid Id { get; }
@@ -20,4 +22,6 @@ public class DeviceInfo
     public string Device { get; }
     public string Brand { get; }
     public string Model { get; }
+    public DateTime IssuedAt { get; }
+    public DateTime ExpiresAt { get; }
 }

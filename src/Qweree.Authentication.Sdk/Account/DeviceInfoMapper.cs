@@ -13,7 +13,9 @@ public static class DeviceInfoMapper
             Device = deviceInfo.Device,
             Id = deviceInfo.Id,
             Model = deviceInfo.Model,
-            Os = deviceInfo.Os
+            Os = deviceInfo.Os,
+            IssuedAt = deviceInfo.IssuedAt,
+            ExpiresAt = deviceInfo.ExpiresAt
         };
     }
 
@@ -25,6 +27,8 @@ public static class DeviceInfoMapper
             deviceInfo.Os ?? string.Empty,
             deviceInfo.Device ?? string.Empty,
             deviceInfo.Brand ?? string.Empty,
-            deviceInfo.Model ?? string.Empty);
+            deviceInfo.Model ?? string.Empty,
+            deviceInfo.IssuedAt ?? DateTime.MinValue,
+            deviceInfo.ExpiresAt ?? DateTime.MinValue);
     }
 }

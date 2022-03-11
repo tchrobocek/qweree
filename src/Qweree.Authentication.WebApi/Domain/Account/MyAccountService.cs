@@ -79,7 +79,7 @@ public class MyAccountService
         var items = await _refreshTokenRepository.FindValidForUser(_sessionStorage.Id, cancellationToken);
         var result = items.Where(r => r.Device != null)
             .Select(r => new Sdk.Account.DeviceInfo(r.Id, r.Device!.Client, r.Device.Os, r.Device.Device,
-                r.Device.Brand, r.Device.Model));
+                r.Device.Brand, r.Device.Model, r.CreatedAt, r.ExpiresAt));
         return Response.Ok(result);
     }
 

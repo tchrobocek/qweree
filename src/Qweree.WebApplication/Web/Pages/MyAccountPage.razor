@@ -54,46 +54,34 @@
                     <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
                 </MudTabPanel>
                 <MudTabPanel Text="Active devices">
-                        <MudGrid>
-                            <MudItem xs="2">
-                            </MudItem>
-                            <MudItem xs="2">
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.body1">Client</MudText>
-                            </MudItem>
-                            <MudItem xs="4">
-                                <MudText Typo="Typo.body1">OS</MudText>
-                            </MudItem>
-                        </MudGrid>
+                    <MudDivider/>
                     @foreach (var myDevice in _myDevices)
                     {
-                        <MudGrid Class="mb-4">
-                            <MudItem xs="2">
-                                <div class="align-center">
-                                    <div>
-                                        @if (myDevice.Device == "desktop")
-                                        {
-                                            <MudIcon Icon="@Icons.Material.Filled.DesktopMac" Style="font-size: 3rem;"/>
-                                        }
-                                        @if (myDevice.Device == "mobile")
-                                        {
-                                            <MudIcon Icon="@Icons.Material.Filled.Phone" Style="font-size: 3rem;"/>
-                                        }
-                                        @if (myDevice.Device == "tv")
-                                        {
-                                            <MudIcon Icon="@Icons.Material.Filled.Tv" Style="font-size: 3rem;"/>
-                                        }
-                                        @if (myDevice.Device == "tablet")
-                                        {
-                                            <MudIcon Icon="@Icons.Material.Filled.Tablet" Style="font-size: 3rem;"/>
-                                        }
-                                        <MudText Typo="Typo.body2">@myDevice.Device</MudText>
-                                        <MudText Typo="Typo.body2">@myDevice.Brand</MudText>
-                                    </div>
+                        <MudGrid Class="mb-2 mt-2">
+                            <MudItem xs="3">
+                                <div class="align-center ma-4">
+                                    @if (myDevice.Device == "desktop")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.DesktopMac" Style="font-size: 3rem;"/>
+                                    }
+                                    @if (myDevice.Device == "mobile")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Phone" Style="font-size: 3rem;"/>
+                                    }
+                                    @if (myDevice.Device == "tv")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Tv" Style="font-size: 3rem;"/>
+                                    }
+                                    @if (myDevice.Device == "tablet")
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.Tablet" Style="font-size: 3rem;"/>
+                                    }
                                 </div>
-                            </MudItem>
-                            <MudItem xs="2">
+                                <MudText Typo="Typo.body2">Device: @myDevice.Device</MudText>
+                                <MudText Typo="Typo.body2">Brand: @myDevice.Brand</MudText>
+                                <MudText Typo="Typo.body2">Model: @myDevice.Model</MudText>
+                                <MudText Typo="Typo.body2">Issued at: @myDevice.IssuedAt</MudText>
+                                <MudText Typo="Typo.body2">Expires at: @myDevice.ExpiresAt</MudText>
                             </MudItem>
                             <MudItem xs="4">
                                 @foreach (var item in myDevice.Client?.Split(';') ?? Array.Empty<string>())
@@ -101,13 +89,14 @@
                                     <MudText Typo="Typo.body2">@item</MudText>
                                 }
                             </MudItem>
-                            <MudItem xs="4">
+                            <MudItem xs="5">
                                 @foreach (var item in myDevice.Os?.Split(';') ?? Array.Empty<string>())
                                 {
                                     <MudText Typo="Typo.body2">@item</MudText>
                                 }
                             </MudItem>
                         </MudGrid>
+                        <MudDivider/>
                     }
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">
