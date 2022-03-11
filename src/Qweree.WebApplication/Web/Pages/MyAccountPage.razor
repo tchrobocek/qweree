@@ -53,6 +53,63 @@
                     }
                     <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
                 </MudTabPanel>
+                <MudTabPanel Text="Active devices">
+                        <MudGrid>
+                            <MudItem xs="2">
+                            </MudItem>
+                            <MudItem xs="2">
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.body1">Client</MudText>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudText Typo="Typo.body1">OS</MudText>
+                            </MudItem>
+                        </MudGrid>
+                    @foreach (var myDevice in _myDevices)
+                    {
+                        <MudGrid Class="mb-4">
+                            <MudItem xs="2">
+                                <div class="align-center">
+                                    <div>
+                                        @if (myDevice.Device == "desktop")
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Filled.DesktopMac" Style="font-size: 3rem;"/>
+                                        }
+                                        @if (myDevice.Device == "mobile")
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Filled.Phone" Style="font-size: 3rem;"/>
+                                        }
+                                        @if (myDevice.Device == "tv")
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Filled.Tv" Style="font-size: 3rem;"/>
+                                        }
+                                        @if (myDevice.Device == "tablet")
+                                        {
+                                            <MudIcon Icon="@Icons.Material.Filled.Tablet" Style="font-size: 3rem;"/>
+                                        }
+                                        <MudText Typo="Typo.body2">@myDevice.Device</MudText>
+                                        <MudText Typo="Typo.body2">@myDevice.Brand</MudText>
+                                    </div>
+                                </div>
+                            </MudItem>
+                            <MudItem xs="2">
+                            </MudItem>
+                            <MudItem xs="4">
+                                @foreach (var item in myDevice.Client?.Split(';') ?? Array.Empty<string>())
+                                {
+                                    <MudText Typo="Typo.body2">@item</MudText>
+                                }
+                            </MudItem>
+                            <MudItem xs="4">
+                                @foreach (var item in myDevice.Os?.Split(';') ?? Array.Empty<string>())
+                                {
+                                    <MudText Typo="Typo.body2">@item</MudText>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    }
+                </MudTabPanel>
                 <MudTabPanel Text="Change password">
                     <ErrorsComponent Errors="_errors"/>
                     <PasswordFieldComponent @bind-Value="_oldPassword" Label="Old password" Variant="Variant.Outlined" Class="my-6"></PasswordFieldComponent>
@@ -74,6 +131,7 @@
 @code {
     private IdentityDto? _identity;
     private MyProfileDto? _user;
+    private List<DeviceInfoDto> _myDevices = new();
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -92,6 +150,9 @@
             var userResponse = await _myAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
+            var myDevicesResponse = await _myAccountClient.MyDevicesGetAsync();
+            if (myDevicesResponse.IsSuccessful)
+                _myDevices = (await myDevicesResponse.ReadPayloadAsync())!.ToList();
         }
     }
 
