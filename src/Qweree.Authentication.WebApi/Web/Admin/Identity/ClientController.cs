@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Sdk;
@@ -45,6 +46,26 @@ public class ClientController : ControllerBase
         var createdClient = CreatedClientMapper.ToDto(clientResponse.Payload!);
         return Created($"/api/v1/clients/{createdClient.Id}", createdClient);
     }
+    
+    /// <summary>
+    ///     Get client effective roles.
+    /// </summary>
+    /// <param name="id">Client id.</param>
+    /// <returns>Found effective client roles.</returns>
+    [HttpGet("{id}/effective-roles")]
+    [Authorize(Policy = "ClientRead")]
+    [ProducesResponseType(typeof(ClientEffectiveRolesCollectionDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClientGetEffectiveRolesActionAsync(Guid id)
+    {
+        var clientRolesResponse = await _clientService.ClientGetEffectiveRolesAsync(id);
+
+        if (clientRolesResponse.Status != ResponseStatus.Ok)
+            return clientRolesResponse.ToErrorActionResult();
+
+        return Ok(ClientEffectiveRolesCollectionMapper.ToDto(clientRolesResponse.Payload!));
+    }
+
 
 
     /// <summary>

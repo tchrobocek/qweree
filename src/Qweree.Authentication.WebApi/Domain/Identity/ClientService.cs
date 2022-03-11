@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
@@ -20,10 +23,11 @@ public class ClientService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IClientRepository _clientRepository;
     private readonly SdkMapperService _sdkMapperService;
+    private readonly AuthorizationService _authorizationService;
     private readonly Random _random;
 
     public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-        IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random)
+        IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random, AuthorizationService authorizationService)
     {
         _validator = validator;
         _passwordEncoder = passwordEncoder;
@@ -31,6 +35,7 @@ public class ClientService
         _clientRepository = clientRepository;
         _sdkMapperService = sdkMapperService;
         _random = random;
+        _authorizationService = authorizationService;
     }
 
     private string GenerateClientSecret()
@@ -95,6 +100,37 @@ public class ClientService
         }
 
         return Response.Ok(await _sdkMapperService.ClientMapAsync(client, cancellationToken));
+    }
+
+    public async Task<Response<ClientEffectiveRolesCollection>> ClientGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        Client client;
+
+        try
+        {
+            client = await _clientRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<ClientEffectiveRolesCollection>(new Error("Client was not found", 404));
+        }
+
+        var userRoles = new List<Role>();
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            userRoles.Add(effectiveRole);
+        }
+
+        var clientRoles = new List<Role>();
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveClientRoles(client, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            clientRoles.Add(effectiveRole);
+        }
+
+
+        return Response.Ok(new ClientEffectiveRolesCollection(userRoles.ToImmutableArray(), clientRoles.ToImmutableArray()));
     }
 
     public async Task<PaginationResponse<SdkClient>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,

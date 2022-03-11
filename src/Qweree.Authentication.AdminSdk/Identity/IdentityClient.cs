@@ -92,6 +92,12 @@ public class IdentityClient
         return new ApiResponse<ClientDto>(response);
     }
 
+    public async Task<ApiResponse<ClientEffectiveRolesCollectionDto>> ClientEffectiveRolesGetAsync(Guid id, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"clients/{id}/effective-roles", cancellationToken);
+        return new ApiResponse<ClientEffectiveRolesCollectionDto>(response);
+    }
+
     public async Task<ApiResponse<CreatedClientDto>> ClientCreateAsync(ClientCreateInputDto input, CancellationToken cancellationToken = new())
     {
         var json = JsonUtils.Serialize(input);

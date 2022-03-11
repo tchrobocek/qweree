@@ -232,7 +232,7 @@ public class Startup
         services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
             p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
             p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>(),
-            new Random()));
+            new Random(), p.GetRequiredService<AuthorizationService>()));
 
         // Authorization
         services.AddSingleton<IUserRoleRepository, UserRoleRepository>();
