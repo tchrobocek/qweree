@@ -20,9 +20,7 @@ public static class ClientMapper
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
             ClientRoles = client.ClientRoles.Select(RoleMapper.ToDto).ToArray(),
-            EffectiveClientRoles = client.EffectiveClientRoles.Select(RoleMapper.ToDto).ToArray(),
-            UserRoles = client.UserRoles.Select(RoleMapper.ToDto).ToArray(),
-            EffectiveUserRoles = client.EffectiveUserRoles.Select(RoleMapper.ToDto).ToArray()
+            UserRoles = client.UserRoles.Select(RoleMapper.ToDto).ToArray()
         };
     }
 
@@ -32,9 +30,7 @@ public static class ClientMapper
             clientDto.ApplicationName ?? string.Empty, clientDto.Origin ?? string.Empty,
             UserMapper.FromDto(clientDto.Owner ?? new UserDto()),
             clientDto.ClientRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
-            clientDto.EffectiveClientRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
             clientDto.UserRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
-            clientDto.EffectiveUserRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
             clientDto.CreatedAt ?? DateTime.MinValue,
             clientDto.ModifiedAt ?? DateTime.MinValue);
     }

@@ -12,9 +12,7 @@ public class ClientDto
     public string? Origin { get; set; }
     public UserDto? Owner { get; set; }
     public RoleDto[]? ClientRoles { get; set; }
-    public RoleDto[]? EffectiveClientRoles { get; set; }
     public RoleDto[]? UserRoles { get; set; }
-    public RoleDto[]? EffectiveUserRoles { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
 }
