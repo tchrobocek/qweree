@@ -94,7 +94,7 @@
         var userResponse = await _identityClient.UserGetAsync(id);
         var effectiveRolesResponse = await _identityClient.UserEffectiveRolesGetAsync(id);
 
-        if (!userResponse.IsSuccessful || effectiveRolesResponse.IsSuccessful)
+        if (!userResponse.IsSuccessful || !effectiveRolesResponse.IsSuccessful)
         {
             _navigationManager.NavigateTo("/not-found");
         }
