@@ -16,7 +16,6 @@ public static class UserMapper
             Username = user.Username,
             Properties = user.Properties.Select(UserPropertyMapper.ToDto).ToArray(),
             Roles = user.Roles.Select(RoleMapper.ToDto).ToArray(),
-            EffectiveRoles = user.EffectiveRoles.Select(RoleMapper.ToDto).ToArray(),
             ContactEmail = user.ContactEmail,
             CreatedAt = user.CreatedAt,
             ModifiedAt = user.ModifiedAt
@@ -30,7 +29,6 @@ public static class UserMapper
             user.ContactEmail ?? string.Empty,
             user.Properties?.Select(UserPropertyMapper.FromDto).ToImmutableArray() ?? ImmutableArray<UserProperty>.Empty,
             user.Roles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
-            user.EffectiveRoles?.Select(RoleMapper.FromDto).ToImmutableArray() ?? ImmutableArray<Role>.Empty,
             user.CreatedAt ?? DateTime.MinValue,
             user.ModifiedAt ?? DateTime.MinValue);
     }

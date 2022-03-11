@@ -7,7 +7,7 @@ namespace Qweree.Authentication.AdminSdk.Identity.Users;
 
 public class User
 {
-    public User(Guid id, string username, string contactEmail, ImmutableArray<UserProperty> properties, ImmutableArray<Role> roles, ImmutableArray<Role> effectiveRoles,
+    public User(Guid id, string username, string contactEmail, ImmutableArray<UserProperty> properties, ImmutableArray<Role> roles,
         DateTime createdAt, DateTime modifiedAt)
     {
         Id = id;
@@ -15,7 +15,6 @@ public class User
         ContactEmail = contactEmail;
         Properties = properties;
         Roles = roles;
-        EffectiveRoles = effectiveRoles;
         CreatedAt = createdAt;
         ModifiedAt = modifiedAt;
     }
@@ -24,7 +23,6 @@ public class User
     public string Username { get; }
     public string ContactEmail { get; }
     public ImmutableArray<Role> Roles { get; }
-    public ImmutableArray<Role> EffectiveRoles { get; }
     public ImmutableArray<UserProperty> Properties { get; }
     public DateTime CreatedAt { get; }
     public DateTime ModifiedAt { get; }

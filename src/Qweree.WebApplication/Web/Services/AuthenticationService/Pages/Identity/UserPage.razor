@@ -51,8 +51,8 @@
                                 <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
                             }
                         </MudExpansionPanel>
-                        <MudExpansionPanel Disabled="@(!_user.EffectiveRoles?.Any() ?? false)" Text="@($"Effective roles ({_user.EffectiveRoles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _user.EffectiveRoles ?? Array.Empty<RoleDto>())
+                        <MudExpansionPanel Disabled="@(!_effectiveRoles.Any())" Text="@($"Effective roles ({_effectiveRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
+                            @foreach (var role in _effectiveRoles ?? Array.Empty<RoleDto>())
                             {
                                 <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
                             }
@@ -78,6 +78,7 @@
 @code {
     private string _fullName = string.Empty;
     private UserDto? _user;
+    private RoleDto[] _effectiveRoles = new RoleDto[0];
 
     [Parameter]
     public string? UserId { get; set; }
@@ -91,14 +92,16 @@
         }
 
         var userResponse = await _identityClient.UserGetAsync(id);
+        var effectiveRolesResponse = await _identityClient.UserEffectiveRolesGetAsync(id);
 
-        if (!userResponse.IsSuccessful)
+        if (!userResponse.IsSuccessful || effectiveRolesResponse.IsSuccessful)
         {
             _navigationManager.NavigateTo("/not-found");
         }
 
         _user = await userResponse.ReadPayloadAsync();
         _fullName = _user?.GetFullName() ?? string.Empty;
+        _effectiveRoles = (await effectiveRolesResponse.ReadPayloadAsync())?.ToArray() ?? Array.Empty<RoleDto>();
     }
 
     private async Task DeleteAsync()

@@ -11,7 +11,6 @@ public class UserDto
     public string? ContactEmail { get; set; }
     public UserPropertyDto[]? Properties { get; set; }
     public RoleDto[]? Roles { get; set; }
-    public RoleDto[]? EffectiveRoles { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
 }
