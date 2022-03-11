@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using DeviceDetectorNET;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
@@ -81,19 +82,20 @@ public class OAuth2Controller : ControllerBase
             }
         }
 
+        var device = GetDeviceInfo();
         if (grantType == "password")
         {
             var passwordInput = new PasswordGrantInput(username ?? "", password ?? "");
-            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials);
+            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials, device);
         }
         else if (grantType == "refresh_token")
         {
             var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
-            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials);
+            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials, device);
         }
         else if (grantType == "client_credentials")
         {
-            response = await _authenticationService.AuthenticateAsync(clientCredentials);
+            response = await _authenticationService.AuthenticateAsync(clientCredentials, device);
         }
         else
         {
@@ -113,5 +115,43 @@ public class OAuth2Controller : ControllerBase
             $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{expiresIn?.TotalSeconds}""}}";
 
         return Ok(json);
+    }
+
+    private DeviceInfo? GetDeviceInfo()
+    {
+        var userAgent = Request.Headers.UserAgent;
+        if (string.IsNullOrWhiteSpace(userAgent))
+            return null;
+
+        var detector = new DeviceDetector(userAgent);
+        detector.Parse();
+
+        if(detector.IsBot())
+        {
+            var result = detector.GetBot();
+
+            if (result.Success)
+                return DeviceInfo.Bot(result.ToString());
+
+            return null;
+        }
+        else
+        {
+            var clientInfo = detector.GetClient();
+            var osInfo = detector.GetOs();
+
+            var client = string.Empty;
+            var os = string.Empty;
+
+            if (clientInfo.Success)
+                client = clientInfo.ToString();
+            if (osInfo.Success)
+                os = osInfo.ToString();
+            var device = detector.GetDeviceName();
+            var brand  = detector.GetBrandName();
+            var model  = detector.GetModel();
+
+            return new DeviceInfo(client, os, device, brand, model);
+        }
     }
 }

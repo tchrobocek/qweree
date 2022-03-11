@@ -58,7 +58,7 @@ public class AuthenticationService
     }
 
     public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input,
-        ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
+        ClientCredentials clientCredentials, DeviceInfo? device, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -91,14 +91,14 @@ public class AuthenticationService
         var accessToken = new AccessToken(identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
-        var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
+        var refreshToken = await GenerateRefreshTokenAsync(user, client, device, cancellationToken);
 
         var tokenInfo = new TokenInfo(jwt, refreshToken, expiresAt);
         return Response.Ok(tokenInfo);
     }
 
     public async Task<Response<TokenInfo>> AuthenticateAsync(RefreshTokenGrantInput input,
-        ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
+        ClientCredentials clientCredentials, DeviceInfo? device, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -138,13 +138,13 @@ public class AuthenticationService
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
 
         await _refreshTokenRepository.DeleteOneAsync(token.Id, cancellationToken);
-        var refreshToken = await GenerateRefreshTokenAsync(user, client, cancellationToken);
+        var refreshToken = await GenerateRefreshTokenAsync(user, client, device, cancellationToken);
 
         var tokenInfo = new TokenInfo(jwt, refreshToken, expiresAt);
         return Response.Ok(tokenInfo);
     }
 
-    public async Task<Response<TokenInfo>> AuthenticateAsync(ClientCredentials clientCredentials, CancellationToken cancellationToken = new())
+    public async Task<Response<TokenInfo>> AuthenticateAsync(ClientCredentials clientCredentials, DeviceInfo? device, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -180,7 +180,7 @@ public class AuthenticationService
         return Response.Ok(tokenInfo);
     }
 
-    private async Task<string> GenerateRefreshTokenAsync(User user, Client client,
+    private async Task<string> GenerateRefreshTokenAsync(User user, Client client, DeviceInfo? deviceInfo,
         CancellationToken cancellationToken = new())
     {
         var token = "";
@@ -188,7 +188,8 @@ public class AuthenticationService
             token += RefreshTokenChars[_random.Next(RefreshTokenChars.Length)];
 
         var expiresAt = _datetimeProvider.UtcNow + TimeSpan.FromSeconds(_refreshTokenValiditySeconds);
-        var refreshToken = new RefreshToken(Guid.NewGuid(), token, client.Id, user.Id, expiresAt, _datetimeProvider.UtcNow);
+        var refreshToken = new RefreshToken(Guid.NewGuid(), token, client.Id, user.Id,
+            expiresAt, _datetimeProvider.UtcNow, deviceInfo);
 
         await _refreshTokenRepository.InsertAsync(refreshToken, cancellationToken);
 
