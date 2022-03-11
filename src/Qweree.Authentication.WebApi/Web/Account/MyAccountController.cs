@@ -6,18 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.Sdk.Account;
-using Qweree.Authentication.WebApi.Domain.Account;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Account;
 
 [ApiController]
+[Authorize]
 [Route("/api/account")]
-public class MyAccountService : ControllerBase
+public class MyAccountController : ControllerBase
 {
     private readonly Domain.Account.MyAccountService _myAccountService;
 
-    public MyAccountService(Domain.Account.MyAccountService myAccountService)
+    public MyAccountController(Domain.Account.MyAccountService myAccountService)
     {
         _myAccountService = myAccountService;
     }
@@ -27,10 +28,9 @@ public class MyAccountService : ControllerBase
     /// </summary>
     /// <param name="input">Change my password input.</param>
     [HttpPost("change-password")]
-    [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ClientCreateActionAsync(ChangeMyPasswordInputDto input)
+    public async Task<IActionResult> ChangePasswordActionAsync(ChangeMyPasswordInputDto input)
     {
         var response = await _myAccountService.ChangeMyPasswordAsync(new ChangeMyPasswordInput(input.OldPassword ?? string.Empty, input.NewPassword ?? string.Empty));
 
@@ -44,8 +44,7 @@ public class MyAccountService : ControllerBase
     ///     Find my devices.
     /// </summary>
     [HttpGet("my-devices")]
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DeviceInfoDto[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> MyDevicesFindActionAsync()
     {
         var response = await _myAccountService.FindMyDevicesAsync();
@@ -54,5 +53,20 @@ public class MyAccountService : ControllerBase
             return response.ToErrorActionResult();
 
         return Ok(response.Payload!.Select(DeviceInfoMapper.ToDto));
+    }
+
+    /// <summary>
+    ///     Get my account.
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(IdentityUserDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMeActionAsync()
+    {
+        var response = await _myAccountService.GetMeAsync();
+
+        if (response.Status != ResponseStatus.Ok)
+            return response.ToErrorActionResult();
+
+        return Ok(IdentityMapper.ToDto(response.Payload!));
     }
 }
