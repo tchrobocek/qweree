@@ -42,7 +42,8 @@ public class AuthenticationController : ControllerBase
     {
         var grantInput = new PasswordGrantInput(input.Username ?? string.Empty, input.Password ?? string.Empty);
         var clientCredentials = new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty, _qwereeConfig.Value.ClientSecret ?? string.Empty);
-        var response = await _oauthClient.SignInAsync(grantInput, clientCredentials);
+        var options = new OAuth2RequestOptions(Request.Headers.UserAgent);
+        var response = await _oauthClient.SignInAsync(grantInput, clientCredentials, options);
 
         if (!response.IsSuccessful)
         {
@@ -147,9 +148,11 @@ public class AuthenticationController : ControllerBase
             Response.Cookies.Delete("Session");
             return Unauthorized();
         }
+
+        var options = new OAuth2RequestOptions(Request.Headers.UserAgent);
         var response = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput(tokenInfo!.RefreshToken ?? string.Empty),
             new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty,
-                _qwereeConfig.Value.ClientSecret ?? string.Empty));
+                _qwereeConfig.Value.ClientSecret ?? string.Empty), options);
 
         if (!response.IsSuccessful)
             return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
