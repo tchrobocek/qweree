@@ -22,7 +22,7 @@ public class AuthenticationService
         var oauthClient = await _oauthClientFactory.CreateClientAsync(cancellationToken);
 
         var clientCredentials = new ClientCredentials("admin-cli", "password");
-        var response = await oauthClient.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
+        var response = await oauthClient.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken: cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
@@ -35,7 +35,7 @@ public class AuthenticationService
         var oauthClient = await _oauthClientFactory.CreateClientAsync(cancellationToken);
 
         var clientCredentials = new ClientCredentials("admin-cli", "password");
-        var response = await oauthClient.RefreshAsync(refreshTokenGrantInput, clientCredentials, cancellationToken);
+        var response = await oauthClient.RefreshAsync(refreshTokenGrantInput, clientCredentials, cancellationToken: cancellationToken);
 
         response.EnsureSuccessStatusCode();
 

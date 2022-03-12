@@ -16,7 +16,7 @@ public class OAuth2Client
     }
 
     public async Task<ApiResponse<TokenInfoDto>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
-        CancellationToken cancellationToken = new())
+        OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
         {
@@ -33,12 +33,15 @@ public class OAuth2Client
             Content = content
         };
 
+        if (options.UserAgentHeader != null)
+            request.Headers.Add("User-Agent", options.UserAgentHeader);
+
         var response = await _httpClient.SendAsync(request, cancellationToken);
         return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
     }
 
     public async Task<ApiResponse<TokenInfoDto>> SignInAsync(ClientCredentials clientCredentials,
-        CancellationToken cancellationToken = new())
+        OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
         {
@@ -53,12 +56,15 @@ public class OAuth2Client
             Content = content
         };
 
+        if (options.UserAgentHeader != null)
+            request.Headers.Add("User-Agent", options.UserAgentHeader);
+
         var response = await _httpClient.SendAsync(request, cancellationToken);
         return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
     }
 
     public async Task<ApiResponse<TokenInfoDto>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
-        CancellationToken cancellationToken = new())
+        OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
         {
@@ -74,7 +80,20 @@ public class OAuth2Client
             Content = content
         };
 
+        if (options.UserAgentHeader != null)
+            request.Headers.Add("User-Agent", options.UserAgentHeader);
+
         var response = await _httpClient.SendAsync(request, cancellationToken);
         return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
     }
+}
+
+public struct OAuth2RequestOptions
+{
+    public OAuth2RequestOptions(string? userAgentHeader)
+    {
+        UserAgentHeader = userAgentHeader;
+    }
+
+    public string? UserAgentHeader { get; }
 }

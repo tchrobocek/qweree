@@ -61,7 +61,7 @@ public class ClientCredentialsHandler : DelegatingHandler
 
     private async Task<TokenInfo?> AuthenticateAsync(CancellationToken cancellationToken = new())
     {
-        var response = await _oauthClient.SignInAsync(_clientCredentials, cancellationToken);
+        var response = await _oauthClient.SignInAsync(_clientCredentials, cancellationToken: cancellationToken);
 
         if (!response.IsSuccessful)
             return null;

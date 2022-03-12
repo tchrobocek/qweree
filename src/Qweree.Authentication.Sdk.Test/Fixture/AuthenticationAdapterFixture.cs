@@ -43,7 +43,7 @@ public class AuthenticationAdapterFixture : IDisposable
         var client = await CreateHttpClientAsync(cancellationToken);
         client.BaseAddress = new Uri(AuthenticationApiUri);
         var authAdapter = new OAuth2Client(client);
-        var response = await authAdapter.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
+        var response = await authAdapter.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var token = await response.ReadPayloadAsync(cancellationToken);
         client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse($"Bearer {token?.AccessToken}");

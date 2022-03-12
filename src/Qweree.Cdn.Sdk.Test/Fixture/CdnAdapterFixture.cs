@@ -45,7 +45,7 @@ public class CdnAdapterFixture : IDisposable
         var client = await CreateHttpClientAsync(cancellationToken);
         client.BaseAddress = new Uri(new Uri(AuthenticationApiUri), "api/oauth2/auth");
         var oAuth2Client = new OAuth2Client(client);
-        var response = await oAuth2Client.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken);
+        var response = await oAuth2Client.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken: cancellationToken);
         response.EnsureSuccessStatusCode();
         var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
 

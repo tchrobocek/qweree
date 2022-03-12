@@ -44,7 +44,7 @@ public class RefreshTokenHandler : DelegatingHandler
             return response;
 
         var refreshResponse = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput(token.RefreshToken),
-            new ClientCredentials(_clientCredentials.ClientId, _clientCredentials.ClientSecret), cancellationToken);
+            new ClientCredentials(_clientCredentials.ClientId, _clientCredentials.ClientSecret), cancellationToken: cancellationToken);
 
         if (!refreshResponse.IsSuccessful)
             return response;
