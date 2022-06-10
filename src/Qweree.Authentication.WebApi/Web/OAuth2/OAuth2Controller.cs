@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using DeviceDetectorNET;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
@@ -123,6 +124,7 @@ public class OAuth2Controller : ControllerBase
     [HttpPost("revoke")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize]
     public async Task<IActionResult> RevokeSessionActionAsync()
     {
         var response = await _authenticationService.RevokeAsync();
