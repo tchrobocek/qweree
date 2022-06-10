@@ -1,3 +1,6 @@
+using System.Collections.Immutable;
+using System.Linq;
+
 namespace Qweree.Authentication.WebApi.Domain.Authentication;
 
 public struct GrantType
@@ -9,6 +12,13 @@ public struct GrantType
     public static readonly GrantType Password = new("password", PasswordRoleKey);
     public static readonly GrantType RefreshToken = new("refresh_token", RefreshTokenRoleKey);
     public static readonly GrantType ClientCredentials = new("client_credentials", ClientCredentialsRoleKey);
+
+    public static readonly ImmutableArray<GrantType> GrantTypes = new[] { Password, RefreshToken, ClientCredentials }.ToImmutableArray();
+
+    public static GrantType FromKey(string key)
+    {
+        return GrantTypes.Single(g => g.Key == key);
+    }
 
     public GrantType(string key, string roleKey)
     {

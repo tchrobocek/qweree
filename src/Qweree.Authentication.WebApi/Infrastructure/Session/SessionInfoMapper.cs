@@ -13,7 +13,7 @@ public class SessionInfoMapper
         {
             Id = sessionInfo.Id,
             UserId = sessionInfo.UserId,
-            Grant = sessionInfo.Grant,
+            Grant = sessionInfo.Grant.Key,
             ClientId = sessionInfo.ClientId,
             Device = sessionInfo.Device != null ? DeviceInfoMapper.ToDo(sessionInfo.Device) : null,
             CreatedAt = sessionInfo.CreatedAt,
@@ -27,7 +27,7 @@ public class SessionInfoMapper
     {
         return new SessionInfo(sessionInfo.Id ?? Guid.Empty, sessionInfo.ClientId ?? Guid.Empty, sessionInfo.UserId,
             sessionInfo.RefreshToken ?? string.Empty,
-            sessionInfo.Device != null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null, sessionInfo.Grant ?? new GrantType(), sessionInfo.CreatedAt ?? DateTime.MinValue,
+            sessionInfo.Device != null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null, sessionInfo.Grant != null ? GrantType.FromKey(sessionInfo.Grant) : new GrantType(), sessionInfo.CreatedAt ?? DateTime.MinValue,
             sessionInfo.IssuedAt ?? DateTime.MinValue, sessionInfo.ExpiresAt ?? DateTime.MinValue);
     }
 
