@@ -57,7 +57,7 @@ public class PiccController : ControllerBase
             return BadRequest("Can upload images only.");
         }
 
-        var userId = _sessionStorage.Id;
+        var userId = _sessionStorage.UserId;
         var piccId = Guid.NewGuid();
 
         var path = PathHelper.Combine(PathHelper.GetClientDataPath(_qwereeConfiguration.Value.ClientId ?? string.Empty), "piccs", piccId.ToString());
@@ -193,7 +193,7 @@ public class PiccController : ControllerBase
     {
         var sortDictionary = sort.ToDictionary(kv => kv.Key, kv => int.Parse(kv.Value.FirstOrDefault() ?? "1"));
 
-        var userId = _sessionStorage.Id;
+        var userId = _sessionStorage.UserId;
         var pagination = await _piccRepository.PaginateAsync($@"{{""OwnerId"": UUID(""{userId}"")}}", skip, take, sortDictionary);
 
         var sortParts = sort.Select(s => $"sort[{s.Key}]={s.Value}");

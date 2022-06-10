@@ -46,7 +46,7 @@ public class MyAccountService
             return validationResult.ToErrorResponse();
 
         User user;
-        var id = _sessionStorage.Id;
+        var id = _sessionStorage.UserId;
 
         try
         {
@@ -81,7 +81,7 @@ public class MyAccountService
     {
         try
         {
-            var item = await _userRepository.GetAsync(_sessionStorage.Id, cancellationToken);
+            var item = await _userRepository.GetAsync(_sessionStorage.UserId, cancellationToken);
             return Response.Ok(new MyProfile(item.Id, item.Username, item.ContactEmail, item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
         }
         catch (DocumentNotFoundException)

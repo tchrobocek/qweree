@@ -43,7 +43,7 @@ public class StoredObjectService
             if (!input.Force)
                 return Response.Fail<StoredObjectDescriptor>("Stored object already exists.");
 
-            if (existing.Descriptor.OwnerId != _sessionStorage.Id)
+            if (existing.Descriptor.OwnerId != _sessionStorage.UserId)
                 return Response.Fail<StoredObjectDescriptor>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
 
             created = existing.Descriptor.CreatedAt;
@@ -57,7 +57,7 @@ public class StoredObjectService
         {
         }
 
-        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.Id, slug, input.MediaType, bufferItem.Length,
+        var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.UserId, slug, input.MediaType, bufferItem.Length,
             isPrivate ?? true, created, _dateTimeProvider.UtcNow);
 
         await _storedObjectRepository.StoreAsync(descriptor, bufferItem, cancellationToken);
@@ -80,7 +80,7 @@ public class StoredObjectService
             return Response.Fail<StoredObject>(e.Message);
         }
 
-        if (storedObject.Descriptor.IsPrivate && _sessionStorage.Id != storedObject.Descriptor.OwnerId)
+        if (storedObject.Descriptor.IsPrivate && _sessionStorage.UserId != storedObject.Descriptor.OwnerId)
         {
             if (_sessionStorage.IsAnonymous)
                 return Response.Fail<StoredObject>(new Error("Unauthorized.", (int) HttpStatusCode.Unauthorized));
@@ -99,7 +99,7 @@ public class StoredObjectService
         try
         {
             var storedObject = await _storedObjectRepository.ReadAsync(slug, cancellationToken);
-            if (storedObject.Descriptor.OwnerId != _sessionStorage.Id)
+            if (storedObject.Descriptor.OwnerId != _sessionStorage.UserId)
             {
                 return Response.Fail<StoredObject>(new Error("Forbidden.", (int)HttpStatusCode.Forbidden));
             }

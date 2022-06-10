@@ -6,6 +6,7 @@ public interface ISessionStorage
 {
     IdentityUser? CurrentUser { get; }
     IdentityClient CurrentClient { get; }
-    Guid Id { get; }
+    Guid UserId { get; }
+    Guid SessionId { get; }
     bool IsAnonymous { get; }
 }

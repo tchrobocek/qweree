@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Qweree.Authentication.Sdk.Session;
@@ -10,10 +11,14 @@ public class ClaimsPrincipalStorage : ISessionStorage
     {
         ClaimsPrincipal = claimsPrincipal;
         _identity = IdentityMapper.ToIdentity(claimsPrincipal);
+        var sid = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "sid");
+        Guid.TryParse(sid?.Value, out var session);
+        SessionId = session;
     }
     public ClaimsPrincipal ClaimsPrincipal { get; }
     public IdentityUser? CurrentUser => _identity.User;
     public IdentityClient CurrentClient => _identity.Client;
-    public Guid Id => CurrentUser?.Id ?? CurrentClient.Id;
-    public bool IsAnonymous => Id == Guid.Empty;
+    public Guid UserId => CurrentUser?.Id ?? CurrentClient.Id;
+    public bool IsAnonymous => UserId == Guid.Empty;
+    public Guid SessionId { get; }
 }
