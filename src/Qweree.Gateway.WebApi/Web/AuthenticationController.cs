@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,17 @@ public class AuthenticationController : ControllerBase
     private readonly ISessionStorage _sessionStorage;
     private readonly IWebHostEnvironment _environment;
     private readonly IOptions<QwereeConfigurationDo> _qwereeConfig;
+    private readonly HttpMessageHandler _messageHandler;
 
     public AuthenticationController(OAuth2Client oauthClient, ISessionStorage sessionStorage,
-        IWebHostEnvironment environment, IOptions<QwereeConfigurationDo> qwereeConfig)
+        IWebHostEnvironment environment, IOptions<QwereeConfigurationDo> qwereeConfig,
+        HttpMessageHandler messageHandler)
     {
         _oauthClient = oauthClient;
         _sessionStorage = sessionStorage;
         _environment = environment;
         _qwereeConfig = qwereeConfig;
+        _messageHandler = messageHandler;
     }
 
     /// <summary>
@@ -119,6 +123,12 @@ public class AuthenticationController : ControllerBase
         if (cookie == null)
             return NoContent();
 
+        var client = await CreateAuthenticatedClientAsync();
+        var response = await client.RevokeAsync();
+
+        if (!response.IsSuccessful)
+            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
+
         Response.Cookies.Delete("Session");
         await _sessionStorage.DeleteAsync(cookie);
         return NoContent();
@@ -163,6 +173,25 @@ public class AuthenticationController : ControllerBase
         memoryStream.Seek(0, SeekOrigin.Begin);
         await _sessionStorage.WriteAsync(cookie, memoryStream);
         return NoContent();
+    }
+
+    private async Task<OAuth2Client> CreateAuthenticatedClientAsync(CancellationToken cancellationToken = new())
+    {
+        var cookie = Request.Cookies["Session"];
+
+        TokenInfoDto? tokenInfo = null;
+        if (cookie != null)
+        {
+            await using var stream = await _sessionStorage.ReadAsync(cookie, cancellationToken);
+            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream, cancellationToken);
+        }
+
+        var client = new HttpClient(_messageHandler)
+        {
+            BaseAddress = new Uri(new Uri(_qwereeConfig.Value.AuthUri!), "api/oauth2"),
+        };
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenInfo?.AccessToken);
+        return new OAuth2Client(client);
     }
 
     private string GenerateCookie()

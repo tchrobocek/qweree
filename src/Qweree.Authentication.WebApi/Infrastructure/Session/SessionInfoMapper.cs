@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Session;
 using DeviceInfoMapper = Qweree.Authentication.WebApi.Infrastructure.Authentication.DeviceInfoMapper;
@@ -27,8 +29,15 @@ public class SessionInfoMapper
     {
         return new SessionInfo(sessionInfo.Id ?? Guid.Empty, sessionInfo.ClientId ?? Guid.Empty, sessionInfo.UserId,
             sessionInfo.RefreshToken ?? string.Empty,
-            sessionInfo.Device != null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null, sessionInfo.Grant != null ? GrantType.FromKey(sessionInfo.Grant) : new GrantType(), sessionInfo.CreatedAt ?? DateTime.MinValue,
+            sessionInfo.Device != null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null, sessionInfo.Grant != null ? FromKey(sessionInfo.Grant) : new GrantType(), sessionInfo.CreatedAt ?? DateTime.MinValue,
             sessionInfo.IssuedAt ?? DateTime.MinValue, sessionInfo.ExpiresAt ?? DateTime.MinValue);
+    }
+
+    public static readonly ImmutableArray<GrantType> GrantTypes = new[] { GrantType.Password, GrantType.RefreshToken, GrantType.ClientCredentials }.ToImmutableArray();
+
+    public static GrantType FromKey(string key)
+    {
+        return GrantTypes.Single(g => g.Key == key);
     }
 
 }
