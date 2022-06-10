@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
@@ -37,13 +38,14 @@ public class AuthenticationService
     private readonly IClientRoleRepository _clientRoleRepository;
     private readonly ITokenEncoder _tokenEncoder;
     private readonly ISessionInfoRepository _sessionInfoRepository;
+    private readonly ISessionStorage _sessionStorage;
 
     private readonly string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public AuthenticationService(IUserRepository userRepository,
         IDateTimeProvider datetimeProvider, Random random, int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
         IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository,
-        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository)
+        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage)
     {
         _userRepository = userRepository;
         _datetimeProvider = datetimeProvider;
@@ -54,6 +56,7 @@ public class AuthenticationService
         _clientRoleRepository = clientRoleRepository;
         _tokenEncoder = tokenEncoder;
         _sessionInfoRepository = sessionInfoRepository;
+        _sessionStorage = sessionStorage;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -88,7 +91,7 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(session.Id, identity, now, expiresAt);
@@ -136,7 +139,7 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username,
                 user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
@@ -176,7 +179,7 @@ public class AuthenticationService
         effectiveRoles.Add("CLIENT");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new Sdk.Session.IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Sdk.Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             owner.ContactEmail, effectiveRoles.ToImmutableArray());
         var accessToken = new AccessToken(session.Id, identity, now, expiresAt);
         var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
@@ -251,5 +254,16 @@ public class AuthenticationService
             throw new AuthenticationException();
 
         return client;
+    }
+
+    public async Task<Response> RevokeAsync()
+    {
+        if (_sessionStorage.IsAnonymous)
+            return Response.Fail(AccessDeniedMessage);
+
+        var session = _sessionStorage.SessionId;
+        await _sessionInfoRepository.DeleteOneAsync(session);
+
+        return Response.Ok();
     }
 }

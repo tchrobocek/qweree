@@ -18,7 +18,7 @@ using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authenticatio
 namespace Qweree.Authentication.WebApi.Web.OAuth2;
 
 [ApiController]
-[Route("/api/oauth2/auth")]
+[Route("/api/oauth2")]
 public class OAuth2Controller : ControllerBase
 {
     private static readonly ImmutableArray<string> GrantWhitelist =
@@ -46,7 +46,7 @@ public class OAuth2Controller : ControllerBase
     /// <param name="clientId">Client id.</param>
     /// <param name="authorizationHeader">Authorization header.</param>
     /// <returns>Created user.</returns>
-    [HttpPost]
+    [HttpPost("auth")]
     [ProducesResponseType(typeof(TokenInfoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AuthenticateActionAsync(
@@ -116,6 +116,22 @@ public class OAuth2Controller : ControllerBase
             $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{expiresIn?.TotalSeconds}""}}";
 
         return Ok(json);
+    }
+
+    /// <summary>
+    ///     Revoke current session.
+    /// </summary>
+    [HttpPost("revoke")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> RevokeSessionActionAsync()
+    {
+        var response = await _authenticationService.RevokeAsync();
+
+        if (response.Status == ResponseStatus.Fail)
+            return Unauthorized();
+
+        return NoContent();
     }
 
     private DeviceInfo? GetDeviceInfo()

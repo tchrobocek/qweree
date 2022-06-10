@@ -193,6 +193,7 @@ public class Startup
         {
             var userRepository = p.GetRequiredService<IUserRepository>();
             var sessionInfoRepository = p.GetRequiredService<ISessionInfoRepository>();
+            var sessionStorage = p.GetRequiredService<ISessionStorage>();
             var dateTimeProvider = p.GetRequiredService<IDateTimeProvider>();
             var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
             var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
@@ -203,7 +204,8 @@ public class Startup
 
             return new AuthenticationService(userRepository, dateTimeProvider, new Random(),
                 config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder,
-                clientRepository, authorizationService, clientRoleRepository, tokenEncoder, sessionInfoRepository);
+                clientRepository, authorizationService, clientRoleRepository, tokenEncoder, sessionInfoRepository,
+                sessionStorage);
         });
         services.AddSingleton<ITokenEncoder>(p =>
         {
