@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using DeviceDetectorNET;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,7 @@ namespace Qweree.Authentication.WebApi.Web.OAuth2;
 public class OAuth2Controller : ControllerBase
 {
     private static readonly ImmutableArray<string> GrantWhitelist =
-        new[] {"password", "refresh_token", "client_credentials"}.ToImmutableArray();
+        GrantType.GrantTypes.Select(g => g.Key).ToImmutableArray();
 
     private readonly AuthorizationHeaderEncoder _authorizationHeaderEncoder = new();
     private readonly AuthenticationService _authenticationService;
