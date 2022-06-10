@@ -31,7 +31,7 @@ public class RefreshTokenRepositoryTest
     public async Task TestGetByToken()
     {
         var expectedToken =
-            new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow, new DeviceInfo("c", "o", "d", "b", "m"));
+            new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow, DateTime.UtcNow);
         await _repository.InsertAsync(expectedToken);
 
         var actualToken = await _repository.GetByTokenAsync(expectedToken.Token);

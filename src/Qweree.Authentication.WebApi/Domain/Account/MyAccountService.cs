@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -8,12 +9,12 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.Session;
-using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
+using DeviceInfo = Qweree.Authentication.Sdk.Account.DeviceInfo;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 using UserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
 
@@ -26,18 +27,15 @@ public class MyAccountService
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IValidator _validator;
-    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
-        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator,
-        IRefreshTokenRepository refreshTokenRepository)
+        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
-        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
@@ -74,13 +72,9 @@ public class MyAccountService
         return Response.Ok();
     }
 
-    public async Task<CollectionResponse<Sdk.Account.DeviceInfo>> FindMyDevicesAsync(CancellationToken cancellationToken = new())
+    public Task<CollectionResponse<DeviceInfo>> FindMyDevicesAsync(CancellationToken cancellationToken = new())
     {
-        var items = await _refreshTokenRepository.FindValidForUser(_sessionStorage.Id, cancellationToken);
-        var result = items.Where(r => r.Device != null)
-            .Select(r => new Sdk.Account.DeviceInfo(r.Id, r.Device!.Client, r.Device.Os, r.Device.Device,
-                r.Device.Brand, r.Device.Model, r.CreatedAt, r.ExpiresAt));
-        return Response.Ok(result);
+        return Task.FromResult(Response.Ok((IEnumerable<DeviceInfo>)new List<DeviceInfo>()));
     }
 
     public async Task<Response<MyProfile>> GetMeAsync(CancellationToken cancellationToken = new())

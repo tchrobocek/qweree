@@ -13,7 +13,7 @@ public class RefreshTokenMapperTest
     public void TestToAndFromDo()
     {
         var refreshToken = new RefreshToken(Guid.NewGuid(), "token", Guid.NewGuid(), Guid.NewGuid(),
-            DateTime.UtcNow, DateTime.UtcNow, new DeviceInfo("c", "o", "d", "b", "m"));
+            DateTime.UtcNow, DateTime.UtcNow);
         var refreshTokenDo = RefreshTokenMapper.ToDo(refreshToken);
         var actualRefreshToken = RefreshTokenMapper.FromDo(refreshTokenDo);
 

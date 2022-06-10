@@ -10,5 +10,4 @@ public class RefreshTokenDo
     public DateTime? ExpiresAt { get; set; }
     public DateTime? CreatedAt { get; set; }
     public Guid? ClientId { get; set; }
-    public DeviceInfoDo? Device { get; set; }
 }
