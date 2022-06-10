@@ -24,12 +24,14 @@ using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
+using Qweree.Authentication.WebApi.Infrastructure.Session;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Utils;
@@ -188,10 +190,11 @@ public class Startup
 
         // Authentication
         services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddSingleton<ISessionInfoRepository, SessionInfoRepository>();
         services.AddSingleton(p =>
         {
             var userRepository = p.GetRequiredService<IUserRepository>();
-            var refreshTokenRepository = p.GetRequiredService<IRefreshTokenRepository>();
+            var sessionInfoRepository = p.GetRequiredService<ISessionInfoRepository>();
             var dateTimeProvider = p.GetRequiredService<IDateTimeProvider>();
             var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
             var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
@@ -200,8 +203,9 @@ public class Startup
             var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
             var tokenEncoder = p.GetRequiredService<ITokenEncoder>();
 
-            return new AuthenticationService(userRepository, refreshTokenRepository, dateTimeProvider, new Random(),
-                config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder, clientRepository, authorizationService, clientRoleRepository, tokenEncoder);
+            return new AuthenticationService(userRepository, dateTimeProvider, new Random(),
+                config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder,
+                clientRepository, authorizationService, clientRoleRepository, tokenEncoder, sessionInfoRepository);
         });
         services.AddSingleton<ITokenEncoder>(p =>
         {

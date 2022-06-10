@@ -27,8 +27,12 @@ public class JwtEncoder : ITokenEncoder
         var expTime = DateTime.UnixEpoch;
         expTime = expTime.AddSeconds(int.Parse(exp));
 
+        var sidClaim = claims.FirstOrDefault(c => c.Type == "sid");
+        if (!Guid.TryParse(sidClaim?.Value ?? String.Empty, out var sessionId))
+            sessionId = Guid.Empty;
+
         var identity = IdentityMapper.ToIdentity(claims);
-        return new AccessToken(identity, token.IssuedAt, expTime);
+        return new AccessToken(sessionId, identity, token.IssuedAt, expTime);
     }
 
     public JwtEncoder(string issuer, string audience, string accessTokenKey)
@@ -47,7 +51,8 @@ public class JwtEncoder : ITokenEncoder
         var claims = new List<Claim>(identityPrincipal.Claims)
         {
             new("iat", new DateTimeOffset(accessToken.IssuedAt).ToUnixTimeSeconds().ToString()),
-            new("jti", Guid.NewGuid().ToString())
+            new("jti", Guid.NewGuid().ToString()),
+            new("sid", accessToken.SessionId.ToString())
         };
 
         var token = new JwtSecurityToken(_issuer, _audience, claims,

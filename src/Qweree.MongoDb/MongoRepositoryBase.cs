@@ -163,6 +163,10 @@ public abstract class MongoRepositoryBase<TPublicType, TDocumentType>
         }
     }
 
+    public async Task ReplaceAsync(Guid id, TPublicType document, CancellationToken cancellationToken = new())
+    {
+        await ReplaceAsync(id.ToString(), document, cancellationToken);
+    }
     public async Task ReplaceAsync(string id, TPublicType document, CancellationToken cancellationToken = new())
     {
         try
