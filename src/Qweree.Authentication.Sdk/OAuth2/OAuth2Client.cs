@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -28,7 +29,7 @@ public class OAuth2Client
         };
 
         var content = new FormUrlEncodedContent(form);
-        var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+        var request = new HttpRequestMessage(HttpMethod.Post, "auth")
         {
             Content = content
         };
@@ -51,7 +52,7 @@ public class OAuth2Client
         };
 
         var content = new FormUrlEncodedContent(form);
-        var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+        var request = new HttpRequestMessage(HttpMethod.Post, "auth")
         {
             Content = content
         };
@@ -75,7 +76,7 @@ public class OAuth2Client
         };
 
         var content = new FormUrlEncodedContent(form);
-        var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
+        var request = new HttpRequestMessage(HttpMethod.Post, "auth")
         {
             Content = content
         };
@@ -85,6 +86,12 @@ public class OAuth2Client
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
         return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
+    }
+
+    public async Task<ApiResponse> RevokeAsync(CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync("revoke", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
     }
 }
 

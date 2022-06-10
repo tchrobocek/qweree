@@ -8,7 +8,7 @@ public class QwereeConfigurationDo
     public string? AccessTokenKey { get; set; }
     public string? PathBase { get; set; }
     public string? SwaggerTokenUri { get; set; }
-    public string? AuthTokenUri { get; set; }
+    public string? AuthUri { get; set; }
     public string? CdnUri { get; set; }
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }

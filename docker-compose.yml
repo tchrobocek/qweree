@@ -36,7 +36,7 @@ services:
     environment:
       Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
-      Qweree__AuthTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__AuthUri: "http://localhost/auth/api/oauth2"
       Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
       Qweree__FileSystemRoot: "/qweree-storage"
       Qweree__FileSystemTemp: "/qweree-temp"
@@ -53,7 +53,7 @@ services:
     environment:
       Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
-      Qweree__AuthTokenUri: "http://qweree-auth/api/oauth2/auth"
+      Qweree__AuthUri: "http://qweree-auth/api/oauth2"
       Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
       Qweree__PathBase: "/picc"
       Qweree__CdnUri: "http://qweree-cdn/api/v1/storage/"

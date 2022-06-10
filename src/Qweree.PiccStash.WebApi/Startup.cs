@@ -182,7 +182,7 @@ public class Startup
         services.AddSingleton(p =>
         {
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
-            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Qweree:AuthTokenUri"])});
+            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Qweree:AuthUri"])});
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
             var clientCredentials = new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,
                 qwereeConfig.Value.ClientSecret ?? string.Empty);

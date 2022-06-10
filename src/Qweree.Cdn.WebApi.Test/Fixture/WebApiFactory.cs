@@ -46,7 +46,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
         var client = CreateClient();
         var oauthClient = new HttpClient
         {
-            BaseAddress = new Uri(authConfig.AuthTokenUri!)
+            BaseAddress = new Uri(authConfig.AuthUri!)
         };
         var oAuth2Client = new OAuth2Client(oauthClient);
         var response = await oAuth2Client.SignInAsync(passwordInput, clientCredentials);
