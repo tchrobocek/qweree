@@ -123,14 +123,25 @@ public class AuthenticationController : ControllerBase
         if (cookie == null)
             return NoContent();
 
-        var client = await CreateAuthenticatedClientAsync();
-        var response = await client.RevokeAsync();
+        try
+        {
+            var client = await CreateAuthenticatedClientAsync();
+            var response = await client.RevokeAsync();
 
-        if (!response.IsSuccessful)
-            return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
+            if (!response.IsSuccessful)
+                return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
 
-        Response.Cookies.Delete("Session");
-        await _sessionStorage.DeleteAsync(cookie);
+            await _sessionStorage.DeleteAsync(cookie);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+        finally
+        {
+            Response.Cookies.Delete("Session");
+        }
+
         return NoContent();
     }
 
@@ -188,7 +199,7 @@ public class AuthenticationController : ControllerBase
 
         var client = new HttpClient(_messageHandler)
         {
-            BaseAddress = new Uri(new Uri(_qwereeConfig.Value.AuthUri!), "api/oauth2"),
+            BaseAddress = new Uri(new Uri(_qwereeConfig.Value.AuthUri!), "api/oauth2/"),
         };
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenInfo?.AccessToken);
         return new OAuth2Client(client);

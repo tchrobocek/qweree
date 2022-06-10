@@ -60,7 +60,7 @@ public class Startup
             var handler = p.GetRequiredService<HttpMessageHandler>();
             var client = new HttpClient(handler)
             {
-                BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]), "api/oauth2")
+                BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]), "api/oauth2/")
             };
             return new OAuth2Client(client);
         });

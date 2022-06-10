@@ -77,7 +77,7 @@ services:
       - "80:80"
     environment:
       ASPNETCORE_ENVIRONMENT: 'Development'
-      Qweree__AuthTokenUri: "http://qweree-auth"
+      Qweree__AuthUri: "http://qweree-auth"
       ReverseProxy__Clusters__qweree.authentication__Destinations__default__Address: "http://qweree-auth"
       ReverseProxy__Clusters__qweree.cdn__Destinations__default__Address: "http://qweree-cdn"
       ReverseProxy__Clusters__qweree.picc__Destinations__default__Address: "http://qweree-picc"
