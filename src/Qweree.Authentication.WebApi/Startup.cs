@@ -26,7 +26,6 @@ using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure;
-using Qweree.Authentication.WebApi.Infrastructure.Authentication;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
@@ -189,7 +188,6 @@ public class Startup
         });
 
         // Authentication
-        services.AddSingleton<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton<ISessionInfoRepository, SessionInfoRepository>();
         services.AddSingleton(p =>
         {
