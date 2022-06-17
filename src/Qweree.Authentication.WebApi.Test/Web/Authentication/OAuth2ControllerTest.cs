@@ -5,11 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session.Tokens.Jwt;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
+using Qweree.Authentication.WebApi.Infrastructure.Session;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
+using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Xunit;
 using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
@@ -25,6 +29,7 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
     private readonly IServiceScope _scope;
     private readonly UserRepository _userRepository;
     private readonly ClientRepository _clientRepository;
+    private readonly SessionInfoRepository _sessionInfoRepository;
 
     public OAuth2ControllerTest(WebApiFactory webApiFactory)
     {
@@ -37,6 +42,10 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
             .GetResult();
         _clientRepository = (ClientRepository) _scope.ServiceProvider.GetRequiredService<IClientRepository>();
         _clientRepository.DeleteAllAsync()
+            .GetAwaiter()
+            .GetResult();
+        _sessionInfoRepository = (SessionInfoRepository) _scope.ServiceProvider.GetRequiredService<ISessionInfoRepository>();
+        _sessionInfoRepository.DeleteAllAsync()
             .GetAwaiter()
             .GetResult();
     }
@@ -161,6 +170,66 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
             var response = await _client.SendAsync(message);
             response.EnsureSuccessStatusCode();
         }
+    }
+
+    [Fact]
+    public async Task TestRevoke()
+    {
+        var user = UserFactory.CreateDefault();
+        await _userRepository.InsertAsync(user);
+        var client = ClientFactory.CreateDefault(user.Id);
+        await _clientRepository.InsertAsync(client);
+
+        TokenInfoDto? tokenInfo;
+        {
+            var input = new[]
+            {
+                new KeyValuePair<string?, string?>("grant_type", "password"),
+                new KeyValuePair<string?, string?>("username", user.Username),
+                new KeyValuePair<string?, string?>("password", user.Password),
+            };
+
+            var authHeaderEncoder = new AuthorizationHeaderEncoder();
+            var authHeader = authHeaderEncoder.Encode(new ClientCredentials(client.ClientId, client.ClientSecret));
+            var request = new FormUrlEncodedContent(input);
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/auth")
+            {
+                Content = request,
+                Headers =
+                {
+                    {HeaderNames.Authorization, new[] {$"Basic {authHeader}"}}
+                }
+            };
+
+            var response = await _client.SendAsync(message);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
+        }
+
+        var encoder = new JwtEncoder(Startup.Issuer, Startup.Audience, Settings.Authentication.AccessTokenKey);
+        var accessToken = encoder.DecodeAccessToken(tokenInfo?.AccessToken!);
+        await _sessionInfoRepository.GetAsync(accessToken.SessionId);
+
+        {
+            var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/revoke")
+            {
+                Content = new ByteArrayContent(Array.Empty<byte>()),
+                Headers =
+                {
+                    {HeaderNames.Authorization, new[] {$"Bearer {tokenInfo?.AccessToken}"}}
+                }
+            };
+
+            var response = await _client.SendAsync(message);
+            response.EnsureSuccessStatusCode();
+        }
+
+        await Assert.ThrowsAsync<DocumentNotFoundException>(async () =>
+        {
+            await _sessionInfoRepository.GetAsync(accessToken.SessionId);
+        });
     }
 
     [Fact]

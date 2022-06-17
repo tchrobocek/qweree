@@ -189,7 +189,7 @@ public class Startup
 
         // Authentication
         services.AddSingleton<ISessionInfoRepository, SessionInfoRepository>();
-        services.AddSingleton(p =>
+        services.AddScoped(p =>
         {
             var userRepository = p.GetRequiredService<IUserRepository>();
             var sessionInfoRepository = p.GetRequiredService<ISessionInfoRepository>();
