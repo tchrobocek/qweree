@@ -1,17 +1,13 @@
 @page "/services/auth/users/invite"
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation
-@using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject AuthorizationClient AuthorizationClient;
 @inject IdentityClient IdentityClient;
 @inject NavigationManager NavigationManager;
-@inject ClaimsPrincipalStorage Session
 @inject DialogService DialogService
 @inject ISnackbar Snackbar
 

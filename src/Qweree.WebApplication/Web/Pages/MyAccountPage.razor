@@ -1,5 +1,4 @@
 @page "/my-account"
-@using Qweree.WebApplication.Infrastructure.Authentication
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.Sdk.Account
 @using System.Net
@@ -7,8 +6,6 @@
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
 @inject ClaimsPrincipalStorage Storage
-@inject AuthenticationService AuthenticationService
-@inject NavigationManager NavigationManager
 @inject MyAccountClient MyAccountClient
 @inject ISnackbar Snackbar
 @attribute [Authorize]
