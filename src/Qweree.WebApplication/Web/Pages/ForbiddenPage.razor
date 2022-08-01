@@ -1,7 +1,7 @@
 @page "/forbidden"
 @using Qweree.WebApplication.Infrastructure.Authentication
-@inject ClaimsPrincipalStorage _session
-@inject NavigationManager _navigationManager
+@inject ClaimsPrincipalStorage Session
+@inject NavigationManager NavigationManager
 
 <h3>Forbidden</h3>
 <p>You don't have access to this resource. Go <NavLink href="/">home</NavLink>.</p>
@@ -9,9 +9,9 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var user = await _session.GetIdentityAsync();
+        var user = await Session.GetIdentityAsync();
         if (user == null)
-            _navigationManager.NavigateTo("/login");
+            NavigationManager.NavigateTo("/login");
     }
 
 }

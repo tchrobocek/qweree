@@ -6,11 +6,11 @@
 @using Qweree.Authentication.Sdk.Session
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
-@inject ClaimsPrincipalStorage _storage
-@inject AuthenticationService _authenticationService
-@inject NavigationManager _navigationManager
-@inject MyAccountClient _myAccountClient
-@inject ISnackbar _snackbar
+@inject ClaimsPrincipalStorage Storage
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+@inject MyAccountClient MyAccountClient
+@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 @if (_identity != null)
@@ -130,16 +130,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _identity = await _storage.GetIdentityAsync();
+        _identity = await Storage.GetIdentityAsync();
 
         var id = _identity?.User?.Id;
 
         if (id != null)
         {
-            var userResponse = await _myAccountClient.MyProfileGetAsync();
+            var userResponse = await MyAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
-            var myDevicesResponse = await _myAccountClient.MyDevicesGetAsync();
+            var myDevicesResponse = await MyAccountClient.MyDevicesGetAsync();
             if (myDevicesResponse.IsSuccessful)
                 _myDevices = (await myDevicesResponse.ReadPayloadAsync())!.ToList();
         }
@@ -163,7 +163,7 @@
             return;
         }
 
-        var response = await _myAccountClient.ChangeMyPasswordAsync(new ChangeMyPasswordInput(oldPassword, newPassword));
+        var response = await MyAccountClient.ChangeMyPasswordAsync(new ChangeMyPasswordInput(oldPassword, newPassword));
 
         if (!response.IsSuccessful)
         {
@@ -184,7 +184,7 @@
             return;
         }
 
-        _snackbar.Add("Password changed.", Severity.Success);
+        Snackbar.Add("Password changed.", Severity.Success);
     }
 
 }

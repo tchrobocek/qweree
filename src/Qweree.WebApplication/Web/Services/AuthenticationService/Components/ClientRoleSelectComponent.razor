@@ -1,6 +1,6 @@
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
-@inject AuthorizationClient _authorizationClient;
+@inject AuthorizationClient AuthorizationClient;
 
 <div>
     <MudAutocomplete T="ClientRoleDto" Label="Search role" @bind-Text="_searchText"
@@ -36,7 +36,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _authorizationClient.ClientRolesFindAsync();
+        var response = await AuthorizationClient.ClientRolesFindAsync();
 
         if (!response.IsSuccessful)
             return;

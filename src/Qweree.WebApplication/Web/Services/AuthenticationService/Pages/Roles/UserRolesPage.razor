@@ -5,9 +5,9 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject DialogService _dialogService
-@inject AuthorizationClient _authorizationClient
-@inject NavigationManager _navigationManager
+@inject DialogService DialogService
+@inject AuthorizationClient AuthorizationClient
+@inject NavigationManager NavigationManager
 
 
 <MudCard>
@@ -58,22 +58,22 @@
 
     private void AddUserRole()
     {
-        _navigationManager.NavigateTo("services/auth/user-roles/add");
+        NavigationManager.NavigateTo("services/auth/user-roles/add");
     }
 
     private void NavigateToEdit(Guid? id)
     {
-        _navigationManager.NavigateTo($"services/auth/user-roles/edit/{id.ToString()}");
+        NavigationManager.NavigateTo($"services/auth/user-roles/edit/{id.ToString()}");
     }
 
     private async Task DeleteAsync(UserRoleDto context)
     {
-        var delete = await _dialogService.ConfirmAsync($"Delete user role", $"Do you really wish to delete role {context.Key}?");
+        var delete = await DialogService.ConfirmAsync($"Delete user role", $"Do you really wish to delete role {context.Key}?");
 
         if (!delete)
             return;
 
-        await _authorizationClient.UserRoleDeleteAsync(context.Id ?? Guid.Empty);
+        await AuthorizationClient.UserRoleDeleteAsync(context.Id ?? Guid.Empty);
         await RefreshAsync();
     }
 
@@ -82,7 +82,7 @@
     {
         _userRoles.Clear();
 
-        var response = await _authorizationClient.UserRolesFindAsync();
+        var response = await AuthorizationClient.UserRolesFindAsync();
 
         if (response.IsSuccessful)
         {

@@ -4,9 +4,9 @@
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient _identityClient
-@inject NavigationManager _navigationManager
-@inject DialogService _dialogService
+@inject IdentityClient IdentityClient
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
 @attribute [Authorize]
 
 <MudCard>
@@ -59,7 +59,7 @@
     private async Task<TableData<UserDto>> LoadUsers(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
-        var response = await _identityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        var response = await IdentityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
             return new TableData<UserDto>();
@@ -80,11 +80,11 @@
 
     private void GoToUser(Guid contextId)
     {
-        _navigationManager.NavigateTo($"services/auth/users/{contextId}");
+        NavigationManager.NavigateTo($"services/auth/users/{contextId}");
     }
 
     private void GoToInvite()
     {
-        _navigationManager.NavigateTo($"services/auth/users/invite");
+        NavigationManager.NavigateTo($"services/auth/users/invite");
     }
 }

@@ -1,6 +1,6 @@
 @using System.IO
 @using Qweree.PiccStash.Sdk
-@inject PiccClient _piccClient
+@inject PiccClient PiccClient
 
 <MudDialog>
     <DialogContent>
@@ -95,7 +95,7 @@
                 continue;
             }
 
-            await _piccClient.PiccUploadAsync(stream, file.ContentType);
+            await PiccClient.PiccUploadAsync(stream, file.ContentType);
             await stream.DisposeAsync();
         }
     }

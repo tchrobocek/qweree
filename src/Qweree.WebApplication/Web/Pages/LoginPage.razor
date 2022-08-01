@@ -2,9 +2,9 @@
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.Sdk.Http.Exceptions
 @layout EmptyLayout
-@inject AuthenticationService _authenticationService
-@inject NavigationManager _navigationManager
-@inject ClaimsPrincipalStorage _session;
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+@inject ClaimsPrincipalStorage Session;
 
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
@@ -26,10 +26,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var identity = await _session.GetIdentityAsync();
+        var identity = await Session.GetIdentityAsync();
 
         if (identity != null)
-            _navigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/");
     }
 
     private async Task LoginAsync()
@@ -37,8 +37,8 @@
         _authMessage = string.Empty;
         try
         {
-            await _authenticationService.AuthenticateAsync(_username, _password);
-            _navigationManager.NavigateTo("/", true);
+            await AuthenticationService.AuthenticateAsync(_username, _password);
+            NavigationManager.NavigateTo("/", true);
         }
         catch (ClientErrorErrorException)
         {

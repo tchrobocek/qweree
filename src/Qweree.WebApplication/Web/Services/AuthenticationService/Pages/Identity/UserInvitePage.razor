@@ -8,12 +8,12 @@
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject AuthorizationClient _authorizationClient;
-@inject IdentityClient _identityClient;
-@inject NavigationManager _navigationManager;
-@inject ClaimsPrincipalStorage _session
-@inject DialogService _dialogService
-@inject ISnackbar _snackbar
+@inject AuthorizationClient AuthorizationClient;
+@inject IdentityClient IdentityClient;
+@inject NavigationManager NavigationManager;
+@inject ClaimsPrincipalStorage Session
+@inject DialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudCard>
     <MudCardHeader>
@@ -74,7 +74,7 @@
             FullName = _fullName
         };
 
-        var response = await _identityClient.UserInvitationCreateAsync(input);
+        var response = await IdentityClient.UserInvitationCreateAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -88,13 +88,13 @@
         }
 
         var userInvitationDto = (await response.ReadPayloadAsync())!;
-        var link = $"{_navigationManager.BaseUri}invite/{userInvitationDto.Id}";
-        await _dialogService.AlertAsync("Invitation link", link);
-        _navigationManager.NavigateTo("/services/auth/users/list");
+        var link = $"{NavigationManager.BaseUri}invite/{userInvitationDto.Id}";
+        await DialogService.AlertAsync("Invitation link", link);
+        NavigationManager.NavigateTo("/services/auth/users/list");
 
         if (!string.IsNullOrWhiteSpace(_username))
         {
-            _snackbar.Add($"User {_username} invited.", Severity.Success);
+            Snackbar.Add($"User {_username} invited.", Severity.Success);
         }
     }
 }

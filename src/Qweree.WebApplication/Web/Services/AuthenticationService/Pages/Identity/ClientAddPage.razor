@@ -8,12 +8,12 @@
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject AuthorizationClient _authorizationClient;
-@inject IdentityClient _identityClient;
-@inject NavigationManager _navigationManager;
-@inject ClaimsPrincipalStorage _session
-@inject DialogService _dialogService
-@inject ISnackbar _snackbar
+@inject AuthorizationClient AuthorizationClient;
+@inject IdentityClient IdentityClient;
+@inject NavigationManager NavigationManager;
+@inject ClaimsPrincipalStorage Session
+@inject DialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudCard>
     <MudCardHeader>
@@ -63,12 +63,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var rolesResponse = await _authorizationClient.ClientRolesFindAsync();
+        var rolesResponse = await AuthorizationClient.ClientRolesFindAsync();
 
         if (!rolesResponse.IsSuccessful)
             return;
 
-        var identity = await _session.GetIdentityAsync();
+        var identity = await Session.GetIdentityAsync();
 
         if (identity != null)
             _ownerId = identity.User?.Id?.ToString()!;
@@ -91,7 +91,7 @@
             UserRoles = userRoles.ToArray()
         };
 
-        var response = await _identityClient.ClientCreateAsync(input);
+        var response = await IdentityClient.ClientCreateAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -106,8 +106,8 @@
 
         var client = (await response.ReadPayloadAsync())!;
         var secret = client.ClientSecret;
-        await _dialogService.AlertAsync("Client secret", secret ?? "Error: secret is empty.");
-        _navigationManager.NavigateTo("/services/auth/clients/list");
-        _snackbar.Add($"Client {_applicationName} ({_clientId}) was successfully created.", Severity.Success);
+        await DialogService.AlertAsync("Client secret", secret ?? "Error: secret is empty.");
+        NavigationManager.NavigateTo("/services/auth/clients/list");
+        Snackbar.Add($"Client {_applicationName} ({_clientId}) was successfully created.", Severity.Success);
     }
 }

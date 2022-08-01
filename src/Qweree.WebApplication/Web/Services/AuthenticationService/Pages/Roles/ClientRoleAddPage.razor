@@ -2,9 +2,9 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Microsoft.AspNetCore.Authorization
-@inject AuthorizationClient _authorizationClient;
-@inject ISnackbar _snackbar;
-@inject NavigationManager _navigationManager;
+@inject AuthorizationClient AuthorizationClient;
+@inject ISnackbar Snackbar;
+@inject NavigationManager NavigationManager;
 @attribute [Authorize]
 
 <MudCard>
@@ -59,7 +59,7 @@
             Label = _label
         };
 
-        var response = await _authorizationClient.ClientRoleCreateAsync(input);
+        var response = await AuthorizationClient.ClientRoleCreateAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -68,8 +68,8 @@
             return;
         }
 
-        _snackbar.Add($"Role {_label} ({_key}) was successfully created.", Severity.Success);
-        _navigationManager.NavigateTo("/services/auth/client-roles/list");
+        Snackbar.Add($"Role {_label} ({_key}) was successfully created.", Severity.Success);
+        NavigationManager.NavigateTo("/services/auth/client-roles/list");
     }
 
 }

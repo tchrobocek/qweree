@@ -1,6 +1,6 @@
 @using Qweree.WebApplication.Infrastructure.Notes
 @using Qweree.WebApplication.Infrastructure.Browser
-@inject NoteService _noteService
+@inject NoteService NoteService
 
 @foreach (var note in _notes)
 {
@@ -40,7 +40,7 @@
     private async Task RefreshNotesAsync()
     {
         _notes.Clear();
-        var collection = await _noteService.GetMyNotesAsync(Entity!);
+        var collection = await NoteService.GetMyNotesAsync(Entity!);
         _notes.AddRange(collection.Notes ?? Array.Empty<NoteDto>());
     }
 
@@ -57,7 +57,7 @@
         };
         _notes.Add(newNote);
 
-        var success = await _noteService.SetMyNotesAsync(Entity!, _notes);
+        var success = await NoteService.SetMyNotesAsync(Entity!, _notes);
 
         if (success)
             _addNoteInput = string.Empty;
@@ -66,7 +66,7 @@
     private async Task DeleteAsync(NoteDto note)
     {
         _notes.Remove(note);
-        await _noteService.SetMyNotesAsync(Entity!, _notes);
+        await NoteService.SetMyNotesAsync(Entity!, _notes);
     }
 
     private async Task OnInputUpAsync(KeyboardEventArgs e)

@@ -1,6 +1,6 @@
 @using Qweree.Cdn.Sdk.System
 @using Qweree.WebApplication.Infrastructure.View.BinarySize
-@inject StatsClient _statsClient
+@inject StatsClient StatsClient
 
 <MudChart InputData="_data.Values.ToArray()"  InputLabels="_data.Keys.ToArray()" LegendPosition="LegendPosition" ChartType="ChartType" Width="@Width" Height="@Height"/>
 
@@ -19,7 +19,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var statsResponse = await _statsClient.GetStatsAsync();
+        var statsResponse = await StatsClient.GetStatsAsync();
 
         if (statsResponse.IsSuccessful)
         {

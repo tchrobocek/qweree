@@ -1,4 +1,4 @@
-@inject IJSRuntime _jsRuntime
+@inject IJSRuntime JsRuntime
 
 <span title="@Id?.ToString()" @onclick="CopyIdAsync" style="cursor: pointer;">
     @Id?.ToString()[..8]
@@ -15,7 +15,7 @@
 
         try
         {
-            await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", Id.ToString()!);
+            await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", Id.ToString()!);
         }
         catch (Exception)
         {

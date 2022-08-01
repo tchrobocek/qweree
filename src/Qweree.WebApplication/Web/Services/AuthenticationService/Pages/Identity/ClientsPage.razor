@@ -3,8 +3,8 @@
 @attribute [Authorize]
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.Authentication.AdminSdk.Identity
-@inject IdentityClient _identityClient
-@inject NavigationManager _navigationManager
+@inject IdentityClient IdentityClient
+@inject NavigationManager NavigationManager
 
 
 <MudCard>
@@ -53,7 +53,7 @@
     private async Task<TableData<ClientDto>> LoadClients(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
-        var response = await _identityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        var response = await IdentityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
             return new TableData<ClientDto>();
@@ -74,11 +74,11 @@
 
     private void GoToAddClient()
     {
-        _navigationManager.NavigateTo("services/auth/clients/add");
+        NavigationManager.NavigateTo("services/auth/clients/add");
     }
 
     private void GoToClient(Guid contextId)
     {
-        _navigationManager.NavigateTo($"services/auth/clients/{contextId}");
+        NavigationManager.NavigateTo($"services/auth/clients/{contextId}");
     }
 }

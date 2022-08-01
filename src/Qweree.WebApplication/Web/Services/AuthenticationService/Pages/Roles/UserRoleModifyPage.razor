@@ -2,9 +2,9 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Microsoft.AspNetCore.Authorization
-@inject AuthorizationClient _authorizationClient;
-@inject ISnackbar _snackbar;
-@inject NavigationManager _navigationManager;
+@inject AuthorizationClient AuthorizationClient;
+@inject ISnackbar Snackbar;
+@inject NavigationManager NavigationManager;
 @attribute [Authorize]
 
 <MudCard>
@@ -51,14 +51,14 @@
     {
         if (!Guid.TryParse(EditId, out var editId))
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
         }
 
-        var response = await _authorizationClient.UserRolesFindAsync();
+        var response = await AuthorizationClient.UserRolesFindAsync();
 
         if (!response.IsSuccessful)
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
@@ -67,7 +67,7 @@
 
         if (role == null)
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
@@ -93,7 +93,7 @@
             Label = _label
         };
 
-        var response = await _authorizationClient.UserRoleModifyAsync(Guid.Parse(_idString), input);
+        var response = await AuthorizationClient.UserRoleModifyAsync(Guid.Parse(_idString), input);
 
         if (!response.IsSuccessful)
         {
@@ -102,8 +102,8 @@
             return;
         }
 
-        _snackbar.Add($"Role {_label} ({_key}) was successfully modified.", Severity.Success);
-        _navigationManager.NavigateTo("/services/auth/user-roles/list");
+        Snackbar.Add($"Role {_label} ({_key}) was successfully modified.", Severity.Success);
+        NavigationManager.NavigateTo("/services/auth/user-roles/list");
     }
 
 }

@@ -6,10 +6,10 @@
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
 
-@inject DialogService _dialogService
-@inject PiccClient _piccClient
-@inject IJSRuntime _jsRuntime
-@inject IConfiguration _configuration
+@inject DialogService DialogService
+@inject PiccClient PiccClient
+@inject IJSRuntime JsRuntime
+@inject IConfiguration Configuration
 
 <div class="mb-4">
     <MudButton OnClick="OpenUploadDialogAsync">Upload piccs</MudButton>
@@ -68,7 +68,7 @@
 
     private async Task RefreshAsync()
     {
-        var piccs = await _piccClient.PiccsPaginateAsync(_pageIndex * Batch, Batch);
+        var piccs = await PiccClient.PiccsPaginateAsync(_pageIndex * Batch, Batch);
         if (piccs.IsSuccessful)
         {
             _piccs = (await piccs.ReadPayloadAsync())!
@@ -78,23 +78,23 @@
 
     private string GetCdnUri(PiccDto item)
     {
-        return _configuration["PiccServiceUri"] + "api/v1/picc/" + item.Id;
+        return Configuration["PiccServiceUri"] + "api/v1/picc/" + item.Id;
     }
 
     private async Task OpenUploadDialogAsync()
     {
-        await _dialogService.ShowAndWaitAsync<UploadPiccDialogComponent>("Upload piccs",  new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        await DialogService.ShowAndWaitAsync<UploadPiccDialogComponent>("Upload piccs",  new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
         await RefreshAsync();
     }
 
     private async Task DeletePiccAsync(PiccDto item)
     {
-        var delete = await _dialogService.ConfirmAsync("Delete picc", "Do you really wish to delete picc?");
+        var delete = await DialogService.ConfirmAsync("Delete picc", "Do you really wish to delete picc?");
 
         if (!delete || item.Id == null)
             return;
 
-        await _piccClient.PiccDeleteAsync((Guid) item.Id);
+        await PiccClient.PiccDeleteAsync((Guid) item.Id);
         await RefreshAsync();
     }
 
@@ -102,7 +102,7 @@
     {
         try
         {
-            await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", GetCdnUri(item));
+            await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", GetCdnUri(item));
         }
         catch (Exception)
         {

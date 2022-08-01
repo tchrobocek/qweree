@@ -8,11 +8,11 @@
 @using Qweree.WebApplication.Infrastructure.Browser
 @using Qweree.WebApplication.Infrastructure.View
 
-@inject ExplorerClient _explorerClient;
-@inject NavigationManager _navigationManager;
-@inject ISnackbar _snackbar;
-@inject WindowService _windowService;
-@inject IConfiguration _configuration
+@inject ExplorerClient ExplorerClient;
+@inject NavigationManager NavigationManager;
+@inject ISnackbar Snackbar;
+@inject WindowService WindowService;
+@inject IConfiguration Configuration
 
 <MudCard Elevation="1" Class="pa-4">
     <MudCardHeader>
@@ -74,10 +74,10 @@
     {
         _items.Clear();
 
-        var exploreResult = await _explorerClient.ExploreAsync(Path ?? "/");
+        var exploreResult = await ExplorerClient.ExploreAsync(Path ?? "/");
         if (!exploreResult.IsSuccessful)
         {
-            _snackbar.AddErrors(await exploreResult.ReadErrorsAsync());
+            Snackbar.AddErrors(await exploreResult.ReadErrorsAsync());
             return;
         }
 
@@ -136,12 +136,12 @@
 
     private async Task OpenFileAsync(string? path)
     {
-        var cdnUri = _configuration["CdnServiceUri"];
+        var cdnUri = Configuration["CdnServiceUri"];
 
         if (path is null || cdnUri is null)
             return;
 
-        await _windowService.OpenInNewTabAsync(new Uri(new Uri(new Uri(cdnUri), "api/v1/storage/"), path.TrimStart('/')));
+        await WindowService.OpenInNewTabAsync(new Uri(new Uri(new Uri(cdnUri), "api/v1/storage/"), path.TrimStart('/')));
     }
 
     private ExplorerDirectoryComponent.ExplorerDirectory ToExplorerDirectory(ExplorerDirectoryDto directory)

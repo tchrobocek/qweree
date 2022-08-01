@@ -1,9 +1,9 @@
 @page "/invite/{invitationId}"
 @using Qweree.Authentication.Sdk.Account
 @layout EmptyLayout
-@inject MyAccountClient _myAccountClient;
-@inject NavigationManager _navigationManager;
-@inject ISnackbar _snackbar;
+@inject MyAccountClient MyAccountClient;
+@inject NavigationManager NavigationManager;
+@inject ISnackbar Snackbar;
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="d-flex align-center" Style="height: 100vh;">
     <div class="d-flex flex-column mud-width-full">
@@ -43,15 +43,15 @@
     {
         if (!Guid.TryParse(InvitationId ?? string.Empty, out var id))
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
-        var response = await _myAccountClient.UserInvitationGetAsync(id);
+        var response = await MyAccountClient.UserInvitationGetAsync(id);
 
         if (!response.IsSuccessful)
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
@@ -80,7 +80,7 @@
             UserInvitationId = _invitation!.Id
         };
 
-        var response = await _myAccountClient.UserRegisterAsync(input);
+        var response = await MyAccountClient.UserRegisterAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -89,8 +89,8 @@
             return;
         }
 
-        _snackbar.Add("Registration completed, now sign in!", Severity.Success);
-        _navigationManager.NavigateTo("/login");
+        Snackbar.Add("Registration completed, now sign in!", Severity.Success);
+        NavigationManager.NavigateTo("/login");
     }
 
 }

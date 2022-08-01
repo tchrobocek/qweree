@@ -8,10 +8,10 @@
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient _identityClient
-@inject NavigationManager _navigationManager
-@inject DialogService _dialogService
-@inject ISnackbar _snackbar
+@inject IdentityClient IdentityClient
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudCard>
     <MudCardHeader>
@@ -87,16 +87,16 @@
     {
         if (!Guid.TryParse(UserId, out var id))
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
-        var userResponse = await _identityClient.UserGetAsync(id);
-        var effectiveRolesResponse = await _identityClient.UserEffectiveRolesGetAsync(id);
+        var userResponse = await IdentityClient.UserGetAsync(id);
+        var effectiveRolesResponse = await IdentityClient.UserEffectiveRolesGetAsync(id);
 
         if (!userResponse.IsSuccessful || !effectiveRolesResponse.IsSuccessful)
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
         }
 
         _user = await userResponse.ReadPayloadAsync();
@@ -106,19 +106,19 @@
 
     private async Task DeleteAsync()
     {
-        var isDeleting = await _dialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_user?.Username}?");
+        var isDeleting = await DialogService.ConfirmAsync("Remove user", $"Do you really wish to delete user {_user?.Username}?");
 
         if (!isDeleting)
             return;
 
-        var result = await _identityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
+        var result = await IdentityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
         if (!result.IsSuccessful)
         {
-            _snackbar.AddErrors(await result.ReadErrorsAsync());
+            Snackbar.AddErrors(await result.ReadErrorsAsync());
         }
         else
         {
-            _navigationManager.NavigateTo("/services/auth/users/list");
+            NavigationManager.NavigateTo("/services/auth/users/list");
         }
     }
 

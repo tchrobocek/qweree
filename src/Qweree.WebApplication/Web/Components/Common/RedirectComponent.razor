@@ -1,4 +1,4 @@
-@inject NavigationManager _navManager
+@inject NavigationManager NavManager
 @code {
 
     [Parameter]
@@ -6,6 +6,6 @@
 
     protected override void OnInitialized()
     {
-        _navManager.NavigateTo(Uri);
+        NavManager.NavigateTo(Uri);
     }
 }

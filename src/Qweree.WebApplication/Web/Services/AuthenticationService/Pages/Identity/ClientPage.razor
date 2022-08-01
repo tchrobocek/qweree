@@ -6,9 +6,9 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient _identityClient
-@inject NavigationManager _navigationManager
-@inject DialogService _dialogService
+@inject IdentityClient IdentityClient
+@inject NavigationManager NavigationManager
+@inject DialogService DialogService
 
 <MudCard>
     <MudCardHeader>
@@ -84,16 +84,16 @@
     {
         if (!Guid.TryParse(ClientId, out var id))
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
             return;
         }
 
-        var clientResponse = await _identityClient.ClientGetAsync(id);
-        var clientEffectiveRolesResponse = await _identityClient.ClientEffectiveRolesGetAsync(id);
+        var clientResponse = await IdentityClient.ClientGetAsync(id);
+        var clientEffectiveRolesResponse = await IdentityClient.ClientEffectiveRolesGetAsync(id);
 
         if (!clientResponse.IsSuccessful || !clientEffectiveRolesResponse.IsSuccessful)
         {
-            _navigationManager.NavigateTo("/not-found");
+            NavigationManager.NavigateTo("/not-found");
         }
 
         _client = await clientResponse.ReadPayloadAsync();
@@ -104,15 +104,15 @@
 
     private async Task DeleteAsync()
     {
-        var isDeleting = await _dialogService.ConfirmAsync("Remove client", $"Do you really wish to delete client {_client?.ClientId}?");
+        var isDeleting = await DialogService.ConfirmAsync("Remove client", $"Do you really wish to delete client {_client?.ClientId}?");
 
         if (isDeleting)
         {
-            var response = await _identityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
+            var response = await IdentityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
             response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessful)
-                _navigationManager.NavigateTo("/services/auth/clients/list");
+                NavigationManager.NavigateTo("/services/auth/clients/list");
         }
     }
 
