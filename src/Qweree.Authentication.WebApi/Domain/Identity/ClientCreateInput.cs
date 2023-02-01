@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Clients;
+namespace Qweree.Authentication.WebApi.Domain.Identity;
 
 public class ClientCreateInput
 {

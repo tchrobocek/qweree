@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 
 public class UserInvitationInput
 {

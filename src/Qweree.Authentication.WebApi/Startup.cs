@@ -16,7 +16,6 @@ using Microsoft.OpenApi.Models;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.Sdk.Session.Tokens.Jwt;
-using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Authorization;
@@ -231,11 +230,11 @@ public class Startup
         services.AddSingleton<UserInvitationService>();
         services.AddSingleton<UserRegisterService>();
         services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),
-            p.GetRequiredService<ISessionStorage>(), p.GetRequiredService<SdkMapperService>(),
+            p.GetRequiredService<ISessionStorage>(),
             p.GetRequiredService<AuthorizationService>()));
         services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
             p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
-            p.GetRequiredService<IClientRepository>(), p.GetRequiredService<SdkMapperService>(),
+            p.GetRequiredService<IClientRepository>(),
             new Random(), p.GetRequiredService<AuthorizationService>()));
 
         // Authorization

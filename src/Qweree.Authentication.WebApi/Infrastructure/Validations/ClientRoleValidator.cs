@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Mongo.Exception;
 using Qweree.Validator;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 
 public class UserInvitationsFindInput
 {

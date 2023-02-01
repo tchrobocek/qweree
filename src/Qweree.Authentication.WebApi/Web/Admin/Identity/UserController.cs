@@ -11,6 +11,7 @@ using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
@@ -21,11 +22,13 @@ public class UserController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly UserService _userService;
+    private readonly SdkMapperService _sdkMapperService;
 
-    public UserController(UserService userService, IAuthorizationService authorizationService)
+    public UserController(UserService userService, IAuthorizationService authorizationService, SdkMapperService sdkMapperService)
     {
         _userService = userService;
         _authorizationService = authorizationService;
+        _sdkMapperService = sdkMapperService;
     }
 
     /// <summary>
@@ -44,19 +47,18 @@ public class UserController : ControllerBase
         if (userResponse.Status != ResponseStatus.Ok)
             return userResponse.ToErrorActionResult();
 
-        var userDto = UserMapper.ToDto(userResponse.Payload!);
-
+        var user = await _sdkMapperService.MapToUserAsync(userResponse.Payload!);
         var result = await _authorizationService.AuthorizeAsync(User, null, "UserReadPersonalDetail");
 
         if (!result.Succeeded)
         {
-            userDto.ContactEmail = "***";
-            var fullNameProperty = userDto.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
+            user.ContactEmail = "***";
+            var fullNameProperty = user.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
             if (fullNameProperty != null)
                 fullNameProperty.Value = "***";
         }
 
-        return Ok(userDto);
+        return Ok(user);
     }
 
     /// <summary>
@@ -75,7 +77,7 @@ public class UserController : ControllerBase
         if (userRolesResponse.Status != ResponseStatus.Ok)
             return userRolesResponse.ToErrorActionResult();
 
-        return Ok(userRolesResponse.Payload!.Select(RoleMapper.ToDto));
+        return Ok(userRolesResponse.Payload!.Select(r => _sdkMapperService.MapToRole(r)));
     }
 
     /// <summary>
@@ -111,8 +113,10 @@ public class UserController : ControllerBase
 
         Response.Headers.Add("q-document-count", new[] { usersResponse.DocumentCount.ToString() });
 
-        var usersDto = usersResponse.Payload?.Select(UserMapper.ToDto);
-        return Ok(usersDto);
+        var users = new List<UserDto>();
+        foreach (var user in usersResponse.Payload ?? Array.Empty<User>())
+            users.Add(await _sdkMapperService.MapToUserAsync(user));
+        return Ok(users);
     }
 
     /// <summary>

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 
-namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
+namespace Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 
 public static class UserInvitationDescriptorMapper
 {
@@ -19,13 +20,5 @@ public static class UserInvitationDescriptorMapper
             ExpiresAt = userInvitationDescriptor.ExpiresAt,
             ModifiedAt = userInvitationDescriptor.ModifiedAt,
         };
-    }
-
-    public static UserInvitationDescriptor FromDto(UserInvitationDescriptorDto userInvitationDescriptorDto)
-    {
-        return new UserInvitationDescriptor(userInvitationDescriptorDto.Id ?? Guid.Empty, userInvitationDescriptorDto.Username,
-            userInvitationDescriptorDto.FullName, userInvitationDescriptorDto.ContactEmail,
-            userInvitationDescriptorDto.Roles?.ToImmutableArray(), userInvitationDescriptorDto.ExpiresAt ?? DateTime.MinValue, userInvitationDescriptorDto.CreatedAt ?? DateTime.MinValue,
-            userInvitationDescriptorDto.ModifiedAt ?? DateTime.MinValue);
     }
 }

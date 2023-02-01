@@ -9,6 +9,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
+using Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
@@ -35,7 +36,7 @@ public class UserInvitationController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationCreateActionAsync(UserInvitationInputDto userInvitation)
     {
-        var input = UserInvitationInputMapper.FromDto(userInvitation);
+        var input = UserInvitationMapper.FromDto(userInvitation);
         var userInvitationResponse = await _userInvitationService.UserInvitationCreateAsync(input);
 
         if (userInvitationResponse.Status != ResponseStatus.Ok)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
@@ -63,5 +64,29 @@ public static class RoleMapper
             roleDo.CreatedAt ?? DateTime.MinValue,
             roleDo.ModifiedAt ?? DateTime.MinValue
         );
+    }
+
+    public static UserRoleCreateInput FromDto(UserRoleCreateInputDto dto)
+    {
+        return new UserRoleCreateInput(dto.Id ?? Guid.Empty, dto.Key ?? string.Empty, dto.Label ?? string.Empty,
+            dto.Description ?? string.Empty, dto.IsGroup ?? false, dto.Items?.ToImmutableArray() ??
+                                                                   ImmutableArray<Guid>.Empty);
+    }
+
+    public static UserRoleModifyInput FromDto(Guid id, UserRoleModifyInputDto dto)
+    {
+        return new UserRoleModifyInput(id, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
+    }
+
+    public static ClientRoleCreateInput FromDto(ClientRoleCreateInputDto dto)
+    {
+        return new ClientRoleCreateInput(dto.Id ?? Guid.Empty, dto.Key ?? string.Empty, dto.Label ?? string.Empty,
+            dto.Description ?? string.Empty, dto.IsGroup ?? false, dto.Items?.ToImmutableArray() ??
+                                                                   ImmutableArray<Guid>.Empty);
+    }
+
+    public static ClientRoleModifyInput FromDto(Guid id, ClientRoleModifyInputDto dto)
+    {
+        return new ClientRoleModifyInput(id, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
     }
 }

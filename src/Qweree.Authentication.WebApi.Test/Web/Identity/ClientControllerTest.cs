@@ -9,8 +9,8 @@ using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
@@ -18,8 +18,6 @@ using Qweree.Mongo.Exception;
 using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
-using Client = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
-using ClientMapper = Qweree.Authentication.AdminSdk.Identity.Clients.ClientMapper;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity;
 
@@ -82,7 +80,7 @@ public class ClientControllerTest
 
             var createdClientDto = await response.Content.ReadAsObjectAsync<CreatedClientDto>();
 
-            createdClientDto.WithDeepEqual(CreatedClientMapper.ToDto(await _sdkMapperService.ClientMapToCreatedClientAsync(client)))
+            createdClientDto.WithDeepEqual(await _sdkMapperService.MapToCreatedClientAsync(new ClientSecretPair(client, "x")))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .WithCustomComparison(new ImmutableArrayComparison())
                 .IgnoreProperty(p => p.Name == nameof(client.ClientSecret))
@@ -97,7 +95,7 @@ public class ClientControllerTest
 
             var clientDto = await response.Content.ReadAsObjectAsync<ClientDto>();
 
-            clientDto.WithDeepEqual(ClientMapper.ToDto(await _sdkMapperService.ClientMapAsync(client)))
+            clientDto.WithDeepEqual(await _sdkMapperService.MapToClient(client))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .WithCustomComparison(new ImmutableArrayComparison())
                 .IgnoreProperty(p => p.Name is "CreatedAt" or "ModifiedAt")
@@ -127,12 +125,12 @@ public class ClientControllerTest
     {
         var user = UserFactory.CreateAdmin();
         await _userRepository.InsertAsync(user);
-        var clientsList = new List<Client>();
+        var clientsList = new List<ClientDto>();
 
         for (var i = 0; i < 10; i++)
         {
             var client = ClientFactory.CreateDefault(user.Id, $"client{i}");
-            clientsList.Add(await _sdkMapperService.ClientMapAsync(client));
+            clientsList.Add(await _sdkMapperService.MapToClient(client));
             await _clientRepository.InsertAsync(client);
         }
 
@@ -141,7 +139,7 @@ public class ClientControllerTest
         await _userRepository.InsertAsync(adminUser);
         await _clientRepository.InsertAsync(adminClient);
 
-        clientsList.Add(await _sdkMapperService.ClientMapAsync(adminClient));
+        clientsList.Add(await _sdkMapperService.MapToClient(adminClient));
         clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
 
         using var httpClient =
@@ -161,7 +159,7 @@ public class ClientControllerTest
             response.EnsureSuccessStatusCode();
             var clientDtos = await response.Content.ReadAsObjectAsync<ClientDto[]>();
 
-            clientDtos.WithDeepEqual(clientsList.Skip(2).Take(3).Select(ClientMapper.ToDto))
+            clientDtos.WithDeepEqual(clientsList.Skip(2).Take(3))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .WithCustomComparison(new ImmutableArrayComparison())
                 .Assert();

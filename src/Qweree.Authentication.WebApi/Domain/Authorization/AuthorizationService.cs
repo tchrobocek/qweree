@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
@@ -25,12 +23,10 @@ public class AuthorizationService
         _clientRoleRepository = clientRoleRepository;
     }
 
-    public async IAsyncEnumerable<Role> GetEffectiveUserRoles(User user,
+    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(User user,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
-        var ids = new List<Guid>();
-
         foreach (var userRoleId in user.Roles)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -38,39 +34,15 @@ public class AuthorizationService
             await foreach (var item in GetEffectiveUserRoles(0, userRoleId, cancellationToken, ignoreNonExisting)
                                .WithCancellation(cancellationToken))
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                ids.Add(item);
+                yield return item;
             }
-        }
-
-        foreach (var id in ids.Distinct())
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            UserRole userRole;
-
-            try
-            {
-                userRole = await _userRoleRepository.GetAsync(id, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                if (ignoreNonExisting)
-                    continue;
-
-                throw;
-            }
-
-            yield return new Role(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
         }
     }
 
-    public async IAsyncEnumerable<Role> GetEffectiveUserRoles(Client client,
+    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(Client client,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
-        var ids = new List<Guid>();
-
         foreach (var userRoleId in client.UserRoles)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -79,38 +51,15 @@ public class AuthorizationService
                                .WithCancellation(cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                ids.Add(item);
+                yield return item;
             }
-        }
-
-        foreach (var id in ids.Distinct())
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            UserRole userRole;
-
-            try
-            {
-                userRole = await _userRoleRepository.GetAsync(id, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                if (ignoreNonExisting)
-                    continue;
-
-                throw;
-            }
-
-            yield return new Role(userRole.Id, userRole.Key, userRole.Label, userRole.Description);
         }
     }
 
-    public async IAsyncEnumerable<Role> GetEffectiveClientRoles(Client client,
+    public async IAsyncEnumerable<ClientRole> GetEffectiveClientRoles(Client client,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
-        var ids = new List<Guid>();
-
         foreach (var clientRoleId in client.ClientRoles)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -119,77 +68,44 @@ public class AuthorizationService
                                .WithCancellation(cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                ids.Add(item);
+                yield return item;
             }
         }
+    }
 
-        foreach (var id in ids.Distinct())
+    public async IAsyncEnumerable<ClientRole> GetEffectiveClientRoles(ClientRole role, [EnumeratorCancellation] CancellationToken cancellationToken = new(),
+        bool ignoreNonExisting = true)
+    {
+        await foreach (var item in GetEffectiveClientRoles(0, role.Id, cancellationToken, ignoreNonExisting)
+                           .WithCancellation(cancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            ClientRole clientRole;
-
-            try
-            {
-                clientRole = await _clientRoleRepository.GetAsync(id, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                if (ignoreNonExisting)
-                    continue;
-
-                throw;
-            }
-
-            yield return new Role(clientRole.Id, clientRole.Key, clientRole.Label, clientRole.Description);
+            yield return item;
         }
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    public async IAsyncEnumerable<Role> GetEffectiveUserRoles(UserRole userRole,
+    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(UserRole userRole,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
-        var ids = new List<Guid>();
-
         cancellationToken.ThrowIfCancellationRequested();
 
         await foreach (var item in GetEffectiveUserRoles(0, userRole.Id, cancellationToken, ignoreNonExisting)
                            .WithCancellation(cancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ids.Add(item);
-        }
-
-        foreach (var id in ids.Distinct())
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            UserRole item;
-
-            try
-            {
-                item = await _userRoleRepository.GetAsync(id, cancellationToken);
-            }
-            catch (DocumentNotFoundException)
-            {
-                if (ignoreNonExisting)
-                    continue;
-
-                throw;
-            }
-
-            yield return new Role(item.Id, item.Key, item.Label, item.Description);
+            yield return item;
         }
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    private async IAsyncEnumerable<Guid> GetEffectiveUserRoles(int level, Guid userRoleId,
+    private async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(int level, Guid userRoleId,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
         if (level > MaxSearchLevel)
-            throw new InvalidOperationException($"Max hierarchical level for levels is set to {MaxSearchLevel}.");
+            throw new InvalidOperationException($"Max hierarchical level for roles is set to {MaxSearchLevel}.");
 
         UserRole userRole;
 
@@ -205,26 +121,26 @@ public class AuthorizationService
             throw;
         }
 
-        yield return userRole.Id;
+        yield return userRole;
 
         foreach (var item in userRole.Items)
         {
-            await foreach (var roleId in GetEffectiveUserRoles(level + 1, item, cancellationToken,
+            await foreach (var role in GetEffectiveUserRoles(level + 1, item, cancellationToken,
                                    ignoreNonExisting)
                                .WithCancellation(cancellationToken))
             {
-                yield return roleId;
+                yield return role;
             }
         }
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    private async IAsyncEnumerable<Guid> GetEffectiveClientRoles(int level, Guid clientRoleId,
+    private async IAsyncEnumerable<ClientRole> GetEffectiveClientRoles(int level, Guid clientRoleId,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
         if (level > MaxSearchLevel)
-            throw new InvalidOperationException($"Max hierarchical level for levels is set to {MaxSearchLevel}.");
+            throw new InvalidOperationException($"Max hierarchical level for roles is set to {MaxSearchLevel}.");
 
         ClientRole clientRole;
 
@@ -240,15 +156,15 @@ public class AuthorizationService
             throw;
         }
 
-        yield return clientRole.Id;
+        yield return clientRole;
 
         foreach (var item in clientRole.Items)
         {
-            await foreach (var roleId in GetEffectiveClientRoles(level + 1, item, cancellationToken,
+            await foreach (var role in GetEffectiveClientRoles(level + 1, item, cancellationToken,
                                    ignoreNonExisting)
                                .WithCancellation(cancellationToken))
             {
-                yield return roleId;
+                yield return role;
             }
         }
     }

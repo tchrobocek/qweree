@@ -4,12 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
-using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity;
 
@@ -17,18 +16,16 @@ public class UserService
 {
     private readonly IUserRepository _userRepository;
     private readonly ISessionStorage _sessionStorage;
-    private readonly SdkMapperService _sdkMapperService;
     private readonly AuthorizationService _authorizationService;
 
-    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, SdkMapperService sdkMapperService, AuthorizationService authorizationService)
+    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, AuthorizationService authorizationService)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
-        _sdkMapperService = sdkMapperService;
         _authorizationService = authorizationService;
     }
 
-    public async Task<Response<SdkUser>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())
+    public async Task<Response<User>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())
     {
         User user;
 
@@ -38,14 +35,14 @@ public class UserService
         }
         catch (DocumentNotFoundException)
         {
-            return Response.Fail<SdkUser>(new Error($@"User ""{userId}"" was not found.",
+            return Response.Fail<User>(new Error($@"User ""{userId}"" was not found.",
                 StatusCodes.Status404NotFound));
         }
 
-        return Response.Ok(await _sdkMapperService.UserMapAsync(user, cancellationToken));
+        return Response.Ok(user);
     }
 
-    public async Task<PaginationResponse<SdkUser>> UsersPaginateAsync(UserFindInput input,
+    public async Task<PaginationResponse<User>> UsersPaginateAsync(UserFindInput input,
         CancellationToken cancellationToken = new())
     {
         Pagination<User> pagination;
@@ -56,16 +53,10 @@ public class UserService
         }
         catch (Exception e)
         {
-            return Response.FailPagination<SdkUser>(e.Message);
+            return Response.FailPagination<User>(e.Message);
         }
 
-        var users = new List<SdkUser>();
-        foreach (var document in pagination.Documents)
-        {
-            users.Add(await _sdkMapperService.UserMapAsync(document, cancellationToken));
-        }
-
-        return Response.Ok(users, pagination.TotalCount);
+        return Response.Ok(pagination.Documents, pagination.TotalCount);
     }
 
     public async Task<Response> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -87,7 +78,7 @@ public class UserService
         return Response.Ok();
     }
 
-    public async Task<CollectionResponse<Role>> UserGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<CollectionResponse<UserRole>> UserGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
     {
         User user;
 
@@ -97,11 +88,11 @@ public class UserService
         }
         catch (DocumentNotFoundException)
         {
-            return Response.FailCollection<Role>(new Error($@"User ""{id}"" was not found.",
+            return Response.FailCollection<UserRole>(new Error($@"User ""{id}"" was not found.",
                 StatusCodes.Status404NotFound));
         }
 
-        var effectiveRoles = new List<Role>();
+        var effectiveRoles = new List<UserRole>();
 
         await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
                            .WithCancellation(cancellationToken))
@@ -109,6 +100,6 @@ public class UserService
             effectiveRoles.Add(effectiveRole);
         }
 
-        return Response.Ok((IEnumerable<Role>)effectiveRoles);
+        return Response.Ok((IEnumerable<UserRole>)effectiveRoles);
     }
 }

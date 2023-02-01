@@ -5,14 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Authorization;
+using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
-using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity;
 
@@ -22,18 +20,16 @@ public class ClientService
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IClientRepository _clientRepository;
-    private readonly SdkMapperService _sdkMapperService;
     private readonly AuthorizationService _authorizationService;
     private readonly Random _random;
 
     public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-        IClientRepository clientRepository, SdkMapperService sdkMapperService, Random random, AuthorizationService authorizationService)
+        IClientRepository clientRepository, Random random, AuthorizationService authorizationService)
     {
         _validator = validator;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _clientRepository = clientRepository;
-        _sdkMapperService = sdkMapperService;
         _random = random;
         _authorizationService = authorizationService;
     }
@@ -53,12 +49,12 @@ public class ClientService
         return result;
     }
 
-    public async Task<Response<CreatedClient>> ClientCreateAsync(ClientCreateInput clientCreateInput,
+    public async Task<Response<ClientSecretPair>> ClientCreateAsync(ClientCreateInput clientCreateInput,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _validator.ValidateAsync(clientCreateInput, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<CreatedClient>();
+            return validationResult.ToErrorResponse<ClientSecretPair>();
 
         var id = clientCreateInput.Id;
         if (id == Guid.Empty)
@@ -66,8 +62,10 @@ public class ClientService
 
         var clientSecret = GenerateClientSecret();
         var secret = _passwordEncoder.EncodePassword(clientSecret);
+
         var client = new Client(id, clientCreateInput.ClientId, secret,
-            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
+            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles,
+            _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
             clientCreateInput.OwnerId, clientCreateInput.Origin);
 
         try
@@ -76,16 +74,13 @@ public class ClientService
         }
         catch (InsertDocumentException)
         {
-            return Response.Fail<CreatedClient>("Client is a duplicate.");
+            return Response.Fail<ClientSecretPair>("Client is a duplicate.");
         }
 
-        var clientToReturn = new Client(client.Id, clientCreateInput.ClientId, clientSecret,
-            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles, _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
-            clientCreateInput.OwnerId, clientCreateInput.Origin);
-        return Response.Ok(await _sdkMapperService.ClientMapToCreatedClientAsync(clientToReturn, cancellationToken));
+        return Response.Ok(new ClientSecretPair(client, secret));
     }
 
-    public async Task<Response<SdkClient>> ClientGetAsync(Guid id,
+    public async Task<Response<Client>> ClientGetAsync(Guid id,
         CancellationToken cancellationToken = new())
     {
         Client client;
@@ -96,13 +91,14 @@ public class ClientService
         }
         catch (DocumentNotFoundException)
         {
-            return Response.Fail<SdkClient>(new Error("Client was not found", 404));
+            return Response.Fail<Client>(new Error("Client was not found", 404));
         }
 
-        return Response.Ok(await _sdkMapperService.ClientMapAsync(client, cancellationToken));
+        return Response.Ok(client);
     }
 
-    public async Task<Response<ClientEffectiveRolesCollection>> ClientGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<Response<RolesCollection>> ClientGetEffectiveRolesAsync(Guid id,
+        CancellationToken cancellationToken = new())
     {
         Client client;
 
@@ -112,17 +108,17 @@ public class ClientService
         }
         catch (DocumentNotFoundException)
         {
-            return Response.Fail<ClientEffectiveRolesCollection>(new Error("Client was not found", 404));
+            return Response.Fail<RolesCollection>(new Error("Client was not found", 404));
         }
 
-        var userRoles = new List<Role>();
+        var userRoles = new List<UserRole>();
         await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             userRoles.Add(effectiveRole);
         }
 
-        var clientRoles = new List<Role>();
+        var clientRoles = new List<ClientRole>();
         await foreach (var effectiveRole in _authorizationService.GetEffectiveClientRoles(client, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
@@ -130,21 +126,14 @@ public class ClientService
         }
 
 
-        return Response.Ok(new ClientEffectiveRolesCollection(userRoles.ToImmutableArray(), clientRoles.ToImmutableArray()));
+        return Response.Ok(new RolesCollection(userRoles.ToImmutableArray(), clientRoles.ToImmutableArray()));
     }
 
-    public async Task<PaginationResponse<SdkClient>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
+    public async Task<PaginationResponse<Client>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
         CancellationToken cancellationToken = new())
     {
         var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
-        var documents = new List<SdkClient>();
-
-        foreach (var document in pagination.Documents)
-        {
-            documents.Add(await _sdkMapperService.ClientMapAsync(document, cancellationToken));
-        }
-
-        return Response.Ok(documents, pagination.TotalCount);
+        return Response.Ok(pagination.Documents, pagination.TotalCount);
     }
 
     public async Task<Response> ClientDeleteAsync(Guid id)

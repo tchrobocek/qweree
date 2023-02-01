@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +8,8 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
+using Qweree.Authentication.WebApi.Infrastructure;
+using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Sdk;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
@@ -17,10 +19,12 @@ namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
 public class UserRoleController : ControllerBase
 {
     private readonly RoleService _roleService;
+    private readonly SdkMapperService _sdkMapperService;
 
-    public UserRoleController(RoleService roleService)
+    public UserRoleController(RoleService roleService, SdkMapperService sdkMapperService)
     {
         _roleService = roleService;
+        _sdkMapperService = sdkMapperService;
     }
 
     /// <summary>
@@ -34,14 +38,14 @@ public class UserRoleController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserRoleCreateActionAsync(UserRoleCreateInputDto input)
     {
-        var serviceInput = UserRoleMapper.FromDto(input);
+        var serviceInput = RoleMapper.FromDto(input);
 
         var response = await _roleService.UserRoleCreateAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = UserRoleMapper.ToDto(response.Payload!);
+        var payload = await _sdkMapperService.MapToUserRoleAsync(response.Payload!);
         return Created($"/api/admin/authorization/userRoles", payload);
     }
 
@@ -57,14 +61,13 @@ public class UserRoleController : ControllerBase
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UserRoleModifyActionAsync(Guid id, UserRoleModifyInputDto input)
     {
-        var serviceInput = UserRoleMapper.FromDto(id, input);
-
+        var serviceInput = RoleMapper.FromDto(id, input);
         var response = await _roleService.UserRoleModifyAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = UserRoleMapper.ToDto(response.Payload!);
+        var payload = await _sdkMapperService.MapToUserRoleAsync(response.Payload!);
         return Ok(payload);
     }
 
@@ -93,13 +96,17 @@ public class UserRoleController : ControllerBase
     [Authorize(Policy = "RoleRead")]
     [ProducesResponseType(typeof(UserRoleDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UserRolesFindActionAsync()
+    public async Task<IActionResult> UserRolesFindAsync()
     {
         var response = await _roleService.UserRolesFindAsync();
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(response.Payload!.Select(UserRoleMapper.ToDto));
+        var roles = new List<UserRoleDto>();
+        foreach (var item in response.Payload!)
+            roles.Add(await _sdkMapperService.MapToUserRoleAsync(item));
+
+        return Ok(roles);
     }
 }

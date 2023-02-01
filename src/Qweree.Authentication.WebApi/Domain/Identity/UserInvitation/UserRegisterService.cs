@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Authorization.Roles;
+namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
 public class ClientRoleCreateInput
 {

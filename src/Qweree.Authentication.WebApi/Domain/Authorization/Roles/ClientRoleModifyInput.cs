@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Qweree.Authentication.AdminSdk.Authorization.Roles;
+namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
-public class UserRoleModifyInput
+public class ClientRoleModifyInput
 {
-    public UserRoleModifyInput(Guid id, string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
+    public ClientRoleModifyInput(Guid id, string? label, string? description, bool? isGroup, ImmutableArray<Guid>? items)
     {
         Id = id;
         Label = label;

@@ -98,8 +98,8 @@
 
         _client = await clientResponse.ReadPayloadAsync();
         var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
-        _effectiveClientRoles = roles?.ClientEffectiveRoles ?? Array.Empty<RoleDto>();
-        _effectiveUserRoles = roles?.UserEffectiveRoles ?? Array.Empty<RoleDto>();
+        _effectiveClientRoles = roles?.ClientRoles ?? Array.Empty<RoleDto>();
+        _effectiveUserRoles = roles?.UserRoles ?? Array.Empty<RoleDto>();
     }
 
     private async Task DeleteAsync()

@@ -5,12 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
-using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
-using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
 
 namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
@@ -19,48 +16,36 @@ public class RoleService
     private readonly IUserRoleRepository _userRoleRepository;
     private readonly IClientRoleRepository _clientRoleRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly SdkMapperService _sdkMapperService;
     private readonly IValidator _validator;
 
     public RoleService(IUserRoleRepository userRoleRepository, IClientRoleRepository clientRoleRepository,
-        IDateTimeProvider dateTimeProvider, SdkMapperService sdkMapperService, IValidator validator)
+        IDateTimeProvider dateTimeProvider, IValidator validator)
     {
         _userRoleRepository = userRoleRepository;
         _clientRoleRepository = clientRoleRepository;
         _dateTimeProvider = dateTimeProvider;
-        _sdkMapperService = sdkMapperService;
         _validator = validator;
     }
 
-    public async Task<CollectionResponse<SdkUserRole>> UserRolesFindAsync(CancellationToken cancellationToken = new())
+    public async Task<CollectionResponse<UserRole>> UserRolesFindAsync(CancellationToken cancellationToken = new())
     {
         var roles = await _userRoleRepository.FindAsync(cancellationToken);
-        var sdkRoles = new List<SdkUserRole>();
-
-        foreach (var role in roles)
-            sdkRoles.Add(await _sdkMapperService.UserRoleMapAsync(role, cancellationToken));
-
-        return Response.Ok((IEnumerable<SdkUserRole>)sdkRoles);
+        return Response.Ok(roles);
     }
 
-    public async Task<CollectionResponse<SdkClientRole>> ClientRolesFindAsync(
+    public async Task<CollectionResponse<ClientRole>> ClientRolesFindAsync(
         CancellationToken cancellationToken = new())
     {
         var roles = await _clientRoleRepository.FindAsync(cancellationToken);
-        var sdkRoles = new List<SdkClientRole>();
-
-        foreach (var role in roles)
-            sdkRoles.Add(await _sdkMapperService.ClientRoleMapAsync(role, cancellationToken));
-
-        return Response.Ok((IEnumerable<SdkClientRole>)sdkRoles);
+        return Response.Ok(roles);
     }
 
-    public async Task<Response<SdkUserRole>> UserRoleCreateAsync(UserRoleCreateInput input,
+    public async Task<Response<UserRole>> UserRoleCreateAsync(UserRoleCreateInput input,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _validator.ValidateAsync(input, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<SdkUserRole>();
+            return validationResult.ToErrorResponse<UserRole>();
 
         var id = input.Id;
 
@@ -76,18 +61,18 @@ public class RoleService
         }
         catch (InsertDocumentException e)
         {
-            return Response.Fail<SdkUserRole>(e.Message);
+            return Response.Fail<UserRole>(e.Message);
         }
 
-        return Response.Ok(await _sdkMapperService.UserRoleMapAsync(role, cancellationToken));
+        return Response.Ok(role);
     }
 
-    public async Task<Response<SdkClientRole>> ClientRoleCreateAsync(ClientRoleCreateInput input,
+    public async Task<Response<ClientRole>> ClientRoleCreateAsync(ClientRoleCreateInput input,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _validator.ValidateAsync(input, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<SdkClientRole>();
+            return validationResult.ToErrorResponse<ClientRole>();
 
         var id = input.Id;
 
@@ -103,10 +88,10 @@ public class RoleService
         }
         catch (InsertDocumentException e)
         {
-            return Response.Fail<SdkClientRole>(e.Message);
+            return Response.Fail<ClientRole>(e.Message);
         }
 
-        return Response.Ok(await _sdkMapperService.ClientRoleMapAsync(role, cancellationToken));
+        return Response.Ok(role);
     }
 
     public async Task<Response> UserRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -121,12 +106,12 @@ public class RoleService
         return Response.Ok();
     }
 
-    public async Task<Response<SdkUserRole>> UserRoleModifyAsync(UserRoleModifyInput input,
+    public async Task<Response<UserRole>> UserRoleModifyAsync(UserRoleModifyInput input,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _validator.ValidateAsync(input, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<SdkUserRole>();
+            return validationResult.ToErrorResponse<UserRole>();
 
         UserRole role;
 
@@ -136,7 +121,7 @@ public class RoleService
         }
         catch (DocumentNotFoundException e)
         {
-            return Response.Fail<SdkUserRole>(new Error(e.Message, 404));
+            return Response.Fail<UserRole>(new Error(e.Message, 404));
         }
 
         var items = new List<Guid>();
@@ -146,15 +131,15 @@ public class RoleService
 
         await _userRoleRepository.ReplaceAsync(role.Id.ToString(), role, cancellationToken);
 
-        return Response.Ok(await _sdkMapperService.UserRoleMapAsync(role, cancellationToken));
+        return Response.Ok(role);
     }
 
-    public async Task<Response<SdkClientRole>> ClientRoleModifyAsync(ClientRoleModifyInput input,
+    public async Task<Response<ClientRole>> ClientRoleModifyAsync(ClientRoleModifyInput input,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _validator.ValidateAsync(input, cancellationToken);
         if (validationResult.HasFailed)
-            return validationResult.ToErrorResponse<SdkClientRole>();
+            return validationResult.ToErrorResponse<ClientRole>();
 
         ClientRole role;
 
@@ -164,7 +149,7 @@ public class RoleService
         }
         catch (DocumentNotFoundException e)
         {
-            return Response.Fail<SdkClientRole>(e.Message);
+            return Response.Fail<ClientRole>(e.Message);
         }
 
         var items = new List<Guid>();
@@ -173,7 +158,6 @@ public class RoleService
             role.CreatedAt, _dateTimeProvider.UtcNow);
 
         await _clientRoleRepository.ReplaceAsync(role.Id.ToString(), role, cancellationToken);
-
-        return Response.Ok(await _sdkMapperService.ClientRoleMapAsync(role, cancellationToken));
+        return Response.Ok(role);
     }
 }

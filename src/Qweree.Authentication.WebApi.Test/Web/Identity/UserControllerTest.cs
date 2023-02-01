@@ -5,17 +5,15 @@ using System.Threading.Tasks;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using Qweree.Authentication.Sdk.OAuth2;
-using Qweree.Authentication.WebApi.Domain;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Test.Fixture;
 using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
-using User = Qweree.Authentication.AdminSdk.Identity.Users.User;
 using UserDto = Qweree.Authentication.AdminSdk.Identity.Users.UserDto;
-using UserMapper = Qweree.Authentication.AdminSdk.Identity.Users.UserMapper;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity;
 
@@ -71,7 +69,7 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
             response.EnsureSuccessStatusCode();
             var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
 
-            actualUser.WithDeepEqual(UserMapper.ToDto(await _sdkMapperService.UserMapAsync(adminUser)))
+            actualUser.WithDeepEqual(await _sdkMapperService.MapToUserAsync(adminUser))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .Assert();
         }
@@ -80,12 +78,12 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
     [Fact]
     public async Task TestPagination()
     {
-        var usersList = new List<User>();
+        var usersList = new List<UserDto>();
 
         for (var i = 0; i < 10; i++)
         {
             var user = UserFactory.CreateDefault($"{i}user");
-            usersList.Add(await _sdkMapperService.UserMapAsync(user));
+            usersList.Add(await _sdkMapperService.MapToUserAsync(user));
             await _userRepository.InsertAsync(user);
         }
 
@@ -110,9 +108,8 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
             var response = await httpClient.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
             response.EnsureSuccessStatusCode();
             var userDtos = await response.Content.ReadAsObjectAsync<UserDto[]>();
-            var users = userDtos!.Select(UserMapper.FromDto);
 
-            users.WithDeepEqual(usersList.Skip(2).Take(3))
+            userDtos.WithDeepEqual(usersList.Skip(2).Take(3))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .IgnoreProperty(p => p.Name == nameof(User.Roles))
                 .Assert();
