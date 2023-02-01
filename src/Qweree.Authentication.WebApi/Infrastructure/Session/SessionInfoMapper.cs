@@ -17,7 +17,8 @@ public class SessionInfoMapper
             UserId = sessionInfo.UserId,
             Grant = sessionInfo.Grant.Key,
             ClientId = sessionInfo.ClientId,
-            Device = sessionInfo.Device != null ? DeviceInfoMapper.ToDo(sessionInfo.Device) : null,
+            Device = sessionInfo.Device is not null ? DeviceInfoMapper.ToDo(sessionInfo.Device) : null,
+            UserAgent = sessionInfo.UserAgent is not null ? UserAgentInfoMapper.ToDo(sessionInfo.UserAgent) : null,
             CreatedAt = sessionInfo.CreatedAt,
             ExpiresAt = sessionInfo.ExpiresAt,
             IssuedAt = sessionInfo.IssuedAt,
@@ -27,10 +28,16 @@ public class SessionInfoMapper
 
     public static SessionInfo FromDo(SessionInfoDo sessionInfo)
     {
-        return new SessionInfo(sessionInfo.Id ?? Guid.Empty, sessionInfo.ClientId ?? Guid.Empty, sessionInfo.UserId,
+        return new SessionInfo(sessionInfo.Id ?? Guid.Empty,
+            sessionInfo.ClientId ?? Guid.Empty,
+            sessionInfo.UserId,
             sessionInfo.RefreshToken ?? string.Empty,
-            sessionInfo.Device != null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null, sessionInfo.Grant != null ? FromKey(sessionInfo.Grant) : new GrantType(), sessionInfo.CreatedAt ?? DateTime.MinValue,
-            sessionInfo.IssuedAt ?? DateTime.MinValue, sessionInfo.ExpiresAt ?? DateTime.MinValue);
+            sessionInfo.Device is not null ? DeviceInfoMapper.FromDo(sessionInfo.Device) : null,
+            sessionInfo.UserAgent is not null ? UserAgentInfoMapper.FromDo(sessionInfo.UserAgent) : null,
+            sessionInfo.Grant is not null ? FromKey(sessionInfo.Grant) : new GrantType(),
+            sessionInfo.CreatedAt ?? DateTime.MinValue,
+            sessionInfo.IssuedAt ?? DateTime.MinValue,
+            sessionInfo.ExpiresAt ?? DateTime.MinValue);
     }
 
     public static readonly ImmutableArray<GrantType> GrantTypes = new[] { GrantType.Password, GrantType.RefreshToken, GrantType.ClientCredentials }.ToImmutableArray();

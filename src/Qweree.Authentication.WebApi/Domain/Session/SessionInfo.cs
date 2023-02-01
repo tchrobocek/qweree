@@ -5,7 +5,7 @@ namespace Qweree.Authentication.WebApi.Domain.Session;
 
 public class SessionInfo
 {
-    public SessionInfo(Guid id, Guid clientId, Guid? userId, string refreshToken, DeviceInfo? device, GrantType grant,
+    public SessionInfo(Guid id, Guid clientId, Guid? userId, string refreshToken, DeviceInfo? device, UserAgentInfo? userAgent, GrantType grant,
         DateTime createdAt, DateTime issuedAt, DateTime expiresAt)
     {
         Id = id;
@@ -13,6 +13,7 @@ public class SessionInfo
         UserId = userId;
         RefreshToken = refreshToken;
         Device = device;
+        UserAgent = userAgent;
         Grant = grant;
         CreatedAt = createdAt;
         IssuedAt = issuedAt;
@@ -24,6 +25,7 @@ public class SessionInfo
     public Guid? UserId { get; }
     public string RefreshToken { get; }
     public DeviceInfo? Device { get; }
+    public UserAgentInfo? UserAgent { get; }
     public GrantType Grant { get; }
     public DateTime CreatedAt { get; }
     public DateTime IssuedAt { get; }

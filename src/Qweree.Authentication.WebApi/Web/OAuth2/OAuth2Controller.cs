@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain.Authentication;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
+using Qweree.Authentication.WebApi.Infrastructure.Session;
 using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
@@ -84,19 +86,25 @@ public class OAuth2Controller : ControllerBase
         }
 
         var device = GetDeviceInfo();
+
+        var userAgentString = Request.Headers.UserAgent;
+        UserAgentInfo? userAgent = null;
+        if (!string.IsNullOrWhiteSpace(userAgentString))
+            userAgent = UserAgentInfoParser.Parse(userAgentString);
+
         if (grantType == "password")
         {
             var passwordInput = new PasswordGrantInput(username ?? "", password ?? "");
-            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials, device);
+            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials, device, userAgent);
         }
         else if (grantType == "refresh_token")
         {
             var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
-            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials, device);
+            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials, device, userAgent);
         }
         else if (grantType == "client_credentials")
         {
-            response = await _authenticationService.AuthenticateAsync(clientCredentials, device);
+            response = await _authenticationService.AuthenticateAsync(clientCredentials, device, userAgent);
         }
         else
         {
@@ -158,18 +166,18 @@ public class OAuth2Controller : ControllerBase
             var clientInfo = detector.GetClient();
             var osInfo = detector.GetOs();
 
-            var client = string.Empty;
+            var clientString = string.Empty;
             var os = string.Empty;
 
             if (clientInfo.Success)
-                client = clientInfo.ToString();
+                clientString = clientInfo.ToString();
             if (osInfo.Success)
                 os = osInfo.ToString();
             var device = detector.GetDeviceName();
             var brand  = detector.GetBrandName();
             var model  = detector.GetModel();
 
-            return new DeviceInfo(client, os, device, brand, model);
+            return new DeviceInfo(clientString, os, device, brand, model);
         }
     }
 }
