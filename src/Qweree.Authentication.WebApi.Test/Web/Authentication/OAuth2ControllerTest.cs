@@ -143,7 +143,7 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            var tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
+            var tokenInfo = JsonUtils.Deserialize<TokenInfo>(content, JsonUtils.SnakeCaseNamingPolicy);
 
             refreshToken = tokenInfo?.RefreshToken!;
         }
@@ -180,7 +180,7 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
         var client = ClientFactory.CreateDefault(user.Id);
         await _clientRepository.InsertAsync(client);
 
-        TokenInfoDto? tokenInfo;
+        TokenInfo? tokenInfo;
         {
             var input = new[]
             {
@@ -205,12 +205,12 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            tokenInfo = JsonUtils.Deserialize<TokenInfoDto>(content, JsonUtils.SnakeCaseNamingPolicy);
+            tokenInfo = JsonUtils.Deserialize<TokenInfo>(content, JsonUtils.SnakeCaseNamingPolicy);
         }
 
         var encoder = new JwtEncoder(Startup.Issuer, Startup.Audience, Settings.Authentication.AccessTokenKey);
         var accessToken = encoder.DecodeAccessToken(tokenInfo?.AccessToken!);
-        await _sessionInfoRepository.GetAsync(accessToken.SessionId);
+        await _sessionInfoRepository.GetAsync((Guid)accessToken.SessionId!);
 
         {
             var message = new HttpRequestMessage(HttpMethod.Post, "/api/oauth2/revoke")
@@ -228,7 +228,7 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
 
         await Assert.ThrowsAsync<DocumentNotFoundException>(async () =>
         {
-            await _sessionInfoRepository.GetAsync(accessToken.SessionId);
+            await _sessionInfoRepository.GetAsync((Guid)accessToken.SessionId!);
         });
     }
 

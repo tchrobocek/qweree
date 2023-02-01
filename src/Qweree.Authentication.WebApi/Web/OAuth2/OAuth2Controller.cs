@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
@@ -15,6 +14,7 @@ using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
 using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
+using TokenInfo = Qweree.Authentication.Sdk.OAuth2.TokenInfo;
 
 namespace Qweree.Authentication.WebApi.Web.OAuth2;
 
@@ -48,7 +48,7 @@ public class OAuth2Controller : ControllerBase
     /// <param name="authorizationHeader">Authorization header.</param>
     /// <returns>Created user.</returns>
     [HttpPost("auth")]
-    [ProducesResponseType(typeof(TokenInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TokenInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AuthenticateActionAsync(
         [FromForm(Name = "username")] string? username,
@@ -63,7 +63,7 @@ public class OAuth2Controller : ControllerBase
         if (!GrantWhitelist.Contains(grantType))
             return Unauthorized();
 
-        Response<TokenInfo> response;
+        Response<Domain.Authentication.TokenInfo> response;
 
         var clientCredentials = new ClientCredentials(clientId ?? "", clientSecret);
 

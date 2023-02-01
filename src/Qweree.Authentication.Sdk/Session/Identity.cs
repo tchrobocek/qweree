@@ -1,54 +1,24 @@
 using System;
-using System.Collections.Immutable;
 using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.Sdk.Session;
 
 public class Identity
 {
-    public Identity(IdentityClient client, string email, ImmutableArray<string> roles)
-    {
-        Client = client;
-        Email = email;
-        Roles = roles;
-    }
-
-    public Identity(IdentityClient client, IdentityUser user, string email, ImmutableArray<string> roles)
-        :this(client, email, roles)
-    {
-        User = user;
-    }
-
-    public IdentityClient Client { get; }
-    public IdentityUser? User { get; }
-    public string Email { get; }
-    public ImmutableArray<string> Roles { get; }
+    public IdentityClient? Client { get; set; }
+    public IdentityUser? User { get; set; }
+    public string? Email { get; set; }
+    public string[]? Roles { get; set; }
 }
-
-public class IdentityUser
-{
-    public IdentityUser(Guid id, string username, ImmutableArray<UserProperty> properties)
-    {
-        Id = id;
-        Username = username;
-        Properties = properties;
-    }
-
-    public Guid Id { get; }
-    public string Username { get; }
-    public ImmutableArray<UserProperty> Properties { get; }
-}
-
 public class IdentityClient
 {
-    public IdentityClient(Guid id, string clientId, string applicationName)
-    {
-        Id = id;
-        ClientId = clientId;
-        ApplicationName = applicationName;
-    }
-
-    public Guid Id { get; }
-    public string ClientId { get; }
-    public string ApplicationName { get; }
+    public Guid? Id { get; set; }
+    public string? ClientId { get; set; }
+    public string? ApplicationName { get; set; }
+}
+public class IdentityUser
+{
+    public Guid? Id { get; set; }
+    public string? Username { get; set; }
+    public UserProperty[]? Properties { get; set; }
 }

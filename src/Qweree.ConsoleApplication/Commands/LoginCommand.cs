@@ -32,7 +32,11 @@ public class LoginCommand : ICommand
 
         try
         {
-            await _authenticationService.AuthenticateAsync(new PasswordGrantInput(username, password), cancellationToken);
+            await _authenticationService.AuthenticateAsync(new PasswordGrantInput
+            {
+                Username = username,
+                Password = password
+            }, cancellationToken);
         }
         catch (Exception e)
         {

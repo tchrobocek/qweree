@@ -4,24 +4,12 @@ namespace Qweree.Authentication.Sdk.Account;
 
 public class DeviceInfo
 {
-    public DeviceInfo(Guid id, string client, string os, string device, string brand, string model, DateTime issuedAt, DateTime expiresAt)
-    {
-        Id = id;
-        Client = client;
-        Os = os;
-        Device = device;
-        Brand = brand;
-        Model = model;
-        IssuedAt = issuedAt;
-        ExpiresAt = expiresAt;
-    }
-
-    public Guid Id { get; }
-    public string Client { get; }
-    public string Os { get; }
-    public string Device { get; }
-    public string Brand { get; }
-    public string Model { get; }
-    public DateTime IssuedAt { get; }
-    public DateTime ExpiresAt { get; }
+    public Guid? Id { get; set; }
+    public string? Client { get; set; }
+    public string? Os { get; set; }
+    public string? Device { get; set; }
+    public string? Brand { get; set; }
+    public string? Model { get; set; }
+    public DateTime? IssuedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

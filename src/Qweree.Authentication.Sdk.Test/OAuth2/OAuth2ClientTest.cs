@@ -24,10 +24,16 @@ public class OAuth2ClientTest : IClassFixture<AuthenticationAdapterFixture>
     [Fact]
     public async Task TestAuthenticatePassword()
     {
-        var input = new PasswordGrantInput(AuthenticationAdapterFixture.TestAdminUsername,
-            AuthenticationAdapterFixture.TestAdminPassword);
-        var clientCredentials = new ClientCredentials(AuthenticationAdapterFixture.TestClientId,
-            AuthenticationAdapterFixture.TestClientSecret);
+        var input = new PasswordGrantInput
+        {
+            Username = AuthenticationAdapterFixture.TestAdminUsername,
+            Password = AuthenticationAdapterFixture.TestAdminPassword
+        };
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = AuthenticationAdapterFixture.TestClientId,
+            ClientSecret = AuthenticationAdapterFixture.TestClientSecret
+        };
         var response = await _oAuth2Client.SignInAsync(input, clientCredentials);
 
         response.EnsureSuccessStatusCode();

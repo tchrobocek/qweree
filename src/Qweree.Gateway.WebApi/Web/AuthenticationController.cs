@@ -41,11 +41,19 @@ public class AuthenticationController : ControllerBase
     /// <returns>Identity.</returns>
     [HttpPost]
     [Route("login")]
-    [ProducesResponseType(typeof(IdentityDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Identity), StatusCodes.Status200OK)]
     public async Task<IActionResult> LoginAsync(LoginInputDto input)
     {
-        var grantInput = new PasswordGrantInput(input.Username ?? string.Empty, input.Password ?? string.Empty);
-        var clientCredentials = new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty, _qwereeConfig.Value.ClientSecret ?? string.Empty);
+        var grantInput = new PasswordGrantInput
+        {
+            Username = input.Username,
+            Password = input.Password
+        };
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = _qwereeConfig.Value.ClientId,
+            ClientSecret = _qwereeConfig.Value.ClientSecret
+        };
         var options = new OAuth2RequestOptions(Request.Headers.UserAgent);
         var response = await _oauthClient.SignInAsync(grantInput, clientCredentials, options);
 
@@ -108,7 +116,7 @@ public class AuthenticationController : ControllerBase
             }
         }
 
-        return Ok(IdentityMapper.ToDto(new ClaimsPrincipal(user)));
+        return Ok(IdentityMapper.ToIdentity(new ClaimsPrincipal(user)));
     }
 
     /// <summary>
@@ -157,12 +165,12 @@ public class AuthenticationController : ControllerBase
         if (cookie == null)
             return Unauthorized();
 
-        TokenInfoDto? tokenInfo;
+        TokenInfo? tokenInfo;
 
         try
         {
             await using var stream = await _sessionStorage.ReadAsync(cookie);
-            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream);
+            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream);
         }
         catch (ArgumentException)
         {
@@ -171,9 +179,15 @@ public class AuthenticationController : ControllerBase
         }
 
         var options = new OAuth2RequestOptions(Request.Headers.UserAgent);
-        var response = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput(tokenInfo!.RefreshToken ?? string.Empty),
-            new ClientCredentials(_qwereeConfig.Value.ClientId ?? string.Empty,
-                _qwereeConfig.Value.ClientSecret ?? string.Empty), options);
+        var response = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput
+            {
+                RefreshToken = tokenInfo?.RefreshToken
+            },
+            new ClientCredentials
+            {
+                ClientId = _qwereeConfig.Value.ClientId,
+                ClientSecret = _qwereeConfig.Value.ClientSecret
+            }, options);
 
         if (!response.IsSuccessful)
             return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
@@ -190,11 +204,11 @@ public class AuthenticationController : ControllerBase
     {
         var cookie = Request.Cookies["Session"];
 
-        TokenInfoDto? tokenInfo = null;
+        TokenInfo? tokenInfo = null;
         if (cookie != null)
         {
             await using var stream = await _sessionStorage.ReadAsync(cookie, cancellationToken);
-            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream, cancellationToken);
+            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream, cancellationToken);
         }
 
         var client = new HttpClient(_messageHandler)

@@ -43,8 +43,16 @@ public class RefreshTokenHandler : DelegatingHandler
         if (token?.RefreshToken == null)
             return response;
 
-        var refreshResponse = await _oauthClient.RefreshAsync(new RefreshTokenGrantInput(token.RefreshToken),
-            new ClientCredentials(_clientCredentials.ClientId, _clientCredentials.ClientSecret), cancellationToken: cancellationToken);
+        var input = new RefreshTokenGrantInput
+        {
+            RefreshToken = token.RefreshToken
+        };
+        var credentials = new ClientCredentials
+        {
+            ClientId = _clientCredentials.ClientId,
+            ClientSecret = _clientCredentials.ClientSecret
+        };
+        var refreshResponse = await _oauthClient.RefreshAsync(input, credentials, cancellationToken: cancellationToken);
 
         if (!refreshResponse.IsSuccessful)
             return response;
@@ -56,7 +64,7 @@ public class RefreshTokenHandler : DelegatingHandler
 
         try
         {
-            await _tokenStorage.SetTokenInfoAsync(TokenInfoMapper.FromDto(payload), cancellationToken);
+            await _tokenStorage.SetTokenInfoAsync(payload, cancellationToken);
         }
         catch (Exception)
         {

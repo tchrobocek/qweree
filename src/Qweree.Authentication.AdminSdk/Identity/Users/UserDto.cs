@@ -1,6 +1,5 @@
 using System;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users;
 
@@ -13,4 +12,10 @@ public class UserDto
     public RoleDto[]? Roles { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
+}
+
+public class UserPropertyDto
+{
+    public string? Key { get; set; }
+    public string? Value { get; set; }
 }

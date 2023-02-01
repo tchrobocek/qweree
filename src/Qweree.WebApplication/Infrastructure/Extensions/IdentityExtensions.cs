@@ -13,12 +13,12 @@ public static class IdentityExtensions
         var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
         return fullNameProperty?.Value;
     }
-    public static string? GetFullName(this IdentityUserDto @this)
+    public static string? GetFullName(this IdentityUser @this)
     {
         var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
         return fullNameProperty?.Value;
     }
-    public static string? GetFullName(this MyProfileDto @this)
+    public static string? GetFullName(this MyProfile @this)
     {
         var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
         return fullNameProperty?.Value;

@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.WebApi.Domain.Account;
+using Qweree.Authentication.WebApi.Infrastructure.Account;
 using Qweree.Sdk;
+using ChangeMyPasswordInput = Qweree.Authentication.Sdk.Account.ChangeMyPasswordInput;
+using DeviceInfo = Qweree.Authentication.Sdk.Account.DeviceInfo;
 
 namespace Qweree.Authentication.WebApi.Web.Account;
 
@@ -16,9 +19,9 @@ namespace Qweree.Authentication.WebApi.Web.Account;
 [Route("/api/account")]
 public class MyAccountController : ControllerBase
 {
-    private readonly Domain.Account.MyAccountService _myAccountService;
+    private readonly MyAccountService _myAccountService;
 
-    public MyAccountController(Domain.Account.MyAccountService myAccountService)
+    public MyAccountController(MyAccountService myAccountService)
     {
         _myAccountService = myAccountService;
     }
@@ -30,9 +33,9 @@ public class MyAccountController : ControllerBase
     [HttpPost("change-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ChangePasswordActionAsync(ChangeMyPasswordInputDto input)
+    public async Task<IActionResult> ChangePasswordActionAsync(ChangeMyPasswordInput input)
     {
-        var response = await _myAccountService.ChangeMyPasswordAsync(new ChangeMyPasswordInput(input.OldPassword ?? string.Empty, input.NewPassword ?? string.Empty));
+        var response = await _myAccountService.ChangeMyPasswordAsync(new Domain.Account.ChangeMyPasswordInput(input.OldPassword ?? string.Empty, input.NewPassword ?? string.Empty));
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
@@ -44,7 +47,7 @@ public class MyAccountController : ControllerBase
     ///     Find my devices.
     /// </summary>
     [HttpGet("my-devices")]
-    [ProducesResponseType(typeof(DeviceInfoDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DeviceInfo[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> MyDevicesGetActionAsync()
     {
         var response = await _myAccountService.FindMyDevicesAsync();
@@ -52,14 +55,14 @@ public class MyAccountController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(response.Payload!.Select(DeviceInfoMapper.ToDto));
+        return Ok(response.Payload!.Select(DeviceInfoMapper.Map));
     }
 
     /// <summary>
     ///     Get my account.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IdentityUserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IdentityUser), StatusCodes.Status200OK)]
     public async Task<IActionResult> MyProfileGetActionAsync()
     {
         var response = await _myAccountService.GetMeAsync();
@@ -67,6 +70,6 @@ public class MyAccountController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(MyProfileMapper.ToDto(response.Payload!));
+        return Ok(MyProfileMapper.Map(response.Payload!));
     }
 }

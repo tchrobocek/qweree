@@ -17,8 +17,8 @@ public class ClaimsPrincipalStorage : ISessionStorage
     }
     public ClaimsPrincipal ClaimsPrincipal { get; }
     public IdentityUser? CurrentUser => _identity.User;
-    public IdentityClient CurrentClient => _identity.Client;
-    public Guid UserId => CurrentUser?.Id ?? CurrentClient.Id;
+    public IdentityClient CurrentClient => _identity.Client!;
+    public Guid UserId => (Guid)(CurrentUser?.Id ?? CurrentClient.Id)!;
     public bool IsAnonymous => UserId == Guid.Empty;
     public Guid SessionId { get; }
 }

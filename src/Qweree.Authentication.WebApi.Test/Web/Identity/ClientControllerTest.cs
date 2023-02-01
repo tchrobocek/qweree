@@ -59,8 +59,16 @@ public class ClientControllerTest
         await _userRepository.InsertAsync(user);
         await _clientRepository.InsertAsync(adminClient);
 
-        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(adminClient.ClientId, adminClient.ClientSecret),
-            new PasswordGrantInput(user.Username, user.Password));
+        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials
+            {
+                ClientId = adminClient.ClientId,
+                ClientSecret = adminClient.ClientSecret
+            },
+            new PasswordGrantInput
+            {
+                Username = user.Username,
+                Password = user.Password
+            });
 
         {
             var input = new ClientCreateInput(client.Id, client.ClientId, client.ApplicationName,
@@ -137,8 +145,16 @@ public class ClientControllerTest
         clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
 
         using var httpClient =
-            await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(adminClient.ClientId, adminClient.ClientSecret),
-                new PasswordGrantInput(adminUser.Username, adminUser.Password));
+            await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials
+                {
+                    ClientId = adminClient.ClientId,
+                    ClientSecret = adminClient.ClientSecret
+                },
+                new PasswordGrantInput
+                {
+                    Username = user.Username,
+                    Password = user.Password
+                });
 
         {
             var response = await httpClient.GetAsync("/api/admin/identity/clients?sort[ClientId]=1&skip=2&take=3");

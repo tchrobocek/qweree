@@ -16,7 +16,7 @@ public class OAuth2Client
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<TokenInfoDto>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
+    public async Task<ApiResponse<TokenInfo>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -38,10 +38,10 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
+        return ApiResponse.CreateApiResponse<TokenInfo>(response);
     }
 
-    public async Task<ApiResponse<TokenInfoDto>> SignInAsync(ClientCredentials clientCredentials,
+    public async Task<ApiResponse<TokenInfo>> SignInAsync(ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -61,10 +61,10 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
+        return ApiResponse.CreateApiResponse<TokenInfo>(response);
     }
 
-    public async Task<ApiResponse<TokenInfoDto>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
+    public async Task<ApiResponse<TokenInfo>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -85,7 +85,7 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfoDto>(response);
+        return ApiResponse.CreateApiResponse<TokenInfo>(response);
     }
 
     public async Task<ApiResponse> RevokeAsync(CancellationToken cancellationToken = new())

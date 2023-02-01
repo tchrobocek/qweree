@@ -16,7 +16,7 @@ using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
 using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
-using SdkUserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
+using SdkUserProperty = Qweree.Authentication.AdminSdk.Identity.Users.UserProperty;
 using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
 
 namespace Qweree.Authentication.WebApi.Domain;

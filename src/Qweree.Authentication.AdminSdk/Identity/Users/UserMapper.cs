@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users;
 

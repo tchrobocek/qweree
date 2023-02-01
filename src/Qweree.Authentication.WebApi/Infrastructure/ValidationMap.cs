@@ -1,12 +1,13 @@
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
-using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Validator.Constraints;
 using Qweree.Validator.ModelValidation.Static;
+using ChangeMyPasswordInput = Qweree.Authentication.WebApi.Domain.Account.ChangeMyPasswordInput;
+using UserRegisterInput = Qweree.Authentication.WebApi.Domain.Account.UserRegisterInput;
 
 namespace Qweree.Authentication.WebApi.Infrastructure;
 

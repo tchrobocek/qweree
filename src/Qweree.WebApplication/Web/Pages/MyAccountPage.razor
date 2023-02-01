@@ -115,9 +115,9 @@
 }
 
 @code {
-    private IdentityDto? _identity;
-    private MyProfileDto? _user;
-    private List<DeviceInfoDto> _myDevices = new();
+    private Identity? _identity;
+    private MyProfile? _user;
+    private List<DeviceInfo> _myDevices = new();
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -160,7 +160,11 @@
             return;
         }
 
-        var response = await MyAccountClient.ChangeMyPasswordAsync(new ChangeMyPasswordInput(oldPassword, newPassword));
+        var response = await MyAccountClient.ChangeMyPasswordAsync(new ChangeMyPasswordInput
+        {
+            OldPassword = oldPassword,
+            NewPassword = newPassword
+        });
 
         if (!response.IsSuccessful)
         {

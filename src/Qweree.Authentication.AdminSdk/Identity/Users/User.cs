@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users;
 
@@ -26,4 +25,16 @@ public class User
     public ImmutableArray<UserProperty> Properties { get; }
     public DateTime CreatedAt { get; }
     public DateTime ModifiedAt { get; }
+}
+
+public class UserProperty
+{
+    public UserProperty(string key, string value)
+    {
+        Key = key;
+        Value = value;
+    }
+
+    public string Key { get; }
+    public string Value { get; }
 }

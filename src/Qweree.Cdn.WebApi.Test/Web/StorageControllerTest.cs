@@ -38,8 +38,16 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
     [Fact]
     public async Task TestStoreAndReadAndDelete()
     {
-        var passwordInput = new PasswordGrantInput("admin", "password");
-        var clientCredentials = new ClientCredentials("test-cli", "password");
+        var passwordInput = new PasswordGrantInput
+        {
+            Username = "admin",
+            Password = "password"
+        };
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = "test-cli",
+            ClientSecret = "password"
+        };
         var client = await _factory.CreateAuthenticatedClientAsync(passwordInput, clientCredentials);
         const string text = "Ahoj!";
         const string text2 = "Hello!";
@@ -119,8 +127,16 @@ public class StorageControllerTest : IClassFixture<WebApiFactory>, IDisposable
     [Fact]
     public async Task TestReplace()
     {
-        var passwordInput = new PasswordGrantInput("admin", "password");
-        var clientCredentials = new ClientCredentials("test-cli", "password");
+        var passwordInput = new PasswordGrantInput
+        {
+            Username = "admin",
+            Password = "password"
+        };
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = "test-cli",
+            ClientSecret = "password"
+        };
         var client = await _factory.CreateAuthenticatedClientAsync(passwordInput, clientCredentials);
         const string text = "Ahoj!";
         const string text2 = "Hello!";

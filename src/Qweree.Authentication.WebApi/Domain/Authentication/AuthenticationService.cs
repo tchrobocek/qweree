@@ -6,7 +6,6 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
-using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
@@ -16,9 +15,11 @@ using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Utils;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
-using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
+using IdentityClient = Qweree.Authentication.WebApi.Domain.Session.IdentityClient;
+using IdentityMapper = Qweree.Authentication.WebApi.Infrastructure.Session.IdentityMapper;
+using IdentityUser = Qweree.Authentication.WebApi.Domain.Session.IdentityUser;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
-using UserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
+using SdkAccessToken = Qweree.Authentication.Sdk.Session.Tokens.AccessToken;
 
 namespace Qweree.Authentication.WebApi.Domain.Authentication;
 
@@ -91,11 +92,16 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Session.Identity(new(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username, user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
-        var accessToken = new AccessToken(session.Id, identity, now, expiresAt);
-        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
+        var jwt = _tokenEncoder.EncodeAccessToken(new SdkAccessToken
+        {
+            ExpiresAt = expiresAt,
+            Identity = IdentityMapper.Map(identity),
+            IssuedAt = _datetimeProvider.UtcNow,
+            SessionId = session.Id
+        });
 
         var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
         return Response.Ok(tokenInfo);
@@ -139,12 +145,17 @@ public class AuthenticationService
         effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             new IdentityUser(user.Id, user.Username,
                 user.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()),
             user.ContactEmail, effectiveRoles.ToImmutableArray());
-        var accessToken = new AccessToken(session.Id, identity, now, expiresAt);
-        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
+        var jwt = _tokenEncoder.EncodeAccessToken(new SdkAccessToken
+        {
+            ExpiresAt = expiresAt,
+            Identity = IdentityMapper.Map(identity),
+            IssuedAt = _datetimeProvider.UtcNow,
+            SessionId = session.Id
+        });
 
         var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
         return Response.Ok(tokenInfo);
@@ -179,10 +190,15 @@ public class AuthenticationService
         effectiveRoles.Add("CLIENT");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
-        var identity = new Sdk.Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
             owner.ContactEmail, effectiveRoles.ToImmutableArray());
-        var accessToken = new AccessToken(session.Id, identity, now, expiresAt);
-        var jwt = _tokenEncoder.EncodeAccessToken(accessToken);
+        var jwt = _tokenEncoder.EncodeAccessToken(new SdkAccessToken
+        {
+            ExpiresAt = expiresAt,
+            Identity = IdentityMapper.Map(identity),
+            IssuedAt = _datetimeProvider.UtcNow,
+            SessionId = session.Id
+        });
 
         var tokenInfo = new TokenInfo(jwt, null, expiresAt);
         return Response.Ok(tokenInfo);

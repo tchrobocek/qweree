@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.Sdk.Users;
+namespace Qweree.Authentication.AdminSdk.Identity.Users;
 
 public static class UserPropertyMapper
 {

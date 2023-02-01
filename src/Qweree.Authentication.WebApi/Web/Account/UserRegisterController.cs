@@ -6,8 +6,8 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
+using Qweree.Authentication.WebApi.Infrastructure.Account;
 using Qweree.Sdk;
-using UserInvitationDto = Qweree.Authentication.Sdk.Account.UserInvitationDto;
 
 namespace Qweree.Authentication.WebApi.Web.Account;
 
@@ -31,9 +31,9 @@ public class UserRegisterController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UserRegisterActionAsync(UserRegisterInputDto input)
+    public async Task<IActionResult> UserRegisterActionAsync(UserRegisterInput input)
     {
-        var response = await _userRegisterService.RegisterAsync(UserRegisterInputMapper.FromDto(input));
+        var response = await _userRegisterService.RegisterAsync(UserRegisterInputMapper.Map(input));
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
@@ -46,7 +46,7 @@ public class UserRegisterController : ControllerBase
     /// </summary>
     /// <param name="id">User invitation id.</param>
     [HttpGet("invitation/{id}")]
-    [ProducesResponseType(typeof(UserInvitationDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserInvitation), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
     {
@@ -55,7 +55,7 @@ public class UserRegisterController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(new UserInvitationDto
+        return Ok(new UserInvitation
         {
             Id = response.Payload!.Id,
             Username = response.Payload.Username,

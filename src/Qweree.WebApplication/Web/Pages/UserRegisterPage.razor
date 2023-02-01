@@ -34,7 +34,7 @@
     private string _password2 = string.Empty;
     private string _contactEmail = string.Empty;
     private string _fullName = string.Empty;
-    private UserInvitationDto? _invitation;
+    private UserInvitation? _invitation;
 
     [Parameter]
     public string? InvitationId { get; set; }
@@ -71,7 +71,7 @@
             return;
         }
 
-        var input = new UserRegisterInputDto
+        var input = new UserRegisterInput
         {
             Fullname = _fullName,
             Password = _password,

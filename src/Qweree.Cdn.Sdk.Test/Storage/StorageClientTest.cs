@@ -19,9 +19,16 @@ public class SttorageClientTest : IClassFixture<CdnAdapterFixture>
     {
         var uri = new Uri(new Uri(cdnAdapterFixture.CdnApiUri), "api/v1/storage/");
         var httpClient = cdnAdapterFixture
-            .CreateAuthenticatedHttpClientAsync(new PasswordGrantInput(CdnAdapterFixture.TestAdminUsername,
-                CdnAdapterFixture.TestAdminPassword), new ClientCredentials(CdnAdapterFixture.TestClientId,
-                CdnAdapterFixture.TestClientSecret)).GetAwaiter().GetResult();
+            .CreateAuthenticatedHttpClientAsync(new PasswordGrantInput
+                {
+                    Username = CdnAdapterFixture.TestAdminUsername,
+                    Password = CdnAdapterFixture.TestAdminPassword
+                },
+                new ClientCredentials
+                {
+                    ClientId = CdnAdapterFixture.TestClientId,
+                    ClientSecret = CdnAdapterFixture.TestClientSecret
+                }).GetAwaiter().GetResult();
 
         httpClient.BaseAddress = uri;
         _storageClient = new StorageClient(httpClient);

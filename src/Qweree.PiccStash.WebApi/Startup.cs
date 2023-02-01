@@ -184,8 +184,11 @@ public class Startup
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
             var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Qweree:AuthUri"])});
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
-            var clientCredentials = new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,
-                qwereeConfig.Value.ClientSecret ?? string.Empty);
+            var clientCredentials = new ClientCredentials
+            {
+                ClientId = qwereeConfig.Value.ClientId,
+                ClientSecret = qwereeConfig.Value.ClientSecret
+            };
 
             return new ClientCredentialsHandler(httpHandler, oauth2Client, clientCredentials, new MemoryTokenStorage());
         });

@@ -15,7 +15,7 @@ public class ClaimsPrincipalStorage
         _authenticationStateProvider = authenticationStateProvider;
     }
 
-    public async Task<IdentityDto?> GetIdentityAsync(CancellationToken cancellationToken = new())
+    public async Task<Identity?> GetIdentityAsync(CancellationToken cancellationToken = new())
     {
         var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
 
@@ -24,7 +24,7 @@ public class ClaimsPrincipalStorage
             return null;
         }
 
-        return IdentityMapper.ToDto(authenticationState.User);
+        return IdentityMapper.ToIdentity(authenticationState.User);
     }
 
     public async Task<ClaimsPrincipal> GetClaimsPrincipalAsync(CancellationToken cancellationToken = new())

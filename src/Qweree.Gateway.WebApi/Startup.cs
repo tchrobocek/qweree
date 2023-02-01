@@ -50,8 +50,11 @@ public class Startup
             var httpHandler = p.GetRequiredService<HttpMessageHandler>();
             var oauth2Client = p.GetRequiredService<OAuth2Client>();
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
-            var clientCredentials = new ClientCredentials(qwereeConfig.Value.ClientId ?? string.Empty,
-                qwereeConfig.Value.ClientSecret ?? string.Empty);
+            var clientCredentials = new ClientCredentials
+            {
+                ClientId = qwereeConfig.Value.ClientId,
+                ClientSecret = qwereeConfig.Value.ClientSecret
+            };
 
             return new ClientCredentialsHandler(httpHandler, oauth2Client, clientCredentials, new MemoryTokenStorage());
         });
@@ -98,7 +101,7 @@ public class Startup
                         try
                         {
                             await using var stream = await storage.ReadAsync(cookie);
-                            var tokenInfo = await JsonUtils.DeserializeAsync<TokenInfoDto>(stream);
+                            var tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream);
                             context.Request.Headers.Authorization = $"Bearer {tokenInfo?.AccessToken}";
                         }
                         catch (Exception)

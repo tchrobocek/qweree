@@ -25,6 +25,10 @@ public class HttpMessageHandlerFactory
         var authorizationHeaderHandler = new AuthorizationHeaderHandler(_innerHandler, _tokenStorage);
         var oauth2Client = await _oauthClientFactory.CreateClientAsync(cancellationToken);
         return new RefreshTokenHandler(authorizationHeaderHandler, _tokenStorage, oauth2Client,
-            new ClientCredentials("admin-cli", "admin"));
+            new ClientCredentials
+            {
+                ClientId = "admin-cli",
+                ClientSecret = "password"
+            });
     }
 }

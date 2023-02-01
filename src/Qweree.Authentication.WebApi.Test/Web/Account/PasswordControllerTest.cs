@@ -61,9 +61,18 @@ public class PasswordControllerTest : IClassFixture<WebApiFactory>, IDisposable
 
 
         {
-            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new Sdk.OAuth2.ClientCredentials(client.ClientId, client.ClientSecret),
-                new Sdk.OAuth2.PasswordGrantInput(user.Username, user.Password));
-            var input = new ChangeMyPasswordInputDto
+            using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(
+                new Sdk.OAuth2.ClientCredentials
+                {
+                    ClientId = client.ClientId,
+                    ClientSecret = client.ClientSecret
+                },
+                new Sdk.OAuth2.PasswordGrantInput
+                {
+                    Username = user.Username,
+                    Password = user.Password
+                });
+            var input = new ChangeMyPasswordInput
             {
                 OldPassword = user.Password,
                 NewPassword = "xxx---pwd1122POsd"

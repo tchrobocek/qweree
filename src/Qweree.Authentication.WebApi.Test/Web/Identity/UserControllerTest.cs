@@ -55,8 +55,16 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         await _userRepository.InsertAsync(adminUser);
         await _clientRepository.InsertAsync(client);
 
-        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
-            new PasswordGrantInput(adminUser.Username, adminUser.Password));
+        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials
+            {
+                ClientId = client.ClientId,
+                ClientSecret = client.ClientSecret
+            },
+            new PasswordGrantInput
+            {
+                Username = adminUser.Username,
+                Password = adminUser.Password
+            });
 
         {
             var response = await httpClient.GetAsync($"/api/admin/identity/users/{adminUser.Id}");
@@ -87,8 +95,16 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         await _userRepository.InsertAsync(admin);
         await _clientRepository.InsertAsync(client);
 
-        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
-            new PasswordGrantInput(admin.Username, admin.Password));
+        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials
+            {
+                ClientId = client.ClientId,
+                ClientSecret = client.ClientSecret
+            },
+            new PasswordGrantInput
+            {
+                Username = admin.Username,
+                Password = admin.Password
+            });
 
         {
             var response = await httpClient.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
@@ -110,8 +126,16 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         var client = ClientFactory.CreateDefault(adminUser.Id);
         await _userRepository.InsertAsync(adminUser);
         await _clientRepository.InsertAsync(client);
-        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials(client.ClientId, client.ClientSecret),
-            new PasswordGrantInput(adminUser.Username, adminUser.Password));
+        using var httpClient = await _webApiFactory.CreateAuthenticatedClientAsync(new ClientCredentials
+            {
+                ClientId = client.ClientId,
+                ClientSecret = client.ClientSecret
+            },
+            new PasswordGrantInput
+            {
+                Username = adminUser.Username,
+                Password = adminUser.Password
+            });
 
         var user = UserFactory.CreateDefault();
         await _userRepository.InsertAsync(user);

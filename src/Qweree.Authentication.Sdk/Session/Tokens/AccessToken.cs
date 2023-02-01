@@ -4,16 +4,8 @@ namespace Qweree.Authentication.Sdk.Session.Tokens;
 
 public class AccessToken
 {
-    public AccessToken(Guid sessionId, Identity identity, DateTime issuedAt, DateTime expiresAt)
-    {
-        SessionId = sessionId;
-        Identity = identity;
-        IssuedAt = issuedAt;
-        ExpiresAt = expiresAt;
-    }
-
-    public Guid SessionId { get; }
-    public Identity Identity { get; }
-    public DateTime IssuedAt { get; }
-    public DateTime ExpiresAt { get; }
+    public Guid? SessionId { get; set; }
+    public Identity? Identity { get; set; }
+    public DateTime? IssuedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

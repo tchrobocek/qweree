@@ -21,25 +21,33 @@ public class AuthenticationService
     {
         var oauthClient = await _oauthClientFactory.CreateClientAsync(cancellationToken);
 
-        var clientCredentials = new ClientCredentials("admin-cli", "password");
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = "admin-cli",
+            ClientSecret = "password"
+        };
         var response = await oauthClient.SignInAsync(passwordGrantInput, clientCredentials, cancellationToken: cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
         var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-        await _context.SetCredentialsAsync(TokenInfoMapper.FromDto(token!), cancellationToken);
+        await _context.SetCredentialsAsync(token!, cancellationToken);
     }
 
     public async Task AuthenticateAsync(RefreshTokenGrantInput refreshTokenGrantInput, CancellationToken cancellationToken = new())
     {
         var oauthClient = await _oauthClientFactory.CreateClientAsync(cancellationToken);
 
-        var clientCredentials = new ClientCredentials("admin-cli", "password");
+        var clientCredentials = new ClientCredentials
+        {
+            ClientId = "admin-cli",
+            ClientSecret = "password"
+        };
         var response = await oauthClient.RefreshAsync(refreshTokenGrantInput, clientCredentials, cancellationToken: cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
         var token = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-        await _context.SetCredentialsAsync(TokenInfoMapper.FromDto(token!), cancellationToken);
+        await _context.SetCredentialsAsync(token!, cancellationToken);
     }
 }

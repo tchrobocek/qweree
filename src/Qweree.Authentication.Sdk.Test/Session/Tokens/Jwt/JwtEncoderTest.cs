@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Immutable;
+using System.Linq;
 using DeepEqual.Syntax;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
@@ -19,13 +19,51 @@ public class JwtEncoderTest
 
         var properties = new[]
         {
-            new UserProperty("property.hello.xxyyy", "hey"),
-            new UserProperty("+ěščřžýáíé=", "foo"),
-            new UserProperty("+12345678=", "bar"),
-            new UserProperty("+12345678=", "baz"),
+            new UserProperty
+            {
+                Key = "property.hello.xxyyy",
+                Value = "hey"
+            },
+            new UserProperty
+            {
+                Key = "+ěščřžýáíé=",
+                Value = "foo"
+            },
+            new UserProperty
+            {
+                Key = "+12345678=",
+                Value = "bar"
+            },
+            new UserProperty
+            {
+                Key = "+12345678=",
+                Value = "baz"
+            }
         };
-        var identity = new Identity(new(Guid.NewGuid(), "client", "app"), new(Guid.NewGuid(), "user", properties.ToImmutableArray()), "email", new[] {"role1", "role2"}.ToImmutableArray());
-        var accessToken = new AccessToken(Guid.NewGuid(), identity, DateTime.UtcNow, DateTime.UtcNow + TimeSpan.FromSeconds(1));
+        var identity = new Identity
+        {
+            Client = new IdentityClient
+            {
+                Id = Guid.NewGuid(),
+                ApplicationName = "client",
+                ClientId = "client"
+            },
+            User = new IdentityUser()
+            {
+                Id = Guid.NewGuid(),
+                Username = "user",
+                Properties = properties.ToArray()
+            },
+            Email = "email",
+            Roles = new[] {"role1", "role2"}
+        };
+        var accessToken = new AccessToken
+        {
+            SessionId = Guid.NewGuid(),
+            Identity = identity,
+            IssuedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(1)
+        };
         var jwt = encoder.EncodeAccessToken(accessToken);
 
         Assert.NotEmpty(jwt);

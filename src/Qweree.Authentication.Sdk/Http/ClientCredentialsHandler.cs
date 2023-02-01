@@ -66,11 +66,10 @@ public class ClientCredentialsHandler : DelegatingHandler
         if (!response.IsSuccessful)
             return null;
 
-        var dto = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
-        if (dto is null)
+        var tokenInfo = await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy, cancellationToken);
+        if (tokenInfo is null)
             return null;
 
-        var tokenInfo = TokenInfoMapper.FromDto(dto);
         await _tokenStorage.SetTokenInfoAsync(tokenInfo, cancellationToken);
         return tokenInfo;
     }

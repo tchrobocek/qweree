@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Immutable;
+using System.Linq;
 using DeepEqual.Syntax;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Users;
@@ -15,14 +15,44 @@ public class ClaimsPrincipalMapperTest
     {
         var properties = new[]
         {
-            new UserProperty("property.hello.xxyyy", "hey"),
-            new UserProperty("+ěščřžýáíé=", "foo"),
-            new UserProperty("+12345678=", "bar"),
-            new UserProperty("+12345678=", "baz"),
+            new UserProperty
+            {
+                Key = "property.hello.xxyyy",
+                Value = "hey"
+            },
+            new UserProperty
+            {
+                Key = "+ěščřžýáíé=",
+                Value = "foo"
+            },
+            new UserProperty
+            {
+                Key = "+12345678=",
+                Value = "bar"
+            },
+            new UserProperty
+            {
+                Key = "+12345678=",
+                Value = "baz"
+            }
         };
-        var identity = new Identity(new IdentityClient(Guid.NewGuid(), "client", "app"),
-            new(Guid.NewGuid(), "user", properties.ToImmutableArray()),
-            "email", ImmutableArray<string>.Empty);
+        var identity = new Identity
+        {
+            Client = new IdentityClient
+            {
+                Id = Guid.NewGuid(),
+                ApplicationName = "client",
+                ClientId = "client"
+            },
+            User = new IdentityUser()
+            {
+                Id = Guid.NewGuid(),
+                Username = "user",
+                Properties = properties.ToArray()
+            },
+            Email = "email",
+            Roles = new[] {"role1", "role2"}
+        };
         var claimsPrincipal = IdentityMapper.FromDto(identity);
         var actualIdentity = IdentityMapper.ToIdentity(claimsPrincipal);
 

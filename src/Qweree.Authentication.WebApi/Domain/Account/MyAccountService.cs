@@ -7,16 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
-using DeviceInfo = Qweree.Authentication.Sdk.Account.DeviceInfo;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
-using UserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
 
 namespace Qweree.Authentication.WebApi.Domain.Account;
 

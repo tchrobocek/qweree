@@ -28,25 +28,25 @@ public class MyAccountClient
         return ApiResponse.CreateApiResponse(response);
     }
 
-    public async Task<ApiResponse<IEnumerable<DeviceInfoDto>>> MyDevicesGetAsync(CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<IEnumerable<DeviceInfo>>> MyDevicesGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("my-devices", cancellationToken);
-        return ApiResponse.CreateApiResponse<IEnumerable<DeviceInfoDto>>(response);
+        return ApiResponse.CreateApiResponse<IEnumerable<DeviceInfo>>(response);
     }
 
-    public async Task<ApiResponse<MyProfileDto>> MyProfileGetAsync(CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<MyProfile>> MyProfileGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("", cancellationToken);
-        return ApiResponse.CreateApiResponse<MyProfileDto>(response);
+        return ApiResponse.CreateApiResponse<MyProfile>(response);
     }
 
-    public async Task<ApiResponse<UserInvitationDto>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<UserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
-        return ApiResponse.CreateApiResponse<UserInvitationDto>(response);
+        return ApiResponse.CreateApiResponse<UserInvitation>(response);
     }
 
-    public async Task<ApiResponse> UserRegisterAsync(UserRegisterInputDto input, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse> UserRegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
         return ApiResponse.CreateApiResponse(response);
