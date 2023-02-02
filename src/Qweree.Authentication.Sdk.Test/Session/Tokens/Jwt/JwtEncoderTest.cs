@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using DeepEqual.Syntax;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.Sdk.Session.Tokens.Jwt;
-using Qweree.Authentication.Sdk.Users;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
@@ -40,7 +40,7 @@ public class JwtEncoderTest
                 Value = "baz"
             }
         };
-        var identity = new Identity
+        var identity = new Sdk.Session.Identity
         {
             Client = new IdentityClient
             {

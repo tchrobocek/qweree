@@ -1,5 +1,5 @@
 using System;
-using Qweree.Authentication.Sdk.Users;
+using Qweree.Authentication.Sdk.Identity;
 
 namespace Qweree.Authentication.Sdk.Session;
 

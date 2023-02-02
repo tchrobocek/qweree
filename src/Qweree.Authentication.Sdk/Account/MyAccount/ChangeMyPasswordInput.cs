@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.Sdk.Account;
+namespace Qweree.Authentication.Sdk.Account.MyAccount;
 
 public class ChangeMyPasswordInput
 {

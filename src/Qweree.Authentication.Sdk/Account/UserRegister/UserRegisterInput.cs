@@ -1,6 +1,6 @@
 using System;
 
-namespace Qweree.Authentication.Sdk.Account;
+namespace Qweree.Authentication.Sdk.Account.UserRegister;
 
 public class UserRegisterInput
 {

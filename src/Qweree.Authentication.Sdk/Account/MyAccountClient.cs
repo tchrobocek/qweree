@@ -4,6 +4,8 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Account.MyAccount;
+using Qweree.Authentication.Sdk.Account.UserRegister;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
@@ -31,6 +33,12 @@ public class MyAccountClient
     {
         var response = await _httpClient.GetAsync("", cancellationToken);
         return ApiResponse.CreateApiResponse<MyProfile>(response);
+    }
+
+    public async Task<ApiResponse<SessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync("sessions", cancellationToken);
+        return ApiResponse.CreateApiResponse<SessionInfo[]>(response);
     }
 
     public async Task<ApiResponse<UserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())

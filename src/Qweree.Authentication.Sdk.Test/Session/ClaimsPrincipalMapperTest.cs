@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using DeepEqual.Syntax;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.Sdk.Session;
-using Qweree.Authentication.Sdk.Users;
 using Qweree.TestUtils.DeepEqual;
 using Xunit;
 
@@ -36,7 +36,7 @@ public class ClaimsPrincipalMapperTest
                 Value = "baz"
             }
         };
-        var identity = new Identity
+        var identity = new Sdk.Session.Identity
         {
             Client = new IdentityClient
             {

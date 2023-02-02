@@ -1,7 +1,7 @@
 using System;
-using Qweree.Authentication.Sdk.Users;
+using Qweree.Authentication.Sdk.Identity;
 
-namespace Qweree.Authentication.Sdk.Account;
+namespace Qweree.Authentication.Sdk.Account.MyAccount;
 
 public class MyProfile
 {

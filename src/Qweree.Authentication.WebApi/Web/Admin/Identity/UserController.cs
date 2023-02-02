@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.Sdk.Users;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Sdk;

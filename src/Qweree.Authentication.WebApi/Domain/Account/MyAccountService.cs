@@ -9,6 +9,7 @@ using Qweree.AspNet.Validations;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -22,16 +23,19 @@ public class MyAccountService
     private readonly IUserRepository _userRepository;
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly IValidator _validator;
 
     public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
-        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator)
+        IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator,
+        ISessionInfoRepository sessionInfoRepository)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
+        _sessionInfoRepository = sessionInfoRepository;
     }
 
     public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
@@ -79,5 +83,11 @@ public class MyAccountService
         {
             return Response.Fail<MyProfile>(new Error("User was not found.", StatusCodes.Status404NotFound));
         }
+    }
+
+    public async Task<CollectionResponse<SessionInfo>> FindMySessions(CancellationToken cancellationToken = new())
+    {
+        var items = await _sessionInfoRepository.FindForUser(_sessionStorage.UserId, cancellationToken);
+        return Response.Ok(items);
     }
 }

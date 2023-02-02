@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Qweree.Authentication.Sdk.Users;
+using Qweree.Authentication.Sdk.Identity;
 
 namespace Qweree.Authentication.Sdk.Session;
 

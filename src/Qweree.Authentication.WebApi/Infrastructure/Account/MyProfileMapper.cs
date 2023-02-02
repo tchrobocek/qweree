@@ -1,7 +1,7 @@
 using System.Linq;
 using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Session;
-using SdkMyProfile = Qweree.Authentication.Sdk.Account.MyProfile;
+using SdkMyProfile = Qweree.Authentication.Sdk.Account.MyAccount.MyProfile;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Account;
 

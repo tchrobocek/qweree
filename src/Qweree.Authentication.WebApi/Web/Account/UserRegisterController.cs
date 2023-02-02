@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.Sdk.Account;
+using Qweree.Authentication.Sdk.Account.UserRegister;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Infrastructure.Account;
 using Qweree.Sdk;

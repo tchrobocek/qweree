@@ -4,7 +4,7 @@ using Qweree.Authentication.WebApi.Domain.Session;
 using SdkIdentity = Qweree.Authentication.Sdk.Session.Identity;
 using SdkIdentityClient = Qweree.Authentication.Sdk.Session.IdentityClient;
 using SdkIdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
-using SdkUserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
+using SdkUserProperty = Qweree.Authentication.Sdk.Identity.UserProperty;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Session;
 

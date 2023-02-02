@@ -1,8 +1,8 @@
 using System.Linq;
 using Qweree.Authentication.AdminSdk.Identity.Users;
-using Qweree.Authentication.Sdk.Account;
+using Qweree.Authentication.Sdk.Account.MyAccount;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.Sdk.Session;
-using Qweree.Authentication.Sdk.Users;
 
 namespace Qweree.WebApplication.Infrastructure.Extensions;
 

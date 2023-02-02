@@ -1,4 +1,4 @@
-namespace Qweree.Authentication.Sdk.Users;
+namespace Qweree.Authentication.Sdk.Identity;
 
 public static class UserProperties
 {
