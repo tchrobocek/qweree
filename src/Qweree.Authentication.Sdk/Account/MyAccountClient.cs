@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -26,12 +25,6 @@ public class MyAccountClient
             cancellationToken);
 
         return ApiResponse.CreateApiResponse(response);
-    }
-
-    public async Task<ApiResponse<IEnumerable<DeviceInfo>>> MyDevicesGetAsync(CancellationToken cancellationToken = new())
-    {
-        var response = await _httpClient.GetAsync("my-devices", cancellationToken);
-        return ApiResponse.CreateApiResponse<IEnumerable<DeviceInfo>>(response);
     }
 
     public async Task<ApiResponse<MyProfile>> MyProfileGetAsync(CancellationToken cancellationToken = new())

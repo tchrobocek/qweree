@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +9,6 @@ using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Account;
 using Qweree.Sdk;
 using ChangeMyPasswordInput = Qweree.Authentication.Sdk.Account.ChangeMyPasswordInput;
-using DeviceInfo = Qweree.Authentication.Sdk.Account.DeviceInfo;
 
 namespace Qweree.Authentication.WebApi.Web.Account;
 
@@ -41,21 +39,6 @@ public class MyAccountController : ControllerBase
             return response.ToErrorActionResult();
 
         return NoContent();
-    }
-
-    /// <summary>
-    ///     Find my devices.
-    /// </summary>
-    [HttpGet("my-devices")]
-    [ProducesResponseType(typeof(DeviceInfo[]), StatusCodes.Status200OK)]
-    public async Task<IActionResult> MyDevicesGetActionAsync()
-    {
-        var response = await _myAccountService.FindMyDevicesAsync();
-
-        if (response.Status != ResponseStatus.Ok)
-            return response.ToErrorActionResult();
-
-        return Ok(response.Payload!.Select(DeviceInfoMapper.Map));
     }
 
     /// <summary>

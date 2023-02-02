@@ -52,49 +52,6 @@
                 </MudTabPanel>
                 <MudTabPanel Text="Active devices">
                     <MudDivider/>
-                    @foreach (var myDevice in _myDevices)
-                    {
-                        <MudGrid Class="mb-2 mt-2">
-                            <MudItem xs="3">
-                                <div class="align-center ma-4">
-                                    @if (myDevice.Device == "desktop")
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Filled.DesktopMac" Style="font-size: 3rem;"/>
-                                    }
-                                    @if (myDevice.Device == "mobile")
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Filled.Phone" Style="font-size: 3rem;"/>
-                                    }
-                                    @if (myDevice.Device == "tv")
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Filled.Tv" Style="font-size: 3rem;"/>
-                                    }
-                                    @if (myDevice.Device == "tablet")
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Filled.Tablet" Style="font-size: 3rem;"/>
-                                    }
-                                </div>
-                                <MudText Typo="Typo.body2">Device: @myDevice.Device</MudText>
-                                <MudText Typo="Typo.body2">Brand: @myDevice.Brand</MudText>
-                                <MudText Typo="Typo.body2">Model: @myDevice.Model</MudText>
-                                <MudText Typo="Typo.body2">Issued at: @myDevice.IssuedAt</MudText>
-                                <MudText Typo="Typo.body2">Expires at: @myDevice.ExpiresAt</MudText>
-                            </MudItem>
-                            <MudItem xs="4">
-                                @foreach (var item in myDevice.Client?.Split(';') ?? Array.Empty<string>())
-                                {
-                                    <MudText Typo="Typo.body2">@item</MudText>
-                                }
-                            </MudItem>
-                            <MudItem xs="5">
-                                @foreach (var item in myDevice.Os?.Split(';') ?? Array.Empty<string>())
-                                {
-                                    <MudText Typo="Typo.body2">@item</MudText>
-                                }
-                            </MudItem>
-                        </MudGrid>
-                        <MudDivider/>
-                    }
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">
                     <ErrorsComponent Errors="_errors"/>
@@ -117,7 +74,6 @@
 @code {
     private Identity? _identity;
     private MyProfile? _user;
-    private List<DeviceInfo> _myDevices = new();
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -136,9 +92,6 @@
             var userResponse = await MyAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
-            var myDevicesResponse = await MyAccountClient.MyDevicesGetAsync();
-            if (myDevicesResponse.IsSuccessful)
-                _myDevices = (await myDevicesResponse.ReadPayloadAsync())!.ToList();
         }
     }
 

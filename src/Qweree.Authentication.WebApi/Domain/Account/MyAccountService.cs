@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -67,11 +66,6 @@ public class MyAccountService
         await _userRepository.ReplaceAsync(id.ToString(), user, cancellationToken);
 
         return Response.Ok();
-    }
-
-    public Task<CollectionResponse<DeviceInfo>> FindMyDevicesAsync(CancellationToken cancellationToken = new())
-    {
-        return Task.FromResult(Response.Ok((IEnumerable<DeviceInfo>)new List<DeviceInfo>()));
     }
 
     public async Task<Response<MyProfile>> GetMeAsync(CancellationToken cancellationToken = new())
