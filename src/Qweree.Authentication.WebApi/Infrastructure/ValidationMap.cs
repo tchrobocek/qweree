@@ -1,4 +1,3 @@
-using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
