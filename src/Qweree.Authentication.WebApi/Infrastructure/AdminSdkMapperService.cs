@@ -35,14 +35,14 @@ using UserRoleModifyInput = Qweree.Authentication.WebApi.Domain.Authorization.Ro
 
 namespace Qweree.Authentication.WebApi.Infrastructure;
 
-public class SdkMapperService
+public class AdminSdkMapperService
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserRoleRepository _userRoleRepository;
     private readonly IClientRoleRepository _clientRoleRepository;
     private readonly AuthorizationService _authorizationService;
 
-    public SdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository,
+    public AdminSdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository,
         IClientRoleRepository clientRoleRepository, AuthorizationService authorizationService)
     {
         _userRepository = userRepository;

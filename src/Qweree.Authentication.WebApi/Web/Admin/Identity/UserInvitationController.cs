@@ -20,9 +20,9 @@ namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 public class UserInvitationController : ControllerBase
 {
     private readonly UserInvitationService _userInvitationService;
-    private readonly SdkMapperService _sdkMapper;
+    private readonly AdminSdkMapperService _sdkMapper;
 
-    public UserInvitationController(UserInvitationService userInvitationService, SdkMapperService sdkMapper)
+    public UserInvitationController(UserInvitationService userInvitationService, AdminSdkMapperService sdkMapper)
     {
         _userInvitationService = userInvitationService;
         _sdkMapper = sdkMapper;

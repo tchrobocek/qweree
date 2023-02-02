@@ -30,7 +30,7 @@ public class ClientControllerTest
 {
     private readonly ClientRepository _clientRepository;
     private readonly UserRepository _userRepository;
-    private readonly SdkMapperService _sdkMapperService;
+    private readonly AdminSdkMapperService _sdkMapperService;
     private readonly WebApiFactory _webApiFactory;
 
     public ClientControllerTest(WebApiFactory webApiFactory)
@@ -38,7 +38,7 @@ public class ClientControllerTest
         _webApiFactory = webApiFactory;
 
         using var scope = webApiFactory.Services.CreateScope();
-        _sdkMapperService = scope.ServiceProvider.GetRequiredService<SdkMapperService>();
+        _sdkMapperService = scope.ServiceProvider.GetRequiredService<AdminSdkMapperService>();
         _clientRepository = (ClientRepository) scope.ServiceProvider.GetRequiredService<IClientRepository>();
         _clientRepository.DeleteAllAsync()
             .GetAwaiter()

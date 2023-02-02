@@ -24,7 +24,7 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
 {
     private readonly UserRepository _userRepository;
     private readonly ClientRepository _clientRepository;
-    private readonly SdkMapperService _sdkMapperService;
+    private readonly AdminSdkMapperService _sdkMapperService;
     private readonly WebApiFactory _webApiFactory;
 
     public UserControllerTest(WebApiFactory webApiFactory)
@@ -32,7 +32,7 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         _webApiFactory = webApiFactory;
 
         using var scope = webApiFactory.Services.CreateScope();
-        _sdkMapperService = scope.ServiceProvider.GetRequiredService<SdkMapperService>();
+        _sdkMapperService = scope.ServiceProvider.GetRequiredService<AdminSdkMapperService>();
         _userRepository = (UserRepository) scope.ServiceProvider.GetRequiredService<IUserRepository>();
         _userRepository.DeleteAllAsync()
             .GetAwaiter()

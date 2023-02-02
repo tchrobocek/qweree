@@ -22,9 +22,9 @@ public class UserController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly UserService _userService;
-    private readonly SdkMapperService _sdkMapperService;
+    private readonly AdminSdkMapperService _sdkMapperService;
 
-    public UserController(UserService userService, IAuthorizationService authorizationService, SdkMapperService sdkMapperService)
+    public UserController(UserService userService, IAuthorizationService authorizationService, AdminSdkMapperService sdkMapperService)
     {
         _userService = userService;
         _authorizationService = authorizationService;

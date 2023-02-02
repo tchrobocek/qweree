@@ -24,9 +24,9 @@ namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 public class ClientController : ControllerBase
 {
     private readonly ClientService _clientService;
-    private readonly SdkMapperService _sdkMapperService;
+    private readonly AdminSdkMapperService _sdkMapperService;
 
-    public ClientController(ClientService clientService, SdkMapperService sdkMapperService)
+    public ClientController(ClientService clientService, AdminSdkMapperService sdkMapperService)
     {
         _clientService = clientService;
         _sdkMapperService = sdkMapperService;

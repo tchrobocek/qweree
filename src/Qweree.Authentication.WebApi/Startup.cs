@@ -226,7 +226,7 @@ public class Startup
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRoleRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, ClientRoleRepository>();
-        services.AddSingleton<SdkMapperService, SdkMapperService>();
+        services.AddSingleton<AdminSdkMapperService, AdminSdkMapperService>();
         services.AddSingleton<UserInvitationService>();
         services.AddSingleton<UserRegisterService>();
         services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),

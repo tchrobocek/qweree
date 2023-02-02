@@ -20,9 +20,9 @@ namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
 public class UserRoleController : ControllerBase
 {
     private readonly RoleService _roleService;
-    private readonly SdkMapperService _sdkMapperService;
+    private readonly AdminSdkMapperService _sdkMapperService;
 
-    public UserRoleController(RoleService roleService, SdkMapperService sdkMapperService)
+    public UserRoleController(RoleService roleService, AdminSdkMapperService sdkMapperService)
     {
         _roleService = roleService;
         _sdkMapperService = sdkMapperService;
