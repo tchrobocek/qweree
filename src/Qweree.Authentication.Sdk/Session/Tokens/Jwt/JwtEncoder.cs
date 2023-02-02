@@ -53,7 +53,7 @@ public class JwtEncoder : ITokenEncoder
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var identityPrincipal = FromDto(accessToken.Identity!);
+        var identityPrincipal = IdentityMapper.ToClaimsPrincipal(accessToken.Identity!);
         var claims = new List<Claim>(identityPrincipal.Claims)
         {
             new("iat", new DateTimeOffset(accessToken.IssuedAt ?? DateTime.MinValue).ToUnixTimeSeconds().ToString()),
@@ -71,27 +71,5 @@ public class JwtEncoder : ITokenEncoder
     public AccessToken DecodeAccessToken(string accessToken)
     {
         return Decode(accessToken);
-    }
-    public static ClaimsPrincipal FromDto(Identity identity)
-    {
-        var claims = new List<Claim>
-        {
-            new("client.id", identity.Client?.Id.ToString() ?? Guid.Empty.ToString()),
-            new("client.client_id", identity.Client?.ClientId ?? string.Empty),
-            new("client.application_name", identity.Client?.ApplicationName ?? string.Empty),
-            new("email", identity.Email ?? string.Empty)
-        };
-
-        claims.AddRange(identity.Roles?.Select(r => new Claim("role", r)) ?? Array.Empty<Claim>());
-        claims.AddRange(identity.Roles?.Select(r => new Claim(ClaimTypes.Role, r)) ?? Array.Empty<Claim>());
-
-        if (identity.User != null)
-        {
-            claims.Add(new Claim("user.id", identity.User?.Id?.ToString() ?? string.Empty));
-            claims.Add(new Claim("user.username", identity.User?.Username ?? string.Empty));
-            claims.AddRange(identity.User?.Properties?.Select(prop => new Claim($"user.property.{prop.Key}", prop.Value ?? string.Empty)) ?? Array.Empty<Claim>());
-        }
-
-        return new ClaimsPrincipal(new ClaimsIdentity(claims, "qweree"));
     }
 }

@@ -39,7 +39,7 @@
 @code {
     private readonly List<string> _errors = new();
 
-    private readonly List<UserRoleDto> _groupRoles = new();
+    private readonly List<UserRole> _groupRoles = new();
     private string _idString = Guid.NewGuid().ToString();
     private string _key = string.Empty;
     private string _label = string.Empty;
@@ -49,7 +49,7 @@
     private async Task CreateRoleAsync()
     {
         _errors.Clear();
-        var input = new UserRoleCreateInputDto
+        var input = new UserRoleCreateInput
         {
             Id = Guid.Parse(_idString),
             Description = _description,

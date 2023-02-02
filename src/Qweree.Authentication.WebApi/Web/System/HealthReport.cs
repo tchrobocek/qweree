@@ -2,16 +2,16 @@ using System.Collections.Generic;
 
 namespace Qweree.Authentication.WebApi.Web.System;
 
-public class HealthReportDto
+public class HealthReport
 {
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? Status { get; set; }
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public Dictionary<string, HealthReportEntryDto>? Entries { get; set; }
+    public Dictionary<string, HealthReportEntry>? Entries { get; set; }
 }
 
-public class HealthReportEntryDto
+public class HealthReportEntry
 {
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string? Status { get; set; }

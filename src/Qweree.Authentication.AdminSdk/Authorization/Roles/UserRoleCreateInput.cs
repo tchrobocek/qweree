@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.AdminSdk.Authorization.Roles;
 
-public class UserRoleCreateInputDto
+public class UserRoleCreateInput
 {
     public Guid? Id { get; set; }
     public string? Key { get; set; }

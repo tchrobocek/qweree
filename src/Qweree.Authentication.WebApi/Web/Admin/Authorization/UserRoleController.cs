@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure;
-using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Sdk;
+using UserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
+using UserRoleCreateInput = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRoleCreateInput;
+using UserRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRoleModifyInput;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
 
@@ -34,18 +35,18 @@ public class UserRoleController : ControllerBase
     /// <returns>Created role.</returns>
     [HttpPost]
     [Authorize(Policy = "RoleCreate")]
-    [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UserRoleCreateActionAsync(UserRoleCreateInputDto input)
+    [ProducesResponseType(typeof(UserRole), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UserRoleCreateActionAsync(UserRoleCreateInput input)
     {
-        var serviceInput = RoleMapper.FromDto(input);
+        var serviceInput = _sdkMapperService.ToUserRoleCreateInput(input);
 
         var response = await _roleService.UserRoleCreateAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = await _sdkMapperService.MapToUserRoleAsync(response.Payload!);
+        var payload = await _sdkMapperService.ToUserRoleAsync(response.Payload!);
         return Created($"/api/admin/authorization/userRoles", payload);
     }
 
@@ -57,17 +58,17 @@ public class UserRoleController : ControllerBase
     /// <returns>Modified role.</returns>
     [HttpPatch("{id}")]
     [Authorize(Policy = "RoleModify")]
-    [ProducesResponseType(typeof(UserRoleDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UserRoleModifyActionAsync(Guid id, UserRoleModifyInputDto input)
+    [ProducesResponseType(typeof(UserRole), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UserRoleModifyActionAsync(Guid id, UserRoleModifyInput input)
     {
-        var serviceInput = RoleMapper.FromDto(id, input);
+        var serviceInput = _sdkMapperService.ToUserRoleModifyInput(id, input);
         var response = await _roleService.UserRoleModifyAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = await _sdkMapperService.MapToUserRoleAsync(response.Payload!);
+        var payload = await _sdkMapperService.ToUserRoleAsync(response.Payload!);
         return Ok(payload);
     }
 
@@ -78,7 +79,7 @@ public class UserRoleController : ControllerBase
     [HttpDelete("{id}")]
     [Authorize(Policy = "RoleDelete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UserRoleDeleteActionAsync(Guid id)
     {
         var response = await _roleService.UserRoleDeleteAsync(id);
@@ -94,8 +95,8 @@ public class UserRoleController : ControllerBase
     /// </summary>
     [HttpGet()]
     [Authorize(Policy = "RoleRead")]
-    [ProducesResponseType(typeof(UserRoleDto[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(UserRole[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UserRolesFindAsync()
     {
         var response = await _roleService.UserRolesFindAsync();
@@ -103,9 +104,9 @@ public class UserRoleController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var roles = new List<UserRoleDto>();
+        var roles = new List<UserRole>();
         foreach (var item in response.Payload!)
-            roles.Add(await _sdkMapperService.MapToUserRoleAsync(item));
+            roles.Add(await _sdkMapperService.ToUserRoleAsync(item));
 
         return Ok(roles);
     }

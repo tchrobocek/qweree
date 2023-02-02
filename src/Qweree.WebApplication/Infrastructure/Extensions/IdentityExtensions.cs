@@ -8,7 +8,7 @@ namespace Qweree.WebApplication.Infrastructure.Extensions;
 
 public static class IdentityExtensions
 {
-    public static string? GetFullName(this UserDto @this)
+    public static string? GetFullName(this User @this)
     {
         var fullNameProperty = @this.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
         return fullNameProperty?.Value;

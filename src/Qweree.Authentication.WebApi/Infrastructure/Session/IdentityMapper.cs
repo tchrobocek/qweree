@@ -1,9 +1,10 @@
 using System.Linq;
+using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Session;
-using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using SdkIdentity = Qweree.Authentication.Sdk.Session.Identity;
 using SdkIdentityClient = Qweree.Authentication.Sdk.Session.IdentityClient;
 using SdkIdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
+using SdkUserProperty = Qweree.Authentication.Sdk.Users.UserProperty;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Session;
 
@@ -40,7 +41,15 @@ public static class IdentityMapper
         {
             Id = identity.Id,
             Username = identity.Username,
-            Properties = identity.Properties.Select(UserPropertyMapper.Map).ToArray()
+            Properties = identity.Properties.Select(Map).ToArray()
+        };
+    }
+    public static SdkUserProperty Map(UserProperty property)
+    {
+        return new SdkUserProperty
+        {
+            Key = property.Key,
+            Value = property.Value
         };
     }
 }

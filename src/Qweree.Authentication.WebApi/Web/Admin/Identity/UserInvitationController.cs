@@ -9,8 +9,9 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
-using Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
+using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Sdk;
+using UserInvitationInput = Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation.UserInvitationInput;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 
@@ -19,10 +20,12 @@ namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 public class UserInvitationController : ControllerBase
 {
     private readonly UserInvitationService _userInvitationService;
+    private readonly SdkMapperService _sdkMapper;
 
-    public UserInvitationController(UserInvitationService userInvitationService)
+    public UserInvitationController(UserInvitationService userInvitationService, SdkMapperService sdkMapper)
     {
         _userInvitationService = userInvitationService;
+        _sdkMapper = sdkMapper;
     }
 
     /// <summary>
@@ -32,20 +35,20 @@ public class UserInvitationController : ControllerBase
     /// <returns>Created user invitation.</returns>
     [HttpPost]
     [Authorize(Policy = "UserInvitationCreate")]
-    [ProducesResponseType(typeof(UserInvitationDescriptorDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UserInvitationCreateActionAsync(UserInvitationInputDto userInvitation)
+    [ProducesResponseType(typeof(UserInvitation), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UserInvitationCreateActionAsync(UserInvitationInput userInvitation)
     {
-        var input = UserInvitationMapper.FromDto(userInvitation);
+        var input = _sdkMapper.ToUserInvitation(userInvitation);
         var userInvitationResponse = await _userInvitationService.UserInvitationCreateAsync(input);
 
         if (userInvitationResponse.Status != ResponseStatus.Ok)
             return userInvitationResponse.ToErrorActionResult();
 
-        var userInvitationDto = UserInvitationDescriptorMapper.ToDto(userInvitationResponse.Payload!);
+        var invitation = UserInvitationDescriptorMapper.ToUserInvitation(userInvitationResponse.Payload!);
 
-        var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/admin/identity/user-invitations/{userInvitationDto.Id}");
-        return Created(uri, userInvitationDto);
+        var uri = new Uri($"{Request.Scheme}://{Request.Host}/api/admin/identity/user-invitations/{invitation.Id}");
+        return Created(uri, invitation);
     }
 
     /// <summary>
@@ -55,8 +58,8 @@ public class UserInvitationController : ControllerBase
     /// <returns>Found user invitation.</returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "UserInvitationRead")]
-    [ProducesResponseType(typeof(UserInvitationDescriptorDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(UserInvitation), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
     {
         var userInvitationResponse = await _userInvitationService.UserInvitationGetAsync(id);
@@ -64,9 +67,9 @@ public class UserInvitationController : ControllerBase
         if (userInvitationResponse.Status != ResponseStatus.Ok)
             return userInvitationResponse.ToErrorActionResult();
 
-        var userInvitationDto = UserInvitationDescriptorMapper.ToDto(userInvitationResponse.Payload!);
+        var invitation = UserInvitationDescriptorMapper.ToUserInvitation(userInvitationResponse.Payload!);
 
-        return Ok(userInvitationDto);
+        return Ok(invitation);
     }
 
     /// <summary>
@@ -82,8 +85,8 @@ public class UserInvitationController : ControllerBase
     /// <returns>Collection of user invitations.</returns>
     [HttpGet]
     [Authorize(Policy = "UserInvitationRead")]
-    [ProducesResponseType(typeof(List<UserInvitationDescriptorDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(List<UserInvitation>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationsPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
         [FromQuery(Name = "skip")] int skip = 0,
@@ -102,8 +105,8 @@ public class UserInvitationController : ControllerBase
 
         Response.Headers.Add("q-document-count", new[] { userInvitationsResponse.DocumentCount.ToString() });
 
-        var usersDto = userInvitationsResponse.Payload?.Select(UserInvitationDescriptorMapper.ToDto);
-        return Ok(usersDto);
+        var users = userInvitationsResponse.Payload?.Select(UserInvitationDescriptorMapper.ToUserInvitation);
+        return Ok(users);
     }
 
     /// <summary>
@@ -114,7 +117,7 @@ public class UserInvitationController : ControllerBase
     [HttpDelete("{id}")]
     [Authorize(Policy = "UserInvitationDelete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserDeleteActionAsync(Guid id)
     {
         var deleteResponse = await _userInvitationService.UserInvitationDeleteAsync(id);

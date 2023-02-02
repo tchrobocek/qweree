@@ -12,7 +12,7 @@
         <MudText Typo="Typo.h6">Users</MudText>
     </MudCardHeader>
     <MudCardContent Class="py-6">
-        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<UserDto>>>(LoadUsers))">
+        <MudTable @ref="_table" Hover="true" Elevation="0" ServerData="@(new Func<TableState, Task<TableData<User>>>(LoadUsers))">
             <ToolBarContent>
                 <MudLink Color="Color.Default" Typo="Typo.body2" Href="/services/auth/user-invitations/list">Show user invitations</MudLink>
                 <MudSpacer/>
@@ -52,19 +52,19 @@
 </MudCard>
 
 @code {
-    private MudTable<UserDto>? _table;
+    private MudTable<User>? _table;
 
-    private async Task<TableData<UserDto>> LoadUsers(TableState tableState)
+    private async Task<TableData<User>> LoadUsers(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
         var response = await IdentityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
-            return new TableData<UserDto>();
+            return new TableData<User>();
         }
 
         var users = (await response.ReadPayloadAsync())!;
-        return new TableData<UserDto>
+        return new TableData<User>
         {
             Items = users,
             TotalItems = response.DocumentCount

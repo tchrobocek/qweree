@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.Sdk.Users;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Sdk;
+using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 
@@ -38,8 +38,8 @@ public class UserController : ControllerBase
     /// <returns>Found user.</returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserGetActionAsync(Guid id)
     {
         var userResponse = await _userService.UserGetAsync(id);
@@ -47,7 +47,7 @@ public class UserController : ControllerBase
         if (userResponse.Status != ResponseStatus.Ok)
             return userResponse.ToErrorActionResult();
 
-        var user = await _sdkMapperService.MapToUserAsync(userResponse.Payload!);
+        var user = await _sdkMapperService.ToUserAsync(userResponse.Payload!);
         var result = await _authorizationService.AuthorizeAsync(User, null, "UserReadPersonalDetail");
 
         if (!result.Succeeded)
@@ -68,8 +68,8 @@ public class UserController : ControllerBase
     /// <returns>Found effective user roles.</returns>
     [HttpGet("{id}/effective-roles")]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(List<RoleDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UserGetEffectiveRolesActionAsync(Guid id)
     {
         var userRolesResponse = await _userService.UserGetEffectiveRolesAsync(id);
@@ -77,7 +77,7 @@ public class UserController : ControllerBase
         if (userRolesResponse.Status != ResponseStatus.Ok)
             return userRolesResponse.ToErrorActionResult();
 
-        return Ok(userRolesResponse.Payload!.Select(r => _sdkMapperService.MapToRole(r)));
+        return Ok(userRolesResponse.Payload!.Select(r => _sdkMapperService.ToRole(r)));
     }
 
     /// <summary>
@@ -93,8 +93,8 @@ public class UserController : ControllerBase
     /// <returns>Collection of users.</returns>
     [HttpGet]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(List<User>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UsersPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
         [FromQuery(Name = "skip")] int skip = 0,
@@ -113,9 +113,9 @@ public class UserController : ControllerBase
 
         Response.Headers.Add("q-document-count", new[] { usersResponse.DocumentCount.ToString() });
 
-        var users = new List<UserDto>();
+        var users = new List<SdkUser>();
         foreach (var user in usersResponse.Payload ?? Array.Empty<User>())
-            users.Add(await _sdkMapperService.MapToUserAsync(user));
+            users.Add(await _sdkMapperService.ToUserAsync(user));
         return Ok(users);
     }
 
@@ -127,7 +127,7 @@ public class UserController : ControllerBase
     [HttpDelete("{id}")]
     [Authorize(Policy = "UserDelete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserDeleteActionAsync(Guid id)
     {
         var deleteResponse = await _userService.UserDeleteAsync(id);

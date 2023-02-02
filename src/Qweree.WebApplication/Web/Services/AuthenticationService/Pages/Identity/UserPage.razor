@@ -37,7 +37,7 @@
                             <MudText Typo="Typo.body2">Creation time: @_user.CreatedAt</MudText>
                             <MudText Typo="Typo.body2">Last modification time: @_user.ModifiedAt</MudText>
                             <MudText Typo="Typo.body2">Properties: </MudText>
-                            @foreach (var property in _user.Properties ?? Array.Empty<UserPropertyDto>())
+                            @foreach (var property in _user.Properties ?? Array.Empty<UserProperty>())
                             {
                                 <MudText class="ml-4" Typo="Typo.body2">- @property.Key: @property.Value</MudText>
                             }
@@ -45,13 +45,13 @@
                     </MudGrid>
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
                         <MudExpansionPanel Disabled="@(!_user.Roles?.Any() ?? false)" Text="@($"Roles ({_user.Roles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _user.Roles ?? Array.Empty<RoleDto>())
+                            @foreach (var role in _user.Roles ?? Array.Empty<Role>())
                             {
                                 <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
                             }
                         </MudExpansionPanel>
                         <MudExpansionPanel Disabled="@(!_effectiveRoles.Any())" Text="@($"Effective roles ({_effectiveRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _effectiveRoles ?? Array.Empty<RoleDto>())
+                            @foreach (var role in _effectiveRoles ?? Array.Empty<Role>())
                             {
                                 <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
                             }
@@ -76,8 +76,8 @@
 
 @code {
     private string _fullName = string.Empty;
-    private UserDto? _user;
-    private RoleDto[] _effectiveRoles = new RoleDto[0];
+    private User? _user;
+    private Role[] _effectiveRoles = new Role[0];
 
     [Parameter]
     public string? UserId { get; set; }
@@ -100,7 +100,7 @@
 
         _user = await userResponse.ReadPayloadAsync();
         _fullName = _user?.GetFullName() ?? string.Empty;
-        _effectiveRoles = (await effectiveRolesResponse.ReadPayloadAsync())?.ToArray() ?? Array.Empty<RoleDto>();
+        _effectiveRoles = (await effectiveRolesResponse.ReadPayloadAsync())?.ToArray() ?? Array.Empty<Role>();
     }
 
     private async Task DeleteAsync()

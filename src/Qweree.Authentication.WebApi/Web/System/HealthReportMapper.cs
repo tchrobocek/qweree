@@ -1,22 +1,21 @@
 using System.Linq;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Qweree.Authentication.WebApi.Web.System;
 
 public static class HealthReportMapper
 {
-    public static HealthReportDto ToDto(HealthReport report)
+    public static HealthReport ToHealthReport(Microsoft.Extensions.Diagnostics.HealthChecks.HealthReport report)
     {
-        return new HealthReportDto
+        return new HealthReport
         {
             Status = report.Status.ToString(),
-            Entries = report.Entries.ToDictionary(kv => kv.Key, kv => ToDto(kv.Value))
+            Entries = report.Entries.ToDictionary(kv => kv.Key, kv => ToHealthReportEntry(kv.Value))
         };
     }
 
-    public static HealthReportEntryDto ToDto(HealthReportEntry entry)
+    public static HealthReportEntry ToHealthReportEntry(Microsoft.Extensions.Diagnostics.HealthChecks.HealthReportEntry entry)
     {
-        return new HealthReportEntryDto
+        return new HealthReportEntry
         {
             Status = entry.Status.ToString()
         };

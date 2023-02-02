@@ -22,6 +22,6 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
         {
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(authenticationType: null)));
         }
-        return new AuthenticationState(IdentityMapper.FromDto(identity));
+        return new AuthenticationState(IdentityMapper.ToClaimsPrincipal(identity));
     }
 }

@@ -3,7 +3,7 @@
 @inject AuthorizationClient AuthorizationClient;
 
 <div>
-    <MudAutocomplete T="UserRoleDto" Label="Search role" @bind-Text="_searchText"
+    <MudAutocomplete T="UserRole" Label="Search role" @bind-Text="_searchText"
                      SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label} ({r?.Key})")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
@@ -16,7 +16,7 @@
     @foreach (var selectedRole in SelectedRoles)
     {
         <MudChip Color="Color.Default" OnClose="() => RoleRemoved(selectedRole)">@($"{selectedRole.Label} ({selectedRole.Key})")</MudChip>
-        @foreach (var effectiveRole in selectedRole.EffectiveRoles?.Where(r => r.Id != selectedRole.Id) ?? Array.Empty<RoleDto>())
+        @foreach (var effectiveRole in selectedRole.EffectiveRoles?.Where(r => r.Id != selectedRole.Id) ?? Array.Empty<Role>())
         {
             <MudChip Color="Color.Dark">@($"{effectiveRole.Label} ({effectiveRole.Key})")</MudChip>
         }
@@ -24,12 +24,12 @@
 </div>
 
 @code {
-    private readonly List<UserRoleDto> _userRoles = new();
-    private UserRoleDto? _selectValue;
+    private readonly List<UserRole> _userRoles = new();
+    private UserRole? _selectValue;
     private string _searchText = string.Empty;
 
     [Parameter]
-    public List<UserRoleDto> SelectedRoles { get; set; } = new();
+    public List<UserRole> SelectedRoles { get; set; } = new();
 
     [Parameter]
     public bool ExcludeGroupRoles { get; set; } = true;
@@ -41,20 +41,20 @@
         if (!response.IsSuccessful)
             return;
 
-        var roles = await response.ReadPayloadAsync() ?? Array.Empty<UserRoleDto>();
+        var roles = await response.ReadPayloadAsync() ?? Array.Empty<UserRole>();
         if (ExcludeGroupRoles)
             roles = roles.Where(r => !(r.IsGroup ?? true));
 
         _userRoles.AddRange(roles.OrderBy(r => r.Key));
     }
 
-    private Task<IEnumerable<UserRoleDto>> Search(string? arg)
+    private Task<IEnumerable<UserRole>> Search(string? arg)
     {
         var roles = _userRoles.Where(r => SearchRole(r, arg));
         return Task.FromResult(roles);
     }
 
-    private bool SearchRole(UserRoleDto role, string? searchArg)
+    private bool SearchRole(UserRole role, string? searchArg)
     {
         if (SelectedRoles.Contains(role))
             return false;
@@ -63,13 +63,13 @@
                (role.Key?.ToLower() ?? string.Empty).IndexOf(searchArg ?? string.Empty, StringComparison.Ordinal) >= 0;
     }
 
-    private void SelectValueChanged(UserRoleDto role)
+    private void SelectValueChanged(UserRole role)
     {
         SelectedRoles.Add(role);
         _selectValue = null;
     }
 
-    private void RoleRemoved(UserRoleDto selectedRole)
+    private void RoleRemoved(UserRole selectedRole)
     {
         SelectedRoles.Remove(selectedRole);
     }

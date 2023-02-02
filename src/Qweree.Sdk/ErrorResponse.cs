@@ -1,6 +1,6 @@
 ﻿namespace Qweree.Sdk;
 
-public class ErrorResponseDto
+public class ErrorResponse
 {
     public ErrorDto[]? Errors { get; set; }
 }

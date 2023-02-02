@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Infrastructure;
-using Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 using Qweree.Sdk;
+using ClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
+using ClientRoleCreateInput = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRoleCreateInput;
+using ClientRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRoleModifyInput;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Authorization;
 
@@ -34,18 +35,18 @@ public class ClientRoleController : ControllerBase
     /// <returns>Created role.</returns>
     [HttpPost]
     [Authorize(Policy = "RoleCreate")]
-    [ProducesResponseType(typeof(ClientRoleDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ClientRoleCreateActionAsync(ClientRoleCreateInputDto input)
+    [ProducesResponseType(typeof(ClientRole), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ClientRoleCreateActionAsync(ClientRoleCreateInput input)
     {
-        var serviceInput = RoleMapper.FromDto(input);
+        var serviceInput = _sdkMapperService.ToClientRoleCreateInput(input);
 
         var response = await _roleService.ClientRoleCreateAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = await _sdkMapperService.MapToClientRoleAsync(response.Payload!);
+        var payload = await _sdkMapperService.ToClientRoleAsync(response.Payload!);
         return Created($"/api/admin/authorization/clientRoles", payload);
     }
 
@@ -57,17 +58,17 @@ public class ClientRoleController : ControllerBase
     /// <returns>Modified role.</returns>
     [HttpPatch("{id}")]
     [Authorize(Policy = "RoleModify")]
-    [ProducesResponseType(typeof(ClientRoleDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ClientRoleModifyActionAsync(Guid id, ClientRoleModifyInputDto input)
+    [ProducesResponseType(typeof(ClientRole), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClientRoleModifyActionAsync(Guid id, ClientRoleModifyInput input)
     {
-        var serviceInput = RoleMapper.FromDto(id, input);
+        var serviceInput = _sdkMapperService.ToClientRoleModifyInput(id, input);
         var response = await _roleService.ClientRoleModifyAsync(serviceInput);
 
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var payload = await _sdkMapperService.MapToClientRoleAsync(response.Payload!);
+        var payload = await _sdkMapperService.ToClientRoleAsync(response.Payload!);
         return Ok(payload);
     }
 
@@ -78,7 +79,7 @@ public class ClientRoleController : ControllerBase
     [HttpDelete("{id}")]
     [Authorize(Policy = "RoleDelete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientRoleDeleteActionAsync(Guid id)
     {
         var response = await _roleService.ClientRoleDeleteAsync(id);
@@ -94,8 +95,8 @@ public class ClientRoleController : ControllerBase
     /// </summary>
     [HttpGet()]
     [Authorize(Policy = "RoleRead")]
-    [ProducesResponseType(typeof(ClientRoleDto[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ClientRole[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientRolesFindAsync()
     {
         var response = await _roleService.ClientRolesFindAsync();
@@ -103,9 +104,9 @@ public class ClientRoleController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var roles = new List<ClientRoleDto>();
+        var roles = new List<ClientRole>();
         foreach (var item in response.Payload!)
-            roles.Add(await _sdkMapperService.MapToClientRoleAsync(item));
+            roles.Add(await _sdkMapperService.ToClientRoleAsync(item));
 
         return Ok(roles);
     }

@@ -13,7 +13,6 @@ using Qweree.Authentication.WebApi.Test.Fixture.Factories;
 using Qweree.TestUtils.DeepEqual;
 using Qweree.Utils;
 using Xunit;
-using UserDto = Qweree.Authentication.AdminSdk.Identity.Users.UserDto;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity;
 
@@ -67,9 +66,9 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         {
             var response = await httpClient.GetAsync($"/api/admin/identity/users/{adminUser.Id}");
             response.EnsureSuccessStatusCode();
-            var actualUser = await response.Content.ReadAsObjectAsync<UserDto>();
+            var actualUser = await response.Content.ReadAsObjectAsync<AdminSdk.Identity.Users.User>();
 
-            actualUser.WithDeepEqual(await _sdkMapperService.MapToUserAsync(adminUser))
+            actualUser.WithDeepEqual(await _sdkMapperService.ToUserAsync(adminUser))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .Assert();
         }
@@ -78,12 +77,12 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
     [Fact]
     public async Task TestPagination()
     {
-        var usersList = new List<UserDto>();
+        var usersList = new List<AdminSdk.Identity.Users.User>();
 
         for (var i = 0; i < 10; i++)
         {
             var user = UserFactory.CreateDefault($"{i}user");
-            usersList.Add(await _sdkMapperService.MapToUserAsync(user));
+            usersList.Add(await _sdkMapperService.ToUserAsync(user));
             await _userRepository.InsertAsync(user);
         }
 
@@ -107,7 +106,7 @@ public class UserControllerTest : IClassFixture<WebApiFactory>
         {
             var response = await httpClient.GetAsync("/api/admin/identity/users?sort[Username]=1&skip=2&take=3");
             response.EnsureSuccessStatusCode();
-            var userDtos = await response.Content.ReadAsObjectAsync<UserDto[]>();
+            var userDtos = await response.Content.ReadAsObjectAsync<AdminSdk.Identity.Users.User[]>();
 
             userDtos.WithDeepEqual(usersList.Skip(2).Take(3))
                 .WithCustomComparison(new MillisecondDateTimeComparison())

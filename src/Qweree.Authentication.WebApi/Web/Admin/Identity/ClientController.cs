@@ -7,12 +7,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Sdk;
+using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
+using ClientCreateInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCreateInput;
+using RolesCollection = Qweree.Authentication.AdminSdk.Authorization.Roles.RolesCollection;
+using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
 
@@ -36,18 +39,18 @@ public class ClientController : ControllerBase
     /// <returns>Created client.</returns>
     [HttpPost]
     [Authorize(Policy = "ClientCreate")]
-    [ProducesResponseType(typeof(CreatedClientDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ClientCreateActionAsync(ClientCreateInputDto input)
+    [ProducesResponseType(typeof(CreatedClient), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ClientCreateActionAsync(ClientCreateInput input)
     {
-        var serviceInput = ClientMapper.FromDto(input);
+        var serviceInput = ClientMapper.ToClientCreateInput(input);
 
         var clientResponse = await _clientService.ClientCreateAsync(serviceInput);
 
         if (clientResponse.Status != ResponseStatus.Ok)
             return clientResponse.ToErrorActionResult();
 
-        var client = await _sdkMapperService.MapToCreatedClientAsync(clientResponse.Payload!);
+        var client = await _sdkMapperService.ToCreatedClientAsync(clientResponse.Payload!);
         return Created($"/api/v1/clients/{client.Id}", client);
     }
     
@@ -58,8 +61,8 @@ public class ClientController : ControllerBase
     /// <returns>Found effective client roles.</returns>
     [HttpGet("{id}/effective-roles")]
     [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(RolesCollectionDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(RolesCollection), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientGetEffectiveRolesActionAsync(Guid id)
     {
         var clientRolesResponse = await _clientService.ClientGetEffectiveRolesAsync(id);
@@ -67,7 +70,7 @@ public class ClientController : ControllerBase
         if (clientRolesResponse.Status != ResponseStatus.Ok)
             return clientRolesResponse.ToErrorActionResult();
 
-        var roles = _sdkMapperService.MapToRolesCollection(clientRolesResponse.Payload!);
+        var roles = _sdkMapperService.ToRolesCollection(clientRolesResponse.Payload!);
         return Ok(roles);
     }
 
@@ -81,8 +84,8 @@ public class ClientController : ControllerBase
     [HttpGet]
     [Route("{id}")]
     [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(ClientDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientGetActionAsync(Guid id)
     {
         var clientResponse = await _clientService.ClientGetAsync(id);
@@ -90,7 +93,7 @@ public class ClientController : ControllerBase
         if (clientResponse.Status != ResponseStatus.Ok)
             return clientResponse.ToErrorActionResult();
 
-        var client = await _sdkMapperService.MapToClient(clientResponse.Payload!);
+        var client = await _sdkMapperService.ToClient(clientResponse.Payload!);
         return Ok(client);
     }
 
@@ -102,7 +105,7 @@ public class ClientController : ControllerBase
     [Route("{id}")]
     [Authorize(Policy = "ClientDelete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientDeleteActionAsync(Guid id)
     {
         var clientResponse = await _clientService.ClientDeleteAsync(id);
@@ -126,8 +129,8 @@ public class ClientController : ControllerBase
     /// <returns>Collection of clients.</returns>
     [HttpGet]
     [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(List<ClientDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(List<Client>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ClientsPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
         [FromQuery(Name = "skip")] int skip = 0,
@@ -145,10 +148,10 @@ public class ClientController : ControllerBase
 
         Response.Headers.Add("q-document-count", new[] { clientsResponse.DocumentCount.ToString() });
 
-        var clients = new List<ClientDto>();
+        var clients = new List<SdkClient>();
         foreach (var document in clientsResponse.Payload ?? Array.Empty<Client>())
         {
-            clients.Add(await _sdkMapperService.MapToClient(document));
+            clients.Add(await _sdkMapperService.ToClient(document));
         }
 
         return Ok(clients);

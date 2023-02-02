@@ -30,7 +30,7 @@ public class UserRegisterController : ControllerBase
     /// <param name="input">User register input.</param>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserRegisterActionAsync(UserRegisterInput input)
     {
         var response = await _userRegisterService.RegisterAsync(UserRegisterInputMapper.Map(input));
@@ -47,7 +47,7 @@ public class UserRegisterController : ControllerBase
     /// <param name="id">User invitation id.</param>
     [HttpGet("invitation/{id}")]
     [ProducesResponseType(typeof(UserInvitation), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
     {
         var response = await _userInvitationService.UserInvitationGetAsync(id);

@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
-using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
+using SdkUserInvitation = Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation.UserInvitation;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 
 public static class UserInvitationDescriptorMapper
 {
-    public static UserInvitationDescriptorDto ToDto(UserInvitationDescriptor userInvitationDescriptor)
+    public static SdkUserInvitation ToUserInvitation(UserInvitationDescriptor userInvitationDescriptor)
     {
-        return new UserInvitationDescriptorDto
+        return new SdkUserInvitation
         {
             Id = userInvitationDescriptor.Id,
             Roles = (userInvitationDescriptor.Roles ?? ImmutableArray<Guid>.Empty).ToArray(),

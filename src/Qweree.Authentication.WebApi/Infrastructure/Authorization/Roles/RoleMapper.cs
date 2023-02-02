@@ -1,14 +1,14 @@
 using System;
-using System.Collections.Immutable;
 using System.Linq;
-using Qweree.Authentication.AdminSdk.Authorization.Roles;
-using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
+using System.Collections.Immutable;
+using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
+using ClientRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRole;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 
 public static class RoleMapper
 {
-    public static UserRoleDo ToDo(UserRole role)
+    public static UserRoleDo ToUserRoleDo(UserRole role)
     {
         return new UserRoleDo
         {
@@ -23,7 +23,7 @@ public static class RoleMapper
         };
     }
 
-    public static UserRole FromDo(UserRoleDo roleDo)
+    public static UserRole ToUserRole(UserRoleDo roleDo)
     {
         return new UserRole(
             roleDo.Id ?? Guid.Empty,
@@ -37,7 +37,7 @@ public static class RoleMapper
         );
     }
 
-    public static ClientRoleDo ToDo(ClientRole role)
+    public static ClientRoleDo ToClientRoleDo(ClientRole role)
     {
         return new ClientRoleDo
         {
@@ -52,7 +52,7 @@ public static class RoleMapper
         };
     }
 
-    public static ClientRole FromDo(ClientRoleDo roleDo)
+    public static ClientRole ToClientRole(ClientRoleDo roleDo)
     {
         return new ClientRole(
             roleDo.Id ?? Guid.Empty,
@@ -64,29 +64,5 @@ public static class RoleMapper
             roleDo.CreatedAt ?? DateTime.MinValue,
             roleDo.ModifiedAt ?? DateTime.MinValue
         );
-    }
-
-    public static UserRoleCreateInput FromDto(UserRoleCreateInputDto dto)
-    {
-        return new UserRoleCreateInput(dto.Id ?? Guid.Empty, dto.Key ?? string.Empty, dto.Label ?? string.Empty,
-            dto.Description ?? string.Empty, dto.IsGroup ?? false, dto.Items?.ToImmutableArray() ??
-                                                                   ImmutableArray<Guid>.Empty);
-    }
-
-    public static UserRoleModifyInput FromDto(Guid id, UserRoleModifyInputDto dto)
-    {
-        return new UserRoleModifyInput(id, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
-    }
-
-    public static ClientRoleCreateInput FromDto(ClientRoleCreateInputDto dto)
-    {
-        return new ClientRoleCreateInput(dto.Id ?? Guid.Empty, dto.Key ?? string.Empty, dto.Label ?? string.Empty,
-            dto.Description ?? string.Empty, dto.IsGroup ?? false, dto.Items?.ToImmutableArray() ??
-                                                                   ImmutableArray<Guid>.Empty);
-    }
-
-    public static ClientRoleModifyInput FromDto(Guid id, ClientRoleModifyInputDto dto)
-    {
-        return new ClientRoleModifyInput(id, dto.Label, dto.Description, dto.IsGroup, dto.Items?.ToImmutableArray());
     }
 }

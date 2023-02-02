@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Clients;
 
-public class ClientCreateInputDto
+public class ClientCreateInput
 {
     public Guid? Id { get; set; }
     public string? ClientId { get; set; }

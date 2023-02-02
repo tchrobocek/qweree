@@ -20,67 +20,67 @@ public class AuthorizationClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<IEnumerable<ClientRoleDto>>> ClientRolesFindAsync(CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<IEnumerable<ClientRole>>> ClientRolesFindAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("client-roles", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<IEnumerable<ClientRoleDto>>(response);
+        return ApiResponse.CreateApiResponse<IEnumerable<ClientRole>>(response);
     }
 
-    public async Task<ApiResponse<ClientRoleDto>> ClientRoleCreateAsync(ClientRoleCreateInputDto input,
+    public async Task<ApiResponse<ClientRole>> ClientRoleCreateAsync(ClientRoleCreateInput input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PostAsync("client-roles", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<ClientRoleDto>(response);
+        return ApiResponse.CreateApiResponse<ClientRole>(response);
     }
 
-    public async Task<ApiResponse<ClientRoleDto>> ClientRoleModifyAsync(Guid id, ClientRoleModifyInputDto input,
+    public async Task<ApiResponse<ClientRole>> ClientRoleModifyAsync(Guid id, ClientRoleModifyInput input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PatchAsync($"client-roles/{id}", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<ClientRoleDto>(response);
+        return ApiResponse.CreateApiResponse<ClientRole>(response);
     }
 
-    public async Task<ApiResponse<ClientRoleDto>> ClientRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<ClientRole>> ClientRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync($"client-roles/{id}", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<ClientRoleDto>(response);
+        return ApiResponse.CreateApiResponse<ClientRole>(response);
     }
 
-    public async Task<ApiResponse<IEnumerable<UserRoleDto>>> UserRolesFindAsync(CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<IEnumerable<UserRole>>> UserRolesFindAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("user-roles", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<IEnumerable<UserRoleDto>>(response);
+        return ApiResponse.CreateApiResponse<IEnumerable<UserRole>>(response);
     }
 
-    public async Task<ApiResponse<UserRoleDto>> UserRoleCreateAsync(UserRoleCreateInputDto input,
+    public async Task<ApiResponse<UserRole>> UserRoleCreateAsync(UserRoleCreateInput input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PostAsync("user-roles", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<UserRoleDto>(response);
+        return ApiResponse.CreateApiResponse<UserRole>(response);
     }
 
-    public async Task<ApiResponse<UserRoleDto>> UserRoleModifyAsync(Guid id, UserRoleModifyInputDto input,
+    public async Task<ApiResponse<UserRole>> UserRoleModifyAsync(Guid id, UserRoleModifyInput input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PatchAsync($"user-roles/{id}", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<UserRoleDto>(response);
+        return ApiResponse.CreateApiResponse<UserRole>(response);
     }
 
-    public async Task<ApiResponse<UserRoleDto>> UserRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<UserRole>> UserRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync($"user-roles/{id}", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<UserRoleDto>(response);
+        return ApiResponse.CreateApiResponse<UserRole>(response);
     }
 }

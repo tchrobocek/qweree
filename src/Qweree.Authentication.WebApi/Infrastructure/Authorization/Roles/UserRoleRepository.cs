@@ -15,9 +15,9 @@ public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUs
     {
     }
 
-    protected override Func<UserRole, UserRoleDo> ToDocument => RoleMapper.ToDo;
+    protected override Func<UserRole, UserRoleDo> ToDocument => RoleMapper.ToUserRoleDo;
 
-    protected override Func<UserRoleDo, UserRole> FromDocument => RoleMapper.FromDo;
+    protected override Func<UserRoleDo, UserRole> FromDocument => RoleMapper.ToUserRole;
 
     public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
     {

@@ -42,7 +42,7 @@
 </MudCard>
 
 @code {
-    private readonly List<UserRoleDto> _roles = new();
+    private readonly List<UserRole> _roles = new();
     private readonly List<string> _errors = new();
 
     private string? _username;
@@ -62,7 +62,7 @@
         if (string.IsNullOrWhiteSpace(_fullName))
             _fullName = null;
 
-        var input = new UserInvitationInputDto
+        var input = new UserInvitationInput
         {
             Username = _username,
             Roles = roles.ToArray(),

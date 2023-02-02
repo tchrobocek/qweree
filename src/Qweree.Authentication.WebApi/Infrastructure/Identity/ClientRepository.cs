@@ -15,8 +15,8 @@ public class ClientRepository : MongoRepositoryBase<Client, ClientDo>, IClientRe
     {
     }
 
-    protected override Func<Client, ClientDo> ToDocument => ClientMapper.ToDo;
-    protected override Func<ClientDo, Client> FromDocument => ClientMapper.FromDo;
+    protected override Func<Client, ClientDo> ToDocument => ClientMapper.ToClientDo;
+    protected override Func<ClientDo, Client> FromDocument => ClientMapper.ToClient;
     public async Task<Client> GetByClientIdAsync(string clientId, CancellationToken cancellationToken)
     {
         var client = (await FindAsync($@"{{""ClientId"": ""{clientId}""}}", 0, 1, cancellationToken))

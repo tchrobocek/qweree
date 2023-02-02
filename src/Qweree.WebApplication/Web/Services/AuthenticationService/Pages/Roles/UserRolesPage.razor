@@ -49,7 +49,7 @@
 </MudCard>
 
 @code {
-    private readonly List<UserRoleDto> _userRoles = new();
+    private readonly List<UserRole> _userRoles = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,7 +66,7 @@
         NavigationManager.NavigateTo($"services/auth/user-roles/edit/{id.ToString()}");
     }
 
-    private async Task DeleteAsync(UserRoleDto context)
+    private async Task DeleteAsync(UserRole context)
     {
         var delete = await DialogService.ConfirmAsync($"Delete user role", $"Do you really wish to delete role {context.Key}?");
 
@@ -87,7 +87,7 @@
         if (response.IsSuccessful)
         {
             var payload = await response.ReadPayloadAsync();
-            _userRoles.AddRange(payload ?? ArraySegment<UserRoleDto>.Empty);
+            _userRoles.AddRange(payload ?? ArraySegment<UserRole>.Empty);
         }
     }
 }

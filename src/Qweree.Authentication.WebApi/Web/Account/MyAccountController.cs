@@ -32,7 +32,7 @@ public class MyAccountController : ControllerBase
     /// <param name="input">Change my password input.</param>
     [HttpPost("change-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ChangePasswordActionAsync(ChangeMyPasswordInput input)
     {
         var response = await _myAccountService.ChangeMyPasswordAsync(new Domain.Account.ChangeMyPasswordInput(input.OldPassword ?? string.Empty, input.NewPassword ?? string.Empty));

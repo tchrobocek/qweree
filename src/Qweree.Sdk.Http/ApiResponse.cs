@@ -61,21 +61,21 @@ public class ApiResponse : IDisposable
         return await ResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
     }
 
-    public async Task<ErrorResponseDto> ReadErrorsAsync(CancellationToken cancellationToken = new())
+    public async Task<ErrorResponse> ReadErrorsAsync(CancellationToken cancellationToken = new())
     {
         if (IsSuccessful)
         {
-            return new ErrorResponseDto();
+            return new ErrorResponse();
         }
 
         try
         {
-            return await ResponseMessage.Content.ReadAsObjectAsync<ErrorResponseDto>(cancellationToken)
-                   ?? new ErrorResponseDto();
+            return await ResponseMessage.Content.ReadAsObjectAsync<ErrorResponse>(cancellationToken)
+                   ?? new ErrorResponse();
         }
         catch (Exception)
         {
-            return new ErrorResponseDto();
+            return new ErrorResponse();
         }
     }
 

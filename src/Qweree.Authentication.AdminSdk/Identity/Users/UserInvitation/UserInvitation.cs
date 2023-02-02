@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 
-public class UserInvitationDescriptorDto
+public class UserInvitation
 {
     public Guid? Id { get; set; }
     public string? Username { get; set; }

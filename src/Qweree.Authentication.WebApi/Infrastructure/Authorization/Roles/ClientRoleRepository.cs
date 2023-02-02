@@ -16,9 +16,9 @@ public class ClientRoleRepository : MongoRepositoryBase<ClientRole, ClientRoleDo
     {
     }
 
-    protected override Func<ClientRole, ClientRoleDo> ToDocument => RoleMapper.ToDo;
+    protected override Func<ClientRole, ClientRoleDo> ToDocument => RoleMapper.ToClientRoleDo;
 
-    protected override Func<ClientRoleDo, ClientRole> FromDocument => RoleMapper.FromDo;
+    protected override Func<ClientRoleDo, ClientRole> FromDocument => RoleMapper.ToClientRole;
 
     public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
     {

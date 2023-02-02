@@ -34,12 +34,12 @@ public class SystemController : ControllerBase
     /// </summary>
     /// <returns>Returns health of the application.</returns>
     [HttpGet("health")]
-    [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(HealthReportDto), StatusCodes.Status503ServiceUnavailable)]
+    [ProducesResponseType(typeof(HealthReport), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(HealthReport), StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> HealthGetActionAsync(CancellationToken cancellationToken = new())
     {
         var report = await _healthCheckService.CheckHealthAsync(cancellationToken);
-        var reportDto = HealthReportMapper.ToDto(report);
+        var reportDto = HealthReportMapper.ToHealthReport(report);
 
         if (report.Status == HealthStatus.Healthy) return Ok(reportDto);
 

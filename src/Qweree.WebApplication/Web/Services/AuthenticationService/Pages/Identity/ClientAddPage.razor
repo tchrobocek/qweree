@@ -52,8 +52,8 @@
 </MudCard>
 
 @code {
-    private readonly List<ClientRoleDto> _clientRoles = new();
-    private readonly List<UserRoleDto> _userRoles = new();
+    private readonly List<ClientRole> _clientRoles = new();
+    private readonly List<UserRole> _userRoles = new();
     private readonly List<string> _errors = new();
 
     private string _clientId = string.Empty;
@@ -81,7 +81,7 @@
         var clientRoles = _clientRoles.Select(r => r.Id ?? Guid.Empty);
         var userRoles = _userRoles.Select(r => r.Id ?? Guid.Empty);
 
-        var input = new ClientCreateInputDto
+        var input = new ClientCreateInput
         {
             Origin = _origin,
             ApplicationName = _applicationName,

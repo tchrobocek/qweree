@@ -7,9 +7,9 @@ namespace Qweree.AspNet.Web;
 
 public static class ResponseExtensions
 {
-    public static ErrorResponseDto ToErrorResponseDto(this Response response)
+    public static ErrorResponse ToErrorResponseDto(this Response response)
     {
-        return new ErrorResponseDto
+        return new ErrorResponse
         {
             Errors = response.Errors.Select(e => new ErrorDto {Message = e.Message}).ToArray()
         };

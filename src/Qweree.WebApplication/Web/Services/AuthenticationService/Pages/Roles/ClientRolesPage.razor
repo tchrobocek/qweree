@@ -49,7 +49,7 @@
 
 @code {
 
-    private readonly List<ClientRoleDto> _clientRoles = new();
+    private readonly List<ClientRole> _clientRoles = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,7 +66,7 @@
         NavigationManager.NavigateTo($"services/auth/client-roles/edit/{id.ToString()}");
     }
 
-    private async Task DeleteAsync(ClientRoleDto context)
+    private async Task DeleteAsync(ClientRole context)
     {
         var delete = await DialogService.ConfirmAsync($"Delete client role", $"Do you really wish to delete role {context.Key}?");
 
@@ -87,7 +87,7 @@
         if (response.IsSuccessful)
         {
             var payload = await response.ReadPayloadAsync();
-            _clientRoles.AddRange(payload ?? ArraySegment<ClientRoleDto>.Empty);
+            _clientRoles.AddRange(payload ?? ArraySegment<ClientRole>.Empty);
         }
     }
 

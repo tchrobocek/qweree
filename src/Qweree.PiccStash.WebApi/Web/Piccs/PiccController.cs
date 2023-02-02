@@ -49,7 +49,7 @@ public class PiccController : ControllerBase
     [Authorize]
     [RequiresFileFromBody]
     [ProducesResponseType(typeof(PiccDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PiccCreateActionAsync([FromHeader(Name = "Content-Type")] string contentType)
     {
         if (!contentType.StartsWith("image/"))
@@ -97,7 +97,7 @@ public class PiccController : ControllerBase
     /// <param name="piccId">Picc id.</param>
     [HttpGet("{piccId:guid}")]
     [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PiccReadActionAsync(Guid piccId)
     {
         StashedPicc picc;
@@ -141,7 +141,7 @@ public class PiccController : ControllerBase
     [Authorize]
     [RequiresFileFromBody]
     [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> PiccDownloadActionAsync(Guid piccId)
     {
         StashedPicc picc;
@@ -184,7 +184,7 @@ public class PiccController : ControllerBase
     [HttpGet]
     [Authorize]
     [ProducesResponseType(typeof(List<PiccDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PiccsPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
         [FromQuery(Name = "skip")] int skip = 0,
@@ -212,7 +212,7 @@ public class PiccController : ControllerBase
     [HttpDelete("{piccId:guid}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PiccDeleteActionAsync(Guid piccId)
     {
         StashedPicc picc;

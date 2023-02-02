@@ -5,12 +5,12 @@ namespace Qweree.WebApplication.Infrastructure.View;
 
 public static class SnackbarExtensions
 {
-    public static void AddErrors(this ISnackbar @this, ErrorResponseDto responseDto)
+    public static void AddErrors(this ISnackbar @this, ErrorResponse response)
     {
-        if (responseDto.Errors is null)
+        if (response.Errors is null)
             return;
 
-        foreach (var error in responseDto.Errors)
+        foreach (var error in response.Errors)
         {
             if (string.IsNullOrWhiteSpace(error.Message))
                 continue;

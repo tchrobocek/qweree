@@ -53,7 +53,7 @@ public class ClaimsPrincipalMapperTest
             Email = "email",
             Roles = new[] {"role1", "role2"}
         };
-        var claimsPrincipal = IdentityMapper.FromDto(identity);
+        var claimsPrincipal = IdentityMapper.ToClaimsPrincipal(identity);
         var actualIdentity = IdentityMapper.ToIdentity(claimsPrincipal);
 
         actualIdentity.WithDeepEqual(identity)

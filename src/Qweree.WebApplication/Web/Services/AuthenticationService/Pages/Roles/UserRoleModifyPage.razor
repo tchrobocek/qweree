@@ -38,7 +38,7 @@
 @code {
     private readonly List<string> _errors = new();
 
-    private readonly List<UserRoleDto> _groupRoles = new();
+    private readonly List<UserRole> _groupRoles = new();
     private string _idString = Guid.NewGuid().ToString();
     private string _key = string.Empty;
     private string _label = string.Empty;
@@ -78,14 +78,14 @@
 
         if (role.IsGroup ?? false)
         {
-            _groupRoles.AddRange(role.Items ?? Array.Empty<UserRoleDto>());
+            _groupRoles.AddRange(role.Items ?? Array.Empty<UserRole>());
         }
     }
 
     private async Task EditRoleAsync()
     {
         _errors.Clear();
-        var input = new UserRoleModifyInputDto
+        var input = new UserRoleModifyInput
         {
             Description = _description,
             IsGroup = _groupRoles.Any(),

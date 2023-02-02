@@ -8,7 +8,7 @@ namespace Qweree.Authentication.Sdk.Session;
 
 public static class IdentityMapper
 {
-    public static ClaimsPrincipal FromDto(Identity identity)
+    public static ClaimsPrincipal ToClaimsPrincipal(Identity identity)
     {
         var claims = new List<Claim>
         {
@@ -67,10 +67,6 @@ public static class IdentityMapper
             Roles = roles
         };
     }
-    public static IdentityClient ToIdentityClient(ClaimsPrincipal claimsPrincipal)
-    {
-        return ToIdentityClient(claimsPrincipal.Claims);
-    }
 
     public static IdentityClient ToIdentityClient(IEnumerable<Claim> claims)
     {
@@ -85,11 +81,6 @@ public static class IdentityMapper
             ClientId = clientId,
             ApplicationName = appName
         };
-    }
-
-    public static IdentityUser ToIdentityUser(ClaimsPrincipal claimsPrincipal)
-    {
-        return ToIdentityUser(claimsPrincipal.Claims);
     }
 
     private static IdentityUser ToIdentityUser(IEnumerable<Claim> claims)
