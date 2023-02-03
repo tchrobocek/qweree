@@ -88,7 +88,7 @@ public class OAuth2Controller : ControllerBase
         var userAgentString = Request.Headers.UserAgent;
         UserAgentInfo? userAgent = null;
         if (!string.IsNullOrWhiteSpace(userAgentString))
-            userAgent = UserAgentInfoParser.Parse(userAgentString);
+            userAgent = UserAgentInfoParser.Parse(userAgentString!);
 
         if (grantType == "password")
         {

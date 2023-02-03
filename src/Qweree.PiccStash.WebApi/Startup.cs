@@ -43,7 +43,7 @@ public class Startup
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Database", Configuration["Qweree:HealthCheckConnectionString"]);
+            .AddMongoHealthCheck(Configuration["Qweree:HealthCheckConnectionString"]!, "Database");
 
         services.AddControllers()
             .AddJsonOptions(options =>
@@ -65,9 +65,9 @@ public class Startup
                 {
                     Password = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
-                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
-                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute)
+                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
+                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
+                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute)
                     }
                 }
             });
@@ -127,7 +127,7 @@ public class Startup
         services.AddSingleton(p =>
         {
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
-            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]), "api/oauth2/")});
+            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]!), "api/oauth2/")});
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
             var clientCredentials = new ClientCredentials
             {
@@ -143,7 +143,7 @@ public class Startup
             var httpHandler = p.GetRequiredService<ClientCredentialsHandler>();
             var httpClient = new HttpClient(httpHandler)
             {
-                BaseAddress = new Uri(Configuration["Qweree:CdnUri"])
+                BaseAddress = new Uri(Configuration["Qweree:CdnUri"]!)
             };
             return new StorageClient(httpClient);
         });

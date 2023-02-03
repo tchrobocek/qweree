@@ -57,7 +57,7 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Database", Configuration["Qweree:HealthCheckConnectionString"]);
+            .AddMongoHealthCheck(Configuration["Qweree:HealthCheckConnectionString"]!, "Database");
         services.AddControllers()
             .AddJsonOptions(options =>
             {

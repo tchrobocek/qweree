@@ -43,7 +43,7 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Database", Configuration["Qweree:HealthCheckConnectionString"]);
+            .AddMongoHealthCheck(Configuration["Qweree:HealthCheckConnectionString"]!, "Database");
 
         services.AddControllers()
             .AddJsonOptions(options =>
@@ -66,9 +66,9 @@ public class Startup
                 {
                     Password = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
-                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute),
-                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"], UriKind.Absolute)
+                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
+                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
+                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute)
                     }
                 }
             });

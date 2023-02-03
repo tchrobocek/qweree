@@ -22,7 +22,7 @@ public class DialogService
     public async Task<TResultType?> ShowAndWaitAsync<TComponentType, TResultType>(string title, DialogParameters parameters) where TComponentType : ComponentBase
     {
         var result = await ShowAndWaitAsync<TComponentType>(title, parameters);
-        if (result.Cancelled)
+        if (result.Canceled)
             return default;
 
         return (TResultType?)result.Data;
@@ -37,7 +37,7 @@ public class DialogService
     public async Task<TResultType?> ShowAndWaitAsync<TComponentType, TResultType>(string title, DialogOptions options) where TComponentType : ComponentBase
     {
         var result = await ShowAndWaitAsync<TComponentType>(title, options);
-        if (result.Cancelled)
+        if (result.Canceled)
             return default;
 
         return (TResultType?)result.Data;

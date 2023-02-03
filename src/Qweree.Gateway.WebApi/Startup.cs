@@ -35,7 +35,7 @@ public class Startup
         {
             options.AddPolicy("liberal", builder =>
             {
-                builder.WithOrigins(Configuration["Origin"])
+                builder.WithOrigins(Configuration["Origin"]!)
                     .AllowCredentials()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
@@ -45,7 +45,7 @@ public class Startup
         proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"))
             .AddTransforms(builderContext =>
             {
-                var keepHost = bool.Parse(Configuration["ReverseProxy:OriginalHost"]);
+                var keepHost = bool.Parse(Configuration["ReverseProxy:OriginalHost"]!);
                 builderContext.AddOriginalHost(keepHost);
             });
 
@@ -70,7 +70,7 @@ public class Startup
             var handler = p.GetRequiredService<HttpMessageHandler>();
             var client = new HttpClient(handler)
             {
-                BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]), "api/oauth2/")
+                BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]!), "api/oauth2/")
             };
             return new OAuth2Client(client);
         });
@@ -80,7 +80,7 @@ public class Startup
             var httpHandler = p.GetRequiredService<ClientCredentialsHandler>();
             var httpClient = new HttpClient(httpHandler)
             {
-                BaseAddress = new Uri(Configuration["Qweree:CdnUri"])
+                BaseAddress = new Uri(Configuration["Qweree:CdnUri"]!)
             };
             return new StorageClient(httpClient);
         });

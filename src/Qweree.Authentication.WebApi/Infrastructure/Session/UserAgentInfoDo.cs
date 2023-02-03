@@ -5,7 +5,7 @@ namespace Qweree.Authentication.WebApi.Infrastructure.Session;
 public class UserAgentInfoDo
 {
     public string? UserAgentString { get; set; }
-    public IClientInfoDo? Client { get; set; }
+    public ClientInfoDo? Client { get; set; }
     public OperationSystemInfoDo? OperationSystem { get; set; }
     public string? Device { get; set; }
     public string? Brand { get; set; }
@@ -21,15 +21,15 @@ public class OperationSystemInfoDo
     public string? Platform { get; set; }
 }
 
-public interface IClientInfoDo
+[BsonKnownTypes(typeof(BrowserClientInfoDo), typeof(BotClientInfoDo))]
+public abstract class ClientInfoDo
 {
-    string? ClientString { get; set; }
+    public string? ClientString { get; set; }
 }
 
 [BsonDiscriminator("browser")]
-public class BrowserClientInfoDo : IClientInfoDo
+public class BrowserClientInfoDo : ClientInfoDo
 {
-    public string? ClientString { get; set; }
     public string? Name { get; set; }
     public string? Version { get; set; }
     public string? ShortName { get; set; }
@@ -38,7 +38,6 @@ public class BrowserClientInfoDo : IClientInfoDo
 }
 
 [BsonDiscriminator("bot")]
-public class BotClientInfoDo : IClientInfoDo
+public class BotClientInfoDo : ClientInfoDo
 {
-    public string? ClientString { get; set; }
 }

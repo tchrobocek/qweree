@@ -25,11 +25,11 @@ public abstract class UserAgentInfoMapper
             os.Platform ?? string.Empty);
     }
 
-    public static IClientInfo FromDo(IClientInfoDo client)
+    public static IClientInfo FromDo(ClientInfoDo client)
     {
-        if (client is BotClientInfoDo)
+        if (client is BotClientInfoDo bot)
         {
-            return new BotClientInfo(client.ClientString ?? string.Empty);
+            return new BotClientInfo(bot.ClientString ?? string.Empty);
         }
 
         if (client is BrowserClientInfoDo browser)
@@ -58,7 +58,7 @@ public abstract class UserAgentInfoMapper
         };
     }
 
-    public static IClientInfoDo ToDo(IClientInfo client)
+    public static ClientInfoDo ToDo(IClientInfo client)
     {
         if (client is BotClientInfo)
         {

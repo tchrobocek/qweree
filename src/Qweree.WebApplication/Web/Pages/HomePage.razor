@@ -23,7 +23,7 @@
                     <MudText Typo="Typo.h6">Service info</MudText>
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    <MudIconButton Class="mr-4 mt-4" OnClick="UpdateServicesAsync" Icon="@Icons.Filled.Refresh" Color="Color.Default"/>
+                    <MudIconButton Class="mr-4 mt-4" OnClick="UpdateServicesAsync" Icon="@Icons.Material.Filled.Refresh" Color="Color.Default"/>
                 </CardHeaderActions>
             </MudCardHeader>
             <MudCardContent>
@@ -50,11 +50,11 @@
                     <CardHeaderActions>
                         @if (_dashboardConfig.NotesOpened)
                         {
-                            <MudIconButton Class="mr-4 mt-4" OnClick="CloseNotesAsync" Icon="@Icons.Filled.KeyboardArrowUp" Color="Color.Default"/>
+                            <MudIconButton Class="mr-4 mt-4" OnClick="CloseNotesAsync" Icon="@Icons.Material.Filled.KeyboardArrowUp" Color="Color.Default"/>
                         }
                         else
                         {
-                            <MudIconButton Class="mr-4 mt-4" OnClick="OpenNotesAsync" Icon="@Icons.Filled.KeyboardArrowDown" Color="Color.Default"/>
+                            <MudIconButton Class="mr-4 mt-4" OnClick="OpenNotesAsync" Icon="@Icons.Material.Filled.KeyboardArrowDown" Color="Color.Default"/>
                         }
                     </CardHeaderActions>
                 </MudCardHeader>
@@ -90,10 +90,10 @@
         var identity = (await Session.GetIdentityAsync())!;
         _username = identity.User?.GetFullName() ?? identity.User?.Username ?? string.Empty;
 
-        var cdnUri = Configuration["CdnServiceUri"];
-        var authUri = Configuration["TokenServiceUri"];
-        var piccUri = Configuration["PiccServiceUri"];
-        var gatewayUri = Configuration["GatewayServiceUri"];
+        var cdnUri = Configuration["CdnServiceUri"]!;
+        var authUri = Configuration["TokenServiceUri"]!;
+        var piccUri = Configuration["PiccServiceUri"]!;
+        var gatewayUri = Configuration["GatewayServiceUri"]!;
         _services.Add(new ServiceInfo {Label = "Authentication service", SwaggerUri = authUri + "swagger", Uri = authUri});
         _services.Add(new ServiceInfo {Label = "Cdn service", SwaggerUri = cdnUri + "swagger", Uri = cdnUri});
         _services.Add(new ServiceInfo {Label = "Picc service", SwaggerUri = piccUri + "swagger", Uri = piccUri});

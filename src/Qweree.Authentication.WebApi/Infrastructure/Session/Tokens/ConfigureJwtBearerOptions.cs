@@ -20,7 +20,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
         Configure(string.Empty, options);
     }
 
-    public void Configure(string name, JwtBearerOptions options)
+    public void Configure(string? name, JwtBearerOptions options)
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;

@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <AssemblyName>Qweree.Mongo</AssemblyName>
         <RootNamespace>Qweree.Mongo</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
+      <PackageReference Include="MongoDB.Driver" Version="2.19.0" />
     </ItemGroup>
 
 </Project>

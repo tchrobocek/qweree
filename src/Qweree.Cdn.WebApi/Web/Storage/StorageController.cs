@@ -49,7 +49,7 @@ public class StorageController : ControllerBase
         Response.Headers.ETag = new StringValues(EtagHelper.ComputeEtag(descriptor));
 
         var ifNoneMatchValues = Request.Headers.IfNoneMatch.ToArray();
-        if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v, descriptor)))
+        if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v ?? string.Empty, descriptor)))
         {
             var stream = response.Payload?.Stream;
             if (stream != null)

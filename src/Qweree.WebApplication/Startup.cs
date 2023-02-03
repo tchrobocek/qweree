@@ -53,7 +53,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<BrowserCredentialsHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["GatewayServiceUri"]), "api/v1/auth/")
+                BaseAddress = new Uri(new Uri(configuration["GatewayServiceUri"]!), "api/v1/auth/")
             };
             return new AuthenticationClient(client);
         });
@@ -61,7 +61,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]) , "api/v1/picc/")
+                BaseAddress = new Uri(new Uri(configuration["PiccServiceUri"]!) , "api/v1/picc/")
             };
             return new PiccClient(client);
         });
@@ -69,7 +69,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/account/")
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/account/")
             };
             return new MyAccountClient(client);
         });
@@ -77,7 +77,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/authorization/")
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/admin/authorization/")
             };
             return new AuthorizationClient(client);
         });
@@ -85,7 +85,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]) , "api/admin/identity/")
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/admin/identity/")
             };
             return new IdentityClient(client);
         });
@@ -93,7 +93,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/system/stats/")
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]!) , "api/system/stats/")
             };
             return new StatsClient(client);
         });
@@ -101,7 +101,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/explorer/")
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]!) , "api/v1/explorer/")
             };
             return new ExplorerClient(client);
         });
@@ -109,7 +109,7 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]) , "api/v1/storage/")
+                BaseAddress = new Uri(new Uri(configuration["CdnServiceUri"]!) , "api/v1/storage/")
             };
             return new StorageClient(client);
         });
