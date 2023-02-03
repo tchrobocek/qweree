@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace Qweree.Cdn.WebApi.Web.System;
 
 [ApiController]
+[AllowAnonymous]
 [Route("/api/system/")]
 public class SystemController : ControllerBase
 {

@@ -24,7 +24,6 @@ public class StatsController : ControllerBase
     /// </summary>
     /// <returns>Returns cdn stats.</returns>
     [HttpGet("stats")]
-    [Authorize]
     [ProducesResponseType(typeof(CdnStatsDto), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStatsActionAsync()
     {
