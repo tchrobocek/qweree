@@ -6,6 +6,7 @@ using Qweree.Cdn.Sdk.Storage;
 using Qweree.Gateway.WebApi.Infrastructure;
 using Qweree.Gateway.WebApi.Infrastructure.Session;
 using Qweree.Utils;
+using Yarp.ReverseProxy.Transforms;
 
 namespace Qweree.Gateway.WebApi;
 
@@ -40,7 +41,12 @@ public class Startup
             });
         });
         var proxyBuilder = services.AddReverseProxy();
-        proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"));
+        proxyBuilder.LoadFromConfig(Configuration.GetSection("ReverseProxy"))
+            .AddTransforms(builderContext =>
+            {
+                var keepHost = bool.Parse(Configuration["ReverseProxy:OriginalHost"]);
+                builderContext.AddOriginalHost(keepHost);
+            });
 
         services.AddSingleton<ISessionStorage, QwereeSessionStorage>();
         // services.AddSingleton<ISessionStorage, FileSystemSessionStorage>(_ => new FileSystemSessionStorage(Configuration["Qweree:SessionStorage"]));

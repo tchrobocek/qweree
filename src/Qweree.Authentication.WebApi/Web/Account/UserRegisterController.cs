@@ -46,7 +46,7 @@ public class UserRegisterController : ControllerBase
     /// </summary>
     /// <param name="id">User invitation id.</param>
     [HttpGet("invitation/{id}")]
-    [ProducesResponseType(typeof(UserInvitation), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthUserInvitation), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserInvitationGetActionAsync(Guid id)
     {
@@ -55,7 +55,7 @@ public class UserRegisterController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        return Ok(new UserInvitation
+        return Ok(new AuthUserInvitation
         {
             Id = response.Payload!.Id,
             Username = response.Payload.Username,

@@ -56,6 +56,9 @@ public class StoredObjectService
         catch (DocumentNotFoundException)
         {
         }
+        catch (ArgumentException)
+        {
+        }
 
         var descriptor = new StoredObjectDescriptor(Guid.NewGuid(), _sessionStorage.UserId, slug, input.MediaType, bufferItem.Length,
             isPrivate ?? true, created, _dateTimeProvider.UtcNow);

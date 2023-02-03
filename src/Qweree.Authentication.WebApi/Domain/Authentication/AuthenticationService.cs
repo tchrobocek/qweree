@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Authentication;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
@@ -40,13 +42,14 @@ public class AuthenticationService
     private readonly ITokenEncoder _tokenEncoder;
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly ISessionStorage _sessionStorage;
+    private readonly RSA _rsa;
 
     private const string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public AuthenticationService(IUserRepository userRepository,
         IDateTimeProvider datetimeProvider, Random random, int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
         IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository,
-        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage)
+        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa)
     {
         _userRepository = userRepository;
         _datetimeProvider = datetimeProvider;
@@ -58,6 +61,7 @@ public class AuthenticationService
         _tokenEncoder = tokenEncoder;
         _sessionInfoRepository = sessionInfoRepository;
         _sessionStorage = sessionStorage;
+        _rsa = rsa;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -101,7 +105,7 @@ public class AuthenticationService
             Identity = IdentityMapper.Map(identity),
             IssuedAt = _datetimeProvider.UtcNow,
             SessionId = session.Id
-        });
+        }, new RsaSecurityKey(_rsa));
 
         var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
         return Response.Ok(tokenInfo);
@@ -155,7 +159,7 @@ public class AuthenticationService
             Identity = IdentityMapper.Map(identity),
             IssuedAt = _datetimeProvider.UtcNow,
             SessionId = session.Id
-        });
+        }, new RsaSecurityKey(_rsa));
 
         var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
         return Response.Ok(tokenInfo);
@@ -198,7 +202,7 @@ public class AuthenticationService
             Identity = IdentityMapper.Map(identity),
             IssuedAt = _datetimeProvider.UtcNow,
             SessionId = session.Id
-        });
+        }, new RsaSecurityKey(_rsa));
 
         var tokenInfo = new TokenInfo(jwt, null, expiresAt);
         return Response.Ok(tokenInfo);

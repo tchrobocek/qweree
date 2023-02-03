@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Qweree.Authentication.Sdk.Session.Tokens.Jwt;
@@ -11,8 +10,6 @@ namespace Qweree.Authentication.Sdk.Session.Tokens.Jwt;
 public class JwtEncoder : ITokenEncoder
 {
     private readonly string _issuer;
-    private readonly string _audience;
-    private readonly string _accessTokenKey;
 
     public static AccessToken Decode(string accessToken)
     {
@@ -41,17 +38,14 @@ public class JwtEncoder : ITokenEncoder
         };
     }
 
-    public JwtEncoder(string issuer, string audience, string accessTokenKey)
+    public JwtEncoder(string issuer)
     {
         _issuer = issuer;
-        _audience = audience;
-        _accessTokenKey = accessTokenKey;
     }
 
-    public string EncodeAccessToken(AccessToken accessToken)
+    public string EncodeAccessToken(AccessToken accessToken, RsaSecurityKey rsa)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenKey));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(rsa, SecurityAlgorithms.RsaSha256Signature);
 
         var identityPrincipal = IdentityMapper.ToClaimsPrincipal(accessToken.Identity!);
         var claims = new List<Claim>(identityPrincipal.Claims)
@@ -61,7 +55,7 @@ public class JwtEncoder : ITokenEncoder
             new("sid", accessToken.SessionId?.ToString() ?? Guid.Empty.ToString())
         };
 
-        var token = new JwtSecurityToken(_issuer, _audience, claims,
+        var token = new JwtSecurityToken(_issuer, null, claims,
             expires: accessToken.ExpiresAt, signingCredentials: credentials,
             notBefore: accessToken.IssuedAt);
 

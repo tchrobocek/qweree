@@ -32,6 +32,8 @@ public class StorageController : ControllerBase
     /// </summary>
     /// <param name="path">Object path.</param>
     /// <returns></returns>
+    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{*path}")]
     [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStoredObjectActionAsync(string path)

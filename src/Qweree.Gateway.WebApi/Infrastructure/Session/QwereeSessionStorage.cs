@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Qweree.Cdn.Sdk;
 using Qweree.Cdn.Sdk.Extensions;
 using Qweree.Cdn.Sdk.Storage;
+using Qweree.Sdk.Http.Exceptions;
 
 namespace Qweree.Gateway.WebApi.Infrastructure.Session;
 
@@ -20,13 +21,28 @@ public class QwereeSessionStorage : ISessionStorage
     public async Task WriteAsync(string key, Stream data, CancellationToken cancellationToken = new())
     {
         var response = await _storageClient.StoreAsync(GetPath(key), MediaTypeNames.Application.Octet, data, true, true, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpErrorException e)
+        {
+            throw new Exception($"{e.ApiResponse.StatusCode}", e);
+        }
     }
 
     public async Task<Stream> ReadAsync(string key, CancellationToken cancellationToken = new())
     {
         var response = await _storageClient.RetrieveAsync(GetPath(key), cancellationToken);
-        response.EnsureSuccessStatusCode();
+
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpErrorException e)
+        {
+            throw new Exception($"{e.ApiResponse.StatusCode}", e);
+        }
 
         return await response.ReadPayloadAsStreamAsync(cancellationToken);
     }
@@ -34,7 +50,14 @@ public class QwereeSessionStorage : ISessionStorage
     public async Task DeleteAsync(string key, CancellationToken cancellationToken = new())
     {
         var response = await _storageClient.DeleteAsync(GetPath(key), cancellationToken);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpErrorException e)
+        {
+            throw new Exception($"{e.ApiResponse.StatusCode}", e);
+        }
     }
 
     private string GetPath(string key)

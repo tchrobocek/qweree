@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography;
 using DeepEqual.Syntax;
+using Microsoft.IdentityModel.Tokens;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
@@ -15,26 +17,26 @@ public class JwtEncoderTest
     [Fact]
     public void TestEncoder()
     {
-        var encoder = new JwtEncoder("net.qweree", "qweree", "$2a$06$Kkim544a5cO/dHyknpvH3eMTpe1sg8iMx6dWUhEiTFUV.BfXNPmVG");
+        var encoder = new JwtEncoder("net.qweree");
 
         var properties = new[]
         {
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "property.hello.xxyyy",
                 Value = "hey"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+ěščřžýáíé=",
                 Value = "foo"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+12345678=",
                 Value = "bar"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+12345678=",
                 Value = "baz"
@@ -64,7 +66,9 @@ public class JwtEncoderTest
             IssuedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(1)
         };
-        var jwt = encoder.EncodeAccessToken(accessToken);
+
+        using var rsa = RSA.Create();
+        var jwt = encoder.EncodeAccessToken(accessToken, new RsaSecurityKey(rsa));
 
         Assert.NotEmpty(jwt);
 

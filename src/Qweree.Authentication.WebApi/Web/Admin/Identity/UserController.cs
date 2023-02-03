@@ -38,7 +38,7 @@ public class UserController : ControllerBase
     /// <returns>Found user.</returns>
     [HttpGet("{id}")]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SdkUser), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UserGetActionAsync(Guid id)
     {
@@ -93,7 +93,7 @@ public class UserController : ControllerBase
     /// <returns>Collection of users.</returns>
     [HttpGet]
     [Authorize(Policy = "UserRead")]
-    [ProducesResponseType(typeof(List<User>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<SdkUser>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UsersPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,

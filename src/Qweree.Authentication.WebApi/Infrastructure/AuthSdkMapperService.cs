@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Session;
 using IClientInfo = Qweree.Authentication.WebApi.Domain.Session.IClientInfo;
 using OperationSystemInfo = Qweree.Authentication.WebApi.Domain.Session.OperationSystemInfo;
-using SdkClient = Qweree.Authentication.Sdk.Identity.Client;
 using SdkSessionInfo = Qweree.Authentication.Sdk.Account.MyAccount.SessionInfo;
 using SdkUserAgentInfo = Qweree.Authentication.Sdk.Account.MyAccount.UserAgentInfo;
 using SdkIClientInfo = Qweree.Authentication.Sdk.Account.MyAccount.IClientInfo;
@@ -89,9 +89,9 @@ public class AuthSdkMapperService
         };
     }
 
-    public SdkClient ToClient(Client client)
+    public AuthClient ToClient(Client client)
     {
-        return new SdkClient
+        return new AuthClient
         {
             Id = client.Id,
             ClientId = client.ClientId,

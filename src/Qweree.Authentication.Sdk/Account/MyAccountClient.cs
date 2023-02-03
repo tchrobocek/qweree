@@ -41,10 +41,10 @@ public class MyAccountClient
         return ApiResponse.CreateApiResponse<SessionInfo[]>(response);
     }
 
-    public async Task<ApiResponse<UserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<AuthUserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
-        return ApiResponse.CreateApiResponse<UserInvitation>(response);
+        return ApiResponse.CreateApiResponse<AuthUserInvitation>(response);
     }
 
     public async Task<ApiResponse> UserRegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())

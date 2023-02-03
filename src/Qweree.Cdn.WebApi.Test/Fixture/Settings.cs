@@ -7,9 +7,4 @@ public static class Settings
         public const string ConnectionString = "mongodb://localhost:27017";
         public const string DatabaseName = "qweree_cdn_test";
     }
-
-    public static class Authentication
-    {
-        public const string AccessTokenKey = "$2a$06$A.ioEWhhL4a.S8gSeeF73efPOD7glmt3BKY339wEC2A7fnQDaPLUy";
-    }
 }

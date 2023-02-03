@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.Sdk.Identity;
 
-public class Client
+public class AuthClient
 {
     public Guid? Id { get; set; }
     public string? ClientId { get; set; }

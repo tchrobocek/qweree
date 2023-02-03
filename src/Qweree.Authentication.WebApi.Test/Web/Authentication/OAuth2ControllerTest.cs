@@ -208,7 +208,7 @@ public class OAuth2ControllerTest : IClassFixture<WebApiFactory>, IDisposable
             tokenInfo = JsonUtils.Deserialize<TokenInfo>(content, JsonUtils.SnakeCaseNamingPolicy);
         }
 
-        var encoder = new JwtEncoder(Startup.Issuer, Startup.Audience, Settings.Authentication.AccessTokenKey);
+        var encoder = new JwtEncoder(Startup.Issuer);
         var accessToken = encoder.DecodeAccessToken(tokenInfo?.AccessToken!);
         await _sessionInfoRepository.GetAsync((Guid)accessToken.SessionId!);
 

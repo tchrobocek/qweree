@@ -91,7 +91,7 @@ public static class IdentityMapper
         var username = claims.FirstOrDefault(c => c.Type == "user.username")?.Value ?? "anonymous";
 
         var properties = claims.Where(c => c.Type.StartsWith("user.property."))
-            .Select(c => new UserProperty
+            .Select(c => new AuthUserProperty
             {
                 Key = c.Type["user.property.".Length..],
                 Value = c.Value

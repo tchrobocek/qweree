@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,8 +12,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Authentication.Sdk.Http;
@@ -25,6 +21,7 @@ using Qweree.Cdn.Sdk.Storage;
 using Qweree.Mongo;
 using Qweree.PiccStash.WebApi.Domain;
 using Qweree.PiccStash.WebApi.Infrastructure;
+using Qweree.PiccStash.WebApi.Infrastructure.System;
 using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.Sdk.OAuth2.ClientCredentials;
 
@@ -38,20 +35,6 @@ public class Startup
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
-    }
-
-    public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
-    {
-        return new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = Issuer,
-            ValidateAudience = true,
-            ValidAudience = Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
     }
 
     public IConfiguration Configuration { get; }
@@ -107,58 +90,23 @@ public class Startup
             });
         });
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.SaveToken = true;
-            options.TokenValidationParameters =
-                GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    string? token;
+        services.AddAuthentication()
+            .AddJwtBearer("AccessToken", _ => {})
+            .AddJwtBearer("FileAccessToken", _ => {});
 
-                    if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
-                    {
-                        context.Options.TokenValidationParameters =
-                            GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
-
-                        token = values.FirstOrDefault();
-
-                        if (token == null)
-                            return Task.CompletedTask;
-
-                        const string prefix = "Bearer ";
-
-                        if (token.StartsWith(prefix))
-                            token = token.Substring(prefix.Length);
-                        else
-                            token = null;
-                    }
-                    else if (context.Request.Query.TryGetValue("access_token", out values))
-                    {
-                        token = values.FirstOrDefault();
-                    }
-                    else
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    context.Token = token;
-                    return Task.CompletedTask;
-                }
-            };
-        });
         services.Configure<ForwardedHeadersOptions>(options =>
         {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
         });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            var schemes = new[] { "AccessToken", "FileAccessToken" };
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes(schemes)
+                .Build();
+        });
 
         // _
         services.Configure<QwereeConfigurationDo>(Configuration.GetSection("Qweree"));
@@ -206,6 +154,8 @@ public class Startup
         // Picc stash
         services.AddScoped<StashedPiccRepository>();
 
+        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+        services.AddSingleton<FileAccessKey>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -216,10 +166,7 @@ public class Startup
         if (pathBase != null)
             app.UsePathBase(pathBase);
 
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.All
-        });
+        app.UseForwardedHeaders();
         app.UseSwagger(c =>
         {
             c.PreSerializeFilters.Add((swaggerDoc, _) =>

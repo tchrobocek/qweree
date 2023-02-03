@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,8 +11,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Qweree.AspNet.Web.Swagger;
 using Qweree.Authentication.Sdk.Session;
@@ -34,27 +30,12 @@ public class Startup
     public const string Audience = "qweree";
     public const string Issuer = "net.qweree";
 
-
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
 
     public IConfiguration Configuration { get; }
-
-    public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
-    {
-        return new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = Issuer,
-            ValidateAudience = true,
-            ValidAudience = Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -107,63 +88,43 @@ public class Startup
             });
         });
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.SaveToken = true;
-            options.TokenValidationParameters =
-                GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    string? token;
+        services.AddAuthentication()
+            .AddJwtBearer("AccessToken", _ => {})
+            .AddJwtBearer("FileAccessToken", _ => {});
 
-                    if (context.Request.Headers.TryGetValue(HeaderNames.Authorization, out var values))
-                    {
-                        context.Options.TokenValidationParameters =
-                            GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
-
-                        token = values.FirstOrDefault();
-
-                        if (token == null)
-                            return Task.CompletedTask;
-
-                        const string prefix = "Bearer ";
-
-                        if (token.StartsWith(prefix))
-                            token = token.Substring(prefix.Length);
-                        else
-                            token = null;
-                    }
-                    else if (context.Request.Query.TryGetValue("access_token", out values))
-                    {
-                        token = values.FirstOrDefault();
-                    }
-                    else
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    context.Token = token;
-                    return Task.CompletedTask;
-                }
-            };
-        });
         services.Configure<ForwardedHeadersOptions>(options =>
         {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
         });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("StorageStore", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store"));
-            options.AddPolicy("StorageStoreForce", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store_force"));
-            options.AddPolicy("StorageExplore", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.explore"));
-            options.AddPolicy("StorageDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.delete"));
+            var schemes = new[] { "AccessToken", "FileAccessToken" };
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes(schemes)
+                .Build();
+
+            options.AddPolicy("StorageStore", policy =>
+            {
+                policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store");
+                policy.AuthenticationSchemes = schemes;
+            });
+            options.AddPolicy("StorageStoreForce", policy =>
+            {
+                policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.store_force");
+                policy.AuthenticationSchemes = schemes;
+            });
+            options.AddPolicy("StorageExplore", policy =>
+            {
+                policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.explore");
+                policy.AuthenticationSchemes = schemes;
+            });
+            options.AddPolicy("StorageDelete", policy =>
+            {
+                policy.RequireClaim(ClaimTypes.Role, "qweree.cdn.storage.delete");
+                policy.AuthenticationSchemes = schemes;
+            });
         });
 
         // _
@@ -175,6 +136,8 @@ public class Startup
             p.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
         services.AddScoped<ISessionStorage, ClaimsPrincipalStorage>();
         services.AddScoped<ClaimsPrincipalStorage, ClaimsPrincipalStorage>();
+        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+        services.AddSingleton<FileAccessKey>();
 
         // Database
         services.AddSingleton(p =>
@@ -210,11 +173,7 @@ public class Startup
         if (pathBase != null)
             app.UsePathBase(pathBase);
 
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.All,
-
-        });
+        app.UseForwardedHeaders();
         app.UseSwagger(c =>
         {
             c.PreSerializeFilters.Add((swaggerDoc, _) =>

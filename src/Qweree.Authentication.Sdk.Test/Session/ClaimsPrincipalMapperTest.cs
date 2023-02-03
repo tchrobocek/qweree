@@ -15,22 +15,22 @@ public class ClaimsPrincipalMapperTest
     {
         var properties = new[]
         {
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "property.hello.xxyyy",
                 Value = "hey"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+ěščřžýáíé=",
                 Value = "foo"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+12345678=",
                 Value = "bar"
             },
-            new UserProperty
+            new AuthUserProperty
             {
                 Key = "+12345678=",
                 Value = "baz"

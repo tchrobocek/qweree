@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
@@ -30,6 +29,7 @@ using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Authentication.WebApi.Infrastructure.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Session;
+using Qweree.Authentication.WebApi.Infrastructure.Session.Tokens;
 using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Mongo;
 using Qweree.Utils;
@@ -41,7 +41,6 @@ namespace Qweree.Authentication.WebApi;
 
 public class Startup
 {
-    public const string Audience = "qweree";
     public const string Issuer = "net.qweree";
 
     public Startup(IConfiguration configuration)
@@ -50,20 +49,6 @@ public class Startup
     }
 
     public IConfiguration Configuration { get; }
-
-    public static TokenValidationParameters GetValidationParameters(string accessTokenKey)
-    {
-        return new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = Issuer,
-            ValidateAudience = true,
-            ValidAudience = Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(accessTokenKey)),
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -119,12 +104,8 @@ public class Startup
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.SaveToken = true;
-            options.TokenValidationParameters =
-                GetValidationParameters(Configuration["Qweree:AccessTokenKey"]);
-        });
+        }).AddJwtBearer();
+
         services.AddAuthorization(options =>
         {
             options.AddPolicy("UserCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.create"));
@@ -145,7 +126,7 @@ public class Startup
         });
         services.Configure<ForwardedHeadersOptions>(options =>
         {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
         });
 
         // Validator
@@ -200,16 +181,19 @@ public class Startup
             var authorizationService = p.GetRequiredService<AuthorizationService>();
             var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
             var tokenEncoder = p.GetRequiredService<ITokenEncoder>();
+            var rsa = p.GetRequiredService<RSA>();
 
             return new AuthenticationService(userRepository, dateTimeProvider, new Random(),
                 config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder,
                 clientRepository, authorizationService, clientRoleRepository, tokenEncoder, sessionInfoRepository,
-                sessionStorage);
+                sessionStorage, rsa);
         });
-        services.AddSingleton<ITokenEncoder>(p =>
+        services.AddScoped<ITokenEncoder>(p =>
         {
-            var config = p.GetRequiredService<IOptions<QwereeConfigurationDo>>().Value;
-            return new JwtEncoder(Issuer, Audience, config?.AccessTokenKey ?? string.Empty);
+            var context = p.GetRequiredService<IHttpContextAccessor>();
+            var request = context.HttpContext!.Request;
+            var issuer = new Uri($"{request.Scheme}://{request.Host}");
+            return new JwtEncoder(issuer.ToString());
         });
 
         // Identity
@@ -226,7 +210,8 @@ public class Startup
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRoleRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, ClientRoleRepository>();
-        services.AddSingleton<AdminSdkMapperService, AdminSdkMapperService>();
+        services.AddSingleton<AdminSdkMapperService>();
+        services.AddSingleton<AuthSdkMapperService>();
         services.AddSingleton<UserInvitationService>();
         services.AddSingleton<UserRegisterService>();
         services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),
@@ -246,6 +231,8 @@ public class Startup
 
         // Security
         services.AddSingleton<IPasswordEncoder, BCryptPasswordEncoder>();
+        services.AddSingleton<RSA>(_ => RSA.Create());
+        services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -256,10 +243,7 @@ public class Startup
         if (pathBase != null)
             app.UsePathBase(pathBase);
 
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.All
-        });
+        app.UseForwardedHeaders();
         app.UseSwagger(c =>
         {
             c.PreSerializeFilters.Add((swaggerDoc, _) =>

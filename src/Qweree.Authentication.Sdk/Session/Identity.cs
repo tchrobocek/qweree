@@ -20,5 +20,5 @@ public class IdentityUser
 {
     public Guid? Id { get; set; }
     public string? Username { get; set; }
-    public UserProperty[]? Properties { get; set; }
+    public AuthUserProperty[]? Properties { get; set; }
 }

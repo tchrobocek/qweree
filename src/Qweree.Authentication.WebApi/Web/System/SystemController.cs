@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +28,17 @@ public class SystemController : ControllerBase
     {
         var version = GetType().Assembly.GetName().Version?.ToString();
         return Ok(new VersionDto {Version = version});
+    }
+
+    /// <summary>
+    ///     Get Version.
+    /// </summary>
+    /// <returns>Returns current project assembly version.</returns>
+    [HttpGet("headers")]
+    [ProducesResponseType(typeof(VersionDto), StatusCodes.Status200OK)]
+    public IActionResult Headers()
+    {
+        return Ok(Request.Headers.Select(kv => new{ kv.Key, kv.Value }));
     }
 
     /// <summary>

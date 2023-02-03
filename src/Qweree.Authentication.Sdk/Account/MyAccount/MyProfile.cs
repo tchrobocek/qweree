@@ -8,5 +8,5 @@ public class MyProfile
     public Guid? Id { get; set; }
     public string? Username { get; set; }
     public string? ContactEmail { get; set; }
-    public UserProperty[]? Properties { get; set; }
+    public AuthUserProperty[]? Properties { get; set; }
 }

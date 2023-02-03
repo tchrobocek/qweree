@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.Sdk.Account.UserRegister;
 
-public class UserInvitation
+public class AuthUserInvitation
 {
     public Guid? Id { get; set; }
     public string? Username { get; set; }
