@@ -20,10 +20,12 @@ public class OperationSystemInfo
 
 public interface IClientInfo
 {
+    public string TypeName { get; }
 }
 
 public class BrowserClientInfo : IClientInfo
 {
+    public string TypeName => "browser";
     public string? Name { get; set; }
     public string? Version { get; set; }
     public string? ShortName { get; set; }
@@ -33,5 +35,6 @@ public class BrowserClientInfo : IClientInfo
 
 public class BotClientInfo : IClientInfo
 {
+    public string TypeName => "bot";
     public string? Name { get; set; }
 }
