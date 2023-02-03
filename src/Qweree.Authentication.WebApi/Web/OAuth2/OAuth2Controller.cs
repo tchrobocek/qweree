@@ -84,6 +84,7 @@ public class OAuth2Controller : ControllerBase
             }
         }
 
+        var ipAddress = Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         var userAgentString = Request.Headers.UserAgent;
         UserAgentInfo? userAgent = null;
         if (!string.IsNullOrWhiteSpace(userAgentString))
@@ -92,16 +93,16 @@ public class OAuth2Controller : ControllerBase
         if (grantType == "password")
         {
             var passwordInput = new PasswordGrantInput(username ?? "", password ?? "");
-            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials, userAgent);
+            response = await _authenticationService.AuthenticateAsync(passwordInput, clientCredentials, ipAddress, userAgent);
         }
         else if (grantType == "refresh_token")
         {
             var refreshTokenInput = new RefreshTokenGrantInput(refreshToken ?? "");
-            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials, userAgent);
+            response = await _authenticationService.AuthenticateAsync(refreshTokenInput, clientCredentials, ipAddress, userAgent);
         }
         else if (grantType == "client_credentials")
         {
-            response = await _authenticationService.AuthenticateAsync(clientCredentials, userAgent);
+            response = await _authenticationService.AuthenticateAsync(clientCredentials, ipAddress, userAgent);
         }
         else
         {

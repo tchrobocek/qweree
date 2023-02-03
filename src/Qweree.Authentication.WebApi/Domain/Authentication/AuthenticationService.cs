@@ -67,7 +67,7 @@ public class AuthenticationService
     }
 
     public async Task<Response<TokenInfo>> AuthenticateAsync(PasswordGrantInput input,
-        ClientCredentials clientCredentials, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
+        ClientCredentials clientCredentials, string ipAddress, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -84,7 +84,7 @@ public class AuthenticationService
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
         }
 
-        var session = await BeginSessionAsync(client, user, userAgent, GrantType.Password, true);
+        var session = await BeginSessionAsync(client, user, ipAddress, userAgent, GrantType.Password, true);
 
         var effectiveRoles = new List<string>();
         await foreach (var role in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
@@ -112,7 +112,7 @@ public class AuthenticationService
     }
 
     public async Task<Response<TokenInfo>> AuthenticateAsync(RefreshTokenGrantInput input,
-        ClientCredentials clientCredentials, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
+        ClientCredentials clientCredentials, string ipAddress, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -134,7 +134,7 @@ public class AuthenticationService
         if (sessionInfo.ClientId != client.Id)
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
-        var session = await RefreshSessionAsync(sessionInfo, userAgent);
+        var session = await RefreshSessionAsync(sessionInfo, ipAddress, userAgent);
 
         if (session.ExpiresAt < now)
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
@@ -165,7 +165,7 @@ public class AuthenticationService
         return Response.Ok(tokenInfo);
     }
 
-    public async Task<Response<TokenInfo>> AuthenticateAsync(ClientCredentials clientCredentials, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
+    public async Task<Response<TokenInfo>> AuthenticateAsync(ClientCredentials clientCredentials, string ipAddress, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
     {
         var now = _datetimeProvider.UtcNow;
 
@@ -182,7 +182,7 @@ public class AuthenticationService
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
         }
 
-        var session = await BeginSessionAsync(client, null, userAgent, GrantType.ClientCredentials, false);
+        var session = await BeginSessionAsync(client, null, ipAddress, userAgent, GrantType.ClientCredentials, false);
 
         var effectiveRoles = new List<string>();
         await foreach (var role in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
@@ -208,7 +208,7 @@ public class AuthenticationService
         return Response.Ok(tokenInfo);
     }
 
-    private async Task<SessionInfo> BeginSessionAsync(Client client, User? user, UserAgentInfo? userAgent, GrantType grantType, bool issueRefreshToken)
+    private async Task<SessionInfo> BeginSessionAsync(Client client, User? user, string ipAddress, UserAgentInfo? userAgent, GrantType grantType, bool issueRefreshToken)
     {
         var expiresAt  = _datetimeProvider.UtcNow + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var refreshToken = string.Empty;
@@ -219,7 +219,7 @@ public class AuthenticationService
             refreshToken = GenerateRefreshToken();
         }
 
-        var session = new SessionInfo(Guid.NewGuid(), client.Id, user?.Id, refreshToken, userAgent, grantType,
+        var session = new SessionInfo(Guid.NewGuid(), client.Id, user?.Id, refreshToken, ipAddress, userAgent, grantType,
             _datetimeProvider.UtcNow, _datetimeProvider.UtcNow, expiresAt);
 
         await _sessionInfoRepository.InsertAsync(session);
@@ -227,11 +227,11 @@ public class AuthenticationService
         return session;
     }
 
-    private async Task<SessionInfo> RefreshSessionAsync(SessionInfo sessionInfo, UserAgentInfo? userAgentInfo)
+    private async Task<SessionInfo> RefreshSessionAsync(SessionInfo sessionInfo, string ipAddress, UserAgentInfo? userAgentInfo)
     {
         var expiresAt = _datetimeProvider.UtcNow + TimeSpan.FromSeconds(_refreshTokenValiditySeconds);
         var refreshToken = GenerateRefreshToken();
-        var session = new SessionInfo(sessionInfo.Id, sessionInfo.ClientId, sessionInfo.UserId, refreshToken, userAgentInfo, sessionInfo.Grant,
+        var session = new SessionInfo(sessionInfo.Id, sessionInfo.ClientId, sessionInfo.UserId, refreshToken, ipAddress, userAgentInfo, sessionInfo.Grant,
             sessionInfo.CreatedAt, _datetimeProvider.UtcNow, expiresAt);
 
         await _sessionInfoRepository.ReplaceAsync(sessionInfo.Id, session);
