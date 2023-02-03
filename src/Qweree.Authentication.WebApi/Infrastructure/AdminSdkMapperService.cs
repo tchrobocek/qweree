@@ -227,12 +227,23 @@ public class AdminSdkMapperService
 
     public async Task<SdkClient> ToClient(Client client, CancellationToken cancellationToken = new())
     {
-        var roles = new List<ClientRole>();
+        var clientRoles = new List<ClientRole>();
         foreach (var role in client.ClientRoles)
         {
             try
             {
-                roles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
+                clientRoles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
+            }
+            catch (DocumentNotFoundException)
+            {
+            }
+        }
+        var userRoles = new List<UserRole>();
+        foreach (var role in client.UserRoles)
+        {
+            try
+            {
+                userRoles.Add(await _userRoleRepository.GetAsync(role, cancellationToken));
             }
             catch (DocumentNotFoundException)
             {
@@ -250,7 +261,8 @@ public class AdminSdkMapperService
             Owner = await ToUserAsync(owner, cancellationToken),
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            ClientRoles = roles.Select(ToRole).ToArray()
+            ClientRoles = clientRoles.Select(ToRole).ToArray(),
+            UserRoles = userRoles.Select(ToRole).ToArray()
         };
     }
 

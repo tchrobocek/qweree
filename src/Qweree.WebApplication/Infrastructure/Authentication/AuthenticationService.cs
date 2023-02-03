@@ -32,8 +32,7 @@ public class AuthenticationService
 
     public async Task LogoutAsync(CancellationToken cancellationToken = new())
     {
-        var response = await _authenticationClient.LogoutAsync(cancellationToken);
-        response.EnsureSuccessStatusCode();
+        await _authenticationClient.LogoutAsync(cancellationToken);
         await _localUserStorage.RemoveUserAsync(cancellationToken);
     }
 
