@@ -86,6 +86,7 @@ public class Startup
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
+        app.UseHttpsRedirection();
         if (environment.IsDevelopment())
             app.UseCors("liberal");
 
