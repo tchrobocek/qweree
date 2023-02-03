@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using Qweree.Authentication.Sdk.Account
 @using System.Net
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @using Qweree.Authentication.Sdk.Account.MyAccount
 @using Qweree.Authentication.Sdk.Session
 @using Qweree.WebApplication.Infrastructure.Extensions
@@ -35,24 +37,26 @@
                         <MudText Typo="Typo.body1">Full name: @_user.GetFullName()</MudText>
                     }
                 </MudTabPanel>
-                <MudTabPanel Text="Session info">
-                    <MudText Class="ml-4" Typo="Typo.body1">Client</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Id: @_identity?.Client!.Id</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Client id: @_identity?.Client!.ClientId</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Application name: @_identity?.Client!.ApplicationName</MudText>
-                    <MudText Class="mt-4 ml-4" Typo="Typo.body1">User</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Id: @_identity?.User!.Id</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Username: @_identity.User!.Username</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Email: @_identity.Email</MudText>
-                    <MudText Class="ml-4" Typo="Typo.body2">Properties:</MudText>
-                    @foreach (var property in _identity.User?.Properties!)
-                    {
-                        <MudText Class="ml-6" Typo="Typo.body2">@property.Key: @property.Value</MudText>
-                    }
-                    <MudText Class="ma-4" Typo="Typo.body2">Roles: @string.Join(", ", _identity?.Roles ?? Array.Empty<string>())</MudText>
-                </MudTabPanel>
-                <MudTabPanel Text="Active devices">
-                    <MudDivider/>
+                <MudTabPanel Text="Active sessions">
+                    <MudTable Elevation="0" Items="_sessions">
+                        <RowTemplate>
+                            <MudTd Class="pa-1" DataLabel="Id">
+                                <ShortIdComponent Id="@context.Id"/>
+                            </MudTd>
+                            <MudTd Class="pa-1" DataLabel="Device">@context.UserAgent?.Brand @context.UserAgent?.OperationSystem?.Name (@context.UserAgent?.OperationSystem?.Version)</MudTd>
+                            @if (context.UserAgent?.Client is BotClientInfo bot)
+                            {
+                                <MudTd Class="pa-1" DataLabel="Browser">@bot.Name</MudTd>
+                            }
+                            @if (context.UserAgent?.Client is BrowserClientInfo browser)
+                            {
+                                <MudTd Class="pa-1" DataLabel="Browser">@browser.Name (@browser.Version)</MudTd>
+                            }
+                            <MudTd Class="pa-1" DataLabel="ExpiresAt">@context.ExpiresAt</MudTd>
+
+                            <MudTd Class="pa-1" DataLabel="Actions"><MudLink @onclick="() => RevokeAsync(context)" Color="Color.Error" Class="cursor-pointer mx-2">revoke</MudLink></MudTd>
+                        </RowTemplate>
+                    </MudTable>
                 </MudTabPanel>
                 <MudTabPanel Text="Change password">
                     <ErrorsComponent Errors="_errors"/>
@@ -75,6 +79,7 @@
 @code {
     private Identity? _identity;
     private MyProfile? _user;
+    private SessionInfo[]? _sessions;
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -93,6 +98,15 @@
             var userResponse = await MyAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
+            var sessionsResponse = await MyAccountClient.MySessionsGetAsync();
+            if (sessionsResponse.IsSuccessful)
+                _sessions = await sessionsResponse.ReadPayloadAsync(new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                    Converters = { new ClientInfoConverter() }
+                });
         }
     }
 
@@ -140,6 +154,11 @@
         }
 
         Snackbar.Add("Password changed.", Severity.Success);
+    }
+
+    private Task RevokeAsync(SessionInfo context)
+    {
+        throw new NotImplementedException();
     }
 
 }
