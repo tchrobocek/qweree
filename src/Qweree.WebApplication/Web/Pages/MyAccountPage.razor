@@ -6,11 +6,16 @@
 @using System.Text.Json.Serialization
 @using Qweree.Authentication.Sdk.Account.MyAccount
 @using Qweree.Authentication.Sdk.Session
+@using Qweree.Gateway.Sdk
 @using Qweree.WebApplication.Infrastructure.Extensions
+@using Qweree.WebApplication.Infrastructure.View
 @using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
+
 @inject ClaimsPrincipalStorage Storage
 @inject MyAccountClient MyAccountClient
+@inject AuthenticationClient AuthenticationClient
 @inject ISnackbar Snackbar
+
 @attribute [Authorize]
 
 @if (_identity != null)
@@ -54,7 +59,7 @@
                             }
                             <MudTd Class="pa-1" DataLabel="ExpiresAt">@context.ExpiresAt</MudTd>
 
-                            <MudTd Class="pa-1" DataLabel="Actions"><MudLink @onclick="() => RevokeAsync(context)" Color="Color.Error" Class="cursor-pointer mx-2">revoke</MudLink></MudTd>
+                            <MudTd Class="pa-1" DataLabel="Actions"><MudLink @onclick="async () => await RevokeAsync(context)" Color="Color.Error" Class="cursor-pointer mx-2">revoke</MudLink></MudTd>
                         </RowTemplate>
                     </MudTable>
                 </MudTabPanel>
@@ -93,21 +98,27 @@
 
         var id = _identity?.User?.Id;
 
-        if (id != null)
+        if (id is not null)
         {
             var userResponse = await MyAccountClient.MyProfileGetAsync();
             if (userResponse.IsSuccessful)
                 _user = await userResponse.ReadPayloadAsync();
-            var sessionsResponse = await MyAccountClient.MySessionsGetAsync();
-            if (sessionsResponse.IsSuccessful)
-                _sessions = await sessionsResponse.ReadPayloadAsync(new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    PropertyNameCaseInsensitive = true,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-                    Converters = { new ClientInfoConverter() }
-                });
+
+            await LoadSessionsAsync();
         }
+    }
+
+    private async Task LoadSessionsAsync()
+    {
+        var sessionsResponse = await MyAccountClient.MySessionsGetAsync();
+        if (sessionsResponse.IsSuccessful)
+            _sessions = await sessionsResponse.ReadPayloadAsync(new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                Converters = { new ClientInfoConverter() }
+            });
     }
 
     private async Task ChangePasswordAsync()
@@ -156,9 +167,19 @@
         Snackbar.Add("Password changed.", Severity.Success);
     }
 
-    private Task RevokeAsync(SessionInfo context)
+    private async Task RevokeAsync(SessionInfo session)
     {
-        throw new NotImplementedException();
+        var response = await AuthenticationClient.RevokeSessionAsync((Guid)session.Id!);
+        if (response.IsSuccessful)
+        {
+            Snackbar.Add("Session revoked.", Severity.Success);
+            await LoadSessionsAsync();
+        }
+        else
+        {
+            var errors = await response.ReadErrorsAsync();
+            Snackbar.AddErrors(errors);
+        }
     }
 
 }
