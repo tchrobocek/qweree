@@ -39,4 +39,10 @@ public class AuthenticationClient
         var response = await _httpClient.PostAsync("logout", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
         return ApiResponse.CreateApiResponse(response);
     }
+
+    public async Task<ApiResponse> RevokeSessionAsync(Guid sessionId, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync($"session/{sessionId}", cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
+    }
 }

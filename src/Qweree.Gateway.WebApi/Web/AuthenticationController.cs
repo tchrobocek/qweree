@@ -4,10 +4,13 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Qweree.Authentication.Sdk.Account;
 using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.Sdk.Session.Tokens.Jwt;
 using Qweree.Gateway.Sdk;
 using Qweree.Gateway.WebApi.Infrastructure;
+using Qweree.Sdk;
 using Qweree.Utils;
 using ISessionStorage = Qweree.Gateway.WebApi.Infrastructure.Session.ISessionStorage;
 
@@ -17,7 +20,6 @@ namespace Qweree.Gateway.WebApi.Web;
 [Route("/api/v1/auth")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly Random _random = new();
     private readonly OAuth2Client _oauthClient;
     private readonly ISessionStorage _sessionStorage;
     private readonly IWebHostEnvironment _environment;
@@ -63,27 +65,11 @@ public class AuthenticationController : ControllerBase
         }
 
         var tokenInfo = (await response.ReadPayloadAsync(JsonUtils.SnakeCaseNamingPolicy))!;
-        var cookie = GenerateCookie();
+        var encoder = new JwtEncoder(string.Empty);
+        var accessToken = encoder.DecodeAccessToken(tokenInfo.AccessToken!);
+        var cookie = accessToken.SessionId!.ToString()!;
 
-        Response.Cookies.Delete("Session");
-        if (_environment.IsDevelopment())
-        {
-            Response.Cookies.Append("Session", cookie, new CookieOptions
-            {
-                HttpOnly = false,
-                SameSite = SameSiteMode.Strict,
-                Secure = true
-            });
-        }
-
-        Response.Cookies.Append("Session", cookie, new CookieOptions
-        {
-            Expires = new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromHours(3)),
-            MaxAge = TimeSpan.FromDays(1),
-            HttpOnly = false,
-            SameSite = SameSiteMode.None,
-            Secure = true
-        });
+        AppendCookie(cookie);
 
         await using var memoryStream = new MemoryStream();
         await memoryStream.WriteAsync(Encoding.UTF8.GetBytes(JsonUtils.Serialize(tokenInfo)));
@@ -91,11 +77,9 @@ public class AuthenticationController : ControllerBase
 
         await _sessionStorage.WriteAsync(cookie, memoryStream);
 
-        var accessToken = tokenInfo.AccessToken!;
-
         ClaimsIdentity user;
 
-        if (string.IsNullOrWhiteSpace(accessToken))
+        if (string.IsNullOrWhiteSpace(tokenInfo.AccessToken))
         {
             user = new ClaimsIdentity(authenticationType: null);
         }
@@ -104,7 +88,7 @@ public class AuthenticationController : ControllerBase
             try
             {
                 var token = (JwtSecurityToken)new JwtSecurityTokenHandler()
-                    .ReadToken(accessToken);
+                    .ReadToken(tokenInfo.AccessToken);
                 var claims = token.Claims.ToList();
                 claims.AddRange(token.Claims.Where(c => c.Type == "role")
                     .Select(c => new Claim(ClaimTypes.Role, c.Value)).ToArray());
@@ -133,12 +117,8 @@ public class AuthenticationController : ControllerBase
 
         try
         {
-            var client = await CreateAuthenticatedClientAsync();
-            var response = await client.RevokeAsync();
-
-            if (!response.IsSuccessful)
-                return StatusCode((int)response.StatusCode, await response.ReadErrorsAsync());
-
+            var client = await CreateAuthenticatedOAuth2ClientAsync();
+            await client.RevokeAsync();
             await _sessionStorage.DeleteAsync(cookie);
         }
         catch (Exception)
@@ -148,6 +128,45 @@ public class AuthenticationController : ControllerBase
         finally
         {
             Response.Cookies.Delete("Session");
+        }
+
+        return NoContent();
+    }
+
+    /// <summary>
+    ///     Revokes session.
+    /// </summary>
+    [HttpDelete]
+    [Route("session/{sessionId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> RevokeSessionAsync(Guid sessionId)
+    {
+        var cookie = Request.Cookies["Session"];
+        if (cookie == null)
+            return Unauthorized();
+
+        if (cookie == sessionId.ToString())
+            return BadRequest(new ErrorResponse
+            {
+                Errors = new[] {new ErrorDto
+                {
+                    Message = "Forbidden."
+                }}
+            });
+
+        AppendCookie(cookie);
+
+        try
+        {
+            var client = await CreateAuthenticatedMyAccountClientAsync();
+            var response = await client.RevokeSessionAsync(sessionId);
+            response.EnsureSuccessStatusCode();
+
+            await _sessionStorage.DeleteAsync(sessionId.ToString());
+        }
+        catch (Exception)
+        {
+            // ignored
         }
 
         return NoContent();
@@ -200,7 +219,7 @@ public class AuthenticationController : ControllerBase
         return NoContent();
     }
 
-    private async Task<OAuth2Client> CreateAuthenticatedClientAsync(CancellationToken cancellationToken = new())
+    private async Task<OAuth2Client> CreateAuthenticatedOAuth2ClientAsync(CancellationToken cancellationToken = new())
     {
         var cookie = Request.Cookies["Session"];
 
@@ -219,18 +238,47 @@ public class AuthenticationController : ControllerBase
         return new OAuth2Client(client);
     }
 
-    private string GenerateCookie()
+    private async Task<MyAccountClient> CreateAuthenticatedMyAccountClientAsync(CancellationToken cancellationToken = new())
     {
-        const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        const int secretLength = 30;
-        var result = string.Empty;
+        var cookie = Request.Cookies["Session"];
 
-        for (var i = 0; i < secretLength; i++)
+        TokenInfo? tokenInfo = null;
+        if (cookie != null)
         {
-            var index = _random.Next(chars.Length);
-            result += chars[index];
+            await using var stream = await _sessionStorage.ReadAsync(cookie, cancellationToken);
+            tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream, cancellationToken);
         }
 
-        return result;
+        var client = new HttpClient(_messageHandler)
+        {
+            BaseAddress = new Uri(new Uri(_qwereeConfig.Value.AuthUri!), "api/account/"),
+        };
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenInfo?.AccessToken);
+        return new MyAccountClient(client);
+    }
+
+    private void AppendCookie(string cookie)
+    {
+        Response.Cookies.Delete("Session");
+        if (_environment.IsDevelopment())
+        {
+            Response.Cookies.Append("Session", cookie, new CookieOptions
+            {
+                HttpOnly = false,
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            });
+        }
+        else
+        {
+            Response.Cookies.Append("Session", cookie, new CookieOptions
+            {
+                Expires = new DateTimeOffset(DateTime.UtcNow + TimeSpan.FromHours(3)),
+                MaxAge = TimeSpan.FromDays(1),
+                HttpOnly = false,
+                SameSite = SameSiteMode.None,
+                Secure = true
+            });
+        }
     }
 }

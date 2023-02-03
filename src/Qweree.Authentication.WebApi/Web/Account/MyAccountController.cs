@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -79,5 +80,23 @@ public class MyAccountController : ControllerBase
             infos.Add(await _authSdkMapper.ToSessionInfoAsync(item));
 
         return Ok(infos);
+    }
+
+    /// <summary>
+    ///     Revoke session.
+    /// </summary>
+    [HttpDelete("sessions/{sessionId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [Authorize]
+    public async Task<IActionResult> RevokeSessionActionAsync(Guid sessionId)
+    {
+        var response = await _myAccountService.RevokeAsync(sessionId);
+
+        if (response.Status == ResponseStatus.Fail)
+            return response.ToErrorActionResult();
+
+        return NoContent();
     }
 }

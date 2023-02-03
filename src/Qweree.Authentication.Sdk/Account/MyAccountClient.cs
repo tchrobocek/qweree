@@ -52,4 +52,10 @@ public class MyAccountClient
         var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
         return ApiResponse.CreateApiResponse(response);
     }
+
+    public async Task<ApiResponse> RevokeSessionAsync(Guid sessionId, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.DeleteAsync($"sessions/{sessionId}", cancellationToken);
+        return ApiResponse.CreateApiResponse(response);
+    }
 }

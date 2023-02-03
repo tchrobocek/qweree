@@ -90,4 +90,22 @@ public class MyAccountService
         var items = await _sessionInfoRepository.FindForUser(_sessionStorage.UserId, cancellationToken);
         return Response.Ok(items);
     }
+
+    public async Task<Response> RevokeAsync(Guid sessionId, CancellationToken cancellationToken = new())
+    {
+        try
+        {
+            var session = await _sessionInfoRepository.GetAsync(sessionId, cancellationToken);
+
+            if (_sessionStorage.UserId != session.UserId)
+                return Response.Fail("Session does not exist", StatusCodes.Status404NotFound);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail("Session does not exist", StatusCodes.Status404NotFound);
+        }
+
+        await _sessionInfoRepository.DeleteOneAsync(sessionId, cancellationToken);
+        return Response.Ok();
+    }
 }

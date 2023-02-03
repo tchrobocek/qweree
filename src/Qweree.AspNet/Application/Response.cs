@@ -71,6 +71,11 @@ public class Response
         return new Response(ResponseStatus.Fail, null, errors.Select(e => new Error(e)));
     }
 
+    public static Response Fail(string error, int statusCode)
+    {
+        return new Response(ResponseStatus.Fail, null, new []{ new Error(error, statusCode) });
+    }
+
     public static Response<TPayloadType> Fail<TPayloadType>(IEnumerable<Error> errors) where TPayloadType : class
     {
         return new Response<TPayloadType>(ResponseStatus.Fail, null, errors);
