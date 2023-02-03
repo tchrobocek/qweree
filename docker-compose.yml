@@ -37,7 +37,7 @@ services:
       Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
       Qweree__AuthUri: "http://qweree-auth"
-      Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__SwaggerTokenUri: "https://localhost/auth/api/oauth2/auth"
       Qweree__FileSystemRoot: "/qweree-storage"
       Qweree__FileSystemTemp: "/qweree-temp"
       Qweree__PathBase: "/cdn"
@@ -54,7 +54,7 @@ services:
       Qweree__MongoConnectionString: "mongodb://qweree-db:27017"
       Qweree__HealthCheckConnectionString: "mongodb://qweree-db:27017"
       Qweree__AuthUri: "http://qweree-auth"
-      Qweree__SwaggerTokenUri: "http://localhost/auth/api/oauth2/auth"
+      Qweree__SwaggerTokenUri: "https://localhost/auth/api/oauth2/auth"
       Qweree__PathBase: "/picc"
       Qweree__CdnUri: "http://qweree-cdn/api/v1/storage/"
 
@@ -75,9 +75,17 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ~/.aspnet/https:/https:ro
     environment:
       ASPNETCORE_ENVIRONMENT: 'Development'
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      Urls: "http://*80;https://*:443"
       Qweree__AuthUri: "http://qweree-auth"
+      Qweree__CdnUri: "http://qweree-cdn/api/v1/storage/"
       ReverseProxy__Clusters__qweree.authentication__Destinations__default__Address: "http://qweree-auth"
       ReverseProxy__Clusters__qweree.cdn__Destinations__default__Address: "http://qweree-cdn"
       ReverseProxy__Clusters__qweree.picc__Destinations__default__Address: "http://qweree-picc"

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Qweree.Authentication.Sdk.Http;
@@ -84,8 +85,10 @@ public class Startup
             return new StorageClient(httpClient);
         });
     }
+
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
+        ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;
         app.UseHttpsRedirection();
         if (environment.IsDevelopment())
             app.UseCors("liberal");

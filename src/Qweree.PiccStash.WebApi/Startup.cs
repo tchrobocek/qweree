@@ -29,9 +29,6 @@ namespace Qweree.PiccStash.WebApi;
 
 public class Startup
 {
-    public const string Audience = "qweree";
-    public const string Issuer = "net.qweree";
-
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -130,7 +127,7 @@ public class Startup
         services.AddSingleton(p =>
         {
             var httpHandler = p.GetRequiredService<HttpClientHandler>();
-            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(Configuration["Qweree:AuthUri"])});
+            var oauth2Client = new OAuth2Client(new HttpClient(httpHandler){BaseAddress = new Uri(new Uri(Configuration["Qweree:AuthUri"]), "api/oauth2/")});
             var qwereeConfig = p.GetRequiredService<IOptions<QwereeConfigurationDo>>();
             var clientCredentials = new ClientCredentials
             {
