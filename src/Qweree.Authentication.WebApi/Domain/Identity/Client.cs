@@ -6,7 +6,7 @@ namespace Qweree.Authentication.WebApi.Domain.Identity;
 public class Client
 {
     public Client(Guid id, string clientId, string clientSecret, string applicationName,
-        ImmutableArray<Guid> userRoles, DateTime createdAt, DateTime modifiedAt, Guid ownerId, string origin)
+        ImmutableArray<Guid> roles, DateTime createdAt, DateTime modifiedAt, Guid ownerId, string origin)
     {
         Id = id;
         ClientId = clientId;
@@ -16,7 +16,7 @@ public class Client
         ModifiedAt = modifiedAt;
         OwnerId = ownerId;
         Origin = origin;
-        UserRoles = userRoles;
+        Roles = roles;
     }
 
     public Guid Id { get; }
@@ -24,7 +24,7 @@ public class Client
     public string ClientSecret { get; }
     public string ApplicationName { get; }
     public string Origin { get; }
-    public ImmutableArray<Guid> UserRoles { get; }
+    public ImmutableArray<Guid> Roles { get; }
     public DateTime CreatedAt { get; }
     public DateTime ModifiedAt { get; }
     public Guid OwnerId { get; }

@@ -48,23 +48,16 @@ public static class IdentityMapper
 
         var client = ToIdentityClient(claims);
 
-        if (!roles.Contains("CLIENT"))
-        {
-            var user = ToIdentityUser(claims);
-            return new Identity
-            {
-                Client = client,
-                User = user,
-                Email = email,
-                Roles = roles
-            };
-        }
+        IdentityUser? user = null;
+        if (claims.Any(c => c.Type == "user.id"))
+            user = ToIdentityUser(claims);
 
         return new Identity
         {
             Client = client,
             Email = email,
-            Roles = roles
+            Roles = roles,
+            User = user
         };
     }
 

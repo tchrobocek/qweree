@@ -36,8 +36,8 @@
                     </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
-            <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_userRoles"/>
+            <MudExpansionPanel Text="Roles" Class="mt-0" Style="margin: 0 !important;">
+                <RoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_roles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
@@ -47,7 +47,7 @@
 </MudCard>
 
 @code {
-    private readonly List<UserRole> _userRoles = new();
+    private readonly List<Role> _roles = new();
     private readonly List<string> _errors = new();
 
     private string _clientId = string.Empty;
@@ -67,7 +67,7 @@
     {
         _errors.Clear();
 
-        var userRoles = _userRoles.Select(r => r.Id ?? Guid.Empty);
+        var roles = _roles.Select(r => r.Id ?? Guid.Empty);
 
         var input = new ClientCreateInput
         {
@@ -75,7 +75,7 @@
             ApplicationName = _applicationName,
             ClientId = _clientId,
             OwnerId = Guid.Parse(_ownerId),
-            UserRoles = userRoles.ToArray()
+            Roles = roles.ToArray()
         };
 
         var response = await IdentityClient.ClientCreateAsync(input);

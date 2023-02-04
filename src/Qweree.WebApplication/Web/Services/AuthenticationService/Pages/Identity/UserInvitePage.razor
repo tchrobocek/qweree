@@ -32,7 +32,7 @@
                 </MudGrid>
             </MudExpansionPanel>
             <MudExpansionPanel Text="Roles" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_roles"/>
+                <RoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_roles"/>
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
@@ -42,7 +42,7 @@
 </MudCard>
 
 @code {
-    private readonly List<UserRole> _roles = new();
+    private readonly List<Role> _roles = new();
     private readonly List<string> _errors = new();
 
     private string? _username;

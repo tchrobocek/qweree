@@ -6,8 +6,8 @@ using Qweree.Authentication.WebApi.Domain.Persistence;
 
 namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
-public interface IUserRoleRepository : IRepository<UserRole>
+public interface IRoleRepository : IRepository<Role>
 {
-    Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new());
-    Task<UserRole?> FindByKey(string key, CancellationToken cancellationToken = new());
+    Task<IEnumerable<Role>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new());
+    Task<Role?> FindByKey(string key, CancellationToken cancellationToken = new());
 }

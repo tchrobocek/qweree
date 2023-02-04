@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Mongo.Exception;
 using Qweree.Validator;
-using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
+using Role = Qweree.Authentication.WebApi.Domain.Authorization.Roles.Role;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Validations;
 
-public class CreateUserRoleValidator : ObjectValidatorBase<UserRoleCreateInput>
+public class CreateRoleValidator : ObjectValidatorBase<RoleCreateInput>
 {
-    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IRoleRepository _roleRepository;
 
-    public CreateUserRoleValidator(IUserRoleRepository userRoleRepository)
+    public CreateRoleValidator(IRoleRepository roleRepository)
     {
-        _userRoleRepository = userRoleRepository;
+        _roleRepository = roleRepository;
     }
 
-    protected override async Task ValidateAsync(ValidationContext<UserRoleCreateInput> validationContext,
+    protected override async Task ValidateAsync(ValidationContext<RoleCreateInput> validationContext,
         ValidationBuilder builder, CancellationToken cancellationToken)
     {
         var input = validationContext.Subject;
@@ -30,14 +30,14 @@ public class CreateUserRoleValidator : ObjectValidatorBase<UserRoleCreateInput>
 
         if (input.IsGroup)
         {
-            var parentRoles = (await _userRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
+            var parentRoles = (await _roleRepository.FindParentRolesAsync(input.Id, cancellationToken))
                 .ToArray();
 
             if (parentRoles.Any())
                 builder.AddError(input.Key,
                     $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
 
-            var items = new List<UserRole>();
+            var items = new List<Role>();
             foreach (var itemId in input.Items)
             {
                 if (itemId == input.Id)
@@ -48,7 +48,7 @@ public class CreateUserRoleValidator : ObjectValidatorBase<UserRoleCreateInput>
 
                 try
                 {
-                    items.Add(await _userRoleRepository.GetAsync(itemId, cancellationToken));
+                    items.Add(await _roleRepository.GetAsync(itemId, cancellationToken));
                 }
                 catch (DocumentNotFoundException)
                 {
@@ -66,16 +66,16 @@ public class CreateUserRoleValidator : ObjectValidatorBase<UserRoleCreateInput>
     }
 }
 
-public class ModifyUserRoleValidator : ObjectValidatorBase<UserRoleModifyInput>
+public class ModifyRoleValidator : ObjectValidatorBase<RoleModifyInput>
 {
-    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IRoleRepository _roleRepository;
 
-    public ModifyUserRoleValidator(IUserRoleRepository userRoleRepository)
+    public ModifyRoleValidator(IRoleRepository roleRepository)
     {
-        _userRoleRepository = userRoleRepository;
+        _roleRepository = roleRepository;
     }
 
-    protected override async Task ValidateAsync(ValidationContext<UserRoleModifyInput> validationContext,
+    protected override async Task ValidateAsync(ValidationContext<RoleModifyInput> validationContext,
         ValidationBuilder builder, CancellationToken cancellationToken)
     {
         var input = validationContext.Subject;
@@ -87,7 +87,7 @@ public class ModifyUserRoleValidator : ObjectValidatorBase<UserRoleModifyInput>
 
         if (input.IsGroup ?? false)
         {
-            var parentRoles = (await _userRoleRepository.FindParentRolesAsync(input.Id, cancellationToken))
+            var parentRoles = (await _roleRepository.FindParentRolesAsync(input.Id, cancellationToken))
                 .ToArray();
 
             if (parentRoles.Any())
@@ -97,7 +97,7 @@ public class ModifyUserRoleValidator : ObjectValidatorBase<UserRoleModifyInput>
 
             if (input.Items != null)
             {
-                var items = new List<UserRole>();
+                var items = new List<Role>();
 
                 foreach (var itemId in input.Items)
                 {
@@ -109,7 +109,7 @@ public class ModifyUserRoleValidator : ObjectValidatorBase<UserRoleModifyInput>
 
                     try
                     {
-                        items.Add(await _userRoleRepository.GetAsync(itemId, cancellationToken));
+                        items.Add(await _roleRepository.GetAsync(itemId, cancellationToken));
                     }
                     catch (DocumentNotFoundException)
                     {

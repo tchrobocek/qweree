@@ -5,14 +5,14 @@ namespace Qweree.Authentication.WebApi.Domain.Identity;
 
 public class ClientCreateInput
 {
-    public ClientCreateInput(Guid id, string clientId, string applicationName, string origin, Guid ownerId, ImmutableArray<Guid> userRoles)
+    public ClientCreateInput(Guid id, string clientId, string applicationName, string origin, Guid ownerId, ImmutableArray<Guid> roles)
     {
         Id = id;
         ClientId = clientId;
         ApplicationName = applicationName;
         Origin = origin;
         OwnerId = ownerId;
-        UserRoles = userRoles;
+        Roles = roles;
     }
 
     public Guid Id { get; }
@@ -20,5 +20,5 @@ public class ClientCreateInput
     public string ApplicationName { get; }
     public Guid OwnerId { get; }
     public string Origin { get; }
-    public ImmutableArray<Guid> UserRoles { get; }
+    public ImmutableArray<Guid> Roles { get; }
 }

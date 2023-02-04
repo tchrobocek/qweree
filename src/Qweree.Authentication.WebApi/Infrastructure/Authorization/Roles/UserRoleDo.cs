@@ -2,7 +2,7 @@ using System;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 
-public class UserRoleDo
+public class RoleDo
 {
     public Guid? Id { get; set; }
     public string? Key { get; set; }

@@ -16,13 +16,13 @@ public static class ClientMapper
             input.ApplicationName ?? string.Empty,
             input.Origin ?? string.Empty,
             input.OwnerId ?? Guid.Empty,
-            input.UserRoles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+            input.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
     }
 
     public static Client ToClient(ClientDo document)
     {
         return new Client(document.Id ?? Guid.Empty, document.ClientId ?? string.Empty, document.ClientSecret ?? string.Empty,
-            document.ApplicationName ?? string.Empty, document.UserRoles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty, document.CreatedAt ?? DateTime.MinValue,
+            document.ApplicationName ?? string.Empty, document.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty, document.CreatedAt ?? DateTime.MinValue,
             document.ModifiedAt ?? DateTime.MinValue, document.OwnerId ?? Guid.Empty, document.Origin ?? String.Empty);
     }
 
@@ -38,7 +38,7 @@ public static class ClientMapper
             ModifiedAt = client.ModifiedAt,
             OwnerId = client.OwnerId,
             Origin = client.Origin,
-            UserRoles = client.UserRoles.ToArray()
+            Roles = client.Roles.ToArray()
         };
     }
 }

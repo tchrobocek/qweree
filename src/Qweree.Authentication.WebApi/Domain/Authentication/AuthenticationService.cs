@@ -41,7 +41,7 @@ public class AuthenticationService
     private readonly ITokenEncoder _tokenEncoder;
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly ISessionStorage _sessionStorage;
-    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IRoleRepository _roleRepository;
     private readonly RSA _rsa;
 
     private const string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -50,7 +50,7 @@ public class AuthenticationService
         IDateTimeProvider datetimeProvider, Random random, int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
         IClientRepository clientRepository, AuthorizationService authorizationService,
         ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa,
-        IUserRoleRepository userRoleRepository)
+        IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
         _datetimeProvider = datetimeProvider;
@@ -62,7 +62,7 @@ public class AuthenticationService
         _sessionInfoRepository = sessionInfoRepository;
         _sessionStorage = sessionStorage;
         _rsa = rsa;
-        _userRoleRepository = userRoleRepository;
+        _roleRepository = roleRepository;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -88,13 +88,11 @@ public class AuthenticationService
         var session = await BeginSessionAsync(client, user, ipAddress, userAgent, GrantType.Password, true);
 
         var effectiveRoles = new List<string>();
-        await foreach (var role in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+        await foreach (var role in _authorizationService.GetEffectiveRoles(user.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             effectiveRoles.Add(role.Key);
         }
-
-        effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new(client.Id, client.ClientId, client.ApplicationName),
@@ -141,13 +139,11 @@ public class AuthenticationService
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
 
         var effectiveRoles = new List<string>();
-        await foreach (var role in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+        await foreach (var role in _authorizationService.GetEffectiveRoles(user.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             effectiveRoles.Add(role.Key);
         }
-
-        effectiveRoles.Add("USER");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
@@ -186,13 +182,11 @@ public class AuthenticationService
         var session = await BeginSessionAsync(client, null, ipAddress, userAgent, GrantType.ClientCredentials, false);
 
         var effectiveRoles = new List<string>();
-        await foreach (var role in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
+        await foreach (var role in _authorizationService.GetEffectiveRoles(client.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             effectiveRoles.Add(role.Key);
         }
-
-        effectiveRoles.Add("CLIENT");
 
         var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
         var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
@@ -267,11 +261,11 @@ public class AuthenticationService
         if (!_passwordEncoder.VerifyPassword(client.ClientSecret, clientCredentials.ClientSecret ?? ""))
             throw new AuthenticationException();
 
-        var role = await _userRoleRepository.FindByKey(grantType.RoleKey, cancellationToken);
+        var role = await _roleRepository.FindByKey(grantType.RoleKey, cancellationToken);
         if (role == null)
             throw new AuthenticationException();
 
-        if (!client.UserRoles.Contains(role.Id))
+        if (!client.Roles.Contains(role.Id))
             throw new AuthenticationException();
 
         return client;

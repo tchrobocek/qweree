@@ -78,7 +78,7 @@ public class UserService
         return Response.Ok();
     }
 
-    public async Task<CollectionResponse<UserRole>> UserGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<CollectionResponse<Role>> UserGetEffectiveRolesAsync(Guid id, CancellationToken cancellationToken = new())
     {
         User user;
 
@@ -88,18 +88,18 @@ public class UserService
         }
         catch (DocumentNotFoundException)
         {
-            return Response.FailCollection<UserRole>(new Error($@"User ""{id}"" was not found.",
+            return Response.FailCollection<Role>(new Error($@"User ""{id}"" was not found.",
                 StatusCodes.Status404NotFound));
         }
 
-        var effectiveRoles = new List<UserRole>();
+        var effectiveRoles = new List<Role>();
 
-        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(user, cancellationToken)
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveRoles(user.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             effectiveRoles.Add(effectiveRole);
         }
 
-        return Response.Ok((IEnumerable<UserRole>)effectiveRoles);
+        return Response.Ok((IEnumerable<Role>)effectiveRoles);
     }
 }

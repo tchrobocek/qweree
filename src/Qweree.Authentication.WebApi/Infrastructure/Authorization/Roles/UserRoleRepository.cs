@@ -9,25 +9,25 @@ using Qweree.Mongo;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 
-public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUserRoleRepository, IUniqueConstraintValidatorRepository, IExistsConstraintValidatorRepository
+public class RoleRepository : MongoRepositoryBase<Role, RoleDo>, IRoleRepository, IUniqueConstraintValidatorRepository, IExistsConstraintValidatorRepository
 {
-    public UserRoleRepository(MongoContext context) : base("user_roles", context)
+    public RoleRepository(MongoContext context) : base("roles", context)
     {
     }
 
-    protected override Func<UserRole, UserRoleDo> ToDocument => RoleMapper.ToUserRoleDo;
+    protected override Func<Role, RoleDo> ToDocument => RoleMapper.ToRoleDo;
 
-    protected override Func<UserRoleDo, UserRole> FromDocument => RoleMapper.ToUserRole;
+    protected override Func<RoleDo, Role> FromDocument => RoleMapper.ToRole;
 
     public async Task<bool> IsExistingAsync(string field, string value, CancellationToken cancellationToken = new())
     {
-        var userRole = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
+        var role = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        return userRole != null;
+        return role != null;
     }
 
-    public async Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<IEnumerable<Role>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())
     {
         return await FindAsync($@"{{""Items"": UUID(""{id}"")}}", 0, 1, cancellationToken);
     }
@@ -48,11 +48,11 @@ public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUs
         }
     }
 
-    public async Task<UserRole?> FindByKey(string key, CancellationToken cancellationToken = new())
+    public async Task<Role?> FindByKey(string key, CancellationToken cancellationToken = new())
     {
-        var userRole = (await FindAsync($@"{{""Key"": ""{key}""}}", 0, 1, cancellationToken))
+        var role = (await FindAsync($@"{{""Key"": ""{key}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        return userRole;
+        return role;
     }
 }

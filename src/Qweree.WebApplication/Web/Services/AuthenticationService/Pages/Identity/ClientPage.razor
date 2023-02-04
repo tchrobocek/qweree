@@ -30,14 +30,14 @@
                     </div>
 
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
-                        <MudExpansionPanel Disabled="@(!_client.UserRoles?.Any() ?? false)" Text="@($"User roles ({_client.UserRoles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _client.UserRoles ?? Array.Empty<Role>())
+                        <MudExpansionPanel Disabled="@(!_client.Roles?.Any() ?? false)" Text="@($"Roles ({_client.Roles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
+                            @foreach (var role in _client.Roles ?? Array.Empty<Role>())
                             {
                                 <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
                             }
                         </MudExpansionPanel>
-                        <MudExpansionPanel Disabled="@(!_effectiveUserRoles.Any())" Text="@($"Effective user roles ({_effectiveUserRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _effectiveUserRoles)
+                        <MudExpansionPanel Disabled="@(!_effectiveRoles.Any())" Text="@($"Effective roles ({_effectiveRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
+                            @foreach (var role in _effectiveRoles)
                             {
                                 <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
                             }
@@ -62,7 +62,7 @@
 
 @code {
     private Client? _client;
-    private Role[] _effectiveUserRoles = Array.Empty<Role>();
+    private Role[] _effectiveRoles = Array.Empty<Role>();
 
     [Parameter]
     public string? ClientId { get; set; }
@@ -85,7 +85,7 @@
 
         _client = await clientResponse.ReadPayloadAsync();
         var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
-        _effectiveUserRoles = roles?.UserRoles ?? Array.Empty<Role>();
+        _effectiveRoles = roles?.Roles ?? Array.Empty<Role>();
     }
 
     private async Task DeleteAsync()

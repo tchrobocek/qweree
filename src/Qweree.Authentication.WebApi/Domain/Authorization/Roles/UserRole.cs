@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 
 namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 
-public class UserRole
+public class Role
 {
-    public UserRole(Guid id, string key, string label, string description, ImmutableArray<Guid> items, bool isGroup, DateTime createdAt, DateTime modifiedAt)
+    public Role(Guid id, string key, string label, string description, ImmutableArray<Guid> items, bool isGroup, DateTime createdAt, DateTime modifiedAt)
     {
         Id = id;
         Key = key;

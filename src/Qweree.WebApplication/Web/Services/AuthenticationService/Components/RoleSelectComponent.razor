@@ -3,8 +3,8 @@
 @inject AuthorizationClient AuthorizationClient;
 
 <div>
-    <MudAutocomplete T="UserRole" Label="Search role" @bind-Text="_searchText"
-                     SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label} ({r?.Key})")"
+    <MudAutocomplete T="Role" Label="Search role" @bind-Text="_searchText"
+                     SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label}{(r is not null ? $" ({r.Key})" : "")}")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
                      @onfocus="OnFocus">
@@ -24,37 +24,37 @@
 </div>
 
 @code {
-    private readonly List<UserRole> _userRoles = new();
-    private UserRole? _selectValue;
+    private readonly List<Role> _roles = new();
+    private Role? _selectValue;
     private string _searchText = string.Empty;
 
     [Parameter]
-    public List<UserRole> SelectedRoles { get; set; } = new();
+    public List<Role> SelectedRoles { get; set; } = new();
 
     [Parameter]
     public bool ExcludeGroupRoles { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await AuthorizationClient.UserRolesFindAsync();
+        var response = await AuthorizationClient.RolesFindAsync();
 
         if (!response.IsSuccessful)
             return;
 
-        var roles = await response.ReadPayloadAsync() ?? Array.Empty<UserRole>();
+        var roles = await response.ReadPayloadAsync() ?? Array.Empty<Role>();
         if (ExcludeGroupRoles)
             roles = roles.Where(r => !(r.IsGroup ?? true));
 
-        _userRoles.AddRange(roles.OrderBy(r => r.Key));
+        _roles.AddRange(roles.OrderBy(r => r.Key));
     }
 
-    private Task<IEnumerable<UserRole>> Search(string? arg)
+    private Task<IEnumerable<Role>> Search(string? arg)
     {
-        var roles = _userRoles.Where(r => SearchRole(r, arg));
+        var roles = _roles.Where(r => SearchRole(r, arg));
         return Task.FromResult(roles);
     }
 
-    private bool SearchRole(UserRole role, string? searchArg)
+    private bool SearchRole(Role role, string? searchArg)
     {
         if (SelectedRoles.Contains(role))
             return false;
@@ -63,13 +63,13 @@
                (role.Key?.ToLower() ?? string.Empty).IndexOf(searchArg ?? string.Empty, StringComparison.Ordinal) >= 0;
     }
 
-    private void SelectValueChanged(UserRole role)
+    private void SelectValueChanged(Role role)
     {
         SelectedRoles.Add(role);
         _selectValue = null;
     }
 
-    private void RoleRemoved(UserRole selectedRole)
+    private void RoleRemoved(Role selectedRole)
     {
         SelectedRoles.Remove(selectedRole);
     }
@@ -87,7 +87,7 @@
     private void SelectAll()
     {
         SelectedRoles.Clear();
-        SelectedRoles.AddRange(_userRoles);
+        SelectedRoles.AddRange(_roles);
     }
 
 }

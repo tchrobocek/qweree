@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
-using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Mongo.Exception;
 
 namespace Qweree.Authentication.WebApi.Domain.Authorization;
@@ -12,38 +11,22 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization;
 public class AuthorizationService
 {
     private const int MaxSearchLevel = 5;
-    private readonly IUserRoleRepository _userRoleRepository;
+    private readonly IRoleRepository _roleRepository;
 
-    public AuthorizationService(IUserRoleRepository userRoleRepository)
+    public AuthorizationService(IRoleRepository roleRepository)
     {
-        _userRoleRepository = userRoleRepository;
+        _roleRepository = roleRepository;
     }
 
-    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(User user,
+    public async IAsyncEnumerable<Role> GetEffectiveRoles(IEnumerable<Guid> roles,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
-        foreach (var userRoleId in user.Roles)
+        foreach (var roleId in roles)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            await foreach (var item in GetEffectiveUserRoles(0, userRoleId, cancellationToken, ignoreNonExisting)
-                               .WithCancellation(cancellationToken))
-            {
-                yield return item;
-            }
-        }
-    }
-
-    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(Client client,
-        [EnumeratorCancellation] CancellationToken cancellationToken = new(),
-        bool ignoreNonExisting = true)
-    {
-        foreach (var userRoleId in client.UserRoles)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await foreach (var item in GetEffectiveUserRoles(0, userRoleId, cancellationToken, ignoreNonExisting)
+            await foreach (var item in GetEffectiveRoles(0, roleId, cancellationToken, ignoreNonExisting)
                                .WithCancellation(cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -53,13 +36,13 @@ public class AuthorizationService
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    public async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(UserRole userRole,
+    public async IAsyncEnumerable<Role> GetEffectiveRoles(Role role,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        await foreach (var item in GetEffectiveUserRoles(0, userRole.Id, cancellationToken, ignoreNonExisting)
+        await foreach (var item in GetEffectiveRoles(0, role.Id, cancellationToken, ignoreNonExisting)
                            .WithCancellation(cancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -68,18 +51,18 @@ public class AuthorizationService
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    private async IAsyncEnumerable<UserRole> GetEffectiveUserRoles(int level, Guid userRoleId,
+    private async IAsyncEnumerable<Role> GetEffectiveRoles(int level, Guid roleId,
         [EnumeratorCancellation] CancellationToken cancellationToken = new(),
         bool ignoreNonExisting = true)
     {
         if (level > MaxSearchLevel)
             throw new InvalidOperationException($"Max hierarchical level for roles is set to {MaxSearchLevel}.");
 
-        UserRole userRole;
+        Role role;
 
         try
         {
-            userRole = await _userRoleRepository.GetAsync(userRoleId, cancellationToken);
+            role = await _roleRepository.GetAsync(roleId, cancellationToken);
         }
         catch (DocumentNotFoundException)
         {
@@ -89,15 +72,15 @@ public class AuthorizationService
             throw;
         }
 
-        yield return userRole;
+        yield return role;
 
-        foreach (var item in userRole.Items)
+        foreach (var item in role.Items)
         {
-            await foreach (var role in GetEffectiveUserRoles(level + 1, item, cancellationToken,
+            await foreach (var child in GetEffectiveRoles(level + 1, item, cancellationToken,
                                    ignoreNonExisting)
                                .WithCancellation(cancellationToken))
             {
-                yield return role;
+                yield return child;
             }
         }
     }

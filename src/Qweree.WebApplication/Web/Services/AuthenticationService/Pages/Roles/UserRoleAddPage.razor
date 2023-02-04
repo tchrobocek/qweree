@@ -1,4 +1,4 @@
-@page "/services/auth/user-roles/add"
+@page "/services/auth/roles/add"
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Authorization
 @using Microsoft.AspNetCore.Authorization
@@ -9,7 +9,7 @@
 
 <MudCard>
     <MudCardHeader>
-        <MudText Typo="Typo.h6">Add user role</MudText>
+        <MudText Typo="Typo.h6">Add role</MudText>
     </MudCardHeader>
     <MudCardContent>
         <ErrorsComponent Errors="_errors" />
@@ -27,7 +27,7 @@
                 <MudTextField T="string" Lines="3" Variant="Variant.Outlined" Label="Description" @bind-Value="_description" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Group role" Class="mt-0" Style="margin: 0 !important;">
-                <UserRoleSelectComponent SelectedRoles="_groupRoles" />
+                <RoleSelectComponent SelectedRoles="_groupRoles" />
             </MudExpansionPanel>
         </MudExpansionPanels>
         <div style="text-align: right;" class="mt-4">
@@ -39,7 +39,7 @@
 @code {
     private readonly List<string> _errors = new();
 
-    private readonly List<UserRole> _groupRoles = new();
+    private readonly List<Role> _groupRoles = new();
     private string _idString = Guid.NewGuid().ToString();
     private string _key = string.Empty;
     private string _label = string.Empty;
@@ -49,7 +49,7 @@
     private async Task CreateRoleAsync()
     {
         _errors.Clear();
-        var input = new UserRoleCreateInput
+        var input = new RoleCreateInput
         {
             Id = Guid.Parse(_idString),
             Description = _description,
@@ -59,7 +59,7 @@
             Label = _label
         };
 
-        var response = await AuthorizationClient.UserRoleCreateAsync(input);
+        var response = await AuthorizationClient.RoleCreateAsync(input);
 
         if (!response.IsSuccessful)
         {
@@ -69,7 +69,7 @@
         }
 
         Snackbar.Add($"Role {_label} ({_key}) was successfully created.", Severity.Success);
-        NavigationManager.NavigateTo("/services/auth/user-roles/list");
+        NavigationManager.NavigateTo("/services/auth/roles/list");
     }
 
 }

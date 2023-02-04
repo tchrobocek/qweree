@@ -5,10 +5,10 @@ namespace Qweree.Authentication.WebApi.Domain.Identity;
 
 public class RolesCollection
 {
-    public RolesCollection(ImmutableArray<UserRole> userRoles)
+    public RolesCollection(ImmutableArray<Role> roles)
     {
-        UserRoles = userRoles;
+        Roles = roles;
     }
 
-    public ImmutableArray<UserRole> UserRoles { get; }
+    public ImmutableArray<Role> Roles { get; }
 }

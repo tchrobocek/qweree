@@ -65,19 +65,19 @@ public class UserController : ControllerBase
     ///     Get user effective roles.
     /// </summary>
     /// <param name="id">User id.</param>
-    /// <returns>Found effective user roles.</returns>
+    /// <returns>Found effective roles.</returns>
     [HttpGet("{id}/effective-roles")]
     [Authorize(Policy = "UserRead")]
     [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UserGetEffectiveRolesActionAsync(Guid id)
     {
-        var userRolesResponse = await _userService.UserGetEffectiveRolesAsync(id);
+        var rolesResponse = await _userService.UserGetEffectiveRolesAsync(id);
 
-        if (userRolesResponse.Status != ResponseStatus.Ok)
-            return userRolesResponse.ToErrorActionResult();
+        if (rolesResponse.Status != ResponseStatus.Ok)
+            return rolesResponse.ToErrorActionResult();
 
-        return Ok(userRolesResponse.Payload!.Select(r => _sdkMapperService.ToRole(r)));
+        return Ok(rolesResponse.Payload!.Select(r => _sdkMapperService.ToRole(r)));
     }
 
     /// <summary>

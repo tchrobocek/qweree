@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using System.Collections.Immutable;
-using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
+using Role = Qweree.Authentication.WebApi.Domain.Authorization.Roles.Role;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Authorization.Roles;
 
 public static class RoleMapper
 {
-    public static UserRoleDo ToUserRoleDo(UserRole role)
+    public static RoleDo ToRoleDo(Role role)
     {
-        return new UserRoleDo
+        return new RoleDo
         {
             Description = role.Description,
             Id = role.Id,
@@ -22,9 +22,9 @@ public static class RoleMapper
         };
     }
 
-    public static UserRole ToUserRole(UserRoleDo roleDo)
+    public static Role ToRole(RoleDo roleDo)
     {
-        return new UserRole(
+        return new Role(
             roleDo.Id ?? Guid.Empty,
             roleDo.Key ?? string.Empty,
             roleDo.Label ?? string.Empty,

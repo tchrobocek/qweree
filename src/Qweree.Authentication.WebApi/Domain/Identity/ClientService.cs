@@ -64,7 +64,7 @@ public class ClientService
         var secret = _passwordEncoder.EncodePassword(clientSecret);
 
         var client = new Client(id, clientCreateInput.ClientId, secret,
-            clientCreateInput.ApplicationName, clientCreateInput.UserRoles,
+            clientCreateInput.ApplicationName, clientCreateInput.Roles,
             _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
             clientCreateInput.OwnerId, clientCreateInput.Origin);
 
@@ -111,14 +111,14 @@ public class ClientService
             return Response.Fail<RolesCollection>(new Error("Client was not found", 404));
         }
 
-        var userRoles = new List<UserRole>();
-        await foreach (var effectiveRole in _authorizationService.GetEffectiveUserRoles(client, cancellationToken)
+        var roles = new List<Role>();
+        await foreach (var effectiveRole in _authorizationService.GetEffectiveRoles(client.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
-            userRoles.Add(effectiveRole);
+            roles.Add(effectiveRole);
         }
 
-        return Response.Ok(new RolesCollection(userRoles.ToImmutableArray()));
+        return Response.Ok(new RolesCollection(roles.ToImmutableArray()));
     }
 
     public async Task<PaginationResponse<Client>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
