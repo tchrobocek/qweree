@@ -38,18 +38,19 @@ public class AuthenticationService
     private readonly IClientRepository _clientRepository;
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly AuthorizationService _authorizationService;
-    private readonly IClientRoleRepository _clientRoleRepository;
     private readonly ITokenEncoder _tokenEncoder;
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly ISessionStorage _sessionStorage;
+    private readonly IUserRoleRepository _userRoleRepository;
     private readonly RSA _rsa;
 
     private const string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public AuthenticationService(IUserRepository userRepository,
         IDateTimeProvider datetimeProvider, Random random, int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
-        IClientRepository clientRepository, AuthorizationService authorizationService, IClientRoleRepository clientRoleRepository,
-        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa)
+        IClientRepository clientRepository, AuthorizationService authorizationService,
+        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa,
+        IUserRoleRepository userRoleRepository)
     {
         _userRepository = userRepository;
         _datetimeProvider = datetimeProvider;
@@ -57,11 +58,11 @@ public class AuthenticationService
         _passwordEncoder = passwordEncoder;
         _clientRepository = clientRepository;
         _authorizationService = authorizationService;
-        _clientRoleRepository = clientRoleRepository;
         _tokenEncoder = tokenEncoder;
         _sessionInfoRepository = sessionInfoRepository;
         _sessionStorage = sessionStorage;
         _rsa = rsa;
+        _userRoleRepository = userRoleRepository;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -266,11 +267,11 @@ public class AuthenticationService
         if (!_passwordEncoder.VerifyPassword(client.ClientSecret, clientCredentials.ClientSecret ?? ""))
             throw new AuthenticationException();
 
-        var role = await _clientRoleRepository.FindByKey(grantType.RoleKey, cancellationToken);
+        var role = await _userRoleRepository.FindByKey(grantType.RoleKey, cancellationToken);
         if (role == null)
             throw new AuthenticationException();
 
-        if (!client.ClientRoles.Contains(role.Id))
+        if (!client.UserRoles.Contains(role.Id))
             throw new AuthenticationException();
 
         return client;

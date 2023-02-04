@@ -1,6 +1,5 @@
 @page "/services/auth/clients/add"
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Clients
@@ -8,7 +7,6 @@
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject AuthorizationClient AuthorizationClient;
 @inject IdentityClient IdentityClient;
 @inject NavigationManager NavigationManager;
 @inject ClaimsPrincipalStorage Session
@@ -38,9 +36,6 @@
                     </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
-            <MudExpansionPanel Text="Client roles" Class="mt-0" Style="margin: 0 !important;">
-                <ClientRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_clientRoles"/>
-            </MudExpansionPanel>
             <MudExpansionPanel Text="User roles" Class="mt-0" Style="margin: 0 !important;">
                 <UserRoleSelectComponent ExcludeGroupRoles="false" SelectedRoles="_userRoles"/>
             </MudExpansionPanel>
@@ -52,7 +47,6 @@
 </MudCard>
 
 @code {
-    private readonly List<ClientRole> _clientRoles = new();
     private readonly List<UserRole> _userRoles = new();
     private readonly List<string> _errors = new();
 
@@ -63,11 +57,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var rolesResponse = await AuthorizationClient.ClientRolesFindAsync();
-
-        if (!rolesResponse.IsSuccessful)
-            return;
-
         var identity = await Session.GetIdentityAsync();
 
         if (identity != null)
@@ -78,7 +67,6 @@
     {
         _errors.Clear();
 
-        var clientRoles = _clientRoles.Select(r => r.Id ?? Guid.Empty);
         var userRoles = _userRoles.Select(r => r.Id ?? Guid.Empty);
 
         var input = new ClientCreateInput
@@ -86,7 +74,6 @@
             Origin = _origin,
             ApplicationName = _applicationName,
             ClientId = _clientId,
-            ClientRoles = clientRoles.ToArray(),
             OwnerId = Guid.Parse(_ownerId),
             UserRoles = userRoles.ToArray()
         };

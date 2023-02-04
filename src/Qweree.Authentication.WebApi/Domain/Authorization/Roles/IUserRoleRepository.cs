@@ -9,4 +9,5 @@ namespace Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 public interface IUserRoleRepository : IRepository<UserRole>
 {
     Task<IEnumerable<UserRole>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new());
+    Task<UserRole?> FindByKey(string key, CancellationToken cancellationToken = new());
 }

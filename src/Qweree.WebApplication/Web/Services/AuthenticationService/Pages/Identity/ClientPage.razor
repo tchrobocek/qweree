@@ -30,18 +30,6 @@
                     </div>
 
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
-                        <MudExpansionPanel Disabled="@(!_client.ClientRoles?.Any() ?? false)" Text="@($"Client roles ({_client.ClientRoles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _client.ClientRoles ?? Array.Empty<Role>())
-                            {
-                                <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
-                            }
-                        </MudExpansionPanel>
-                        <MudExpansionPanel Disabled="@(!_effectiveClientRoles.Any())" Text="@($"Effective client roles ({_effectiveClientRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _effectiveClientRoles)
-                            {
-                                <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
-                            }
-                        </MudExpansionPanel>
                         <MudExpansionPanel Disabled="@(!_client.UserRoles?.Any() ?? false)" Text="@($"User roles ({_client.UserRoles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
                             @foreach (var role in _client.UserRoles ?? Array.Empty<Role>())
                             {
@@ -75,7 +63,6 @@
 @code {
     private Client? _client;
     private Role[] _effectiveUserRoles = Array.Empty<Role>();
-    private Role[] _effectiveClientRoles = Array.Empty<Role>();
 
     [Parameter]
     public string? ClientId { get; set; }
@@ -98,7 +85,6 @@
 
         _client = await clientResponse.ReadPayloadAsync();
         var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
-        _effectiveClientRoles = roles?.ClientRoles ?? Array.Empty<Role>();
         _effectiveUserRoles = roles?.UserRoles ?? Array.Empty<Role>();
     }
 

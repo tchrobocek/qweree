@@ -44,11 +44,6 @@ clients = [{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "ClientRoles": [
-        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
-        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
-        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
-    ],
     "UserRoles": [
         "d0a77eeb-972e-4337-a62e-493b3e59f214",
         "c990cc7b-7415-4836-8468-b48c67dd9e45",
@@ -68,6 +63,9 @@ clients = [{
         "1cc32e1e-7b61-445a-9410-c80afb91b06d",
         "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
         "8cae063d-c180-4c88-ba3f-9b999f6267b2",
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
     ]
 }, {
     "_id": UUID("a25acc07-7246-4e8e-9291-4ee30b18c168"),
@@ -78,13 +76,11 @@ clients = [{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "ClientRoles": [
-        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
-    ],
     "UserRoles": [
         "d98049ab-977e-42ef-bba6-05c16184d054",
         "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
-        "8cae063d-c180-4c88-ba3f-9b999f6267b2"
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
     ]
 }, {
     "_id": UUID("eadde137-61cf-4fd8-9725-15d417cf5906"),
@@ -95,15 +91,13 @@ clients = [{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "ClientRoles": [
-        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
-        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
-        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
-    ],
     "UserRoles": [
         "d98049ab-977e-42ef-bba6-05c16184d054",
         "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
-        "8cae063d-c180-4c88-ba3f-9b999f6267b2"
+        "8cae063d-c180-4c88-ba3f-9b999f6267b2",
+        "f946f6cd-5d17-4dc5-b383-af0201a8b431",
+        "92024488-4c7d-42a9-8fc5-19fc73853c8e",
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
     ]
 }, {
     "_id": UUID("13147148-3c9e-4b52-b214-e6b04d66cb21"),
@@ -114,12 +108,11 @@ clients = [{
     "OwnerId": "8caa1d0c-401d-42d7-a726-943a30b73373",
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01"),
-    "ClientRoles": [
+    "UserRoles": [
         "f946f6cd-5d17-4dc5-b383-af0201a8b431",
         "92024488-4c7d-42a9-8fc5-19fc73853c8e",
         "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
-    ],
-    "UserRoles": []
+    ]
 }];
 
 userRoles = [{
@@ -284,9 +277,7 @@ userRoles = [{
     "IsGroup": false,
     "CreatedAt": ISODate("1970-01-01"),
     "ModifiedAt": ISODate("1970-01-01")
-}, ];
-
-clientRoles = [{
+}, {
     "_id": UUID("f946f6cd-5d17-4dc5-b383-af0201a8b431"),
     "Key": "qweree.auth.grant_type.password",
     "Label": "Password grant",
@@ -318,7 +309,5 @@ clientRoles = [{
 db.users.insert(users);
 db.clients.insert(clients);
 db.user_roles.insert(userRoles);
-db.client_roles.insert(clientRoles);
 
 testDb.user_roles.insert(userRoles);
-testDb.client_roles.insert(clientRoles);

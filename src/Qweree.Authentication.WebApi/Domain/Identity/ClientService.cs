@@ -64,7 +64,7 @@ public class ClientService
         var secret = _passwordEncoder.EncodePassword(clientSecret);
 
         var client = new Client(id, clientCreateInput.ClientId, secret,
-            clientCreateInput.ApplicationName, clientCreateInput.ClientRoles, clientCreateInput.UserRoles,
+            clientCreateInput.ApplicationName, clientCreateInput.UserRoles,
             _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
             clientCreateInput.OwnerId, clientCreateInput.Origin);
 
@@ -118,15 +118,7 @@ public class ClientService
             userRoles.Add(effectiveRole);
         }
 
-        var clientRoles = new List<ClientRole>();
-        await foreach (var effectiveRole in _authorizationService.GetEffectiveClientRoles(client, cancellationToken)
-                           .WithCancellation(cancellationToken))
-        {
-            clientRoles.Add(effectiveRole);
-        }
-
-
-        return Response.Ok(new RolesCollection(userRoles.ToImmutableArray(), clientRoles.ToImmutableArray()));
+        return Response.Ok(new RolesCollection(userRoles.ToImmutableArray()));
     }
 
     public async Task<PaginationResponse<Client>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,

@@ -28,8 +28,6 @@ public class ValidationMap
                 .AddConstraint(new NotEmptyConstraint("Application name cannot be empty."))
                 .AddConstraint(new MinLengthConstraint(3, "Application name has to have 3 or more characters."))
                 .AddConstraint(new MaxLengthConstraint(255, "Application name has to have up to 255 characters."));
-            c.AddProperty(p => p.ClientRoles)
-                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
             c.AddProperty(p => p.UserRoles)
                 .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
             c.AddProperty(p => p.OwnerId)
@@ -49,33 +47,12 @@ public class ValidationMap
                 .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
         });
 
-        builder.AddModel<ClientRoleCreateInput>(c =>
-        {
-            c.AddProperty(p => p.Key)
-                .AddConstraint(new UniqueConstraint(typeof(ClientRoleRepository)))
-                .AddConstraint(new NotEmptyConstraint("Key cannot be empty."))
-                .AddConstraint(new MinLengthConstraint(3, "Key has to have 3 or more characters."))
-                .AddConstraint(new MaxLengthConstraint(255, "Key has to have up to 255 characters."));
-            c.AddProperty(p => p.Label)
-                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-            c.AddProperty(p => p.Items)
-                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
-        });
-
         builder.AddModel<UserRoleModifyInput>(c =>
         {
             c.AddProperty(p => p.Label)
                 .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
             c.AddProperty(p => p.Items)
                 .AddConstraint(new ExistsConstraint(typeof(UserRoleRepository)));
-        });
-
-        builder.AddModel<ClientRoleModifyInput>(c =>
-        {
-            c.AddProperty(p => p.Label)
-                .AddConstraint(new NotEmptyConstraint("Label cannot be empty."));
-            c.AddProperty(p => p.Items)
-                .AddConstraint(new ExistsConstraint(typeof(ClientRoleRepository)));
         });
 
         builder.AddModel<ChangeMyPasswordInput>(c =>

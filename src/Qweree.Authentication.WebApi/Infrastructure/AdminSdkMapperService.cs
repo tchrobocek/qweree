@@ -12,24 +12,18 @@ using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Mongo.Exception;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
-using ClientRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRole;
-using ClientRoleCreateInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRoleCreateInput;
-using ClientRoleModifyInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.ClientRoleModifyInput;
 using RolesCollection = Qweree.Authentication.WebApi.Domain.Identity.RolesCollection;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 using UserProperty = Qweree.Authentication.WebApi.Domain.Identity.UserProperty;
 using UserRole = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRole;
 using SdkUser = Qweree.Authentication.AdminSdk.Identity.Users.User;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
-using SdkClientRole = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRole;
 using SdkUserRole = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRole;
 using SdkUserProperty = Qweree.Authentication.AdminSdk.Identity.Users.UserProperty;
 using SdkRolesCollection = Qweree.Authentication.AdminSdk.Authorization.Roles.RolesCollection;
 using SdkUserInvitationInput = Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation.UserInvitationInput;
 using SdkUserRoleCreateInput = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRoleCreateInput;
 using SdkUserRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.UserRoleModifyInput;
-using SdkClientRoleCreateInput = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRoleCreateInput;
-using SdkClientRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.ClientRoleModifyInput;
 using UserRoleCreateInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRoleCreateInput;
 using UserRoleModifyInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.UserRoleModifyInput;
 
@@ -39,15 +33,12 @@ public class AdminSdkMapperService
 {
     private readonly IUserRepository _userRepository;
     private readonly IUserRoleRepository _userRoleRepository;
-    private readonly IClientRoleRepository _clientRoleRepository;
     private readonly AuthorizationService _authorizationService;
 
-    public AdminSdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository,
-        IClientRoleRepository clientRoleRepository, AuthorizationService authorizationService)
+    public AdminSdkMapperService(IUserRepository userRepository, IUserRoleRepository userRoleRepository, AuthorizationService authorizationService)
     {
         _userRepository = userRepository;
         _userRoleRepository = userRoleRepository;
-        _clientRoleRepository = clientRoleRepository;
         _authorizationService = authorizationService;
     }
 
@@ -86,12 +77,12 @@ public class AdminSdkMapperService
     {
         var client = clientSecretPair.Client;
 
-        var roles = new List<ClientRole>();
-        foreach (var role in client.ClientRoles)
+        var roles = new List<UserRole>();
+        foreach (var role in client.UserRoles)
         {
             try
             {
-                roles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
+                roles.Add(await _userRoleRepository.GetAsync(role, cancellationToken));
             }
             catch (DocumentNotFoundException)
             {
@@ -110,45 +101,9 @@ public class AdminSdkMapperService
             Owner = await ToUserAsync(owner, cancellationToken),
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            ClientRoles = roles.Select(ToRole).ToArray()
+            UserRoles = roles.Select(ToRole).ToArray()
         };
     }
-
-    public async Task<SdkClientRole> ToClientRoleAsync(ClientRole role,
-        CancellationToken cancellationToken = new())
-    {
-        var effectiveRoles = new List<ClientRole>();
-        var items = new List<SdkClientRole>();
-
-        await foreach (var effectiveRole in _authorizationService.GetEffectiveClientRoles(role, cancellationToken)
-                           .WithCancellation(cancellationToken))
-        {
-            effectiveRoles.Add(effectiveRole);
-        }
-
-        foreach (var roleId in role.Items)
-        {
-            var clientRole = effectiveRoles.FirstOrDefault(r => r.Id == roleId);
-            if (clientRole is null)
-                clientRole = await _clientRoleRepository.GetAsync(roleId, cancellationToken);
-
-            items.Add(await ToClientRoleAsync(clientRole, cancellationToken));
-        }
-
-        return new SdkClientRole
-        {
-            Id = role.Id,
-            Description = role.Description,
-            Key = role.Key,
-            Label = role.Label,
-            IsGroup = role.IsGroup,
-            CreatedAt = role.CreatedAt,
-            ModifiedAt = role.ModifiedAt,
-            Items = items.ToArray(),
-            EffectiveRoles = effectiveRoles.Select(ToRole).ToArray(),
-        };
-    }
-
 
     public async Task<SdkUserRole> ToUserRoleAsync(UserRole role,
         CancellationToken cancellationToken = new())
@@ -196,17 +151,6 @@ public class AdminSdkMapperService
         };
     }
 
-    public Role ToRole(ClientRole role)
-    {
-        return new Role
-        {
-            Id = role.Id,
-            Key = role.Key,
-            Label = role.Label,
-            Description = role.Description
-        };
-    }
-
     private SdkUserProperty ToUserProperty(UserProperty userProperty)
     {
         return new SdkUserProperty
@@ -221,23 +165,11 @@ public class AdminSdkMapperService
         return new SdkRolesCollection
         {
             UserRoles = roles.UserRoles.Select(ToRole).ToArray(),
-            ClientRoles = roles.ClientRoles.Select(ToRole).ToArray()
         };
     }
 
     public async Task<SdkClient> ToClient(Client client, CancellationToken cancellationToken = new())
     {
-        var clientRoles = new List<ClientRole>();
-        foreach (var role in client.ClientRoles)
-        {
-            try
-            {
-                clientRoles.Add(await _clientRoleRepository.GetAsync(role, cancellationToken));
-            }
-            catch (DocumentNotFoundException)
-            {
-            }
-        }
         var userRoles = new List<UserRole>();
         foreach (var role in client.UserRoles)
         {
@@ -261,7 +193,6 @@ public class AdminSdkMapperService
             Owner = await ToUserAsync(owner, cancellationToken),
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            ClientRoles = clientRoles.Select(ToRole).ToArray(),
             UserRoles = userRoles.Select(ToRole).ToArray()
         };
     }
@@ -283,17 +214,5 @@ public class AdminSdkMapperService
     public UserRoleModifyInput ToUserRoleModifyInput(Guid id, SdkUserRoleModifyInput input)
     {
         return new UserRoleModifyInput(id, input.Label, input.Description, input.IsGroup, input.Items?.ToImmutableArray());
-    }
-
-    public ClientRoleCreateInput ToClientRoleCreateInput(SdkClientRoleCreateInput input)
-    {
-        return new ClientRoleCreateInput(input.Id ?? Guid.Empty, input.Key ?? string.Empty, input.Label ?? string.Empty,
-            input.Description ?? string.Empty, input.IsGroup ?? false, input.Items?.ToImmutableArray() ??
-                                                                       ImmutableArray<Guid>.Empty);
-    }
-
-    public ClientRoleModifyInput ToClientRoleModifyInput(Guid id, SdkClientRoleModifyInput input)
-    {
-        return new ClientRoleModifyInput(id, input.Label, input.Description, input.IsGroup, input.Items?.ToImmutableArray());
     }
 }

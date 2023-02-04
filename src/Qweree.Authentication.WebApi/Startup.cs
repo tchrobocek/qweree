@@ -137,8 +137,6 @@ public class Startup
         services.AddSingleton<IConstraintValidator, ExistsConstraintValidator>();
         services.AddSingleton<CreateUserRoleValidator>();
         services.AddSingleton<ModifyUserRoleValidator>();
-        services.AddSingleton<CreateClientRoleValidator>();
-        services.AddSingleton<ModifyClientRoleValidator>();
         services.AddSingleton<IValidator>(p =>
         {
             var validatorBuilder = new ValidatorBuilder();
@@ -148,8 +146,6 @@ public class Startup
             validatorBuilder.WithDefaultConstraints();
             validatorBuilder.WithObjectValidator(p.GetRequiredService<CreateUserRoleValidator>());
             validatorBuilder.WithObjectValidator(p.GetRequiredService<ModifyUserRoleValidator>());
-            validatorBuilder.WithObjectValidator(p.GetRequiredService<CreateClientRoleValidator>());
-            validatorBuilder.WithObjectValidator(p.GetRequiredService<ModifyClientRoleValidator>());
 
             var validators = p.GetServices<IConstraintValidator>();
             foreach (var validator in validators)
@@ -181,14 +177,13 @@ public class Startup
             var passwordEncoder = p.GetRequiredService<IPasswordEncoder>();
             var clientRepository = p.GetRequiredService<IClientRepository>();
             var authorizationService = p.GetRequiredService<AuthorizationService>();
-            var clientRoleRepository = p.GetRequiredService<IClientRoleRepository>();
             var tokenEncoder = p.GetRequiredService<ITokenEncoder>();
             var rsa = p.GetRequiredService<RSA>();
 
             return new AuthenticationService(userRepository, dateTimeProvider, new Random(),
                 config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder,
-                clientRepository, authorizationService, clientRoleRepository, tokenEncoder, sessionInfoRepository,
-                sessionStorage, rsa);
+                clientRepository, authorizationService, tokenEncoder, sessionInfoRepository,
+                sessionStorage, rsa, p.GetRequiredService<IUserRoleRepository>());
         });
         services.AddScoped<ITokenEncoder>(p =>
         {
@@ -208,10 +203,8 @@ public class Startup
         services.AddSingleton<IUniqueConstraintValidatorRepository, UserRepository>();
         services.AddSingleton<IUniqueConstraintValidatorRepository, UserRoleRepository>();
         services.AddSingleton<IUniqueConstraintValidatorRepository, ClientRepository>();
-        services.AddSingleton<IUniqueConstraintValidatorRepository, ClientRoleRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRepository>();
         services.AddSingleton<IExistsConstraintValidatorRepository, UserRoleRepository>();
-        services.AddSingleton<IExistsConstraintValidatorRepository, ClientRoleRepository>();
         services.AddSingleton<AdminSdkMapperService>();
         services.AddSingleton<AuthSdkMapperService>();
         services.AddSingleton<UserInvitationService>();
@@ -226,7 +219,6 @@ public class Startup
 
         // Authorization
         services.AddSingleton<IUserRoleRepository, UserRoleRepository>();
-        services.AddSingleton<IClientRoleRepository, ClientRoleRepository>();
         services.AddSingleton<RoleService, RoleService>();
         services.AddSingleton<AuthorizationService>();
         services.AddScoped<MyAccountService>();

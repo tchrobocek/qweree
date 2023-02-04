@@ -20,38 +20,6 @@ public class AuthorizationClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<IEnumerable<ClientRole>>> ClientRolesFindAsync(CancellationToken cancellationToken = new())
-    {
-        var response = await _httpClient.GetAsync("client-roles", cancellationToken);
-
-        return ApiResponse.CreateApiResponse<IEnumerable<ClientRole>>(response);
-    }
-
-    public async Task<ApiResponse<ClientRole>> ClientRoleCreateAsync(ClientRoleCreateInput input,
-        CancellationToken cancellationToken = new())
-    {
-        var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
-        var response = await _httpClient.PostAsync("client-roles", content, cancellationToken);
-
-        return ApiResponse.CreateApiResponse<ClientRole>(response);
-    }
-
-    public async Task<ApiResponse<ClientRole>> ClientRoleModifyAsync(Guid id, ClientRoleModifyInput input,
-        CancellationToken cancellationToken = new())
-    {
-        var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
-        var response = await _httpClient.PatchAsync($"client-roles/{id}", content, cancellationToken);
-
-        return ApiResponse.CreateApiResponse<ClientRole>(response);
-    }
-
-    public async Task<ApiResponse<ClientRole>> ClientRoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
-    {
-        var response = await _httpClient.DeleteAsync($"client-roles/{id}", cancellationToken);
-
-        return ApiResponse.CreateApiResponse<ClientRole>(response);
-    }
-
     public async Task<ApiResponse<IEnumerable<UserRole>>> UserRolesFindAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("user-roles", cancellationToken);

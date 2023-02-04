@@ -9,6 +9,5 @@ public class ClientCreateInput
     public string? ApplicationName { get; set; }
     public string? Origin { get; set; }
     public Guid? OwnerId { get; set; }
-    public Guid[]? ClientRoles { get; set; }
     public Guid[]? UserRoles { get; set; }
 }

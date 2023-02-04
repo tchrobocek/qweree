@@ -14,5 +14,5 @@ public class CreatedClient
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
     public User? Owner { get; set; }
-    public Role[]? ClientRoles { get; set; }
+    public Role[]? UserRoles { get; set; }
 }

@@ -72,7 +72,7 @@ public class ClientControllerTest
 
         {
             var input = new ClientCreateInput(client.Id, client.ClientId, client.ApplicationName,
-                client.Origin, user.Id, client.ClientRoles, client.UserRoles);
+                client.Origin, user.Id, client.UserRoles);
 
             var json = JsonUtils.Serialize(input);
             var response = await httpClient.PostAsync("/api/admin/identity/clients",

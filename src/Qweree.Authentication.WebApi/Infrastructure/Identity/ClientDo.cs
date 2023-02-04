@@ -10,7 +10,6 @@ public class ClientDo
     public string? ApplicationName { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
-    public Guid[]? ClientRoles { get; set; }
     public Guid[]? UserRoles { get; set; }
     public Guid? OwnerId { get; set; }
     public string? Origin { get; set; }

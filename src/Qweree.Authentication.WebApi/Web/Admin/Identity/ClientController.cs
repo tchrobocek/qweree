@@ -53,24 +53,24 @@ public class ClientController : ControllerBase
         var client = await _sdkMapperService.ToCreatedClientAsync(clientResponse.Payload!);
         return Created($"/api/v1/clients/{client.Id}", client);
     }
-    
+
     /// <summary>
     ///     Get client effective roles.
     /// </summary>
     /// <param name="id">Client id.</param>
-    /// <returns>Found effective client roles.</returns>
+    /// <returns>Found effective roles.</returns>
     [HttpGet("{id}/effective-roles")]
     [Authorize(Policy = "ClientRead")]
     [ProducesResponseType(typeof(RolesCollection), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientGetEffectiveRolesActionAsync(Guid id)
     {
-        var clientRolesResponse = await _clientService.ClientGetEffectiveRolesAsync(id);
+        var rolesResponse = await _clientService.ClientGetEffectiveRolesAsync(id);
 
-        if (clientRolesResponse.Status != ResponseStatus.Ok)
-            return clientRolesResponse.ToErrorActionResult();
+        if (rolesResponse.Status != ResponseStatus.Ok)
+            return rolesResponse.ToErrorActionResult();
 
-        var roles = _sdkMapperService.ToRolesCollection(clientRolesResponse.Payload!);
+        var roles = _sdkMapperService.ToRolesCollection(rolesResponse.Payload!);
         return Ok(roles);
     }
 

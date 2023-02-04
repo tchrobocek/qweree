@@ -47,4 +47,12 @@ public class UserRoleRepository : MongoRepositoryBase<UserRole, UserRoleDo>, IUs
             return false;
         }
     }
+
+    public async Task<UserRole?> FindByKey(string key, CancellationToken cancellationToken = new())
+    {
+        var userRole = (await FindAsync($@"{{""Key"": ""{key}""}}", 0, 1, cancellationToken))
+            .FirstOrDefault();
+
+        return userRole;
+    }
 }
