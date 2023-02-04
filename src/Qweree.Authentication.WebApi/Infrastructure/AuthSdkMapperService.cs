@@ -1,17 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Qweree.Authentication.Sdk.Account.MyAccount;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
-using Qweree.Authentication.WebApi.Domain.Session;
+using BotClientInfo = Qweree.Authentication.WebApi.Domain.Session.BotClientInfo;
+using BrowserClientInfo = Qweree.Authentication.WebApi.Domain.Session.BrowserClientInfo;
 using IClientInfo = Qweree.Authentication.WebApi.Domain.Session.IClientInfo;
 using OperationSystemInfo = Qweree.Authentication.WebApi.Domain.Session.OperationSystemInfo;
-using SdkSessionInfo = Qweree.Authentication.Sdk.Account.MyAccount.SessionInfo;
-using SdkUserAgentInfo = Qweree.Authentication.Sdk.Account.MyAccount.UserAgentInfo;
-using SdkIClientInfo = Qweree.Authentication.Sdk.Account.MyAccount.IClientInfo;
-using SdkBotClientInfo = Qweree.Authentication.Sdk.Account.MyAccount.BotClientInfo;
-using SdkBrowserClientInfo = Qweree.Authentication.Sdk.Account.MyAccount.BrowserClientInfo;
-using SdkOperationSystemInfo = Qweree.Authentication.Sdk.Account.MyAccount.OperationSystemInfo;
 using SessionInfo = Qweree.Authentication.WebApi.Domain.Session.SessionInfo;
 using UserAgentInfo = Qweree.Authentication.WebApi.Domain.Session.UserAgentInfo;
 
@@ -26,10 +22,10 @@ public class AuthSdkMapperService
         _clientRepository = clientRepository;
     }
 
-    public async Task<SdkSessionInfo> ToSessionInfoAsync(SessionInfo sessionInfo, CancellationToken cancellationToken = new())
+    public async Task<MyAccountSessionInfo> ToSessionInfoAsync(SessionInfo sessionInfo, CancellationToken cancellationToken = new())
     {
         var client = await _clientRepository.GetAsync(sessionInfo.ClientId, cancellationToken);
-        return new SdkSessionInfo
+        return new MyAccountSessionInfo
         {
             Id = sessionInfo.Id,
             Grant = sessionInfo.Grant.ToString()?.ToLower(),
@@ -41,9 +37,9 @@ public class AuthSdkMapperService
         };
     }
 
-    private SdkUserAgentInfo ToUserAgentInfo(UserAgentInfo userAgent)
+    private AuthUserAgentInfo ToUserAgentInfo(UserAgentInfo userAgent)
     {
-        return new SdkUserAgentInfo
+        return new AuthUserAgentInfo
         {
             Brand = userAgent.Brand,
             Device = userAgent.Device,
@@ -53,11 +49,11 @@ public class AuthSdkMapperService
         };
     }
 
-    private SdkIClientInfo ToClientInfo(IClientInfo clientInfo)
+    private IAuthClientInfo ToClientInfo(IClientInfo clientInfo)
     {
         if (clientInfo is BotClientInfo bot)
         {
-            return new SdkBotClientInfo
+            return new BotAuthClientInfo
             {
                 Name = bot.ClientString
             };
@@ -65,7 +61,7 @@ public class AuthSdkMapperService
 
         if (clientInfo is BrowserClientInfo browser)
         {
-            return new SdkBrowserClientInfo
+            return new BrowserAuthClientInfo
             {
                 Name = browser.Name,
                 Version = browser.Version,
@@ -78,9 +74,9 @@ public class AuthSdkMapperService
         throw new ArgumentException($"Convertor for client info of type {clientInfo.GetType()} is not implemented.");
     }
 
-    private SdkOperationSystemInfo ToOperationSystem(OperationSystemInfo os)
+    private AuthOperationSystemInfo ToOperationSystem(OperationSystemInfo os)
     {
-        return new SdkOperationSystemInfo
+        return new AuthOperationSystemInfo
         {
             Name = os.Name,
             Platform = os.Platform,

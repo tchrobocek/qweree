@@ -7,8 +7,10 @@ using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo;
 using Qweree.Mongo.Exception;
+using SessionInfo = Qweree.Authentication.WebApi.Domain.Session.SessionInfo;
 
 namespace Qweree.Authentication.WebApi.Domain.Identity;
 
@@ -17,12 +19,14 @@ public class UserService
     private readonly IUserRepository _userRepository;
     private readonly ISessionStorage _sessionStorage;
     private readonly AuthorizationService _authorizationService;
+    private readonly ISessionInfoRepository _sessionInfoRepository;
 
-    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, AuthorizationService authorizationService)
+    public UserService(IUserRepository userRepository, ISessionStorage sessionStorage, AuthorizationService authorizationService, ISessionInfoRepository sessionInfoRepository)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
         _authorizationService = authorizationService;
+        _sessionInfoRepository = sessionInfoRepository;
     }
 
     public async Task<Response<User>> UserGetAsync(Guid userId, CancellationToken cancellationToken = new())
@@ -101,5 +105,10 @@ public class UserService
         }
 
         return Response.Ok((IEnumerable<Role>)effectiveRoles);
+    }
+
+    public async Task<CollectionResponse<SessionInfo>> UserGetActiveSessions(Guid id, CancellationToken cancellationToken = new())
+    {
+        return Response.Ok(await _sessionInfoRepository.FindActiveSessionsForUser(id, cancellationToken));
     }
 }

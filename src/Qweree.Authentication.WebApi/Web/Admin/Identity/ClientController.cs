@@ -9,6 +9,7 @@ using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.WebApi.Domain.Identity;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Sdk;
@@ -93,7 +94,7 @@ public class ClientController : ControllerBase
         if (clientResponse.Status != ResponseStatus.Ok)
             return clientResponse.ToErrorActionResult();
 
-        var client = await _sdkMapperService.ToClient(clientResponse.Payload!);
+        var client = await _sdkMapperService.ToClientAsync(clientResponse.Payload!);
         return Ok(client);
     }
 
@@ -151,9 +152,26 @@ public class ClientController : ControllerBase
         var clients = new List<SdkClient>();
         foreach (var document in clientsResponse.Payload ?? Array.Empty<Client>())
         {
-            clients.Add(await _sdkMapperService.ToClient(document));
+            clients.Add(await _sdkMapperService.ToClientAsync(document));
         }
 
         return Ok(clients);
     }
+
+    /// <summary>
+    ///     Find client active sessions
+    /// </summary>
+    [HttpGet("{id}/sessions")]
+    [Authorize(Policy = "UserRead")]
+    [ProducesResponseType(typeof(List<SessionInfo>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UsersFindActiveSessionsAction(Guid userId)
+    {
+        var sessionResponse = await _clientService.ClientGetActiveSessions(userId);
+
+        if (sessionResponse.Status != ResponseStatus.Ok)
+            return sessionResponse.ToErrorActionResult();
+
+        return Ok(await _sdkMapperService.ToSessionInfosAsync(sessionResponse.Payload!));
+    }
+
 }

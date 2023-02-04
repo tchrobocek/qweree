@@ -8,6 +8,7 @@ using Qweree.AspNet.Validations;
 using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Security;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo.Exception;
 using Qweree.Utils;
 using Qweree.Validator;
@@ -21,10 +22,12 @@ public class ClientService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IClientRepository _clientRepository;
     private readonly AuthorizationService _authorizationService;
+    private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly Random _random;
 
     public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-        IClientRepository clientRepository, Random random, AuthorizationService authorizationService)
+        IClientRepository clientRepository, Random random, AuthorizationService authorizationService,
+        ISessionInfoRepository sessionInfoRepository)
     {
         _validator = validator;
         _passwordEncoder = passwordEncoder;
@@ -32,6 +35,7 @@ public class ClientService
         _clientRepository = clientRepository;
         _random = random;
         _authorizationService = authorizationService;
+        _sessionInfoRepository = sessionInfoRepository;
     }
 
     private string GenerateClientSecret()
@@ -126,6 +130,11 @@ public class ClientService
     {
         var pagination = await _clientRepository.PaginateAsync(skip, take, sort, cancellationToken);
         return Response.Ok(pagination.Documents, pagination.TotalCount);
+    }
+
+    public async Task<CollectionResponse<SessionInfo>> ClientGetActiveSessions(Guid id, CancellationToken cancellationToken = new())
+    {
+        return Response.Ok(await _sessionInfoRepository.FindActiveSessionsForUser(id, cancellationToken));
     }
 
     public async Task<Response> ClientDeleteAsync(Guid id)

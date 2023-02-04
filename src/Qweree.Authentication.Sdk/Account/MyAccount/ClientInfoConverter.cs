@@ -6,15 +6,15 @@ using System.Text.Json.Serialization;
 
 namespace Qweree.Authentication.Sdk.Account.MyAccount;
 
-public class ClientInfoConverter : JsonConverter<IClientInfo>
+public class ClientInfoConverter : JsonConverter<IAuthClientInfo>
 {
     private readonly Dictionary<string, Type> _typeMap = new()
     {
-        ["bot"] = typeof(BotClientInfo),
-        ["browser"] = typeof(BrowserClientInfo)
+        ["bot"] = typeof(BotAuthClientInfo),
+        ["browser"] = typeof(BrowserAuthClientInfo)
     };
 
-    public override IClientInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IAuthClientInfo? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         // Check for null values
         if (reader.TokenType == JsonTokenType.Null)
@@ -36,18 +36,18 @@ public class ClientInfoConverter : JsonConverter<IClientInfo>
         // See if that class can be deserialized or not
         if (!string.IsNullOrEmpty(className) && _typeMap.TryGetValue(className, out var targetType))
         {
-            return (IClientInfo?)JsonSerializer.Deserialize(ref readerAtStart, targetType, options);
+            return (IAuthClientInfo?)JsonSerializer.Deserialize(ref readerAtStart, targetType, options);
         }
 
         throw new NotSupportedException($"{className} can not be deserialized");
     }
 
-    public override void Write(Utf8JsonWriter writer, IClientInfo value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IAuthClientInfo value, JsonSerializerOptions options)
     {
         switch (value)
         {
             case null:
-                JsonSerializer.Serialize(writer, (IClientInfo?) null, options);
+                JsonSerializer.Serialize(writer, (IAuthClientInfo?) null, options);
                 break;
             default:
                 var type = value.GetType();

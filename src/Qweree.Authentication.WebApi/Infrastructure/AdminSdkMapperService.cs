@@ -9,6 +9,7 @@ using Qweree.Authentication.WebApi.Domain.Authorization;
 using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
+using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo.Exception;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using RolesCollection = Qweree.Authentication.WebApi.Domain.Identity.RolesCollection;
@@ -23,22 +24,29 @@ using SdkRolesCollection = Qweree.Authentication.AdminSdk.Authorization.Roles.Ro
 using SdkUserInvitationInput = Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation.UserInvitationInput;
 using SdkRoleCreateInput = Qweree.Authentication.AdminSdk.Authorization.Roles.RoleCreateInput;
 using SdkRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.RoleModifyInput;
-using RoleCreateInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.RoleCreateInput;
-using RoleModifyInput = Qweree.Authentication.WebApi.Domain.Authorization.Roles.RoleModifyInput;
+using SdkSessionInfo = Qweree.Authentication.AdminSdk.Session.SessionInfo;
+using SdkUserAgentInfo = Qweree.Authentication.AdminSdk.Session.UserAgentInfo;
+using ISdkClientInfo = Qweree.Authentication.AdminSdk.Session.IClientInfo;
+using SdkBotClientInfo = Qweree.Authentication.AdminSdk.Session.BotClientInfo;
+using SdkBrowserClientInfo = Qweree.Authentication.AdminSdk.Session.BrowserClientInfo;
+using SdkOperationSystemInfo = Qweree.Authentication.AdminSdk.Session.OperationSystemInfo;
 
 namespace Qweree.Authentication.WebApi.Infrastructure;
 
 public class AdminSdkMapperService
 {
+    private readonly IClientRepository _clientRepository;
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
     private readonly AuthorizationService _authorizationService;
 
-    public AdminSdkMapperService(IUserRepository userRepository, IRoleRepository roleRepository, AuthorizationService authorizationService)
+    public AdminSdkMapperService(IUserRepository userRepository, IRoleRepository roleRepository,
+        AuthorizationService authorizationService, IClientRepository clientRepository)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
         _authorizationService = authorizationService;
+        _clientRepository = clientRepository;
     }
 
     public async Task<SdkUser> ToUserAsync(User user, CancellationToken cancellationToken = new())
@@ -167,7 +175,7 @@ public class AdminSdkMapperService
         };
     }
 
-    public async Task<SdkClient> ToClient(Client client, CancellationToken cancellationToken = new())
+    public async Task<SdkClient> ToClientAsync(Client client, CancellationToken cancellationToken = new())
     {
         var roles = new List<Role>();
         foreach (var role in client.Roles)
@@ -213,5 +221,88 @@ public class AdminSdkMapperService
     public RoleModifyInput ToRoleModifyInput(Guid id, SdkRoleModifyInput input)
     {
         return new RoleModifyInput(id, input.Label, input.Description, input.IsGroup, input.Items?.ToImmutableArray());
+    }
+
+    public async Task<IEnumerable<SdkSessionInfo>> ToSessionInfosAsync(IEnumerable<SessionInfo> sessionInfos)
+    {
+        var result = new List<SdkSessionInfo>();
+
+        sessionInfos = sessionInfos.ToArray();
+
+        var clientIds = sessionInfos.Select(i => i.ClientId);
+        var userIds = sessionInfos.Where(i => i.UserId is not null)
+            .Select(i => i.UserId)
+            .Cast<Guid>();
+
+        var clients = (await _clientRepository.GetAsync(clientIds))
+            .ToDictionary(c => c.Id);
+        var users = (await _userRepository.GetAsync(userIds))
+            .ToDictionary(u => u.Id);
+
+        foreach (var sessionInfo in sessionInfos)
+        {
+            result.Add(new SdkSessionInfo
+            {
+                Id = sessionInfo.Id,
+                Client = await ToClientAsync(clients[sessionInfo.ClientId]),
+                User = sessionInfo.UserId is not null ? await ToUserAsync(users[(Guid)sessionInfo.UserId!]) : null,
+                Grant = sessionInfo.Grant.ToString(),
+                IpAddress = sessionInfo.IpAddress,
+                UserAgent = sessionInfo.UserAgent is not null ? ToUserAgentInfo(sessionInfo.UserAgent) : null,
+                CreatedAt = sessionInfo.CreatedAt,
+                IssuedAt = sessionInfo.IssuedAt,
+                ExpiresAt = sessionInfo.ExpiresAt,
+            });
+        }
+
+        return result;
+    }
+
+    private SdkUserAgentInfo ToUserAgentInfo(UserAgentInfo userAgent)
+    {
+        return new SdkUserAgentInfo
+        {
+            Brand = userAgent.Brand,
+            Device = userAgent.Device,
+            Model = userAgent.Model,
+            Client = userAgent.Client is not null ? ToClientInfo(userAgent.Client) : null,
+            OperationSystem = userAgent.OperationSystem is not null ? ToOperationSystem(userAgent.OperationSystem) : null
+        };
+    }
+
+    private ISdkClientInfo ToClientInfo(IClientInfo clientInfo)
+    {
+        if (clientInfo is BotClientInfo bot)
+        {
+            return new SdkBotClientInfo
+            {
+                Name = bot.ClientString
+            };
+        }
+
+        if (clientInfo is BrowserClientInfo browser)
+        {
+            return new SdkBrowserClientInfo
+            {
+                Name = browser.Name,
+                Version = browser.Version,
+                ShortName = browser.ShortName,
+                Engine = browser.Engine,
+                EngineVersion = browser.EngineVersion
+            };
+        }
+
+        throw new ArgumentException($"Convertor for client info of type {clientInfo.GetType()} is not implemented.");
+    }
+
+    private SdkOperationSystemInfo ToOperationSystem(OperationSystemInfo os)
+    {
+        return new SdkOperationSystemInfo
+        {
+            Name = os.Name,
+            Platform = os.Platform,
+            Version = os.Version,
+            ShortName = os.ShortName
+        };
     }
 }

@@ -67,7 +67,7 @@ public class MyAccountController : ControllerBase
     ///     Get my sessions.
     /// </summary>
     [HttpGet("sessions")]
-    [ProducesResponseType(typeof(SessionInfo[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(MyAccountSessionInfo[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> MySessionsGetActionAsync()
     {
         var response = await _myAccountService.FindMySessions();
@@ -75,7 +75,7 @@ public class MyAccountController : ControllerBase
         if (response.Status != ResponseStatus.Ok)
             return response.ToErrorActionResult();
 
-        var infos = new List<SessionInfo>();
+        var infos = new List<MyAccountSessionInfo>();
         foreach (var item in response.Payload!)
             infos.Add(await _authSdkMapper.ToSessionInfoAsync(item));
 

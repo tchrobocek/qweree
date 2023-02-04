@@ -151,6 +151,22 @@ public abstract class MongoRepositoryBase<TPublicType, TDocumentType>
         return result.FirstOrDefault() ?? throw new DocumentNotFoundException($@"Document ""{id}"" was not found.");
     }
 
+    public async Task<IEnumerable<TPublicType>> GetAsync(IEnumerable<Guid> ids, bool strict = false, CancellationToken cancellationToken = new())
+    {
+        ids = ids.ToArray();
+        var idsQuery = string.Join(", ", ids.Select(id => $@"UUID(""{id}"")"));
+        var items = (await FindAsync($@"{{""_id"": {{ ""$in"": [{idsQuery}]}}}}", cancellationToken))
+            .ToArray();
+
+        if (!strict)
+            return items;
+
+        if (items.Count() != ids.Count())
+            throw new DocumentNotFoundException("Some documents could not be found.");
+
+        return items;
+    }
+
     public async Task InsertAsync(TPublicType document, CancellationToken cancellationToken = new())
     {
         try

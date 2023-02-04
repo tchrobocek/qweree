@@ -36,10 +36,17 @@ public class SessionInfoRepository : MongoRepositoryBase<SessionInfo,  SessionIn
         return result;
     }
 
-    public async Task<IEnumerable<SessionInfo>> FindForUser(Guid userId, CancellationToken cancellationToken = new())
+    public async Task<IEnumerable<SessionInfo>> FindActiveSessionsForUser(Guid userId, CancellationToken cancellationToken = new())
     {
         var now = _dateTimeProvider.UtcNow;
         var query = $@"{{""$and"": [{{""UserId"": UUID(""{userId}"")}}, {{""ExpiresAt"": {{""$gte"": ISODate(""{now.ToString(IsoDateFormat)}"")}}}}]}}";
+        return await FindAsync(query, cancellationToken);
+    }
+
+    public async Task<IEnumerable<SessionInfo>> FindActiveSessionsForClient(Guid clientId, CancellationToken cancellationToken = new())
+    {
+        var now = _dateTimeProvider.UtcNow;
+        var query = $@"{{""$and"": [{{""ClientId"": UUID(""{clientId}"")}}, {{""ExpiresAt"": {{""$gte"": ISODate(""{now.ToString(IsoDateFormat)}"")}}}}]}}";
         return await FindAsync(query, cancellationToken);
     }
 }

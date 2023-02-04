@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Authorization.Roles;
+using Qweree.Authentication.AdminSdk.Session;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Infrastructure;
@@ -117,6 +118,22 @@ public class UserController : ControllerBase
         foreach (var user in usersResponse.Payload ?? Array.Empty<User>())
             users.Add(await _sdkMapperService.ToUserAsync(user));
         return Ok(users);
+    }
+
+    /// <summary>
+    ///     Find user active sessions
+    /// </summary>
+    [HttpGet("{id}/sessions")]
+    [Authorize(Policy = "UserRead")]
+    [ProducesResponseType(typeof(List<SessionInfo>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UsersFindActiveSessionsAction(Guid userId)
+    {
+        var sessionResponse = await _userService.UserGetActiveSessions(userId);
+
+        if (sessionResponse.Status != ResponseStatus.Ok)
+            return sessionResponse.ToErrorActionResult();
+
+        return Ok(await _sdkMapperService.ToSessionInfosAsync(sessionResponse.Payload!));
     }
 
     /// <summary>

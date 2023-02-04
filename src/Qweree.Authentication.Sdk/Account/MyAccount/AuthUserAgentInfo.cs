@@ -1,16 +1,16 @@
 namespace Qweree.Authentication.Sdk.Account.MyAccount;
 
 
-public class UserAgentInfo
+public class AuthUserAgentInfo
 {
-    public IClientInfo? Client { get; set; }
-    public OperationSystemInfo? OperationSystem { get; set; }
+    public IAuthClientInfo? Client { get; set; }
+    public AuthOperationSystemInfo? OperationSystem { get; set; }
     public string? Device { get; set;  }
     public string? Brand { get; set;  }
     public string? Model { get; set; }
 }
 
-public class OperationSystemInfo
+public class AuthOperationSystemInfo
 {
     public string? Name { get; set; }
     public string? ShortName { get; set; }
@@ -18,12 +18,12 @@ public class OperationSystemInfo
     public string? Platform { get; set; }
 }
 
-public interface IClientInfo
+public interface IAuthClientInfo
 {
     public string TypeName { get; }
 }
 
-public class BrowserClientInfo : IClientInfo
+public class BrowserAuthClientInfo : IAuthClientInfo
 {
     public string TypeName => "browser";
     public string? Name { get; set; }
@@ -33,7 +33,7 @@ public class BrowserClientInfo : IClientInfo
     public string? EngineVersion { get; set; }
 }
 
-public class BotClientInfo : IClientInfo
+public class BotAuthClientInfo : IAuthClientInfo
 {
     public string TypeName => "bot";
     public string? Name { get; set; }

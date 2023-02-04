@@ -87,7 +87,7 @@ public class MyAccountService
 
     public async Task<CollectionResponse<SessionInfo>> FindMySessions(CancellationToken cancellationToken = new())
     {
-        var items = await _sessionInfoRepository.FindForUser(_sessionStorage.UserId, cancellationToken);
+        var items = await _sessionInfoRepository.FindActiveSessionsForUser(_sessionStorage.UserId, cancellationToken);
         return Response.Ok(items);
     }
 

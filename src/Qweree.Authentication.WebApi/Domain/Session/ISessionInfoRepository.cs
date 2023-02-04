@@ -12,5 +12,6 @@ public interface ISessionInfoRepository
     Task ReplaceAsync(Guid id, SessionInfo sessionInfo, CancellationToken cancellationToken = new());
     Task<SessionInfo> GetAsync(Guid id, CancellationToken cancellationToken = new());
     Task DeleteOneAsync(Guid id, CancellationToken cancellationToken = new());
-    Task<IEnumerable<SessionInfo>> FindForUser(Guid userId, CancellationToken cancellationToken = new());
+    Task<IEnumerable<SessionInfo>> FindActiveSessionsForUser(Guid userId, CancellationToken cancellationToken = new());
+    Task<IEnumerable<SessionInfo>> FindActiveSessionsForClient(Guid clientId, CancellationToken cancellationToken = new());
 }

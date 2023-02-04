@@ -49,11 +49,11 @@
                                 <ShortIdComponent Id="@context.Id"/>
                             </MudTd>
                             <MudTd Class="pa-1" DataLabel="Device">@context.UserAgent?.Brand @context.UserAgent?.OperationSystem?.Name (@context.UserAgent?.OperationSystem?.Version)</MudTd>
-                            @if (context.UserAgent?.Client is BotClientInfo bot)
+                            @if (context.UserAgent?.Client is BotAuthClientInfo bot)
                             {
                                 <MudTd Class="pa-1" DataLabel="Browser">@bot.Name</MudTd>
                             }
-                            @if (context.UserAgent?.Client is BrowserClientInfo browser)
+                            @if (context.UserAgent?.Client is BrowserAuthClientInfo browser)
                             {
                                 <MudTd Class="pa-1" DataLabel="Browser">@browser.Name (@browser.Version)</MudTd>
                             }
@@ -84,7 +84,7 @@
 @code {
     private Identity? _identity;
     private MyProfile? _user;
-    private SessionInfo[]? _sessions;
+    private MyAccountSessionInfo[]? _sessions;
 
     private string _oldPassword = string.Empty;
     private string _newPassword = string.Empty;
@@ -167,9 +167,9 @@
         Snackbar.Add("Password changed.", Severity.Success);
     }
 
-    private async Task RevokeAsync(SessionInfo session)
+    private async Task RevokeAsync(MyAccountSessionInfo myAccountSession)
     {
-        var response = await AuthenticationClient.RevokeSessionAsync((Guid)session.Id!);
+        var response = await AuthenticationClient.RevokeSessionAsync((Guid)myAccountSession.Id!);
         if (response.IsSuccessful)
         {
             Snackbar.Add("Session revoked.", Severity.Success);

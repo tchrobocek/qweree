@@ -97,7 +97,7 @@ public class ClientControllerTest
 
             var clientDto = await response.Content.ReadAsObjectAsync<Client>();
 
-            clientDto.WithDeepEqual(await _sdkMapperService.ToClient(client))
+            clientDto.WithDeepEqual(await _sdkMapperService.ToClientAsync(client))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .WithCustomComparison(new ImmutableArrayComparison())
                 .IgnoreProperty(p => p.Name is "CreatedAt" or "ModifiedAt")
@@ -132,7 +132,7 @@ public class ClientControllerTest
         for (var i = 0; i < 10; i++)
         {
             var client = ClientFactory.CreateDefault(user.Id, $"client{i}");
-            clientsList.Add(await _sdkMapperService.ToClient(client));
+            clientsList.Add(await _sdkMapperService.ToClientAsync(client));
             await _clientRepository.InsertAsync(client);
         }
 
@@ -141,7 +141,7 @@ public class ClientControllerTest
         await _userRepository.InsertAsync(adminUser);
         await _clientRepository.InsertAsync(adminClient);
 
-        clientsList.Add(await _sdkMapperService.ToClient(adminClient));
+        clientsList.Add(await _sdkMapperService.ToClientAsync(adminClient));
         clientsList = clientsList.OrderBy(u => u.ClientId).ToList();
 
         using var httpClient =

@@ -209,14 +209,8 @@ public class Startup
         services.AddSingleton<AuthSdkMapperService>();
         services.AddSingleton<UserInvitationService>();
         services.AddSingleton<UserRegisterService>();
-        services.AddScoped(p => new UserService(p.GetRequiredService<IUserRepository>(),
-            p.GetRequiredService<ISessionStorage>(),
-            p.GetRequiredService<AuthorizationService>()));
-        services.AddScoped(p => new ClientService(p.GetRequiredService<IValidator>(),
-            p.GetRequiredService<IPasswordEncoder>(), p.GetRequiredService<IDateTimeProvider>(),
-            p.GetRequiredService<IClientRepository>(),
-            new Random(), p.GetRequiredService<AuthorizationService>()));
-
+        services.AddScoped<UserService>();
+        services.AddScoped<ClientService>();
         // Authorization
         services.AddSingleton<IRoleRepository, RoleRepository>();
         services.AddSingleton<RoleService, RoleService>();

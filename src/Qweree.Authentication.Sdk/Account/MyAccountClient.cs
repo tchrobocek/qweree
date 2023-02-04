@@ -35,10 +35,10 @@ public class MyAccountClient
         return ApiResponse.CreateApiResponse<MyProfile>(response);
     }
 
-    public async Task<ApiResponse<SessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())
+    public async Task<ApiResponse<MyAccountSessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("sessions", cancellationToken);
-        return ApiResponse.CreateApiResponse<SessionInfo[]>(response);
+        return ApiResponse.CreateApiResponse<MyAccountSessionInfo[]>(response);
     }
 
     public async Task<ApiResponse<AuthUserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
