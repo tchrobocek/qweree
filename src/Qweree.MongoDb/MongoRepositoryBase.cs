@@ -105,12 +105,12 @@ public abstract class MongoRepositoryBase<TPublicType, TDocumentType>
     {
         var findOptions = new FindOptions<TDocumentType>();
 
-        if (skip != null)
+        if (skip is not null)
             findOptions.Skip = skip;
-        if (take != null)
+        if (take is not null)
             findOptions.Limit = take;
 
-        if (sort != null)
+        if (sort is not null)
         {
             var bsonDocument = new BsonDocument(sort);
             findOptions.Sort = new BsonDocumentSortDefinition<TDocumentType>(bsonDocument);

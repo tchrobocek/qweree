@@ -46,7 +46,7 @@ public class ImmutableArrayComparison : IComparison
         if (_withDeepEqual)
         {
             var syntax = array1.WithDeepEqual(array2);
-            if (_inner != null)
+            if (_inner is not null)
             {
                 syntax = syntax.WithCustomComparison(_inner);
             }

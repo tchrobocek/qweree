@@ -66,7 +66,7 @@ public class ModelValidator : IObjectValidator
             var propInfo = validationContext.Subject?.GetType().GetProperties()
                 .FirstOrDefault(p => p.Name == property.PropertyName);
 
-            if (propInfo == null)
+            if (propInfo is null)
                 continue;
 
             var value = propInfo.GetValue(validationContext.Subject);
@@ -75,7 +75,7 @@ public class ModelValidator : IObjectValidator
             {
                 var validator = _constraintValidators.FirstOrDefault(v => v.GetType() == constraint.ValidatorType);
 
-                if (validator == null)
+                if (validator is null)
                     throw new ArgumentException($@"Missing ""{constraint.ValidatorType}"" validator.");
 
                 var path = validationContext.Path;

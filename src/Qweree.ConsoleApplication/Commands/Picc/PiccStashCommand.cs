@@ -55,7 +55,7 @@ public class PiccStashCommand : ICommand
             path = paths.Single();
         }
 
-        if (path == null)
+        if (path is null)
         {
             Console.WriteLine("None path provided");
             return -1;
@@ -122,7 +122,7 @@ public class PiccStashCommand : ICommand
             uri = uris.Single();
         }
 
-        if (uri == null)
+        if (uri is null)
         {
             Console.WriteLine("None uri provided");
             return -1;

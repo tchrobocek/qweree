@@ -6,20 +6,20 @@
     <div class="explorer-directory-item explorer-directory-path">@Item!.Label</div>
 
     <div class="explorer-directory-total-count">
-        @if (Item.TotalCount != null)
+        @if (Item.TotalCount is not null)
         {
             @Item.TotalCount <PluralityComponent Value="(int)(Item.TotalCount ?? 0)" Singular="item" Plural="items"/>
         }
     </div>
 
     <div class="explorer-directory-total-size">
-    @if (Item.TotalSize != null)
+    @if (Item.TotalSize is not null)
         {
             <BinarySizeComponent Bytes="Item.TotalSize ?? 0"/>
         }
     </div>
     <div class="explorer-directory-modified-at">
-        @if (Item.ModifiedAt != null)
+        @if (Item.ModifiedAt is not null)
         {
             @Item.ModifiedAt
         }

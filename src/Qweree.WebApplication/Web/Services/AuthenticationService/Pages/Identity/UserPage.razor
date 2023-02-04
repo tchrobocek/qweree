@@ -17,7 +17,7 @@
         <MudText Typo="Typo.h6">@_fullName (@_user?.Username)</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @if (_user != null)
+        @if (_user is not null)
         {
             <MudTabs>
                 <MudTabPanel Text="Info">

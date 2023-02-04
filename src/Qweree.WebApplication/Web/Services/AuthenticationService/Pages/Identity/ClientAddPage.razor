@@ -59,7 +59,7 @@
     {
         var identity = await Session.GetIdentityAsync();
 
-        if (identity != null)
+        if (identity is not null)
             _ownerId = identity.User?.Id?.ToString()!;
     }
 

@@ -91,7 +91,7 @@
     {
         var delete = await DialogService.ConfirmAsync("Delete picc", "Do you really wish to delete picc?");
 
-        if (!delete || item.Id == null)
+        if (!delete || item.Id is null)
             return;
 
         await PiccClient.PiccDeleteAsync((Guid) item.Id);

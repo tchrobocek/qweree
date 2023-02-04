@@ -40,7 +40,7 @@ public class RefreshTokenHandler : DelegatingHandler
             token = null;
         }
 
-        if (token?.RefreshToken == null)
+        if (token?.RefreshToken is null)
             return response;
 
         var input = new RefreshTokenGrantInput
@@ -59,7 +59,7 @@ public class RefreshTokenHandler : DelegatingHandler
 
         var payload = await refreshResponse.ReadPayloadAsync(cancellationToken);
 
-        if (payload == null)
+        if (payload is null)
             return response;
 
         try

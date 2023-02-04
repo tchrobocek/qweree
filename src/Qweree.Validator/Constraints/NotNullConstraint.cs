@@ -10,7 +10,7 @@ public class NotNullConstraintValidator : ConstraintValidatorBase<object, NotNul
     protected override Task ValidateAsync(ValidationContext<object> context, NotNullConstraint constraint,
         ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (context.Subject == null)
+        if (context.Subject is null)
             builder.AddError(context.Path, constraint.NullMessage);
 
         return Task.CompletedTask;

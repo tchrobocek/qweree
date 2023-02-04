@@ -30,7 +30,7 @@ public class ClientInfoConverter : JsonConverter<IClientInfo>
         var className = jsonObject.EnumerateObject().FirstOrDefault(p => p.Name.ToLower() == "typename")
             .Value.GetString();
 
-        if (className == null)
+        if (className is null)
             return null;
 
         // See if that class can be deserialized or not

@@ -28,7 +28,7 @@
     {
         var identity = await Session.GetIdentityAsync();
 
-        if (identity != null)
+        if (identity is not null)
             NavigationManager.NavigateTo("/");
     }
 

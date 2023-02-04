@@ -12,7 +12,7 @@ public class MaxLengthConstraintValidator : ConstraintValidatorBase<IEnumerable,
     protected override Task ValidateAsync(ValidationContext<IEnumerable> context, MaxLengthConstraint constraint,
         ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (context.Subject == null)
+        if (context.Subject is null)
             return Task.CompletedTask;
 
         var count = context.Subject.Cast<object>().Count();

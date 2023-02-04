@@ -11,7 +11,7 @@
         <MudPaper Elevation="25" Class="pa-8" Width="100%">
             <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
             <ErrorsComponent Errors="_errors" />
-            <MudTextField Disabled="_invitation?.Username != null" T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" />
+            <MudTextField Disabled="_invitation?.Username is not null" T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" />
             <MudGrid>
                 <MudItem xs="6">
                     <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined" />
@@ -20,8 +20,8 @@
                     <PasswordFieldComponent @bind-Value="_password2" Label="Repeat password" Variant="Variant.Outlined" />
                 </MudItem>
             </MudGrid>
-            <MudTextField Disabled="_invitation?.ContactEmail != null" T="string" @bind-Value="_contactEmail" Label="Contact email" Variant="Variant.Outlined" />
-            <MudTextField Disabled="_invitation?.FullName != null" T="string" @bind-Value="_fullName" Label="Full name" Variant="Variant.Outlined" />
+            <MudTextField Disabled="_invitation?.ContactEmail is not null" T="string" @bind-Value="_contactEmail" Label="Contact email" Variant="Variant.Outlined" />
+            <MudTextField Disabled="_invitation?.FullName is not null" T="string" @bind-Value="_fullName" Label="Full name" Variant="Variant.Outlined" />
             <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await RegisterAsync()" Size="Size.Large" FullWidth="true">Sign In</MudButton>
         </MudPaper>
     </div>

@@ -17,7 +17,7 @@ public class PasswordConstraintValidator : ConstraintValidatorBase<string, Passw
     {
         var password = validationContext.Subject;
 
-        if (password == null)
+        if (password is null)
         {
             builder.AddError($"{validationContext.Path}", "Password cannot be null");
             return Task.CompletedTask;

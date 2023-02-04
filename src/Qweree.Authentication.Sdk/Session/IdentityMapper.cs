@@ -21,7 +21,7 @@ public static class IdentityMapper
         claims.AddRange(identity.Roles?.Select(r => new Claim("role", r)) ?? Array.Empty<Claim>());
         claims.AddRange(identity.Roles?.Select(r => new Claim(ClaimTypes.Role, r)) ?? Array.Empty<Claim>());
 
-        if (identity.User != null)
+        if (identity.User is not null)
         {
             claims.Add(new Claim("user.id", identity.User.Id.ToString() ?? Guid.Empty.ToString()));
             claims.Add(new Claim("user.username", identity.User.Username ?? string.Empty));

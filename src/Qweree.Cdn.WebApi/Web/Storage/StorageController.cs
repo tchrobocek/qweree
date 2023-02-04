@@ -51,7 +51,7 @@ public class StorageController : ControllerBase
         if (ifNoneMatchValues.Any(v => EtagHelper.ValidateEtag(v ?? string.Empty, descriptor)))
         {
             var stream = response.Payload?.Stream;
-            if (stream != null)
+            if (stream is not null)
                 await stream.DisposeAsync();
 
             return StatusCode((int)HttpStatusCode.NotModified);
@@ -77,7 +77,7 @@ public class StorageController : ControllerBase
         [FromHeader(Name = "Content-Type")] string contentType = MediaTypeNames.Application.Octet)
     {
         bool? isPrivate = null;
-        if (privateString != null)
+        if (privateString is not null)
             isPrivate = privateString != "false";
 
         path = HttpUtility.UrlDecode(path);
@@ -108,7 +108,7 @@ public class StorageController : ControllerBase
         [FromHeader(Name = "Content-Type")] string contentType = MediaTypeNames.Application.Octet)
     {
         bool? isPrivate = null;
-        if (privateString != null)
+        if (privateString is not null)
             isPrivate = privateString != "false";
 
         path = HttpUtility.UrlDecode(path);

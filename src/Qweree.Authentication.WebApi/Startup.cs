@@ -234,7 +234,7 @@ public class Startup
     {
         var pathBase = qwereeConfig.Value.PathBase;
 
-        if (pathBase != null)
+        if (pathBase is not null)
             app.UsePathBase(pathBase);
 
         app.UseForwardedHeaders();

@@ -48,7 +48,7 @@ public class StoredObjectService
 
             created = existing.Descriptor.CreatedAt;
 
-            if (isPrivate == null)
+            if (isPrivate is null)
                 isPrivate = existing.Descriptor.IsPrivate;
 
             await _storedObjectRepository.DeleteAsync(slug, cancellationToken);

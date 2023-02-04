@@ -65,7 +65,7 @@
         var roles = await response.ReadPayloadAsync();
         var role = roles!.FirstOrDefault(r => r.Id == editId);
 
-        if (role == null)
+        if (role is null)
         {
             NavigationManager.NavigateTo("/not-found");
             return;

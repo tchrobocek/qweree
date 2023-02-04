@@ -262,7 +262,7 @@ public class AuthenticationService
             throw new AuthenticationException();
 
         var role = await _roleRepository.FindByKey(grantType.RoleKey, cancellationToken);
-        if (role == null)
+        if (role is null)
             throw new AuthenticationException();
 
         if (!client.Roles.Contains(role.Id))

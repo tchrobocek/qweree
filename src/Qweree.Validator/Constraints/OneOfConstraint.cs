@@ -12,7 +12,7 @@ public class OneOfConstraintValidator : ConstraintValidatorBase<object, OneOfCon
     protected override Task ValidateAsync(ValidationContext<object> context, OneOfConstraint constraint,
         ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (context.Subject == null)
+        if (context.Subject is null)
             return Task.CompletedTask;
 
         if (!constraint.OneOf.Contains(context.Subject))

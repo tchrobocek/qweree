@@ -21,12 +21,12 @@ public class ExistsConstraintValidator : ConstraintValidatorBase<object, ExistsC
     protected override async Task ValidateAsync(ValidationContext<object> validationContext,
         ExistsConstraint constraint, ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (validationContext.Subject == null)
+        if (validationContext.Subject is null)
             return;
 
         var repository = _repositories.FirstOrDefault(r => constraint.RepositoryType == r.GetType());
 
-        if (repository == null)
+        if (repository is null)
             throw new ArgumentException(@$"Repository of type ""{constraint.RepositoryType}"" is not registered.");
 
         IEnumerable<object> subjects;

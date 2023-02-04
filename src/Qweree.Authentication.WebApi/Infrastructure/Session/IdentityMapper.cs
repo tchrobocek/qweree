@@ -19,7 +19,7 @@ public static class IdentityMapper
             Roles = identity.Roles.ToArray()
         };
 
-        if (identity.User != null)
+        if (identity.User is not null)
             sdkIdentity.User = Map(identity.User);
 
         return sdkIdentity;

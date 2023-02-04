@@ -54,7 +54,7 @@ public class UserController : ControllerBase
         {
             user.ContactEmail = "***";
             var fullNameProperty = user.Properties?.FirstOrDefault(p => p.Key == UserProperties.FullName);
-            if (fullNameProperty != null)
+            if (fullNameProperty is not null)
                 fullNameProperty.Value = "***";
         }
 

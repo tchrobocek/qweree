@@ -23,7 +23,7 @@ public class CreateRoleValidator : ObjectValidatorBase<RoleCreateInput>
     {
         var input = validationContext.Subject;
 
-        if (input == null)
+        if (input is null)
         {
             return;
         }
@@ -80,7 +80,7 @@ public class ModifyRoleValidator : ObjectValidatorBase<RoleModifyInput>
     {
         var input = validationContext.Subject;
 
-        if (input == null)
+        if (input is null)
         {
             return;
         }
@@ -95,7 +95,7 @@ public class ModifyRoleValidator : ObjectValidatorBase<RoleModifyInput>
                     $@"Role cannot be group, because it already is item of another role(s). [{string.Join(", ", parentRoles.Select(r => r.Key))}]");
 
 
-            if (input.Items != null)
+            if (input.Items is not null)
             {
                 var items = new List<Role>();
 

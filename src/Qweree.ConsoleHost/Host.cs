@@ -61,7 +61,7 @@ public class Host
     {
         var result = await RunApplicationAsync(args, BuildApplication, cancellationToken);
 
-        if (_serviceProvider != null)
+        if (_serviceProvider is not null)
             await _serviceProvider.DisposeAsync();
 
         return result;

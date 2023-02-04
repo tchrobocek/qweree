@@ -24,7 +24,7 @@ public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository
         var user = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        return user != null;
+        return user is not null;
     }
 
     public async Task<User> GetByUsernameAsync(string username, CancellationToken cancellationToken = new())
@@ -32,7 +32,7 @@ public class UserRepository : MongoRepositoryBase<User, UserDo>, IUserRepository
         var user = (await FindAsync($@"{{""Username"": ""{username}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        if (user == null)
+        if (user is null)
             throw new DocumentNotFoundException(@$"User ""{username}"" was not found.");
 
         return user;

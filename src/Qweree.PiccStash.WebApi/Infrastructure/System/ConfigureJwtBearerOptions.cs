@@ -62,7 +62,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
                     {
                         token = values.FirstOrDefault();
 
-                        if (token == null)
+                        if (token is null)
                             return Task.CompletedTask;
 
                         const string prefix = "Bearer ";

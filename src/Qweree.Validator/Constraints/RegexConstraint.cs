@@ -11,7 +11,7 @@ public class RegexConstraintValidator : ConstraintValidatorBase<string, RegexCon
     protected override Task ValidateAsync(ValidationContext<string> context, RegexConstraint constraint,
         ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (context.Subject == null)
+        if (context.Subject is null)
             return Task.CompletedTask;
 
         if (!constraint.Regex.IsMatch(context.Subject))

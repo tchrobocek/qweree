@@ -47,7 +47,7 @@ public class StorageClient
     {
         var request = new HttpRequestMessage(HttpMethod.Get, path.Trim('/'));
 
-        if (ifNoneMatch != null)
+        if (ifNoneMatch is not null)
             request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue($@"""{ifNoneMatch.Trim('"')}"""));
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);

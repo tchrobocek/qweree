@@ -112,7 +112,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> LogoutAsync()
     {
         var cookie = Request.Cookies["Session"];
-        if (cookie == null)
+        if (cookie is null)
             return NoContent();
 
         try
@@ -142,7 +142,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> RevokeSessionAsync(Guid sessionId)
     {
         var cookie = Request.Cookies["Session"];
-        if (cookie == null)
+        if (cookie is null)
             return Unauthorized();
 
         if (cookie == sessionId.ToString())
@@ -181,7 +181,7 @@ public class AuthenticationController : ControllerBase
     public async Task<IActionResult> RefreshAsync()
     {
         var cookie = Request.Cookies["Session"];
-        if (cookie == null)
+        if (cookie is null)
             return Unauthorized();
 
         TokenInfo? tokenInfo;
@@ -224,7 +224,7 @@ public class AuthenticationController : ControllerBase
         var cookie = Request.Cookies["Session"];
 
         TokenInfo? tokenInfo = null;
-        if (cookie != null)
+        if (cookie is not null)
         {
             await using var stream = await _sessionStorage.ReadAsync(cookie, cancellationToken);
             tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream, cancellationToken);
@@ -243,7 +243,7 @@ public class AuthenticationController : ControllerBase
         var cookie = Request.Cookies["Session"];
 
         TokenInfo? tokenInfo = null;
-        if (cookie != null)
+        if (cookie is not null)
         {
             await using var stream = await _sessionStorage.ReadAsync(cookie, cancellationToken);
             tokenInfo = await JsonUtils.DeserializeAsync<TokenInfo>(stream, cancellationToken);

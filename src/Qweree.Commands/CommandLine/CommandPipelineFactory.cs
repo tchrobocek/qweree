@@ -43,7 +43,7 @@ public static class CommandPipelineFactory
                         options[optionKey] = new List<string>();
                     }
 
-                    if (nextArg != null && !nextArg.StartsWith("-"))
+                    if (nextArg is not null && !nextArg.StartsWith("-"))
                     {
                         options[optionKey].Add(nextArg);
                         i++;

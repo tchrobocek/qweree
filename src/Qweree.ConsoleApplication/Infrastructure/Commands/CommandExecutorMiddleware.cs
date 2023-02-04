@@ -23,7 +23,7 @@ public class CommandExecutorMiddleware : IMiddleware
         var returnCode = await _executor.ExecuteCommandAsync(context.Args, cancellationToken);
         context.ReturnCode = returnCode;
 
-        if (next != null)
+        if (next is not null)
             await next.Invoke(context, cancellationToken);
     }
 }

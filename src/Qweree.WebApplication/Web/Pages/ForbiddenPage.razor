@@ -10,7 +10,7 @@
     protected override async Task OnInitializedAsync()
     {
         var user = await Session.GetIdentityAsync();
-        if (user == null)
+        if (user is null)
             NavigationManager.NavigateTo("/login");
     }
 

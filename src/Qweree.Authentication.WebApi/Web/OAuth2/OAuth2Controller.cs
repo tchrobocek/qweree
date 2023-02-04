@@ -115,7 +115,7 @@ public class OAuth2Controller : ControllerBase
         var expiresIn = response.Payload?.ExpiresAt - _datetimeProvider.UtcNow;
 
         var refreshTokenJson = "";
-        if (response.Payload?.RefreshToken != null)
+        if (response.Payload?.RefreshToken is not null)
             refreshTokenJson = @$", ""refresh_token"": ""{response.Payload.RefreshToken}""";
 
         var json =

@@ -25,7 +25,7 @@ public abstract class ConstraintValidatorBase<TSubjectType, TConstraintType> : I
 
         if (validationContext.Subject is not TSubjectType)
         {
-            if (default(TSubjectType) != null)
+            if (default(TSubjectType) is not null)
                 throw new InvalidCastException(@$"The value should be type of ""{typeof(TSubjectType)}"".");
         }
 

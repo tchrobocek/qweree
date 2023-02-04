@@ -22,7 +22,7 @@ public class ClientRepository : MongoRepositoryBase<Client, ClientDo>, IClientRe
         var client = (await FindAsync($@"{{""ClientId"": ""{clientId}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        if (client == null)
+        if (client is null)
             throw new DocumentNotFoundException(@$"Client ""{clientId}"" was not found.");
 
         return client;
@@ -33,6 +33,6 @@ public class ClientRepository : MongoRepositoryBase<Client, ClientDo>, IClientRe
         var client = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        return client != null;
+        return client is not null;
     }
 }

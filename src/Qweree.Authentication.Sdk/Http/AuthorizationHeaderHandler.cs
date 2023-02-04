@@ -30,7 +30,7 @@ public class AuthorizationHeaderHandler : DelegatingHandler
             token = null;
         }
 
-        if (token != null)
+        if (token is not null)
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
 
         return await base.SendAsync(request, cancellationToken);

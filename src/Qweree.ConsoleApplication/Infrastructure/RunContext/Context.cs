@@ -25,7 +25,7 @@ public class Context
 
     public async Task<ContextConfigurationDo> GetConfigurationAsync(CancellationToken cancellationToken = new())
     {
-        if (_configuration != null)
+        if (_configuration is not null)
             return _configuration;
 
         var configFilePath = Path.Combine(RootDirectory, "config", "context.json");
@@ -38,7 +38,7 @@ public class Context
         await using var fileStream = File.OpenRead(configFilePath);
         var configDo = await JsonUtils.DeserializeAsync<ContextConfigurationDo>(fileStream, cancellationToken);
 
-        if (configDo == null)
+        if (configDo is null)
         {
             throw new InvalidOperationException("Configuration corrupted.");
         }
@@ -65,7 +65,7 @@ public class Context
 
         var dirName = Path.GetDirectoryName(configFilePath);
 
-        if (dirName != null && !Directory.Exists(dirName))
+        if (dirName is not null && !Directory.Exists(dirName))
             Directory.CreateDirectory(dirName);
 
         await using var stream = File.Create(configFilePath);
@@ -78,12 +78,12 @@ public class Context
 
         var dirName = Path.GetDirectoryName(configFilePath);
 
-        if (dirName != null && !Directory.Exists(dirName))
+        if (dirName is not null && !Directory.Exists(dirName))
             Directory.CreateDirectory(dirName);
 
         await File.WriteAllTextAsync(configFilePath, tokenInfo.RefreshToken, cancellationToken);
 
-        if (_tokenStorage != null)
+        if (_tokenStorage is not null)
             await _tokenStorage.SetTokenInfoAsync(tokenInfo, cancellationToken);
     }
 

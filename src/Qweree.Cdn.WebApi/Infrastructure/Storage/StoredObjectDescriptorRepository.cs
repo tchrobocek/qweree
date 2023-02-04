@@ -47,7 +47,7 @@ public class StoredObjectDescriptorRepository :
         var query = @$"{{""Slug"": {{""$eq"": [{slugInput}]}}}}";
         var descriptor = (await FindAsync(query, cancellationToken)).FirstOrDefault();
 
-        if (descriptor == null)
+        if (descriptor is null)
             throw new DocumentNotFoundException(@$"Descriptor ""{string.Join("/", slug)}"" was not found.");
 
         return descriptor;

@@ -13,7 +13,7 @@ public class ErrorHandlingMiddleware : IMiddleware
     {
         try
         {
-            if (next != null)
+            if (next is not null)
             {
                 await next(context, cancellationToken);
             }

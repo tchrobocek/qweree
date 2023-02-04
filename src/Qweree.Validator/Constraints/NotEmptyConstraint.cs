@@ -12,7 +12,7 @@ public class NotEmptyConstraintValidator : ConstraintValidatorBase<IEnumerable, 
     protected override Task ValidateAsync(ValidationContext<IEnumerable> context, NotEmptyConstraint constraint,
         ValidationBuilder builder, CancellationToken cancellationToken = new())
     {
-        if (context.Subject == null)
+        if (context.Subject is null)
             return Task.CompletedTask;
 
         if (!context.Subject.Cast<object>().Any())

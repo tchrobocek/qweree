@@ -24,7 +24,7 @@ public class RoleRepository : MongoRepositoryBase<Role, RoleDo>, IRoleRepository
         var role = (await FindAsync($@"{{""{field}"": ""{value}""}}", 0, 1, cancellationToken))
             .FirstOrDefault();
 
-        return role != null;
+        return role is not null;
     }
 
     public async Task<IEnumerable<Role>> FindParentRolesAsync(Guid id, CancellationToken cancellationToken = new())

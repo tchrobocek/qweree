@@ -25,7 +25,7 @@ public class CommandExecutor
         {
             var command = _commands.SingleOrDefault(c => c.CommandPath == call.CommandPath);
 
-            if (command == null)
+            if (command is null)
                 return -4;
 
             var options = call.Options.ToImmutableDictionary(o =>

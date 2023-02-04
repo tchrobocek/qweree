@@ -1,6 +1,6 @@
 @using Qweree.WebApplication.Infrastructure.View.BinarySize
 
-@if (_size != null)
+@if (_size is not null)
 {
     @(_size.Value.ToString(BinaryUnit.ValueFormat))
     @:&nbsp;

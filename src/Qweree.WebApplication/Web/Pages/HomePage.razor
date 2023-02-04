@@ -40,7 +40,7 @@
             </MudCardContent>
         </MudCard>
 
-        @if (_dashboardConfig != null)
+        @if (_dashboardConfig is not null)
         {
             <MudCard Class="mt-4">
                 <MudCardHeader>
@@ -166,7 +166,7 @@
 
     private async Task CloseNotesAsync()
     {
-        if (_dashboardConfig != null)
+        if (_dashboardConfig is not null)
         {
             _dashboardConfig.NotesOpened = false;
             await ConfigurationService.SetDashboardConfigAsync(_dashboardConfig);
@@ -175,7 +175,7 @@
 
     private async Task OpenNotesAsync()
     {
-        if (_dashboardConfig != null)
+        if (_dashboardConfig is not null)
         {
             _dashboardConfig.NotesOpened = true;
             await ConfigurationService.SetDashboardConfigAsync(_dashboardConfig);

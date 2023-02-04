@@ -30,7 +30,7 @@ public class SessionInfoRepository : MongoRepositoryBase<SessionInfo,  SessionIn
         var result = (await FindAsync(query, cancellationToken))
             .FirstOrDefault();
 
-        if (result == null)
+        if (result is null)
             throw new DocumentNotFoundException("Session does not exist.");
 
         return result;

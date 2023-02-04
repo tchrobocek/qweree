@@ -15,7 +15,7 @@
         <MudText Typo="Typo.h6">@_client?.ApplicationName (@_client?.ClientId)</MudText>
     </MudCardHeader>
     <MudCardContent>
-        @if (_client != null)
+        @if (_client is not null)
         {
             <MudTabs>
                 <MudTabPanel Text="Info">

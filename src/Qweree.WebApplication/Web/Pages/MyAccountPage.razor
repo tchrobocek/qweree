@@ -18,7 +18,7 @@
 
 @attribute [Authorize]
 
-@if (_identity != null)
+@if (_identity is not null)
 {
     <MudText Typo="Typo.h4">My Account</MudText>
 
@@ -35,7 +35,7 @@
         <MudItem xs="8">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-8">
                 <MudTabPanel Text="My Profile">
-                    @if (_user != null)
+                    @if (_user is not null)
                     {
                         <MudText Typo="Typo.body1">Username: @_user.Username</MudText>
                         <MudText Typo="Typo.body1">Contact email: @_user.ContactEmail</MudText>

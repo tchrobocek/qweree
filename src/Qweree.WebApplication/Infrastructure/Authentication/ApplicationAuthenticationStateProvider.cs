@@ -18,7 +18,7 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var identity = await _localUserStorage.GetIdentityAsync();
-        if (identity == null)
+        if (identity is null)
         {
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(authenticationType: null)));
         }

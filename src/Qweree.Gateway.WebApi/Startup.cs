@@ -103,10 +103,9 @@ public class Startup
                 pipeline.Use(async (context, next) =>
                 {
                     var storage = context.RequestServices.GetRequiredService<ISessionStorage>();
-
                     var cookie = context.Request.Cookies["Session"];
 
-                    if (cookie != null)
+                    if (cookie is not null)
                     {
                         try
                         {

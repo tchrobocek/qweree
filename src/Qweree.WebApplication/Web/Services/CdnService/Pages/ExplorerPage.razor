@@ -20,12 +20,12 @@
     <MudCardContent>
         <MudTextField OnKeyPress="OnPathKeyPressedAsync" FullWidth="true" T="string" @bind-Value="_pathInput" Label="Path" Variant="Variant.Outlined" Class="my-6" />
 
-        @if (_topDirectory != null)
+        @if (_topDirectory is not null)
         {
             <ExplorerDirectoryComponent Item="_topDirectory"  OnClick="GoToPrevDirectoryAsync"/>
         }
 
-        @if (_currentDirectory != null)
+        @if (_currentDirectory is not null)
         {
             <ExplorerDirectoryComponent Item="_currentDirectory" />
         }

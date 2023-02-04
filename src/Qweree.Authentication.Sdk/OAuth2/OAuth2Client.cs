@@ -34,7 +34,7 @@ public class OAuth2Client
             Content = content
         };
 
-        if (options.UserAgentHeader != null)
+        if (options.UserAgentHeader is not null)
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -57,7 +57,7 @@ public class OAuth2Client
             Content = content
         };
 
-        if (options.UserAgentHeader != null)
+        if (options.UserAgentHeader is not null)
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
@@ -81,7 +81,7 @@ public class OAuth2Client
             Content = content
         };
 
-        if (options.UserAgentHeader != null)
+        if (options.UserAgentHeader is not null)
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);

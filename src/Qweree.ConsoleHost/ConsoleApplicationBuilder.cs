@@ -38,7 +38,7 @@ public class ConsoleApplicationBuilder
             next = func(next);
         }
 
-        if (next != null)
+        if (next is not null)
         {
             await next(context, cancellationToken);
         }
