@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
@@ -143,8 +144,33 @@ public class ClientService
         return Response.Ok();
     }
 
-    public async Task<Response<Client>> ReplaceAccessDefinitions(Guid id, IEnumerable<IAccessDefinitionInput> inputs, CancellationToken cancellationToken = new())
+    public async Task<Response<ClientSecretPair>> ClientSecretRegenerateAsync(Guid id, CancellationToken cancellationToken = new())
     {
+        Client client;
+
+        try
+        {
+            client = await _clientRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<ClientSecretPair>(new Error("Client was not found", 404));
+        }
+
+        var clientSecret = GenerateClientSecret();
+        var secret = _passwordEncoder.EncodePassword(clientSecret);
+
+        client = new Client(client.Id, client.ClientId, secret, client.ApplicationName, client.Roles,
+            client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
+
+        await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
+
+        return Response.Ok(new ClientSecretPair(client, clientSecret));
+    }
+
+    public async Task<Response<Client>> AccessDefinitionsReplaceAsync(Guid id, IEnumerable<IAccessDefinitionInput> inputs, CancellationToken cancellationToken = new())
+    {
+        inputs = inputs.ToArray();
         var validationResult = await _validator.ValidateAsync(inputs, cancellationToken);
         if (validationResult.HasFailed)
             return validationResult.ToErrorResponse<Client>();
@@ -160,8 +186,19 @@ public class ClientService
             return Response.Fail<Client>(new Error("Client was not found", 404));
         }
 
+        var definitions = new List<IAccessDefinition>();
+        foreach (var input in inputs)
+        {
+            if (input is PasswordDefinitionInput)
+                definitions.Add(new PasswordAccessDefinition());
+            if (input is ClientCredentialsDefinitionInput clientCredentials)
+                definitions.Add(new ClientCredentialsAccessDefinition(clientCredentials.Roles));
+
+            throw new ArgumentOutOfRangeException(nameof(input));
+        }
+
         client = new Client(client.Id, client.ClientId, client.ClientSecret, client.ApplicationName, client.Roles,
-            client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
+            definitions.ToImmutableArray(), client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
 
         await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
 
