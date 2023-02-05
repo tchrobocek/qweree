@@ -17,7 +17,6 @@ using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using ClientCreateInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCreateInput;
 using ClientModifyInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientModifyInput;
 using IAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinitionInput;
-using RolesCollection = Qweree.Authentication.AdminSdk.Authorization.Roles.RolesCollection;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 
 namespace Qweree.Authentication.WebApi.Web.Admin.Identity;
@@ -56,28 +55,6 @@ public class ClientController : ControllerBase
         var client = await _sdkMapperService.ToClientWithSecretAsync(clientResponse.Payload!);
         return Created($"/api/v1/clients/{client.Id}", client);
     }
-
-    /// <summary>
-    ///     Get client effective roles.
-    /// </summary>
-    /// <param name="id">Client id.</param>
-    /// <returns>Found effective roles.</returns>
-    [HttpGet("{id}/effective-roles")]
-    [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(RolesCollection), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ClientGetEffectiveRolesActionAsync(Guid id)
-    {
-        var rolesResponse = await _clientService.ClientGetEffectiveRolesAsync(id);
-
-        if (rolesResponse.Status != ResponseStatus.Ok)
-            return rolesResponse.ToErrorActionResult();
-
-        var roles = _sdkMapperService.ToRolesCollection(rolesResponse.Payload!);
-        return Ok(roles);
-    }
-
-
 
     /// <summary>
     ///     Get client.

@@ -101,8 +101,7 @@ public class AdminSdkMapperService
             AccessDefinitions = client.AccessDefinitions,
             Owner = client.Owner,
             CreatedAt = client.CreatedAt,
-            ModifiedAt = client.ModifiedAt,
-            Roles = client.Roles
+            ModifiedAt = client.ModifiedAt
         };
     }
 
@@ -171,18 +170,6 @@ public class AdminSdkMapperService
 
     public async Task<SdkClient> ToClientAsync(Client client, CancellationToken cancellationToken = new())
     {
-        var roles = new List<Role>();
-        foreach (var role in client.Roles)
-        {
-            try
-            {
-                roles.Add(await _roleRepository.GetAsync(role, cancellationToken));
-            }
-            catch (DocumentNotFoundException)
-            {
-            }
-        }
-
         var accessDefinitions = new List<SdkIAccessDefinition>();
         foreach (var definition in client.AccessDefinitions)
         {
@@ -222,7 +209,6 @@ public class AdminSdkMapperService
             Owner = await ToUserAsync(owner, cancellationToken),
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            Roles = roles.Select(ToRole).ToArray(),
             AccessDefinitions = accessDefinitions.ToArray()
         };
     }

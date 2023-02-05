@@ -105,13 +105,6 @@ public class AdminSdkClient
         return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<JsonApiResponse<RolesCollection>> ClientEffectiveRolesGetAsync(Guid id,
-        CancellationToken cancellationToken = new())
-    {
-        var response = await _httpClient.GetAsync($"identity/clients/{id}/effective-roles", cancellationToken);
-        return new JsonApiResponse<RolesCollection>(response, JsonHelper.CamelCaseOptions);
-    }
-
     public async Task<JsonApiResponse<ClientWithSecret>> ClientCreateAsync(ClientCreateInput input,
         CancellationToken cancellationToken = new())
     {

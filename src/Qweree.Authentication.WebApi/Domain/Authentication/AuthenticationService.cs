@@ -177,8 +177,11 @@ public class AuthenticationService
 
         var session = await BeginSessionAsync(client, null, ipAddress, userAgent, GrantType.ClientCredentials, false);
 
+        var definition = client.AccessDefinitions.OfType<ClientCredentialsAccessDefinition>()
+            .Single();
+
         var effectiveRoles = new List<string>();
-        await foreach (var role in _authorizationService.GetEffectiveRoles(client.Roles, cancellationToken)
+        await foreach (var role in _authorizationService.GetEffectiveRoles(definition.Roles, cancellationToken)
                            .WithCancellation(cancellationToken))
         {
             effectiveRoles.Add(role.Key);

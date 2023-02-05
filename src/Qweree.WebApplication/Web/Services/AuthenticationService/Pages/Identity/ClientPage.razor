@@ -32,18 +32,6 @@
                     </div>
 
                     <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
-                        <MudExpansionPanel Disabled="@(!_client.Roles?.Any() ?? false)" Text="@($"Roles ({_client.Roles?.Length ?? 0})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _client.Roles ?? Array.Empty<Role>())
-                            {
-                                <MudChip Color="Color.Default">@($"{role.Label} ({role.Key})")</MudChip>
-                            }
-                        </MudExpansionPanel>
-                        <MudExpansionPanel Disabled="@(!_effectiveRoles.Any())" Text="@($"Effective roles ({_effectiveRoles.Length})")" Class="mt-0" Style="margin: 0 !important;">
-                            @foreach (var role in _effectiveRoles)
-                            {
-                                <MudChip Color="Color.Dark">@($"{role.Label} ({role.Key})")</MudChip>
-                            }
-                        </MudExpansionPanel>
                         <MudExpansionPanel Text="Delete client" Class="mt-0" Style="margin: 0 !important;">
                             <MudButton OnClick="DeleteAsync" Color="Color.Error">Delete</MudButton>
                         </MudExpansionPanel>
@@ -88,7 +76,6 @@
     private string? _modifyApplicationName;
     private string? _modifyOrigin;
     private Client? _client;
-    private Role[] _effectiveRoles = Array.Empty<Role>();
 
     [Parameter]
     public string? ClientId { get; set; }
@@ -125,12 +112,6 @@
         }
 
         var clientResponse = await AdminClient.ClientGetAsync(id);
-        var clientEffectiveRolesResponse = await AdminClient.ClientEffectiveRolesGetAsync(id);
-
-        if (!clientResponse.IsSuccessful || !clientEffectiveRolesResponse.IsSuccessful)
-        {
-            NavigationManager.NavigateTo("/not-found");
-        }
 
         _client = await clientResponse.ReadPayloadAsync();
         _modifyApplicationName = _client?.ApplicationName;
@@ -144,9 +125,6 @@
         _passwordDefinition.Enabled = password is not null;
         _clientCredentialsDefinition.Enabled = clientCredentials is not null;
         _clientCredentialsDefinition.Roles.AddRange(clientCredentials?.Roles ?? Array.Empty<Role>());
-
-        var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
-        _effectiveRoles = roles?.Roles ?? Array.Empty<Role>();
     }
 
     private async Task SaveAccessDefinitionsAsync()
@@ -169,9 +147,14 @@
 
 
         if (!response.IsSuccessful)
+        {
             Snackbar.AddErrors(await response.ReadErrorsAsync());
+        }
         else
+        {
             Snackbar.Add("Access definitions changed.", Severity.Success);
+            await RefreshClientAsync();
+        }
     }
 
     private async Task DeleteAsync()

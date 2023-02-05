@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
-using Qweree.Authentication.WebApi.Domain.Authorization;
-using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo.Exception;
@@ -23,18 +21,16 @@ public class ClientService
     private readonly IPasswordEncoder _passwordEncoder;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IClientRepository _clientRepository;
-    private readonly AuthorizationService _authorizationService;
     private readonly ISessionInfoRepository _sessionInfoRepository;
 
     public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-        IClientRepository clientRepository, AuthorizationService authorizationService,
+        IClientRepository clientRepository,
         ISessionInfoRepository sessionInfoRepository)
     {
         _validator = validator;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _clientRepository = clientRepository;
-        _authorizationService = authorizationService;
         _sessionInfoRepository = sessionInfoRepository;
     }
 
@@ -68,7 +64,7 @@ public class ClientService
         var secret = _passwordEncoder.EncodePassword(clientSecret);
 
         var client = new Client(id, clientCreateInput.ClientId, secret,
-            clientCreateInput.ApplicationName, clientCreateInput.Roles, ImmutableArray<IAccessDefinition>.Empty,
+            clientCreateInput.ApplicationName, ImmutableArray<IAccessDefinition>.Empty,
             _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
             clientCreateInput.OwnerId, clientCreateInput.Origin);
 
@@ -99,30 +95,6 @@ public class ClientService
         }
 
         return Response.Ok(client);
-    }
-
-    public async Task<Response<RolesCollection>> ClientGetEffectiveRolesAsync(Guid id,
-        CancellationToken cancellationToken = new())
-    {
-        Client client;
-
-        try
-        {
-            client = await _clientRepository.GetAsync(id, cancellationToken);
-        }
-        catch (DocumentNotFoundException)
-        {
-            return Response.Fail<RolesCollection>(new Error("Client was not found", 404));
-        }
-
-        var roles = new List<Role>();
-        await foreach (var effectiveRole in _authorizationService.GetEffectiveRoles(client.Roles, cancellationToken)
-                           .WithCancellation(cancellationToken))
-        {
-            roles.Add(effectiveRole);
-        }
-
-        return Response.Ok(new RolesCollection(roles.ToImmutableArray()));
     }
 
     public async Task<PaginationResponse<Client>> ClientPaginateAsync(int skip, int take, Dictionary<string, int> sort,
@@ -160,7 +132,7 @@ public class ClientService
             return Response.Fail<Client>(new Error("Client was not found", 404));
         }
 
-        client = new Client(client.Id, client.ClientId, client.ClientSecret, input.ApplicationName ?? client.ApplicationName, client.Roles,
+        client = new Client(client.Id, client.ClientId, client.ClientSecret, input.ApplicationName ?? client.ApplicationName,
             client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId,  input.Origin ?? client.Origin);
 
         await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
@@ -184,7 +156,7 @@ public class ClientService
         var clientSecret = GenerateClientSecret();
         var secret = _passwordEncoder.EncodePassword(clientSecret);
 
-        client = new Client(client.Id, client.ClientId, secret, client.ApplicationName, client.Roles,
+        client = new Client(client.Id, client.ClientId, secret, client.ApplicationName,
             client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
 
         await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
@@ -228,7 +200,7 @@ public class ClientService
             throw new ArgumentOutOfRangeException(nameof(input));
         }
 
-        client = new Client(client.Id, client.ClientId, client.ClientSecret, client.ApplicationName, client.Roles,
+        client = new Client(client.Id, client.ClientId, client.ClientSecret, client.ApplicationName,
             definitions.ToImmutableArray(), client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
 
         await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
