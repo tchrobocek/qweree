@@ -14,7 +14,8 @@ internal static class JsonHelper
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         Converters =
         {
-            new AccessDefinitionInputConverter()
+            new AccessDefinitionInputConverter(),
+            new AccessDefinitionConverter()
         }
     };
 

@@ -66,6 +66,7 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.Converters.Add(new ClientInfoConverter());
                 options.JsonSerializerOptions.Converters.Add(new AccessDefinitionInputConverter());
+                options.JsonSerializerOptions.Converters.Add(new AccessDefinitionConverter());
             });
 
         var pathBase = Configuration["Qweree:PathBase"];
