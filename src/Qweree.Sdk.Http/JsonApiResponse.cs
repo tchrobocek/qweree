@@ -15,16 +15,6 @@ namespace Qweree.Sdk.Http;
 
 public class ApiResponse : IDisposable
 {
-    public static ApiResponse CreateApiResponse(HttpResponseMessage message)
-    {
-        return new ApiResponse(message);
-    }
-    public static ApiResponse<TPayloadType> CreateApiResponse<TPayloadType>(HttpResponseMessage message) where TPayloadType : class
-    {
-        return new ApiResponse<TPayloadType>(message);
-    }
-
-
     public ApiResponse(HttpResponseMessage responseMessage)
     {
         ResponseMessage = responseMessage;
@@ -85,15 +75,25 @@ public class ApiResponse : IDisposable
     }
 }
 
-public class ApiResponse<TPayloadType> : ApiResponse where TPayloadType : class
+public class JsonApiResponse<TPayloadType> : ApiResponse where TPayloadType : class
 {
-    public ApiResponse(HttpResponseMessage responseMessage) : base(responseMessage)
+    private readonly JsonSerializerOptions? _options;
+
+    public JsonApiResponse(HttpResponseMessage responseMessage) : base(responseMessage)
     {
+    }
+
+    public JsonApiResponse(HttpResponseMessage responseMessage, JsonSerializerOptions options) : base(responseMessage)
+    {
+        _options = options;
     }
 
     public async Task<TPayloadType?> ReadPayloadAsync(CancellationToken cancellationToken = new())
     {
-        return await ResponseMessage.Content.ReadAsObjectAsync<TPayloadType>(cancellationToken);
+        if (_options is not null)
+            return await ResponseMessage.Content.ReadAsObjectAsync<TPayloadType>(_options, cancellationToken);
+        else
+            return await ResponseMessage.Content.ReadAsObjectAsync<TPayloadType>(cancellationToken);
     }
 
     public async Task<TPayloadType?> ReadPayloadAsync(JsonSerializerOptions options, CancellationToken cancellationToken = new())
@@ -102,9 +102,12 @@ public class ApiResponse<TPayloadType> : ApiResponse where TPayloadType : class
     }
 }
 
-public class PaginationApiResponse<TPayloadType> : ApiResponse<IEnumerable<TPayloadType>> where TPayloadType : class
+public class PaginationJsonApiResponse<TPayloadType> : JsonApiResponse<IEnumerable<TPayloadType>> where TPayloadType : class
 {
-    public PaginationApiResponse(HttpResponseMessage responseMessage) : base(responseMessage)
+    public PaginationJsonApiResponse(HttpResponseMessage responseMessage) : base(responseMessage)
+    {
+    }
+    public PaginationJsonApiResponse(HttpResponseMessage responseMessage, JsonSerializerOptions options) : base(responseMessage, options)
     {
     }
 

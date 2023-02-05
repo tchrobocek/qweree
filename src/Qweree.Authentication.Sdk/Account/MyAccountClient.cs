@@ -26,36 +26,36 @@ public class MyAccountClient
             new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json),
             cancellationToken);
 
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 
-    public async Task<ApiResponse<MyProfile>> MyProfileGetAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<MyProfile>> MyProfileGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("", cancellationToken);
-        return ApiResponse.CreateApiResponse<MyProfile>(response);
+        return new JsonApiResponse<MyProfile>(response);
     }
 
-    public async Task<ApiResponse<MyAccountSessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<MyAccountSessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("sessions", cancellationToken);
-        return ApiResponse.CreateApiResponse<MyAccountSessionInfo[]>(response);
+        return new JsonApiResponse<MyAccountSessionInfo[]>(response);
     }
 
-    public async Task<ApiResponse<AuthUserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<AuthUserInvitation>> UserInvitationGetAsync(Guid invitation, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"register/invitation/{invitation}", cancellationToken);
-        return ApiResponse.CreateApiResponse<AuthUserInvitation>(response);
+        return new JsonApiResponse<AuthUserInvitation>(response);
     }
 
     public async Task<ApiResponse> UserRegisterAsync(UserRegisterInput input, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("register", new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 
     public async Task<ApiResponse> RevokeSessionAsync(Guid sessionId, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync($"sessions/{sessionId}", cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 }

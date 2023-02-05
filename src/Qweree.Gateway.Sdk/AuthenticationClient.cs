@@ -19,30 +19,30 @@ public class AuthenticationClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<Identity>> LoginAsync(LoginInputDto input,
+    public async Task<JsonApiResponse<Identity>> LoginAsync(LoginInputDto input,
         CancellationToken cancellationToken = new())
     {
         var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PostAsync("login", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<Identity>(response);
+        return new JsonApiResponse<Identity>(response);
     }
 
-    public async Task<ApiResponse<Identity>> RefreshAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<Identity>> RefreshAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("refresh", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
-        return ApiResponse.CreateApiResponse<Identity>(response);
+        return new JsonApiResponse<Identity>(response);
     }
 
     public async Task<ApiResponse> LogoutAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("logout", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 
     public async Task<ApiResponse> RevokeSessionAsync(Guid sessionId, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync($"session/{sessionId}", cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 }

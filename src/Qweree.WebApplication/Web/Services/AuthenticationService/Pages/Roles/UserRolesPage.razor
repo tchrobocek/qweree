@@ -73,7 +73,9 @@
         if (!delete)
             return;
 
-        await AdminClient.RoleDeleteAsync(context.Id ?? Guid.Empty);
+        var response = await AdminClient.RoleDeleteAsync(context.Id ?? Guid.Empty);
+        response.EnsureSuccessStatusCode();
+
         await RefreshAsync();
     }
 

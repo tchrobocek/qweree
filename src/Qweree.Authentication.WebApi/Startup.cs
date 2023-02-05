@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.Sdk.Account.MyAccount;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
@@ -64,6 +65,7 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.Converters.Add(new ClientInfoConverter());
+                options.JsonSerializerOptions.Converters.Add(new AccessDefinitionInputConverter());
             });
 
         var pathBase = Configuration["Qweree:PathBase"];

@@ -14,9 +14,9 @@ public class ExplorerClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<IExplorerObjectDto[]>> ExploreAsync(string path, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<IExplorerObjectDto[]>> ExploreAsync(string path, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync(path.Trim('/'), cancellationToken);
-        return new ApiResponse<IExplorerObjectDto[]>(response);
+        return new JsonApiResponse<IExplorerObjectDto[]>(response);
     }
 }

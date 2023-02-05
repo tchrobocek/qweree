@@ -14,9 +14,9 @@ public class StatsClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<CdnStatsDto>> GetStatsAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<CdnStatsDto>> GetStatsAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync(string.Empty, cancellationToken);
-        return new ApiResponse<CdnStatsDto>(response);
+        return new JsonApiResponse<CdnStatsDto>(response);
     }
 }

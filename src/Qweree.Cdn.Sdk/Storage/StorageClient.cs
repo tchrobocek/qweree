@@ -16,7 +16,7 @@ public class StorageClient
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream,
+    public async Task<JsonApiResponse<StoredObjectDescriptorDto>> StoreAsync(string path, string mediaType, Stream stream,
         bool force = false, bool isPrivateResource = true, CancellationToken cancellationToken = new())
     {
         var method = HttpMethod.Post;
@@ -40,7 +40,7 @@ public class StorageClient
         };
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<StoredObjectDescriptorDto>(response);
+        return new JsonApiResponse<StoredObjectDescriptorDto>(response);
     }
 
     public async Task<ApiResponse> RetrieveAsync(string path, string? ifNoneMatch = null, CancellationToken cancellationToken = new())
@@ -51,12 +51,12 @@ public class StorageClient
             request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue($@"""{ifNoneMatch.Trim('"')}"""));
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 
     public async Task<ApiResponse> DeleteAsync(string path, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync(path.Trim('/'), cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 }

@@ -10,7 +10,6 @@ using Qweree.Authentication.AdminSdk.Identity.Clients;
 using Qweree.Authentication.AdminSdk.Identity.Users;
 using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation;
 using Qweree.Sdk.Http;
-using Qweree.Utils;
 
 namespace Qweree.Authentication.AdminSdk;
 
@@ -25,20 +24,20 @@ public class AdminSdkClient
 
     #region User
 
-    public async Task<ApiResponse<User>> UserGetAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<User>> UserGetAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"identity/users/{id}", cancellationToken);
-        return new ApiResponse<User>(response);
+        return new JsonApiResponse<User>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<IEnumerable<Role>>> UserEffectiveRolesGetAsync(Guid id,
+    public async Task<JsonApiResponse<IEnumerable<Role>>> UserEffectiveRolesGetAsync(Guid id,
         CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"identity/users/{id}/effective-roles", cancellationToken);
-        return new ApiResponse<IEnumerable<Role>>(response);
+        return new JsonApiResponse<IEnumerable<Role>>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<PaginationApiResponse<User>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort,
+    public async Task<PaginationJsonApiResponse<User>> UsersPaginateAsync(int skip, int take, Dictionary<string, int> sort,
         CancellationToken cancellationToken = new())
     {
         var sortString = "";
@@ -50,7 +49,7 @@ public class AdminSdkClient
         var queryString = $"?skip={skip}&take={take}&{sortString}";
 
         var response = await _httpClient.GetAsync($"identity/users/{queryString}", cancellationToken);
-        return new PaginationApiResponse<User>(response);
+        return new PaginationJsonApiResponse<User>(response, JsonHelper.CamelCaseOptions);
     }
 
     public async Task<ApiResponse> UserDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -59,23 +58,23 @@ public class AdminSdkClient
         return new ApiResponse(response);
     }
 
-    public async Task<ApiResponse<UserInvitation>> UserInvitationCreateAsync(UserInvitationInput input,
+    public async Task<JsonApiResponse<UserInvitation>> UserInvitationCreateAsync(UserInvitationInput input,
         CancellationToken cancellationToken = new())
     {
-        var json = JsonUtils.Serialize(input);
+        var json = JsonHelper.Serialize(input);
         var response = await _httpClient.PostAsync("identity/user-invitations",
             new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-        return new ApiResponse<UserInvitation>(response);
+        return new JsonApiResponse<UserInvitation>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<UserInvitation>> UserInvitationGetAsync(Guid id,
+    public async Task<JsonApiResponse<UserInvitation>> UserInvitationGetAsync(Guid id,
         CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"identity/user-invitations/{id}", cancellationToken);
-        return new ApiResponse<UserInvitation>(response);
+        return new JsonApiResponse<UserInvitation>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<PaginationApiResponse<UserInvitation>> UserInvitationsPaginateAsync(int skip, int take,
+    public async Task<PaginationJsonApiResponse<UserInvitation>> UserInvitationsPaginateAsync(int skip, int take,
         Dictionary<string, int> sort, CancellationToken cancellationToken = new())
     {
         var sortString = "";
@@ -87,7 +86,7 @@ public class AdminSdkClient
         var queryString = $"?skip={skip}&take={take}&{sortString}";
 
         var response = await _httpClient.GetAsync($"identity/user-invitations/{queryString}", cancellationToken);
-        return new PaginationApiResponse<UserInvitation>(response);
+        return new PaginationJsonApiResponse<UserInvitation>(response, JsonHelper.CamelCaseOptions);
     }
 
     public async Task<ApiResponse> UserInvitationDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -100,29 +99,29 @@ public class AdminSdkClient
 
     #region Client
 
-    public async Task<ApiResponse<Client>> ClientGetAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<Client>> ClientGetAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"identity/clients/{id}", cancellationToken);
-        return new ApiResponse<Client>(response);
+        return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<RolesCollection>> ClientEffectiveRolesGetAsync(Guid id,
+    public async Task<JsonApiResponse<RolesCollection>> ClientEffectiveRolesGetAsync(Guid id,
         CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"identity/clients/{id}/effective-roles", cancellationToken);
-        return new ApiResponse<RolesCollection>(response);
+        return new JsonApiResponse<RolesCollection>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<ClientWithSecret>> ClientCreateAsync(ClientCreateInput input,
+    public async Task<JsonApiResponse<ClientWithSecret>> ClientCreateAsync(ClientCreateInput input,
         CancellationToken cancellationToken = new())
     {
-        var json = JsonUtils.Serialize(input);
+        var json = JsonHelper.Serialize(input);
         var response = await _httpClient.PostAsync("identity/clients",
             new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-        return new ApiResponse<ClientWithSecret>(response);
+        return new JsonApiResponse<ClientWithSecret>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<PaginationApiResponse<Client>> ClientsPaginateAsync(int skip, int take,
+    public async Task<PaginationJsonApiResponse<Client>> ClientsPaginateAsync(int skip, int take,
         Dictionary<string, int> sort, CancellationToken cancellationToken = new())
     {
         var sortString = "";
@@ -134,7 +133,7 @@ public class AdminSdkClient
         var queryString = $"?skip={skip}&take={take}&{sortString}";
 
         var response = await _httpClient.GetAsync($"identity/clients/{queryString}", cancellationToken);
-        return new PaginationApiResponse<Client>(response);
+        return new PaginationJsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
     }
 
     public async Task<ApiResponse> ClientDeleteAsync(Guid id, CancellationToken cancellationToken = new())
@@ -143,40 +142,66 @@ public class AdminSdkClient
         return new ApiResponse(response);
     }
 
+    public async Task<JsonApiResponse<Client>> ClientModifyAsync(Guid id, ClientModifyInput input,
+        CancellationToken cancellationToken = new())
+    {
+        var json = JsonHelper.Serialize(input);
+        var response = await _httpClient.PatchAsync($"identity/clients/{id}",
+            new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+        return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
+    }
+
+    public async Task<JsonApiResponse<Client>> ClientSecretRegenerateAsync(Guid id,
+        CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PatchAsync($"identity/clients/{id}",
+            new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
+        return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
+    }
+
+    public async Task<JsonApiResponse<Client>> ClientAccessDefinitionsReplaceAsync(Guid id, IEnumerable<IAccessDefinitionInput> input,
+        CancellationToken cancellationToken = new())
+    {
+        var json = JsonHelper.Serialize(input);
+        var response = await _httpClient.PutAsync($"identity/clients/{id}/access-definitions",
+            new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
+        return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
+    }
+
     #endregion
 
     #region Role
 
-    public async Task<ApiResponse<IEnumerable<Role>>> RolesFindAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<IEnumerable<Role>>> RolesFindAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("authorization/roles", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<IEnumerable<Role>>(response);
+        return new JsonApiResponse<IEnumerable<Role>>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<Role>> RoleCreateAsync(RoleCreateInput input,
+    public async Task<JsonApiResponse<Role>> RoleCreateAsync(RoleCreateInput input,
         CancellationToken cancellationToken = new())
     {
-        var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
+        var content = new StringContent(JsonHelper.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PostAsync("authorization/roles", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<Role>(response);
+        return new JsonApiResponse<Role>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<Role>> RoleModifyAsync(Guid id, RoleModifyInput input,
+    public async Task<JsonApiResponse<Role>> RoleModifyAsync(Guid id, RoleModifyInput input,
         CancellationToken cancellationToken = new())
     {
-        var content = new StringContent(JsonUtils.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
+        var content = new StringContent(JsonHelper.Serialize(input), Encoding.UTF8, MediaTypeNames.Application.Json);
         var response = await _httpClient.PatchAsync($"authorization/roles/{id}", content, cancellationToken);
 
-        return ApiResponse.CreateApiResponse<Role>(response);
+        return new JsonApiResponse<Role>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<ApiResponse<Role>> RoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
+    public async Task<ApiResponse> RoleDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync($"authorization/roles/{id}", cancellationToken);
 
-        return ApiResponse.CreateApiResponse<Role>(response);
+        return new ApiResponse(response);
     }
 
     #endregion

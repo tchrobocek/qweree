@@ -16,15 +16,15 @@ public class PiccClient
         _httpClient = httpClient;
     }
 
-    public async Task<PaginationApiResponse<PiccDto>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
+    public async Task<PaginationJsonApiResponse<PiccDto>> PiccsPaginateAsync(int skip, int take, CancellationToken cancellationToken = new())
     {
         var uri = CreatePaginateUri(skip, take);
         var response = await _httpClient.GetAsync(uri, cancellationToken);
 
-        return new PaginationApiResponse<PiccDto>(response);
+        return new PaginationJsonApiResponse<PiccDto>(response);
     }
 
-    public async Task<ApiResponse<PiccDto>> PiccUploadAsync(Stream stream, string mediaType, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<PiccDto>> PiccUploadAsync(Stream stream, string mediaType, CancellationToken cancellationToken = new())
     {
         var request = new HttpRequestMessage(HttpMethod.Post, string.Empty)
         {
@@ -38,19 +38,19 @@ public class PiccClient
         };
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<PiccDto>(response);
+        return new JsonApiResponse<PiccDto>(response);
     }
 
     public async Task<ApiResponse> PiccDeleteAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.DeleteAsync(id.ToString(), cancellationToken);
-        return ApiResponse.CreateApiResponse<PiccDto>(response);
+        return new JsonApiResponse<PiccDto>(response);
     }
 
     public async Task<ApiResponse> PiccReadAsync(Guid id, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync(id.ToString(), HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        return ApiResponse.CreateApiResponse<PiccDto>(response);
+        return new JsonApiResponse<PiccDto>(response);
     }
 
     private string CreatePaginateUri(int skip, int take)

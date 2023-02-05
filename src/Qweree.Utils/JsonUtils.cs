@@ -35,7 +35,6 @@ public static class JsonUtils
         return JsonSerializer.Serialize(value, CamelCaseOptions);
     }
 
-
     public static string Serialize(object value, JsonSerializerOptions jsonSerializerOptions)
     {
         return JsonSerializer.Serialize(value, jsonSerializerOptions);

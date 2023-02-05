@@ -16,7 +16,7 @@ public class OAuth2Client
         _httpClient = httpClient;
     }
 
-    public async Task<ApiResponse<TokenInfo>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
+    public async Task<JsonApiResponse<TokenInfo>> SignInAsync(PasswordGrantInput grantInput, ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -38,10 +38,10 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfo>(response);
+        return new JsonApiResponse<TokenInfo>(response);
     }
 
-    public async Task<ApiResponse<TokenInfo>> SignInAsync(ClientCredentials clientCredentials,
+    public async Task<JsonApiResponse<TokenInfo>> SignInAsync(ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -61,10 +61,10 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfo>(response);
+        return new JsonApiResponse<TokenInfo>(response);
     }
 
-    public async Task<ApiResponse<TokenInfo>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
+    public async Task<JsonApiResponse<TokenInfo>> RefreshAsync(RefreshTokenGrantInput refreshTokenGrantInput, ClientCredentials clientCredentials,
         OAuth2RequestOptions options = default, CancellationToken cancellationToken = new())
     {
         var form = new[]
@@ -85,13 +85,13 @@ public class OAuth2Client
             request.Headers.Add("User-Agent", options.UserAgentHeader);
 
         var response = await _httpClient.SendAsync(request, cancellationToken);
-        return ApiResponse.CreateApiResponse<TokenInfo>(response);
+        return new JsonApiResponse<TokenInfo>(response);
     }
 
     public async Task<ApiResponse> RevokeAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.PostAsync("revoke", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
-        return ApiResponse.CreateApiResponse(response);
+        return new ApiResponse(response);
     }
 }
 

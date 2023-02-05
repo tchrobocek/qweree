@@ -14,17 +14,17 @@ public class SystemInfoClient
         _client = client;
     }
 
-    public async Task<ApiResponse<VersionDto>> GetVersionAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<VersionDto>> GetVersionAsync(CancellationToken cancellationToken = new())
     {
         const string uri = "version";
         var response = await _client.GetAsync(uri, cancellationToken);
-        return ApiResponse.CreateApiResponse<VersionDto>(response);
+        return new JsonApiResponse<VersionDto>(response);
     }
 
-    public async Task<ApiResponse<HealthReportDto>> GetHealthAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<HealthReportDto>> GetHealthAsync(CancellationToken cancellationToken = new())
     {
         const string uri = "health";
         var response = await _client.GetAsync(uri, cancellationToken);
-        return ApiResponse.CreateApiResponse<HealthReportDto>(response);
+        return new JsonApiResponse<HealthReportDto>(response);
     }
 }
