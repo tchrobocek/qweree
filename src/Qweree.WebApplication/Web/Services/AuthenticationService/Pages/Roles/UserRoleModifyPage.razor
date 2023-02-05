@@ -1,8 +1,8 @@
 @page "/services/auth/roles/edit/{editId}"
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
-@using Qweree.Authentication.AdminSdk.Authorization
 @using Microsoft.AspNetCore.Authorization
-@inject AuthorizationClient AuthorizationClient;
+@using Qweree.Authentication.AdminSdk
+@inject AdminSdkClient AdminClient;
 @inject ISnackbar Snackbar;
 @inject NavigationManager NavigationManager;
 @attribute [Authorize]
@@ -54,7 +54,7 @@
             NavigationManager.NavigateTo("/not-found");
         }
 
-        var response = await AuthorizationClient.RolesFindAsync();
+        var response = await AdminClient.RolesFindAsync();
 
         if (!response.IsSuccessful)
         {
@@ -93,7 +93,7 @@
             Label = _label
         };
 
-        var response = await AuthorizationClient.RoleModifyAsync(Guid.Parse(_idString), input);
+        var response = await AdminClient.RoleModifyAsync(Guid.Parse(_idString), input);
 
         if (!response.IsSuccessful)
         {

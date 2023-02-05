@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using Qweree.Authentication.AdminSdk.Authorization;
-using Qweree.Authentication.AdminSdk.Identity;
+using Qweree.Authentication.AdminSdk;
 using Qweree.Authentication.Sdk.Account;
 using Qweree.Cdn.Sdk.Explorer;
 using Qweree.Cdn.Sdk.Storage;
@@ -77,17 +76,9 @@ public class Startup
         {
             var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
             {
-                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/admin/authorization/")
+                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/admin/")
             };
-            return new AuthorizationClient(client);
-        });
-        services.AddScoped(p =>
-        {
-            var client = new HttpClient(p.GetRequiredService<UnauthorizedHttpHandler>())
-            {
-                BaseAddress = new Uri(new Uri(configuration["TokenServiceUri"]!) , "api/admin/identity/")
-            };
-            return new IdentityClient(client);
+            return new AdminSdkClient(client);
         });
         services.AddScoped(p =>
         {

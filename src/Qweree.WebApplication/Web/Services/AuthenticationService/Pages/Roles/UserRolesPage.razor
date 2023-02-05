@@ -1,12 +1,12 @@
 @page "/services/auth/roles/list"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @attribute [Authorize]
-@using Qweree.Authentication.AdminSdk.Authorization
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @inject DialogService DialogService
-@inject AuthorizationClient AuthorizationClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 
 
@@ -73,7 +73,7 @@
         if (!delete)
             return;
 
-        await AuthorizationClient.RoleDeleteAsync(context.Id ?? Guid.Empty);
+        await AdminClient.RoleDeleteAsync(context.Id ?? Guid.Empty);
         await RefreshAsync();
     }
 
@@ -82,7 +82,7 @@
     {
         _roles.Clear();
 
-        var response = await AuthorizationClient.RolesFindAsync();
+        var response = await AdminClient.RolesFindAsync();
 
         if (response.IsSuccessful)
         {

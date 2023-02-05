@@ -1,12 +1,12 @@
 @page "/services/auth/users/invite"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
-@using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject IdentityClient IdentityClient;
+@inject AdminSdkClient AdminClient;
 @inject NavigationManager NavigationManager;
 @inject DialogService DialogService
 @inject ISnackbar Snackbar
@@ -70,7 +70,7 @@
             FullName = _fullName
         };
 
-        var response = await IdentityClient.UserInvitationCreateAsync(input);
+        var response = await AdminClient.UserInvitationCreateAsync(input);
 
         if (!response.IsSuccessful)
         {

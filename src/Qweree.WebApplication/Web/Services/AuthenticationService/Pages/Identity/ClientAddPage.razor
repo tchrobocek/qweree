@@ -1,13 +1,13 @@
 @page "/services/auth/clients/add"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
-@using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
 @attribute [Authorize]
-@inject IdentityClient IdentityClient;
+@inject AdminSdkClient AdminClient;
 @inject NavigationManager NavigationManager;
 @inject ClaimsPrincipalStorage Session
 @inject DialogService DialogService
@@ -78,7 +78,7 @@
             Roles = roles.ToArray()
         };
 
-        var response = await IdentityClient.ClientCreateAsync(input);
+        var response = await AdminClient.ClientCreateAsync(input);
 
         if (!response.IsSuccessful)
         {

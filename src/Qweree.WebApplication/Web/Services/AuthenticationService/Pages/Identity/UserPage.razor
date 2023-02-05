@@ -1,13 +1,13 @@
 @page "/services/auth/users/{UserId}"
 @attribute [Authorize]
-@using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Users
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient IdentityClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
 @inject ISnackbar Snackbar
@@ -90,8 +90,8 @@
             return;
         }
 
-        var userResponse = await IdentityClient.UserGetAsync(id);
-        var effectiveRolesResponse = await IdentityClient.UserEffectiveRolesGetAsync(id);
+        var userResponse = await AdminClient.UserGetAsync(id);
+        var effectiveRolesResponse = await AdminClient.UserEffectiveRolesGetAsync(id);
 
         if (!userResponse.IsSuccessful || !effectiveRolesResponse.IsSuccessful)
         {
@@ -110,7 +110,7 @@
         if (!isDeleting)
             return;
 
-        var result = await IdentityClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
+        var result = await AdminClient.UserDeleteAsync(_user?.Id ?? Guid.Empty);
         if (!result.IsSuccessful)
         {
             Snackbar.AddErrors(await result.ReadErrorsAsync());

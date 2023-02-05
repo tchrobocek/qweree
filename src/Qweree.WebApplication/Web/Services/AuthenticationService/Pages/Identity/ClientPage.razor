@@ -1,12 +1,12 @@
 @page "/services/auth/clients/{ClientId}"
 @attribute [Authorize]
-@using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.Authentication.AdminSdk.Identity.Clients
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient IdentityClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
 
@@ -75,8 +75,8 @@
             return;
         }
 
-        var clientResponse = await IdentityClient.ClientGetAsync(id);
-        var clientEffectiveRolesResponse = await IdentityClient.ClientEffectiveRolesGetAsync(id);
+        var clientResponse = await AdminClient.ClientGetAsync(id);
+        var clientEffectiveRolesResponse = await AdminClient.ClientEffectiveRolesGetAsync(id);
 
         if (!clientResponse.IsSuccessful || !clientEffectiveRolesResponse.IsSuccessful)
         {
@@ -94,7 +94,7 @@
 
         if (isDeleting)
         {
-            var response = await IdentityClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
+            var response = await AdminClient.ClientDeleteAsync(_client?.Id ?? Guid.Empty);
             response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessful)

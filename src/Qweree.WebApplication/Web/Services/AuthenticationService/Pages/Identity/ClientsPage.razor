@@ -1,9 +1,9 @@
 @page "/services/auth/clients/list"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @attribute [Authorize]
 @using Qweree.Authentication.AdminSdk.Identity.Clients
-@using Qweree.Authentication.AdminSdk.Identity
-@inject IdentityClient IdentityClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 
 
@@ -53,7 +53,7 @@
     private async Task<TableData<Client>> LoadClients(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
-        var response = await IdentityClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        var response = await AdminClient.ClientsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
             return new TableData<Client>();

@@ -1,10 +1,10 @@
 @page "/services/auth/user-invitations/list"
 @using Microsoft.AspNetCore.Authorization
-@using Qweree.Authentication.AdminSdk.Identity
+@using Qweree.Authentication.AdminSdk
 @using Qweree.Authentication.AdminSdk.Identity.Users.UserInvitation
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
-@inject IdentityClient IdentityClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
 @inject ISnackbar Snackbar
@@ -71,7 +71,7 @@
     private async Task<TableData<UserInvitation>> LoadUserInvitations(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
-        var response = await IdentityClient.UserInvitationsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        var response = await AdminClient.UserInvitationsPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
             return new TableData<UserInvitation>();
@@ -98,7 +98,7 @@
         {
             return;
         }
-        var response = await IdentityClient.UserInvitationDeleteAsync(id);
+        var response = await AdminClient.UserInvitationDeleteAsync(id);
         if (!response.IsSuccessful)
         {
             Snackbar.AddErrors(await response.ReadErrorsAsync());

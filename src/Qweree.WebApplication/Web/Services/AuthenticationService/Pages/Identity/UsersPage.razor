@@ -1,9 +1,9 @@
 @page "/services/auth/users/list"
 @using Microsoft.AspNetCore.Authorization
+@using Qweree.Authentication.AdminSdk
 @using Qweree.Authentication.AdminSdk.Identity.Users
-@using Qweree.Authentication.AdminSdk.Identity
 @using Qweree.WebApplication.Infrastructure.Extensions
-@inject IdentityClient IdentityClient
+@inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
@@ -57,7 +57,7 @@
     private async Task<TableData<User>> LoadUsers(TableState tableState)
     {
         var skip = tableState.Page * tableState.PageSize;
-        var response = await IdentityClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
+        var response = await AdminClient.UsersPaginateAsync(skip, tableState.PageSize, new Dictionary<string, int>());
         if (!response.IsSuccessful)
         {
             return new TableData<User>();
