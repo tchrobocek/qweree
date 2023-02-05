@@ -11,7 +11,6 @@ using Qweree.AspNet.Application;
 using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.Sdk.Session.Tokens;
 using Qweree.Authentication.WebApi.Domain.Authorization;
-using Qweree.Authentication.WebApi.Domain.Authorization.Roles;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Domain.Session;
@@ -41,7 +40,6 @@ public class AuthenticationService
     private readonly ITokenEncoder _tokenEncoder;
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly ISessionStorage _sessionStorage;
-    private readonly IRoleRepository _roleRepository;
     private readonly RSA _rsa;
 
     private const string RefreshTokenChars = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -49,8 +47,7 @@ public class AuthenticationService
     public AuthenticationService(IUserRepository userRepository,
         IDateTimeProvider datetimeProvider, Random random, int accessTokenValiditySeconds, int refreshTokenValiditySeconds, IPasswordEncoder passwordEncoder,
         IClientRepository clientRepository, AuthorizationService authorizationService,
-        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa,
-        IRoleRepository roleRepository)
+        ITokenEncoder tokenEncoder, ISessionInfoRepository sessionInfoRepository, ISessionStorage sessionStorage, RSA rsa)
     {
         _userRepository = userRepository;
         _datetimeProvider = datetimeProvider;
@@ -62,7 +59,6 @@ public class AuthenticationService
         _sessionInfoRepository = sessionInfoRepository;
         _sessionStorage = sessionStorage;
         _rsa = rsa;
-        _roleRepository = roleRepository;
         _refreshTokenValiditySeconds = refreshTokenValiditySeconds;
         _random = random;
     }
@@ -254,18 +250,18 @@ public class AuthenticationService
     }
 
     private async Task<Client> AuthenticateClientAsync(ClientCredentials clientCredentials,
-        GrantType grantType,
-        CancellationToken cancellationToken = new())
+        GrantType grantType, CancellationToken cancellationToken = new())
     {
         var client = await _clientRepository.GetByClientIdAsync(clientCredentials.ClientId, cancellationToken);
         if (!_passwordEncoder.VerifyPassword(client.ClientSecret, clientCredentials.ClientSecret ?? ""))
             throw new AuthenticationException();
 
-        var role = await _roleRepository.FindByKey(grantType.RoleKey, cancellationToken);
-        if (role is null)
-            throw new AuthenticationException();
+        var key = grantType.Key;
+        if (key == GrantType.RefreshToken.Key)
+            key = GrantType.Password.Key;
 
-        if (!client.Roles.Contains(role.Id))
+        var accessDefinition = client.AccessDefinitions.FirstOrDefault(d => d.GrantType.Key == key);
+        if (accessDefinition is null)
             throw new AuthenticationException();
 
         return client;

@@ -187,7 +187,7 @@ public class Startup
             return new AuthenticationService(userRepository, dateTimeProvider, new Random(),
                 config.AccessTokenValiditySeconds ?? 0, config.RefreshTokenValiditySeconds ?? 0, passwordEncoder,
                 clientRepository, authorizationService, tokenEncoder, sessionInfoRepository,
-                sessionStorage, rsa, p.GetRequiredService<IRoleRepository>());
+                sessionStorage, rsa);
         });
         services.AddScoped<ITokenEncoder>(p =>
         {
