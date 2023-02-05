@@ -113,13 +113,13 @@ public class AdminSdkClient
         return new ApiResponse<RolesCollection>(response);
     }
 
-    public async Task<ApiResponse<CreatedClient>> ClientCreateAsync(ClientCreateInput input,
+    public async Task<ApiResponse<ClientWithSecret>> ClientCreateAsync(ClientCreateInput input,
         CancellationToken cancellationToken = new())
     {
         var json = JsonUtils.Serialize(input);
         var response = await _httpClient.PostAsync("identity/clients",
             new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json), cancellationToken);
-        return new ApiResponse<CreatedClient>(response);
+        return new ApiResponse<ClientWithSecret>(response);
     }
 
     public async Task<PaginationApiResponse<Client>> ClientsPaginateAsync(int skip, int take,

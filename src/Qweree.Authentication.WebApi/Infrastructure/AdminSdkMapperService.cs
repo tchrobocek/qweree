@@ -12,6 +12,7 @@ using Qweree.Authentication.WebApi.Domain.Identity.UserInvitation;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Mongo.Exception;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
+using ClientCredentialsAccessDefinition = Qweree.Authentication.WebApi.Domain.Identity.ClientCredentialsAccessDefinition;
 using RolesCollection = Qweree.Authentication.WebApi.Domain.Identity.RolesCollection;
 using User = Qweree.Authentication.WebApi.Domain.Identity.User;
 using UserProperty = Qweree.Authentication.WebApi.Domain.Identity.UserProperty;
@@ -27,9 +28,16 @@ using SdkRoleModifyInput = Qweree.Authentication.AdminSdk.Authorization.Roles.Ro
 using SdkSessionInfo = Qweree.Authentication.AdminSdk.Session.SessionInfo;
 using SdkUserAgentInfo = Qweree.Authentication.AdminSdk.Session.UserAgentInfo;
 using ISdkClientInfo = Qweree.Authentication.AdminSdk.Session.IClientInfo;
+using PasswordAccessDefinition = Qweree.Authentication.WebApi.Domain.Identity.PasswordAccessDefinition;
 using SdkBotClientInfo = Qweree.Authentication.AdminSdk.Session.BotClientInfo;
 using SdkBrowserClientInfo = Qweree.Authentication.AdminSdk.Session.BrowserClientInfo;
 using SdkOperationSystemInfo = Qweree.Authentication.AdminSdk.Session.OperationSystemInfo;
+using SdkIAccessDefinition = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinition;
+using SdkPasswordAccessDefinition = Qweree.Authentication.AdminSdk.Identity.Clients.PasswordAccessDefinition;
+using SdkClientCredentialsAccessDefinition = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCredentialsAccessDefinition;
+using SdkIAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinitionInput;
+using SdkPasswordAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.PasswordAccessDefinitionInput;
+using SdkClientCredentialsAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCredentialsAccessDefinitionInput;
 
 namespace Qweree.Authentication.WebApi.Infrastructure;
 
@@ -79,36 +87,22 @@ public class AdminSdkMapperService
         };
     }
 
-    public async Task<CreatedClient> ToCreatedClientAsync(ClientSecretPair clientSecretPair,
+    public async Task<ClientWithSecret> ToClientWithSecretAsync(ClientSecretPair clientSecretPair,
         CancellationToken cancellationToken = new())
     {
-        var client = clientSecretPair.Client;
-
-        var roles = new List<Role>();
-        foreach (var role in client.Roles)
-        {
-            try
-            {
-                roles.Add(await _roleRepository.GetAsync(role, cancellationToken));
-            }
-            catch (DocumentNotFoundException)
-            {
-            }
-        }
-
-        var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
-
-        return new CreatedClient
+        var client = await ToClientAsync(clientSecretPair.Client, cancellationToken);
+        return new ClientWithSecret
         {
             Id = client.Id,
-            ClientId = client.ClientId,
-            ClientSecret = clientSecretPair.Secret,
             ApplicationName = client.ApplicationName,
             Origin = client.Origin,
-            Owner = await ToUserAsync(owner, cancellationToken),
+            ClientId = client.ClientId,
+            ClientSecret = clientSecretPair.Secret,
+            AccessDefinitions = client.AccessDefinitions,
+            Owner = client.Owner,
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            Roles = roles.Select(ToRole).ToArray()
+            Roles = client.Roles
         };
     }
 
@@ -189,6 +183,32 @@ public class AdminSdkMapperService
             }
         }
 
+        var accessDefinitions = new List<SdkIAccessDefinition>();
+        foreach (var definition in client.AccessDefinitions)
+        {
+            if (definition is PasswordAccessDefinition)
+            {
+                accessDefinitions.Add(new SdkPasswordAccessDefinition());
+            }
+
+            if (definition is ClientCredentialsAccessDefinition clientCredentials)
+            {
+                var defRoles = new List<SdkRole>();
+                foreach (var roleId in clientCredentials.Roles)
+                {
+                    var role = await _roleRepository.GetAsync(roleId, cancellationToken);
+                    defRoles.Add(await ToRoleAsync(role, cancellationToken));
+                }
+
+                accessDefinitions.Add(new SdkClientCredentialsAccessDefinition
+                {
+                    Roles = defRoles.ToArray()
+                });
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(definition));
+        }
+
         var owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
 
         return new SdkClient
@@ -200,7 +220,8 @@ public class AdminSdkMapperService
             Owner = await ToUserAsync(owner, cancellationToken),
             CreatedAt = client.CreatedAt,
             ModifiedAt = client.ModifiedAt,
-            Roles = roles.Select(ToRole).ToArray()
+            Roles = roles.Select(ToRole).ToArray(),
+            AccessDefinitions = accessDefinitions.ToArray()
         };
     }
 

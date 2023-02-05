@@ -8,6 +8,7 @@ public class ClientCreateInput
     public string? ClientId { get; set; }
     public string? ApplicationName { get; set; }
     public string? Origin { get; set; }
+    public IAccessDefinitionInput[]? AccessDefinitions { get; set; }
     public Guid? OwnerId { get; set; }
     public Guid[]? Roles { get; set; }
 }

@@ -4,6 +4,10 @@ using System.Linq;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using SdkClientCreateInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCreateInput;
+using SdkClientModifyInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientModifyInput;
+using SdkIAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinitionInput;
+using SdkPasswordAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.PasswordAccessDefinitionInput;
+using SdkClientCredentialsAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCredentialsAccessDefinitionInput;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity;
 
@@ -16,7 +20,23 @@ public static class ClientMapper
             input.ApplicationName ?? string.Empty,
             input.Origin ?? string.Empty,
             input.OwnerId ?? Guid.Empty,
-            input.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+            input.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty,
+            input.AccessDefinitions?.Select(ToAccessDefinitionInput).ToImmutableArray() ?? ImmutableArray<IAccessDefinitionInput>.Empty);
+    }
+
+    public static IAccessDefinitionInput ToAccessDefinitionInput(SdkIAccessDefinitionInput input)
+    {
+        if (input is SdkPasswordAccessDefinitionInput)
+            return new PasswordDefinitionInput();
+        if (input is SdkClientCredentialsAccessDefinitionInput clientCredentials)
+            return new ClientCredentialsDefinitionInput(clientCredentials.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+
+        throw new ArgumentOutOfRangeException(nameof(input));
+    }
+
+    public static ClientModifyInput ToClientModifyInput(SdkClientModifyInput input)
+    {
+        return new ClientModifyInput(input.ApplicationName, input.Origin);
     }
 
     public static Client ToClient(ClientDo document)
