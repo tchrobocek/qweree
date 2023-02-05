@@ -142,4 +142,29 @@ public class ClientService
         await _clientRepository.DeleteOneAsync(id);
         return Response.Ok();
     }
+
+    public async Task<Response<Client>> ReplaceAccessDefinitions(Guid id, IEnumerable<IAccessDefinitionInput> inputs, CancellationToken cancellationToken = new())
+    {
+        var validationResult = await _validator.ValidateAsync(inputs, cancellationToken);
+        if (validationResult.HasFailed)
+            return validationResult.ToErrorResponse<Client>();
+
+        Client client;
+
+        try
+        {
+            client = await _clientRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<Client>(new Error("Client was not found", 404));
+        }
+
+        client = new Client(client.Id, client.ClientId, client.ClientSecret, client.ApplicationName, client.Roles,
+            client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId, client.Origin);
+
+        await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
+
+        return Response.Ok(client);
+    }
 }
