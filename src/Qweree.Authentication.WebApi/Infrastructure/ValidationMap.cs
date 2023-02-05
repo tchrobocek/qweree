@@ -32,6 +32,15 @@ public class ValidationMap
                 .AddConstraint(new ExistsConstraint(typeof(RoleRepository)));
             c.AddProperty(p => p.OwnerId)
                 .AddConstraint(new ExistsConstraint(typeof(UserRepository)));
+            c.AddProperty(p => p.AccessDefinitions)
+                .AddConstraint(new MaxOfTypeConstraint<ClientCredentialsDefinitionInput>(1, "Maximum one client credentials grant settings is allowed."))
+                .AddConstraint(new MaxOfTypeConstraint<PasswordDefinitionInput>(1, "Maximum one password grant settings is allowed"));
+        });
+
+        builder.AddModel<ClientCredentialsDefinitionInput>(c =>
+        {
+            c.AddProperty(p => p.Roles)
+                .AddConstraint(new ExistsConstraint(typeof(RoleRepository)));
         });
 
         builder.AddModel<RoleCreateInput>(c =>

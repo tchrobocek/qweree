@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -20,6 +22,7 @@ using Qweree.Utils;
 using Xunit;
 using Client = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 using ClientCreateInput = Qweree.Authentication.WebApi.Domain.Identity.ClientCreateInput;
+using IAccessDefinitionInput = Qweree.Authentication.WebApi.Domain.Identity.IAccessDefinitionInput;
 
 namespace Qweree.Authentication.WebApi.Test.Web.Identity;
 
@@ -72,7 +75,7 @@ public class ClientControllerTest
 
         {
             var input = new ClientCreateInput(client.Id, client.ClientId, client.ApplicationName,
-                client.Origin, user.Id, client.Roles);
+                client.Origin, user.Id, client.Roles, Array.Empty<IAccessDefinitionInput>().ToImmutableArray());
 
             var json = JsonUtils.Serialize(input);
             var response = await httpClient.PostAsync("/api/admin/identity/clients",
@@ -80,9 +83,9 @@ public class ClientControllerTest
 
             response.EnsureSuccessStatusCode();
 
-            var createdClientDto = await response.Content.ReadAsObjectAsync<CreatedClient>();
+            var createdClientDto = await response.Content.ReadAsObjectAsync<ClientWithSecret>();
 
-            createdClientDto.WithDeepEqual(await _sdkMapperService.ToCreatedClientAsync(new ClientSecretPair(client, "x")))
+            createdClientDto.WithDeepEqual(await _sdkMapperService.ToClientWithSecretAsync(new ClientSecretPair(client, "x")))
                 .WithCustomComparison(new MillisecondDateTimeComparison())
                 .WithCustomComparison(new ImmutableArrayComparison())
                 .IgnoreProperty(p => p.Name == nameof(client.ClientSecret))

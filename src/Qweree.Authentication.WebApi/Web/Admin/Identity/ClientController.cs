@@ -15,6 +15,8 @@ using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Sdk;
 using Client = Qweree.Authentication.WebApi.Domain.Identity.Client;
 using ClientCreateInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCreateInput;
+using ClientModifyInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientModifyInput;
+using IAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinitionInput;
 using RolesCollection = Qweree.Authentication.AdminSdk.Authorization.Roles.RolesCollection;
 using SdkClient = Qweree.Authentication.AdminSdk.Identity.Clients.Client;
 
@@ -40,7 +42,7 @@ public class ClientController : ControllerBase
     /// <returns>Created client.</returns>
     [HttpPost]
     [Authorize(Policy = "ClientCreate")]
-    [ProducesResponseType(typeof(CreatedClient), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ClientWithSecret), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ClientCreateActionAsync(ClientCreateInput input)
     {
@@ -51,7 +53,7 @@ public class ClientController : ControllerBase
         if (clientResponse.Status != ResponseStatus.Ok)
             return clientResponse.ToErrorActionResult();
 
-        var client = await _sdkMapperService.ToCreatedClientAsync(clientResponse.Payload!);
+        var client = await _sdkMapperService.ToClientWithSecretAsync(clientResponse.Payload!);
         return Created($"/api/v1/clients/{client.Id}", client);
     }
 
@@ -174,4 +176,69 @@ public class ClientController : ControllerBase
         return Ok(await _sdkMapperService.ToSessionInfosAsync(sessionResponse.Payload!));
     }
 
+    /// <summary>
+    ///     Modify client.
+    /// </summary>
+    /// <param name="id">Client id.</param>
+    /// <param name="input">Modify client input.</param>
+    /// <returns>Modified client.</returns>
+    [HttpPatch("{id:guid}")]
+    [Authorize(Policy = "ClientModify")]
+    [ProducesResponseType(typeof(SdkClient), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClientModifyActionAsync(Guid id, ClientModifyInput input)
+    {
+        var serviceInput = ClientMapper.ToClientModifyInput(input);
+
+        var clientResponse = await _clientService.ClientModifyAsync(id, serviceInput);
+
+        if (clientResponse.Status != ResponseStatus.Ok)
+            return clientResponse.ToErrorActionResult();
+
+        var client = await _sdkMapperService.ToClientAsync(clientResponse.Payload!);
+        return Ok(client);
+    }
+
+    /// <summary>
+    ///     Regenerate client secret.
+    /// </summary>
+    /// <param name="id">Client id.</param>
+    /// <returns>Modified client.</returns>
+    [HttpPost("{id:guid}/regenerate-secret")]
+    [Authorize(Policy = "ClientModify")]
+    [ProducesResponseType(typeof(ClientWithSecret), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClientSecretRegenerateActionAsync(Guid id)
+    {
+        var clientResponse = await _clientService.ClientSecretRegenerateAsync(id);
+
+        if (clientResponse.Status != ResponseStatus.Ok)
+            return clientResponse.ToErrorActionResult();
+
+        var client = await _sdkMapperService.ToClientWithSecretAsync(clientResponse.Payload!);
+        return Ok(client);
+    }
+
+    /// <summary>
+    ///     Set access definitions.
+    /// </summary>
+    /// <param name="id">Client id.</param>
+    /// <param name="input">List of access definitions.</param>
+    /// <returns>Modified client.</returns>
+    [HttpPut("{id:guid}/access-definitions")]
+    [Authorize(Policy = "ClientModify")]
+    [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ClientSecretRegenerateActionAsync(Guid id, IEnumerable<IAccessDefinitionInput> input)
+    {
+        var clientResponse = await _clientService.AccessDefinitionsReplaceAsync(id, input.Select(ClientMapper.ToAccessDefinitionInput));
+
+        if (clientResponse.Status != ResponseStatus.Ok)
+            return clientResponse.ToErrorActionResult();
+
+        var client = await _sdkMapperService.ToClientAsync(clientResponse.Payload!);
+        return Ok(client);
+    }
 }
