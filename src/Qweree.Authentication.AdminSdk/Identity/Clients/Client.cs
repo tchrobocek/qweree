@@ -11,6 +11,7 @@ public class Client
     public string? ApplicationName { get; set; }
     public string? Origin { get; set; }
     public User? Owner { get; set; }
+    public IAccessDefinition[]? AccessDefinitions { get; set; }
     public Role[]? Roles { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
