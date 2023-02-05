@@ -144,6 +144,31 @@ public class ClientService
         return Response.Ok();
     }
 
+    public async Task<Response<Client>> ClientModifyAsync(Guid id, ClientModifyInput input, CancellationToken cancellationToken = new())
+    {
+        var validationResult = await _validator.ValidateAsync(input, cancellationToken);
+        if (validationResult.HasFailed)
+            return validationResult.ToErrorResponse<Client>();
+
+        Client client;
+
+        try
+        {
+            client = await _clientRepository.GetAsync(id, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<Client>(new Error("Client was not found", 404));
+        }
+
+        client = new Client(client.Id, client.ClientId, client.ClientSecret, input.ApplicationName ?? client.ApplicationName, client.Roles,
+            client.AccessDefinitions, client.CreatedAt, _dateTimeProvider.UtcNow, client.OwnerId,  input.Origin ?? client.Origin);
+
+        await _clientRepository.ReplaceAsync(client.Id.ToString(), client, cancellationToken);
+
+        return Response.Ok(client);
+    }
+
     public async Task<Response<ClientSecretPair>> ClientSecretRegenerateAsync(Guid id, CancellationToken cancellationToken = new())
     {
         Client client;
