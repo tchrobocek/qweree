@@ -52,25 +52,16 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.Converters.Add(new ExplorerObjectConverter());
             });
+
         services.AddSwaggerGen(options =>
         {
             options.OperationFilter<FileFromBodyOperationFilter>();
             options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Cdn.WebApi", Version = "v1"});
-            options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
+
+            options.AddSecurityDefinition("openid", new OpenApiSecurityScheme
             {
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.OAuth2,
-                Scheme = "Bearer",
-                Flows = new OpenApiOAuthFlows
-                {
-                    Password = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
-                        RefreshUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute),
-                        TokenUrl = new Uri(Configuration["Qweree:SwaggerTokenUri"]!, UriKind.Absolute)
-                    }
-                }
+                Type = SecuritySchemeType.OpenIdConnect,
+                OpenIdConnectUrl = new Uri(Configuration["Qweree:SwaggerOpenId"]!, UriKind.Absolute),
             });
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
@@ -80,7 +71,7 @@ public class Startup
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2_password"
+                            Id = "openid"
                         }
                     },
                     new List<string>()

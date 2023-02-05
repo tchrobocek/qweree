@@ -8,6 +8,6 @@ public class QwereeConfigurationDo
     public string? PathBase { get; set; }
     public string? FileSystemRoot { get; set; }
     public string? FileSystemTemp { get; set; }
-    public string? SwaggerTokenUri { get; set; }
+    public string? SwaggerOpenId { get; set; }
     public string? AuthUri { get; set; }
 }

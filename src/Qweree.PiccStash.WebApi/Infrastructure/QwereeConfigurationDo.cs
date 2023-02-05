@@ -7,7 +7,7 @@ public class QwereeConfigurationDo
     public string? DatabaseName { get; set; }
     public string? AccessTokenKey { get; set; }
     public string? PathBase { get; set; }
-    public string? SwaggerTokenUri { get; set; }
+    public string? SwaggerOpenId { get; set; }
     public string? AuthUri { get; set; }
     public string? CdnUri { get; set; }
     public string? ClientId { get; set; }

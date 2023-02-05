@@ -37,9 +37,9 @@ public class WellKnownController : ControllerBase
             Issuer = issuer.ToString(),
             TokenEndpoint = new Uri(baseUri, "api/oauth2/auth").ToString(),
             JwksUri = new Uri(baseUri, ".well-known/jwks.json").ToString(),
-            GrantTypesSupported = new[] {"client_credentials", "password", "refresh_token"},
+            GrantTypesSupported = new[] {"client_credentials", "password", "refresh_token", "implicit"},
             ResponseTypesSupported = new[] {"token", "token id_token"},
-            AuthorizationEndpoint = null,
+            AuthorizationEndpoint = new Uri(baseUri, "/authorize").ToString(),
             UserInfoEndpoint = null,
             RegistrationEndpoint = null
         });

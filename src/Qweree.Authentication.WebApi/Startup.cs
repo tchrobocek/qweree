@@ -73,21 +73,10 @@ public class Startup
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo {Title = "Qweree.Authentication.WebApi", Version = "v1"});
-            options.AddSecurityDefinition("oauth2_password", new OpenApiSecurityScheme
+            options.AddSecurityDefinition("openid", new OpenApiSecurityScheme
             {
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.OAuth2,
-                Scheme = "Bearer",
-                Flows = new OpenApiOAuthFlows
-                {
-                    Password = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative),
-                        RefreshUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative),
-                        TokenUrl = new Uri((pathBase ?? "") + "/api/oauth2/auth", UriKind.Relative)
-                    }
-                }
+                Type = SecuritySchemeType.OpenIdConnect,
+                OpenIdConnectUrl = new Uri((pathBase ?? "") + "/.well-known/openid-configuration", UriKind.Relative),
             });
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
@@ -97,7 +86,7 @@ public class Startup
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2_password"
+                            Id = "openid"
                         }
                     },
                     new List<string>()
