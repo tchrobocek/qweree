@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Qweree.AspNet.Application;
@@ -24,17 +25,15 @@ public class ClientService
     private readonly IClientRepository _clientRepository;
     private readonly AuthorizationService _authorizationService;
     private readonly ISessionInfoRepository _sessionInfoRepository;
-    private readonly Random _random;
 
     public ClientService(IValidator validator, IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider,
-        IClientRepository clientRepository, Random random, AuthorizationService authorizationService,
+        IClientRepository clientRepository, AuthorizationService authorizationService,
         ISessionInfoRepository sessionInfoRepository)
     {
         _validator = validator;
         _passwordEncoder = passwordEncoder;
         _dateTimeProvider = dateTimeProvider;
         _clientRepository = clientRepository;
-        _random = random;
         _authorizationService = authorizationService;
         _sessionInfoRepository = sessionInfoRepository;
     }
@@ -47,7 +46,7 @@ public class ClientService
 
         for (var i = 0; i < secretLength; i++)
         {
-            var index = _random.Next(chars.Length);
+            var index = RandomNumberGenerator.GetInt32(chars.Length);
             result += chars[index];
         }
 
