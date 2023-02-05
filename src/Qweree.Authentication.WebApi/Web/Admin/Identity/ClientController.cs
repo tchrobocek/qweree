@@ -162,7 +162,7 @@ public class ClientController : ControllerBase
     ///     Find client active sessions
     /// </summary>
     [HttpGet("{id}/sessions")]
-    [Authorize(Policy = "UserRead")]
+    [Authorize(Policy = "ClientRead")]
     [ProducesResponseType(typeof(List<SessionInfo>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UsersFindActiveSessionsAction(Guid userId)
     {
