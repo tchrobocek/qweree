@@ -214,9 +214,16 @@ public class ClientService
         foreach (var input in inputs)
         {
             if (input is PasswordDefinitionInput)
+            {
                 definitions.Add(new PasswordAccessDefinition());
+                continue;
+            }
+
             if (input is ClientCredentialsDefinitionInput clientCredentials)
+            {
                 definitions.Add(new ClientCredentialsAccessDefinition(clientCredentials.Roles));
+                continue;
+            }
 
             throw new ArgumentOutOfRangeException(nameof(input));
         }

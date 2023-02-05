@@ -189,6 +189,7 @@ public class AdminSdkMapperService
             if (definition is PasswordAccessDefinition)
             {
                 accessDefinitions.Add(new SdkPasswordAccessDefinition());
+                continue;
             }
 
             if (definition is ClientCredentialsAccessDefinition clientCredentials)
@@ -204,6 +205,7 @@ public class AdminSdkMapperService
                 {
                     Roles = defRoles.ToArray()
                 });
+                continue;
             }
 
             throw new ArgumentOutOfRangeException(nameof(definition));

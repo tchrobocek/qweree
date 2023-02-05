@@ -8,10 +8,11 @@
                      SearchFunc="@Search" ToStringFunc="@(r => $"{r?.Label}{(r is not null ? $" ({r.Key})" : "")}")"
                      ValueChanged="SelectValueChanged"
                      Value="_selectValue"
+                     Disabled="Disabled"
                      @onfocus="OnFocus">
     </MudAutocomplete>
-    <MudButton OnClick="SelectAll" Size="Size.Small">Add all roles</MudButton>
-    <MudButton OnClick="ClearRoles" Size="Size.Small">Clear</MudButton>
+    <MudButton Disabled="Disabled" OnClick="SelectAll" Size="Size.Small">Add all roles</MudButton>
+    <MudButton Disabled="Disabled" OnClick="ClearRoles" Size="Size.Small">Clear</MudButton>
 </div>
 <div class="mt-6">
     @foreach (var selectedRole in SelectedRoles)
@@ -34,6 +35,9 @@
 
     [Parameter]
     public bool ExcludeGroupRoles { get; set; } = true;
+
+    [Parameter]
+    public bool Disabled { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

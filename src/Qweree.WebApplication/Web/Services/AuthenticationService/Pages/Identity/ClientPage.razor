@@ -57,9 +57,19 @@
                             <MudButton OnClick="SaveModifyAsync" Color="Color.Primary">Save</MudButton>
                         </MudExpansionPanel>
                         <MudExpansionPanel Text="Client secret" Class="mt-0" Style="margin: 0 !important;">
-                            <MudButton OnClick="RegenerateSecretAsync"  Color="Color.Warning">Regenerate</MudButton>
+                            <MudButton OnClick="RegenerateSecretAsync" Color="Color.Warning">Regenerate</MudButton>
                         </MudExpansionPanel>
                     </MudExpansionPanels>
+                </MudTabPanel>
+                <MudTabPanel Text="Access">
+                    <MudContainer>
+                        <AccessDefinitionComponent
+                            Password="_passwordDefinition"
+                            ClientCredentials="_clientCredentialsDefinition"/>
+                    </MudContainer>
+                    <MudContainer Class="mt-4" Style="text-align: right;">
+                        <MudButton Variant="Variant.Outlined" OnClick="SaveAccessDefinitionsAsync" Color="Color.Primary">Save changes</MudButton>
+                    </MudContainer>
                 </MudTabPanel>
                 <MudTabPanel Text="Active sessions" Disabled></MudTabPanel>
                 <MudTabPanel Text="Notes">
@@ -73,6 +83,8 @@
 </MudCard>
 
 @code {
+    private readonly AccessDefinitionComponent.PasswordGrant _passwordDefinition = new();
+    private readonly AccessDefinitionComponent.ClientCredentialsGrant _clientCredentialsDefinition = new();
     private string? _modifyApplicationName;
     private string? _modifyOrigin;
     private Client? _client;
@@ -123,8 +135,43 @@
         _client = await clientResponse.ReadPayloadAsync();
         _modifyApplicationName = _client?.ApplicationName;
         _modifyOrigin = _client?.Origin;
+
+        var password = _client?.AccessDefinitions?.OfType<PasswordAccessDefinition>()
+            .FirstOrDefault();
+        var clientCredentials = _client?.AccessDefinitions?.OfType<ClientCredentialsAccessDefinition>()
+            .FirstOrDefault();
+
+        _passwordDefinition.Enabled = password is not null;
+        _clientCredentialsDefinition.Enabled = clientCredentials is not null;
+        _clientCredentialsDefinition.Roles.AddRange(clientCredentials?.Roles ?? Array.Empty<Role>());
+
         var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
         _effectiveRoles = roles?.Roles ?? Array.Empty<Role>();
+    }
+
+    private async Task SaveAccessDefinitionsAsync()
+    {
+        var definitions = new List<IAccessDefinitionInput>();
+        if (_passwordDefinition.Enabled)
+        {
+            definitions.Add(new PasswordAccessDefinitionInput());
+        }
+        if (_clientCredentialsDefinition.Enabled)
+        {
+            definitions.Add(new ClientCredentialsAccessDefinitionInput
+            {
+                Roles = _clientCredentialsDefinition.Roles.Select(r => r.Id ?? Guid.Empty).ToArray()
+            });
+        }
+
+        var response = await AdminClient.ClientAccessDefinitionsReplaceAsync(_client?.Id ?? Guid.Empty, definitions);
+        response.EnsureSuccessStatusCode();
+
+
+        if (!response.IsSuccessful)
+            Snackbar.AddErrors(await response.ReadErrorsAsync());
+        else
+            Snackbar.Add("Access definitions changed.", Severity.Success);
     }
 
     private async Task DeleteAsync()

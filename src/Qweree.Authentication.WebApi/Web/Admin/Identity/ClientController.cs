@@ -231,7 +231,7 @@ public class ClientController : ControllerBase
     [ProducesResponseType(typeof(SdkClient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ClientSecretRegenerateActionAsync(Guid id, IEnumerable<IAccessDefinitionInput> input)
+    public async Task<IActionResult> AccessDefinitionsReplaceActionAsync(Guid id, IEnumerable<IAccessDefinitionInput> input)
     {
         var clientResponse = await _clientService.AccessDefinitionsReplaceAsync(id, input.Select(ClientMapper.ToAccessDefinitionInput));
 
