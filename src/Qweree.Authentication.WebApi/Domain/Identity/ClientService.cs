@@ -68,7 +68,7 @@ public class ClientService
         var secret = _passwordEncoder.EncodePassword(clientSecret);
 
         var client = new Client(id, clientCreateInput.ClientId, secret,
-            clientCreateInput.ApplicationName, clientCreateInput.Roles,
+            clientCreateInput.ApplicationName, clientCreateInput.Roles, ImmutableArray<IAccessDefinition>.Empty,
             _dateTimeProvider.UtcNow, _dateTimeProvider.UtcNow,
             clientCreateInput.OwnerId, clientCreateInput.Origin);
 

@@ -11,6 +11,7 @@ public class ClientDo
     public DateTime? CreatedAt { get; set; }
     public DateTime? ModifiedAt { get; set; }
     public Guid[]? Roles { get; set; }
+    public AccessDefinitionDo[]? AccessDefinitions { get; set; }
     public Guid? OwnerId { get; set; }
     public string? Origin { get; set; }
 }
