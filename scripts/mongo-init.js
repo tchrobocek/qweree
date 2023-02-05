@@ -26,6 +26,7 @@ users = [{
         "1cc32e1e-7b61-445a-9410-c80afb91b06d",
         "bb19c0ef-839e-481f-96e0-cea1486bd3e6",
         "8cae063d-c180-4c88-ba3f-9b999f6267b2",
+        "19494ca2-6ad6-4186-b1df-dd9a272943e3"
     ],
     "Properties": [{
         "Key": "full_name",
@@ -65,7 +66,8 @@ clients = [{
         "8cae063d-c180-4c88-ba3f-9b999f6267b2",
         "f946f6cd-5d17-4dc5-b383-af0201a8b431",
         "92024488-4c7d-42a9-8fc5-19fc73853c8e",
-        "2ec76030-c18d-450c-9a0e-5ff9efb1721d"
+        "2ec76030-c18d-450c-9a0e-5ff9efb1721d",
+        "19494ca2-6ad6-4186-b1df-dd9a272943e3"
     ]
 }, {
     "_id": UUID("a25acc07-7246-4e8e-9291-4ee30b18c168"),
@@ -156,6 +158,15 @@ roles = [{
     "Key": "qweree.auth.clients.create",
     "Label": "Create clients",
     "Description": "Allows user to create clients.",
+    "Items": [],
+    "IsGroup": false,
+    "CreatedAt": ISODate("1970-01-01"),
+    "ModifiedAt": ISODate("1970-01-01")
+}, {
+    "_id": UUID("19494ca2-6ad6-4186-b1df-dd9a272943e3"),
+    "Key": "qweree.auth.clients.modify",
+    "Label": "Modify clients",
+    "Description": "Allows user to modify clients.",
     "Items": [],
     "IsGroup": false,
     "CreatedAt": ISODate("1970-01-01"),

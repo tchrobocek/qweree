@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Web;
 using Qweree.Authentication.AdminSdk.Identity.Clients;
+using Qweree.Authentication.AdminSdk.Session;
 using Qweree.Authentication.WebApi.Domain.Identity;
-using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure;
 using Qweree.Authentication.WebApi.Infrastructure.Identity;
 using Qweree.Sdk;
@@ -87,7 +87,7 @@ public class ClientController : ControllerBase
     [HttpGet]
     [Route("{id}")]
     [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SdkClient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientGetActionAsync(Guid id)
     {
@@ -132,7 +132,7 @@ public class ClientController : ControllerBase
     /// <returns>Collection of clients.</returns>
     [HttpGet]
     [Authorize(Policy = "ClientRead")]
-    [ProducesResponseType(typeof(List<Client>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<SdkClient>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ClientsPaginateActionAsync(
         [FromQuery(Name = "sort")] Dictionary<string, string[]> sort,
@@ -228,7 +228,7 @@ public class ClientController : ControllerBase
     /// <returns>Modified client.</returns>
     [HttpPut("{id:guid}/access-definitions")]
     [Authorize(Policy = "ClientModify")]
-    [ProducesResponseType(typeof(Client), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SdkClient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ClientSecretRegenerateActionAsync(Guid id, IEnumerable<IAccessDefinitionInput> input)

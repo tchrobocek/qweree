@@ -7,6 +7,7 @@ using Qweree.Authentication.WebApi.Infrastructure.Validations;
 using Qweree.Validator.Constraints;
 using Qweree.Validator.ModelValidation.Static;
 using ChangeMyPasswordInput = Qweree.Authentication.WebApi.Domain.Account.ChangeMyPasswordInput;
+using ClientModifyInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientModifyInput;
 using UserRegisterInput = Qweree.Authentication.WebApi.Domain.Account.UserRegisterInput;
 
 namespace Qweree.Authentication.WebApi.Infrastructure;
@@ -35,6 +36,16 @@ public class ValidationMap
             c.AddProperty(p => p.AccessDefinitions)
                 .AddConstraint(new MaxOfTypeConstraint<ClientCredentialsDefinitionInput>(1, "Maximum one client credentials grant settings is allowed."))
                 .AddConstraint(new MaxOfTypeConstraint<PasswordDefinitionInput>(1, "Maximum one password grant settings is allowed"));
+        });
+
+        builder.AddModel<ClientModifyInput>(c =>
+        {
+            c.AddProperty(p => p.Origin)
+                .AddConstraint(new MaxLengthConstraint(255, "Origin has to have up to 255 characters."));
+            c.AddProperty(p => p.ApplicationName)
+                .AddConstraint(new NotEmptyConstraint("Application name cannot be empty."))
+                .AddConstraint(new MinLengthConstraint(3, "Application name has to have 3 or more characters."))
+                .AddConstraint(new MaxLengthConstraint(255, "Application name has to have up to 255 characters."));
         });
 
         builder.AddModel<ClientCredentialsDefinitionInput>(c =>

@@ -126,9 +126,9 @@ public class UserController : ControllerBase
     [HttpGet("{id}/sessions")]
     [Authorize(Policy = "UserRead")]
     [ProducesResponseType(typeof(List<SessionInfo>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UsersFindActiveSessionsAction(Guid userId)
+    public async Task<IActionResult> UsersFindActiveSessionsAction(Guid id)
     {
-        var sessionResponse = await _userService.UserGetActiveSessions(userId);
+        var sessionResponse = await _userService.UserGetActiveSessions(id);
 
         if (sessionResponse.Status != ResponseStatus.Ok)
             return sessionResponse.ToErrorActionResult();

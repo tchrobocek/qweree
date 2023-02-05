@@ -119,6 +119,7 @@ public class Startup
             options.AddPolicy("UserReadPersonalDetail",
                 policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.users.read_personal"));
             options.AddPolicy("ClientCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.create"));
+            options.AddPolicy("ClientModify", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.modify"));
             options.AddPolicy("ClientRead", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.read"));
             options.AddPolicy("ClientDelete", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.clients.delete"));
             options.AddPolicy("RoleCreate", policy => policy.RequireClaim(ClaimTypes.Role, "qweree.auth.roles.create"));

@@ -151,12 +151,12 @@ public class AdminSdkClient
         return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
     }
 
-    public async Task<JsonApiResponse<Client>> ClientSecretRegenerateAsync(Guid id,
+    public async Task<JsonApiResponse<ClientWithSecret>> ClientSecretRegenerateAsync(Guid id,
         CancellationToken cancellationToken = new())
     {
-        var response = await _httpClient.PatchAsync($"identity/clients/{id}",
+        var response = await _httpClient.PostAsync($"identity/clients/{id}/regenerate-secret",
             new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
-        return new JsonApiResponse<Client>(response, JsonHelper.CamelCaseOptions);
+        return new JsonApiResponse<ClientWithSecret>(response, JsonHelper.CamelCaseOptions);
     }
 
     public async Task<JsonApiResponse<Client>> ClientAccessDefinitionsReplaceAsync(Guid id, IEnumerable<IAccessDefinitionInput> input,

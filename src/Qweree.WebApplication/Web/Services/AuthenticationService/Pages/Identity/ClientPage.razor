@@ -6,9 +6,11 @@
 @using Qweree.Authentication.AdminSdk
 @using Qweree.WebApplication.Infrastructure.View
 @using DialogService = Qweree.WebApplication.Infrastructure.View.DialogService
+
 @inject AdminSdkClient AdminClient
 @inject NavigationManager NavigationManager
 @inject DialogService DialogService
+@inject ISnackbar Snackbar;
 
 <MudCard>
     <MudCardHeader>
@@ -47,9 +49,19 @@
                         </MudExpansionPanel>
                     </MudExpansionPanels>
                 </MudTabPanel>
-                <MudTabPanel Text="Modify" Disabled></MudTabPanel>
-                <MudTabPanel Text="Activity log" Disabled></MudTabPanel>
-                <MudTabPanel Text="Comments" Disabled></MudTabPanel>
+                <MudTabPanel Text="Modify">
+                    <MudExpansionPanels MultiExpansion="true" Square="true" DisableBorders="false" Elevation="0">
+                        <MudExpansionPanel Text="Client" Class="mt-0" Style="margin: 0 !important;">
+                            <MudTextField T="string" @bind-Value="_modifyApplicationName" Label="Application name" Variant="Variant.Outlined" Class="my-6"/>
+                            <MudTextField T="string" @bind-Value="_modifyOrigin" Label="Origin" Variant="Variant.Outlined" Class="my-6"/>
+                            <MudButton OnClick="SaveModifyAsync" Color="Color.Primary">Save</MudButton>
+                        </MudExpansionPanel>
+                        <MudExpansionPanel Text="Client secret" Class="mt-0" Style="margin: 0 !important;">
+                            <MudButton OnClick="RegenerateSecretAsync"  Color="Color.Warning">Regenerate</MudButton>
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                </MudTabPanel>
+                <MudTabPanel Text="Active sessions" Disabled></MudTabPanel>
                 <MudTabPanel Text="Notes">
                     <div class="my-6 mx-6">
                         <NotesComponent Entity="@ClientId"/>
@@ -61,6 +73,8 @@
 </MudCard>
 
 @code {
+    private string? _modifyApplicationName;
+    private string? _modifyOrigin;
     private Client? _client;
     private Role[] _effectiveRoles = Array.Empty<Role>();
 
@@ -68,6 +82,29 @@
     public string? ClientId { get; set; }
 
     protected override async Task OnInitializedAsync()
+    {
+        await RefreshClientAsync();
+    }
+
+    private async Task SaveModifyAsync()
+    {
+        var input = new ClientModifyInput
+        {
+            Origin = _modifyOrigin,
+            ApplicationName = _modifyApplicationName
+        };
+
+        var response = await AdminClient.ClientModifyAsync(_client?.Id ?? Guid.Empty, input);
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessful)
+        {
+            Snackbar.Add("Client updated.", Severity.Success);
+            await RefreshClientAsync();
+        }
+    }
+
+    private async Task RefreshClientAsync()
     {
         if (!Guid.TryParse(ClientId, out var id))
         {
@@ -84,6 +121,8 @@
         }
 
         _client = await clientResponse.ReadPayloadAsync();
+        _modifyApplicationName = _client?.ApplicationName;
+        _modifyOrigin = _client?.Origin;
         var roles = await clientEffectiveRolesResponse.ReadPayloadAsync();
         _effectiveRoles = roles?.Roles ?? Array.Empty<Role>();
     }
@@ -100,6 +139,20 @@
             if (response.IsSuccessful)
                 NavigationManager.NavigateTo("/services/auth/clients/list");
         }
+    }
+
+    private async Task RegenerateSecretAsync()
+    {
+        var response = await AdminClient.ClientSecretRegenerateAsync(_client?.Id ?? Guid.Empty);
+
+        if (!response.IsSuccessful)
+        {
+            Snackbar.AddErrors(await response.ReadErrorsAsync());
+        }
+
+        var client = (await response.ReadPayloadAsync())!;
+        var secret = client.ClientSecret;
+        await DialogService.AlertAsync("Client secret", secret ?? "Error: secret is empty.");
     }
 
 }
