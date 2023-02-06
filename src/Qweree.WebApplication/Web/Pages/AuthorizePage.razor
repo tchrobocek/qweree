@@ -1,0 +1,66 @@
+@page "/authorize"
+@using Qweree.WebApplication.Infrastructure.Authentication
+@using Qweree.Sdk.Http.Exceptions
+@using System.Web
+@layout EmptyLayout
+@inject AuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+@inject ClaimsPrincipalStorage Session;
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
+            <ErrorsComponent Error="@_authMessage" />
+            <MudText Typo="Typo.h4" GutterBottom="true">Qweree</MudText>
+            <MudTextField T="string" @bind-Value="_username" Label="Username" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+            <PasswordFieldComponent @bind-Value="_password" Label="Password" Variant="Variant.Outlined"/>
+            <MudButton Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await LoginAsync()" Size="Size.Large" FullWidth="true">Sign In</MudButton>
+        </MudPaper>
+    </div>
+</MudContainer>
+@code {
+    private string _authMessage = string.Empty;
+    private string _username = string.Empty;
+    private string _password = string.Empty;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "client_id")]
+    public string? ClientId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "redirect_uri")]
+    public string? RedirectUri { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(RedirectUri))
+            NavigationManager.NavigateTo("/");
+
+        var identity = await Session.GetIdentityAsync();
+
+        if (identity is not null)
+            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}", true);
+    }
+
+    private async Task LoginAsync()
+    {
+        _authMessage = string.Empty;
+        try
+        {
+            await AuthenticationService.AuthenticateAsync(_username, _password);
+            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}", true);
+        }
+        catch (ClientErrorErrorException)
+        {
+            _authMessage = "Wrong username or password.";
+        }
+        catch (Exception)
+        {
+            _authMessage = "System error.";
+        }
+        finally
+        {
+            _password = string.Empty;
+        }
+    }
+}
