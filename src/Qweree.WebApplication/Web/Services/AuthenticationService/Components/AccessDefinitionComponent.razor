@@ -1,16 +1,38 @@
 @using Qweree.Authentication.AdminSdk.Authorization.Roles
 
-    <MudPaper Outlined Class="pa-4 mt-6">
-        <MudText Typo="Typo.h6">Password grant</MudText>
-        <MudCheckBox T="bool" @bind-Checked="Password.Enabled">Enabled</MudCheckBox>
-    </MudPaper>
-    <MudPaper Outlined Class="pa-4 mt-6">
-        <MudText Typo="Typo.h6">Client credentials</MudText>
-        <MudCheckBox T="bool" @bind-Checked="ClientCredentials.Enabled">Enabled</MudCheckBox>
-        <MudContainer>
-            <RoleSelectComponent Disabled="false" SelectedRoles="ClientCredentials.Roles"/>
-        </MudContainer>
-    </MudPaper>
+<MudPaper Outlined Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6">Password grant</MudText>
+    <MudCheckBox T="bool" @bind-Checked="Password.Enabled">Enabled</MudCheckBox>
+</MudPaper>
+<MudPaper Outlined Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6">Client credentials</MudText>
+    <MudCheckBox T="bool" @bind-Checked="ClientCredentials.Enabled">Enabled</MudCheckBox>
+    <MudContainer>
+        <RoleSelectComponent Disabled="false" SelectedRoles="ClientCredentials.Roles"/>
+    </MudContainer>
+</MudPaper>
+<MudPaper Outlined Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6">Implicit</MudText>
+    <MudCheckBox T="bool" @bind-Checked="Implicit.Enabled">Enabled</MudCheckBox>
+    <MudContainer>
+        @foreach (var item in Implicit.RedirectUris)
+        {
+            <MudTextField T="string" @bind-Value="@item.Uri" Label="Redirect uri" Variant="@Variant.Outlined" Class="my-6"/>
+        }
+        <MudButton OnClick="AddImplicitUri">Add uri</MudButton>
+    </MudContainer>
+</MudPaper>
+<MudPaper Outlined Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6">Authorization code</MudText>
+    <MudCheckBox T="bool" @bind-Checked="AuthorizationCode.Enabled">Enabled</MudCheckBox>
+    <MudContainer>
+        @foreach (var item in AuthorizationCode.RedirectUris)
+        {
+            <MudTextField T="string" @bind-Value="@item.Uri" Label="Redirect uri" Variant="@Variant.Outlined" Class="my-6"/>
+        }
+        <MudButton OnClick="AddAuthorizationCodeUri">Add uri</MudButton>
+    </MudContainer>
+</MudPaper>
 
 @code {
 
@@ -19,6 +41,12 @@
 
     [Parameter]
     public ClientCredentialsGrant ClientCredentials { get; set; } = new();
+
+    [Parameter]
+    public ImplicitGrant Implicit { get; set; } = new();
+
+    [Parameter]
+    public AuthorizationCodeGrant AuthorizationCode { get; set; } = new();
 
     public record PasswordGrant
     {
@@ -29,6 +57,33 @@
     {
         public bool Enabled { get; set; }
         public List<Role> Roles { get; } = new();
+    }
+
+    public record ImplicitGrant
+    {
+        public bool Enabled { get; set; }
+        public List<RedirectUri> RedirectUris { get; } = new();
+    }
+
+    public record AuthorizationCodeGrant
+    {
+        public bool Enabled { get; set; }
+        public List<RedirectUri> RedirectUris { get; } = new();
+    }
+
+    public record RedirectUri
+    {
+        public string Uri { get; set; } = string.Empty;
+    }
+
+    private void AddImplicitUri()
+    {
+        Implicit.RedirectUris.Add(new RedirectUri());
+    }
+
+    private void AddAuthorizationCodeUri()
+    {
+        AuthorizationCode.RedirectUris.Add(new RedirectUri());
     }
 
 }

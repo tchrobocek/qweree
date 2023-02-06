@@ -73,6 +73,9 @@
 @code {
     private readonly AccessDefinitionComponent.PasswordGrant _passwordDefinition = new();
     private readonly AccessDefinitionComponent.ClientCredentialsGrant _clientCredentialsDefinition = new();
+    private readonly AccessDefinitionComponent.ImplicitGrant _implicitDefinition = new();
+    private readonly AccessDefinitionComponent.AuthorizationCodeGrant _authorizationCodeDefinition = new();
+
     private string? _modifyApplicationName;
     private string? _modifyOrigin;
     private Client? _client;
@@ -121,10 +124,24 @@
             .FirstOrDefault();
         var clientCredentials = _client?.AccessDefinitions?.OfType<ClientCredentialsAccessDefinition>()
             .FirstOrDefault();
+        var implicits = _client?.AccessDefinitions?.OfType<ImplicitAccessDefinition>()
+            .ToArray() ?? Array.Empty<ImplicitAccessDefinition>();
+        var authorizationCodes = _client?.AccessDefinitions?.OfType<AuthorizationCodeAccessDefinition>()
+            .ToArray() ?? Array.Empty<AuthorizationCodeAccessDefinition>();
 
         _passwordDefinition.Enabled = password is not null;
         _clientCredentialsDefinition.Enabled = clientCredentials is not null;
         _clientCredentialsDefinition.Roles.AddRange(clientCredentials?.Roles ?? Array.Empty<Role>());
+        _implicitDefinition.Enabled = implicits.Any();
+        _implicitDefinition.RedirectUris.AddRange(implicits.Select(i => new AccessDefinitionComponent.RedirectUri
+        {
+            Uri = i.RedirectUri ?? string.Empty
+        }));
+        _authorizationCodeDefinition.Enabled = authorizationCodes.Any();
+        _authorizationCodeDefinition.RedirectUris.AddRange(authorizationCodes.Select(a => new AccessDefinitionComponent.RedirectUri
+        {
+            Uri = a.RedirectUri ?? string.Empty
+        }));
     }
 
     private async Task SaveAccessDefinitionsAsync()
@@ -140,6 +157,20 @@
             {
                 Roles = _clientCredentialsDefinition.Roles.Select(r => r.Id ?? Guid.Empty).ToArray()
             });
+        }
+        if (_implicitDefinition.Enabled)
+        {
+            definitions.AddRange(_implicitDefinition.RedirectUris.Select(r => new ImplicitAccessDefinitionInput
+            {
+                RedirectUri = r.Uri
+            }));
+        }
+        if (_authorizationCodeDefinition.Enabled)
+        {
+            definitions.AddRange(_authorizationCodeDefinition.RedirectUris.Select(r => new AuthorizationCodeAccessDefinitionInput
+            {
+                RedirectUri = r.Uri
+            }));
         }
 
         var response = await AdminClient.ClientAccessDefinitionsReplaceAsync(_client?.Id ?? Guid.Empty, definitions);

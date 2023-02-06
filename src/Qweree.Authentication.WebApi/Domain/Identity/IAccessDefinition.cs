@@ -25,3 +25,25 @@ public class PasswordAccessDefinition : IAccessDefinition
 {
     public GrantType GrantType => GrantType.Password;
 }
+
+public class ImplicitAccessDefinition : IAccessDefinition
+{
+    public ImplicitAccessDefinition(string redirectUri)
+    {
+        RedirectUri = redirectUri;
+    }
+
+    public GrantType GrantType => GrantType.Implicit;
+    public string RedirectUri { get; }
+}
+
+public class AuthorizationCodeAccessDefinition : IAccessDefinition
+{
+    public AuthorizationCodeAccessDefinition(string redirectUri)
+    {
+        RedirectUri = redirectUri;
+    }
+
+    public GrantType GrantType => GrantType.Implicit;
+    public string RedirectUri { get; }
+}

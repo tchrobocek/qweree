@@ -18,3 +18,23 @@ public class ClientCredentialsDefinitionInput : IAccessDefinitionInput
 public class PasswordDefinitionInput : IAccessDefinitionInput
 {
 }
+
+public class ImplicitAccessDefinitionInput : IAccessDefinitionInput
+{
+    public ImplicitAccessDefinitionInput(string redirectUri)
+    {
+        RedirectUri = redirectUri;
+    }
+
+    public string RedirectUri { get; }
+}
+
+public class AuthorizationCodeAccessDefinitionInput : IAccessDefinitionInput
+{
+    public AuthorizationCodeAccessDefinitionInput(string redirectUri)
+    {
+        RedirectUri = redirectUri;
+    }
+
+    public string RedirectUri { get; }
+}

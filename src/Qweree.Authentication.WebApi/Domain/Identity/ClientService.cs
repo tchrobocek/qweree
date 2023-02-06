@@ -197,6 +197,18 @@ public class ClientService
                 continue;
             }
 
+            if (input is ImplicitAccessDefinitionInput @implicit)
+            {
+                definitions.Add(new ImplicitAccessDefinition(@implicit.RedirectUri));
+                continue;
+            }
+
+            if (input is AuthorizationCodeAccessDefinitionInput authorizationCode)
+            {
+                definitions.Add(new AuthorizationCodeAccessDefinition(authorizationCode.RedirectUri));
+                continue;
+            }
+
             throw new ArgumentOutOfRangeException(nameof(input));
         }
 

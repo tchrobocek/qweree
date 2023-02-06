@@ -3,7 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity;
 
-[BsonKnownTypes(typeof(ClientCredentialsAccessDefinitionDo), typeof(PasswordAccessDefinitionDo))]
+[BsonKnownTypes(typeof(ClientCredentialsAccessDefinitionDo), typeof(PasswordAccessDefinitionDo),
+    typeof(AuthorizationCodeAccessDefinitionDo), typeof(ImplicitAccessDefinitionDo))]
 public abstract class AccessDefinitionDo
 {
 }
@@ -12,7 +13,18 @@ public abstract class AccessDefinitionDo
 public class ClientCredentialsAccessDefinitionDo : AccessDefinitionDo
 {
     public Guid[]? Roles { get; set; }
+}
 
+[BsonDiscriminator("implicit")]
+public class ImplicitAccessDefinitionDo : AccessDefinitionDo
+{
+    public string? RedirectUri { get; set; }
+}
+
+[BsonDiscriminator("authorization_code")]
+public class AuthorizationCodeAccessDefinitionDo : AccessDefinitionDo
+{
+    public string? RedirectUri { get; set; }
 }
 
 [BsonDiscriminator("password")]

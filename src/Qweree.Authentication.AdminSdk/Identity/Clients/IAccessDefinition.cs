@@ -14,6 +14,18 @@ public class ClientCredentialsAccessDefinition : IAccessDefinition
 
 }
 
+public class ImplicitAccessDefinition : IAccessDefinition
+{
+    public string TypeName => "implicit";
+    public string? RedirectUri { get; set; }
+}
+
+public class AuthorizationCodeAccessDefinition : IAccessDefinition
+{
+    public string TypeName => "authorization_code";
+    public string? RedirectUri { get; set; }
+}
+
 public class PasswordAccessDefinition : IAccessDefinition
 {
     public string TypeName => "password";

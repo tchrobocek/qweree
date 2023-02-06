@@ -8,6 +8,8 @@ using SdkClientModifyInput = Qweree.Authentication.AdminSdk.Identity.Clients.Cli
 using SdkIAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.IAccessDefinitionInput;
 using SdkPasswordAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.PasswordAccessDefinitionInput;
 using SdkClientCredentialsAccessDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.ClientCredentialsAccessDefinitionInput;
+using SdkImplicitDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.ImplicitAccessDefinitionInput;
+using SdkAuthorizationCodeDefinitionInput = Qweree.Authentication.AdminSdk.Identity.Clients.AuthorizationCodeAccessDefinitionInput;
 
 namespace Qweree.Authentication.WebApi.Infrastructure.Identity;
 
@@ -29,6 +31,10 @@ public static class ClientMapper
             return new PasswordDefinitionInput();
         if (input is SdkClientCredentialsAccessDefinitionInput clientCredentials)
             return new ClientCredentialsDefinitionInput(clientCredentials.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+        if (input is SdkImplicitDefinitionInput @implicit)
+            return new ImplicitAccessDefinitionInput(@implicit.RedirectUri ?? string.Empty);
+        if (input is SdkAuthorizationCodeDefinitionInput authorizationCode)
+            return new ImplicitAccessDefinitionInput(authorizationCode.RedirectUri ?? string.Empty);
 
         throw new ArgumentOutOfRangeException(nameof(input));
     }
@@ -53,6 +59,12 @@ public static class ClientMapper
 
         if (definition is ClientCredentialsAccessDefinitionDo clientCredentials)
             return new ClientCredentialsAccessDefinition(clientCredentials.Roles?.ToImmutableArray() ?? ImmutableArray<Guid>.Empty);
+
+        if (definition is ImplicitAccessDefinitionDo @implicit)
+            return new ImplicitAccessDefinition(@implicit.RedirectUri ?? string.Empty);
+
+        if (definition is AuthorizationCodeAccessDefinitionDo authorizationCode)
+            return new AuthorizationCodeAccessDefinition(authorizationCode.RedirectUri ?? string.Empty);
 
         throw new ArgumentOutOfRangeException(nameof(definition));
     }
@@ -81,6 +93,16 @@ public static class ClientMapper
             return new ClientCredentialsAccessDefinitionDo
             {
                 Roles = clientCredentials.Roles.ToArray()
+            };
+        if (accessDefinition is ImplicitAccessDefinition @implicit)
+            return new ImplicitAccessDefinitionDo
+            {
+                RedirectUri = @implicit.RedirectUri
+            };
+        if (accessDefinition is AuthorizationCodeAccessDefinition authorizationCode)
+            return new AuthorizationCodeAccessDefinitionDo
+            {
+                RedirectUri = authorizationCode.RedirectUri
             };
 
         throw new ArgumentOutOfRangeException(nameof(accessDefinition));

@@ -11,7 +11,9 @@ public class AccessDefinitionConverter : JsonConverter<IAccessDefinition>
     private readonly Dictionary<string, Type> _typeMap = new()
     {
         ["password"] = typeof(PasswordAccessDefinition),
-        ["client_credentials"] = typeof(ClientCredentialsAccessDefinition)
+        ["client_credentials"] = typeof(ClientCredentialsAccessDefinition),
+        ["implicit"] = typeof(ImplicitAccessDefinition),
+        ["authorization_code"] = typeof(AuthorizationCodeAccessDefinition)
     };
 
     public override IAccessDefinition? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
