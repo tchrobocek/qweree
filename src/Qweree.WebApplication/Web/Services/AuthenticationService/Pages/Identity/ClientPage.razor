@@ -53,7 +53,10 @@
                     <MudContainer>
                         <AccessDefinitionComponent
                             Password="_passwordDefinition"
-                            ClientCredentials="_clientCredentialsDefinition"/>
+                            ClientCredentials="_clientCredentialsDefinition"
+                            Implicit="_implicitDefinition"
+                            AuthorizationCode="_authorizationCodeDefinition"
+                            />
                     </MudContainer>
                     <MudContainer Class="mt-4" Style="text-align: right;">
                         <MudButton Variant="Variant.Outlined" OnClick="SaveAccessDefinitionsAsync" Color="Color.Primary">Save changes</MudButton>
@@ -131,13 +134,16 @@
 
         _passwordDefinition.Enabled = password is not null;
         _clientCredentialsDefinition.Enabled = clientCredentials is not null;
+        _clientCredentialsDefinition.Roles.Clear();
         _clientCredentialsDefinition.Roles.AddRange(clientCredentials?.Roles ?? Array.Empty<Role>());
         _implicitDefinition.Enabled = implicits.Any();
+        _implicitDefinition.RedirectUris.Clear();
         _implicitDefinition.RedirectUris.AddRange(implicits.Select(i => new AccessDefinitionComponent.RedirectUri
         {
             Uri = i.RedirectUri ?? string.Empty
         }));
         _authorizationCodeDefinition.Enabled = authorizationCodes.Any();
+        _authorizationCodeDefinition.RedirectUris.Clear();
         _authorizationCodeDefinition.RedirectUris.AddRange(authorizationCodes.Select(a => new AccessDefinitionComponent.RedirectUri
         {
             Uri = a.RedirectUri ?? string.Empty
@@ -163,14 +169,14 @@
             definitions.AddRange(_implicitDefinition.RedirectUris.Select(r => new ImplicitAccessDefinitionInput
             {
                 RedirectUri = r.Uri
-            }));
+            }).Where(r => !string.IsNullOrWhiteSpace(r.RedirectUri ?? "")));
         }
         if (_authorizationCodeDefinition.Enabled)
         {
             definitions.AddRange(_authorizationCodeDefinition.RedirectUris.Select(r => new AuthorizationCodeAccessDefinitionInput
             {
                 RedirectUri = r.Uri
-            }));
+            }).Where(r => !string.IsNullOrWhiteSpace(r.RedirectUri ?? "")));
         }
 
         var response = await AdminClient.ClientAccessDefinitionsReplaceAsync(_client?.Id ?? Guid.Empty, definitions);

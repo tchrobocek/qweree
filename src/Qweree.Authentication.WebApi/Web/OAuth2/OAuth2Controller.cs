@@ -10,7 +10,6 @@ using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure.Security;
 using Qweree.Authentication.WebApi.Infrastructure.Session;
-using Qweree.Utils;
 using ClientCredentials = Qweree.Authentication.WebApi.Domain.Authentication.ClientCredentials;
 using PasswordGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.PasswordGrantInput;
 using RefreshTokenGrantInput = Qweree.Authentication.WebApi.Domain.Authentication.RefreshTokenGrantInput;
@@ -27,12 +26,10 @@ public class OAuth2Controller : ControllerBase
 
     private readonly AuthorizationHeaderEncoder _authorizationHeaderEncoder = new();
     private readonly AuthenticationService _authenticationService;
-    private readonly IDateTimeProvider _datetimeProvider;
 
-    public OAuth2Controller(AuthenticationService authenticationService, IDateTimeProvider datetimeProvider)
+    public OAuth2Controller(AuthenticationService authenticationService)
     {
         _authenticationService = authenticationService;
-        _datetimeProvider = datetimeProvider;
     }
 
     /// <summary>
@@ -112,14 +109,12 @@ public class OAuth2Controller : ControllerBase
         if (response.Status == ResponseStatus.Fail)
             return Unauthorized();
 
-        var expiresIn = response.Payload?.ExpiresAt - _datetimeProvider.UtcNow;
-
         var refreshTokenJson = "";
         if (response.Payload?.RefreshToken is not null)
             refreshTokenJson = @$", ""refresh_token"": ""{response.Payload.RefreshToken}""";
 
         var json =
-            $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{expiresIn?.TotalSeconds}""}}";
+            $@"{{""access_token"": ""{response.Payload?.AccessToken}""{refreshTokenJson}, ""expires_in"": ""{response.Payload?.ExpiresIn}""}}";
 
         return Ok(json);
     }

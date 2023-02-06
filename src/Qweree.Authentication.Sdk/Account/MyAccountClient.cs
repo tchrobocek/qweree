@@ -4,9 +4,11 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Qweree.Authentication.Sdk.Account.MyAccount;
 using Qweree.Authentication.Sdk.Account.UserRegister;
 using Qweree.Authentication.Sdk.Identity;
+using Qweree.Authentication.Sdk.OAuth2;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
@@ -60,9 +62,15 @@ public class MyAccountClient
         return new ApiResponse(response);
     }
 
-    public async Task<JsonApiResponse<AuthClient>> ApplicationInfoAsync(string clientId, CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<AuthClient>> ApplicationConsentInfoGetAsync(string clientId, CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync($"application-consent/{clientId}", cancellationToken);
         return new JsonApiResponse<AuthClient>(response);
+    }
+
+    public async Task<JsonApiResponse<TokenInfo>> ApplicationConsentAsync(string clientId, string redirectUri, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.PostAsync($"application-consent/{clientId}?redirect_uri={HttpUtility.UrlEncode(redirectUri)}", new ByteArrayContent(Array.Empty<byte>()), cancellationToken);
+        return new JsonApiResponse<TokenInfo>(response);
     }
 }

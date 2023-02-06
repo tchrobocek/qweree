@@ -70,6 +70,9 @@ clients = [{
             "8cae063d-c180-4c88-ba3f-9b999f6267b2",
             "19494ca2-6ad6-4186-b1df-dd9a272943e3"
         ]
+    }, {
+        "_t": "implicit",
+        "RedirectUri": "https://localhost/auth/swagger/oauth2-redirect.html"
     }]
 }, {
     "_id": UUID("a25acc07-7246-4e8e-9291-4ee30b18c168"),

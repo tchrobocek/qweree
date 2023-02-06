@@ -31,6 +31,10 @@
     [SupplyParameterFromQuery(Name = "redirect_uri")]
     public string? RedirectUri { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "state")]
+    public string? State { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(RedirectUri))
@@ -39,7 +43,7 @@
         var identity = await Session.GetIdentityAsync();
 
         if (identity is not null)
-            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}", true);
+            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}&state={State}", true);
     }
 
     private async Task LoginAsync()
@@ -48,7 +52,7 @@
         try
         {
             await AuthenticationService.AuthenticateAsync(_username, _password);
-            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}", true);
+            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}&state={State}&logout", true);
         }
         catch (ClientErrorErrorException)
         {

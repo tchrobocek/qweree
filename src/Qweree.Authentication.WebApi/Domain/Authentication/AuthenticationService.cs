@@ -102,7 +102,8 @@ public class AuthenticationService
             SessionId = session.Id
         }, new RsaSecurityKey(_rsa));
 
-        var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
+        var expiresIn = expiresAt - _datetimeProvider.UtcNow;
+        var tokenInfo = new TokenInfo(jwt, session.RefreshToken, (int)expiresIn.TotalSeconds);
         return Response.Ok(tokenInfo);
     }
 
@@ -154,7 +155,8 @@ public class AuthenticationService
             SessionId = session.Id
         }, new RsaSecurityKey(_rsa));
 
-        var tokenInfo = new TokenInfo(jwt, session.RefreshToken, expiresAt);
+        var expiresIn = expiresAt - _datetimeProvider.UtcNow;
+        var tokenInfo = new TokenInfo(jwt, session.RefreshToken, (int)expiresIn.TotalSeconds);
         return Response.Ok(tokenInfo);
     }
 
@@ -198,7 +200,55 @@ public class AuthenticationService
             SessionId = session.Id
         }, new RsaSecurityKey(_rsa));
 
-        var tokenInfo = new TokenInfo(jwt, null, expiresAt);
+        var expiresIn = expiresAt - _datetimeProvider.UtcNow;
+        var tokenInfo = new TokenInfo(jwt, null, (int)expiresIn.TotalSeconds);
+        return Response.Ok(tokenInfo);
+    }
+
+    public async Task<Response<TokenInfo>> AuthenticateAsync(ImplicitGrantInput grantInput, string ipAddress, UserAgentInfo? userAgent, CancellationToken cancellationToken = new())
+    {
+        if (_sessionStorage.IsAnonymous)
+            return Response.Fail<TokenInfo>(AccessDeniedMessage);
+
+        var now = _datetimeProvider.UtcNow;
+
+        User owner;
+        User user;
+        Client client;
+
+        try
+        {
+            client = await AuthenticateClientAsync(grantInput, cancellationToken);
+            owner = await _userRepository.GetAsync(client.OwnerId, cancellationToken);
+            user = await _userRepository.GetAsync(_sessionStorage.UserId, cancellationToken);
+        }
+        catch (Exception)
+        {
+            return Response.Fail<TokenInfo>(AccessDeniedMessage);
+        }
+
+        var session = await BeginSessionAsync(client, null, ipAddress, userAgent, GrantType.Implicit, false);
+
+        var effectiveRoles = new List<string>();
+        await foreach (var role in _authorizationService.GetEffectiveRoles(user.Roles, cancellationToken)
+                           .WithCancellation(cancellationToken))
+        {
+            effectiveRoles.Add(role.Key);
+        }
+
+        var expiresAt = now + TimeSpan.FromSeconds(_accessTokenValiditySeconds);
+        var identity = new Session.Identity(new IdentityClient(client.Id, client.ClientId, client.ApplicationName),
+            owner.ContactEmail, effectiveRoles.ToImmutableArray());
+        var jwt = _tokenEncoder.EncodeAccessToken(new SdkAccessToken
+        {
+            ExpiresAt = expiresAt,
+            Identity = IdentityMapper.Map(identity),
+            IssuedAt = _datetimeProvider.UtcNow,
+            SessionId = session.Id
+        }, new RsaSecurityKey(_rsa));
+
+        var expiresIn = expiresAt - _datetimeProvider.UtcNow;
+        var tokenInfo = new TokenInfo(jwt, null, (int)expiresIn.TotalSeconds);
         return Response.Ok(tokenInfo);
     }
 
@@ -265,6 +315,20 @@ public class AuthenticationService
 
         var accessDefinition = client.AccessDefinitions.FirstOrDefault(d => d.GrantType.Key == key);
         if (accessDefinition is null)
+            throw new AuthenticationException();
+
+        return client;
+    }
+
+    private async Task<Client> AuthenticateClientAsync(ImplicitGrantInput grantInput,
+        CancellationToken cancellationToken = new())
+    {
+        var client = await _clientRepository.GetByClientIdAsync(grantInput.ClientId, cancellationToken);
+
+        var key = GrantType.Implicit.Key;
+        var accessDefinitions = client.AccessDefinitions.Where(d => d.GrantType.Key == key)
+            .ToArray();
+        if (!accessDefinitions.Cast<ImplicitAccessDefinition>().Any(a => a.RedirectUri == grantInput.RedirectUri))
             throw new AuthenticationException();
 
         return client;

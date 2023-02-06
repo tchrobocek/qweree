@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Qweree.AspNet.Application;
 using Qweree.AspNet.Validations;
 using Qweree.Authentication.Sdk.Session;
+using Qweree.Authentication.WebApi.Domain.Authentication;
 using Qweree.Authentication.WebApi.Domain.Identity;
 using Qweree.Authentication.WebApi.Domain.Security;
 using Qweree.Authentication.WebApi.Domain.Session;
@@ -26,10 +27,12 @@ public class MyAccountService
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly IValidator _validator;
     private readonly IClientRepository _clientRepository;
+    private readonly AuthenticationService _authenticationService;
 
     public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
         IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator,
-        ISessionInfoRepository sessionInfoRepository, IClientRepository clientRepository)
+        ISessionInfoRepository sessionInfoRepository, IClientRepository clientRepository,
+        AuthenticationService authenticationService)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
@@ -38,6 +41,7 @@ public class MyAccountService
         _validator = validator;
         _sessionInfoRepository = sessionInfoRepository;
         _clientRepository = clientRepository;
+        _authenticationService = authenticationService;
     }
 
     public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
@@ -79,7 +83,8 @@ public class MyAccountService
         try
         {
             var item = await _userRepository.GetAsync(_sessionStorage.UserId, cancellationToken);
-            return Response.Ok(new MyProfile(item.Id, item.Username, item.ContactEmail, item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
+            return Response.Ok(new MyProfile(item.Id, item.Username, item.ContactEmail,
+                item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
         }
         catch (DocumentNotFoundException)
         {
@@ -111,7 +116,7 @@ public class MyAccountService
         return Response.Ok();
     }
 
-    public async Task<Response<Client>> GetApplicationInfoAsync(string clientId, CancellationToken cancellationToken = new())
+    public async Task<Response<Client>> ApplicationConsentInfoGetAsync(string clientId, CancellationToken cancellationToken = new())
     {
         Client client;
 
@@ -125,5 +130,11 @@ public class MyAccountService
         }
 
         return Response.Ok(client);
+    }
+
+    public async Task<Response<TokenInfo>> ApplicationConsentAsync(string clientId, string redirectUri, string ipAddress,
+        UserAgentInfo? userAgentInfo, CancellationToken cancellationToken = new())
+    {
+        return await _authenticationService.AuthenticateAsync(new ImplicitGrantInput(clientId, redirectUri), ipAddress, userAgentInfo, cancellationToken);
     }
 }
