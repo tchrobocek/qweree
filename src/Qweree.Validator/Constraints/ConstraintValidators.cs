@@ -19,6 +19,7 @@ public static class ConstraintValidators
         new OneOfConstraintValidator(),
         new NotEmptyConstraintValidator(),
         new NotNullConstraintValidator(),
+        new MaxOfTypeConstraintValidator(),
     };
 
     /// <summary>

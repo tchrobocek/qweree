@@ -96,6 +96,11 @@ public class Response
         return new Response<TPayloadType>(ResponseStatus.Fail, null, errors.Select(e => new Error(e)));
     }
 
+    public static Response<TPayloadType> Fail<TPayloadType>(string error, int statusCode) where TPayloadType : class
+    {
+        return new Response<TPayloadType>(ResponseStatus.Fail, null, new []{ new Error(error, statusCode) });
+    }
+
     public static CollectionResponse<TPayloadType> FailCollection<TPayloadType>(params string[] errors)
         where TPayloadType : class
     {

@@ -99,4 +99,22 @@ public class MyAccountController : ControllerBase
 
         return NoContent();
     }
+
+    /// <summary>
+    ///     Application info for consent.
+    /// </summary>
+    [HttpGet("application-consent/{clientId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [Authorize]
+    public async Task<IActionResult> ClientInfoActionAsync(string clientId)
+    {
+        var response = await _myAccountService.GetApplicationInfoAsync(clientId);
+
+        if (response.Status == ResponseStatus.Fail)
+            return response.ToErrorActionResult();
+
+        return Ok(_authSdkMapper.ToClient(response.Payload!));
+    }
 }

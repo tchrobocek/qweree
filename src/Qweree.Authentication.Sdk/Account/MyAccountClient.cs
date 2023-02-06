@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Qweree.Authentication.Sdk.Account.MyAccount;
 using Qweree.Authentication.Sdk.Account.UserRegister;
+using Qweree.Authentication.Sdk.Identity;
 using Qweree.Sdk.Http;
 using Qweree.Utils;
 
@@ -57,5 +58,11 @@ public class MyAccountClient
     {
         var response = await _httpClient.DeleteAsync($"sessions/{sessionId}", cancellationToken);
         return new ApiResponse(response);
+    }
+
+    public async Task<JsonApiResponse<AuthClient>> ApplicationInfoAsync(string clientId, CancellationToken cancellationToken = new())
+    {
+        var response = await _httpClient.GetAsync($"application-consent/{clientId}", cancellationToken);
+        return new JsonApiResponse<AuthClient>(response);
     }
 }

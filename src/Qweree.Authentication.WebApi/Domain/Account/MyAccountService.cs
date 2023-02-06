@@ -25,10 +25,11 @@ public class MyAccountService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ISessionInfoRepository _sessionInfoRepository;
     private readonly IValidator _validator;
+    private readonly IClientRepository _clientRepository;
 
     public MyAccountService(IUserRepository userRepository, ISessionStorage sessionStorage,
         IPasswordEncoder passwordEncoder, IDateTimeProvider dateTimeProvider, IValidator validator,
-        ISessionInfoRepository sessionInfoRepository)
+        ISessionInfoRepository sessionInfoRepository, IClientRepository clientRepository)
     {
         _userRepository = userRepository;
         _sessionStorage = sessionStorage;
@@ -36,6 +37,7 @@ public class MyAccountService
         _dateTimeProvider = dateTimeProvider;
         _validator = validator;
         _sessionInfoRepository = sessionInfoRepository;
+        _clientRepository = clientRepository;
     }
 
     public async Task<Response> ChangeMyPasswordAsync(ChangeMyPasswordInput input,
@@ -107,5 +109,21 @@ public class MyAccountService
 
         await _sessionInfoRepository.DeleteOneAsync(sessionId, cancellationToken);
         return Response.Ok();
+    }
+
+    public async Task<Response<Client>> GetApplicationInfoAsync(string clientId, CancellationToken cancellationToken = new())
+    {
+        Client client;
+
+        try
+        {
+            client = await _clientRepository.GetByClientIdAsync(clientId, cancellationToken);
+        }
+        catch (DocumentNotFoundException)
+        {
+            return Response.Fail<Client>("Client does not exist.", StatusCodes.Status404NotFound);
+        }
+
+        return Response.Ok(client);
     }
 }
