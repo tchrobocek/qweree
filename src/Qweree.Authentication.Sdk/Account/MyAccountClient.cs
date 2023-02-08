@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,10 +33,10 @@ public class MyAccountClient
         return new ApiResponse(response);
     }
 
-    public async Task<JsonApiResponse<ClaimsPrincipal>> MyProfileGetAsync(CancellationToken cancellationToken = new())
+    public async Task<JsonApiResponse<Dictionary<string, string[]>>> MyProfileGetAsync(CancellationToken cancellationToken = new())
     {
         var response = await _httpClient.GetAsync("", cancellationToken);
-        return new JsonApiResponse<ClaimsPrincipal>(response);
+        return new JsonApiResponse<Dictionary<string, string[]>>(response);
     }
 
     public async Task<JsonApiResponse<MyAccountSessionInfo[]>> MySessionsGetAsync(CancellationToken cancellationToken = new())

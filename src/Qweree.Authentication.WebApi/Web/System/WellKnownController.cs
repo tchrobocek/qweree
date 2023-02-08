@@ -40,7 +40,7 @@ public class WellKnownController : ControllerBase
             GrantTypesSupported = new[] {"client_credentials", "password", "refresh_token", "implicit"},
             ResponseTypesSupported = new[] {"token", "token id_token"},
             AuthorizationEndpoint = new Uri(baseUri, "/authorize").ToString(),
-            UserInfoEndpoint = null,
+            UserInfoEndpoint = new Uri(baseUri, "api/account").ToString(),
             RegistrationEndpoint = null
         });
     }

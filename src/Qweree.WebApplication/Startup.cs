@@ -39,7 +39,7 @@ public class Startup
         services.AddMudServices();
         services.AddSingleton<WindowService>();
         services.AddSingleton<LocalStorage>();
-        services.AddSingleton<LocalUserStorage>();
+        services.AddScoped<LocalUserStorage>();
         services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
         services.AddScoped<ClaimsPrincipalStorage>();
         services.AddScoped<HttpMessageHandler, HttpClientHandler>();

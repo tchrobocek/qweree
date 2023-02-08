@@ -1,5 +1,3 @@
-using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,28 +21,28 @@ public class UnauthorizedHttpHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = await base.SendAsync(request, cancellationToken);
-
-        if (response.StatusCode != HttpStatusCode.Unauthorized)
-            return response;
-
-        try
-        {
-            await _authenticationService.RefreshAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await _authenticationService.LogoutAsync(cancellationToken);
-            _navigationManager.NavigateTo("/", true);
-            return response;
-        }
-
-        response = await base.SendAsync(request, cancellationToken);
-
-        if (response.StatusCode != HttpStatusCode.Unauthorized)
-            return response;
-
-        await _authenticationService.LogoutAsync(cancellationToken);
-        _navigationManager.NavigateTo("/", true);
+        //
+        // if (response.StatusCode != HttpStatusCode.Unauthorized)
+        //     return response;
+        //
+        // try
+        // {
+        //     await _authenticationService.RefreshAsync(cancellationToken);
+        // }
+        // catch (Exception)
+        // {
+        //     await _authenticationService.LogoutAsync(cancellationToken);
+        //     _navigationManager.NavigateTo("/", true);
+        //     return response;
+        // }
+        //
+        // response = await base.SendAsync(request, cancellationToken);
+        //
+        // if (response.StatusCode != HttpStatusCode.Unauthorized)
+        //     return response;
+        //
+        // await _authenticationService.LogoutAsync(cancellationToken);
+        // _navigationManager.NavigateTo("/", true);
 
         return response;
     }

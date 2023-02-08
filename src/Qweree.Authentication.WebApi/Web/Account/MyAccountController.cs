@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -63,7 +64,12 @@ public class MyAccountController : ControllerBase
     [Authorize]
     public IActionResult MyProfileGetActionAsync()
     {
-        return Ok(IdentityMapper.ToClaimsPrincipal(_sessionStorage.Identity));
+        var identity = _sessionStorage.Identity;
+        var claims = IdentityMapper.ToClaimsPrincipal(identity);
+
+        var claimsDictionary = claims.Claims.GroupBy(c => c.Type)
+            .ToDictionary(g => g.Key, g => g.Select(c => c.Value).ToArray());
+        return Ok(claimsDictionary);
     }
 
     /// <summary>

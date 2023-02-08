@@ -1,10 +1,15 @@
 @page "/login"
 @using Qweree.WebApplication.Infrastructure.Authentication
 @using Qweree.Sdk.Http.Exceptions
+@using Qweree.WebApplication.Infrastructure.Browser
+@using Qweree.Authentication.Sdk.Account
+@using System.Security.Claims
+@using Qweree.Authentication.Sdk.Session
 @layout EmptyLayout
 @inject AuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
-@inject ClaimsPrincipalStorage Session;
+@inject MyAccountClient MyAccountClient;
+@inject LocalUserStorage LocalUserStorage;
 
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
@@ -23,13 +28,18 @@
     private string _username = string.Empty;
     private string _password = string.Empty;
 
-
     protected override async Task OnInitializedAsync()
     {
-        var identity = await Session.GetIdentityAsync();
-
-        if (identity is not null)
-            NavigationManager.NavigateTo("/");
+        var response = await MyAccountClient.MyProfileGetAsync();
+        if (response.IsSuccessful)
+        {
+            var payload = await response.ReadPayloadAsync();
+            var claims = payload!.SelectMany(kv => kv.Value.Select(v => new Claim(kv.Key, v)));
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "qweree"));
+            var identity = IdentityMapper.ToIdentity(principal);
+            await LocalUserStorage.SetUserAsync(identity);
+            NavigationManager.NavigateTo("/home", true);
+        }
     }
 
     private async Task LoginAsync()

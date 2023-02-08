@@ -13,6 +13,7 @@
 @inject MyAccountClient MyAccountClient
 @inject AuthenticationClient AuthenticationClient
 @inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
@@ -91,16 +92,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var id = _identity?.User?.Id;
-
-        if (id is not null)
-        {
-            var identity = await MyAccountClient.MyProfileGetAsync();
-            if (identity.IsSuccessful)
-                _identity = IdentityMapper.ToIdentity((await identity.ReadPayloadAsync())!);
-
-            await LoadSessionsAsync();
-        }
+        var state = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _identity = IdentityMapper.ToIdentity(state.User);
+        await LoadSessionsAsync();
     }
 
     private async Task LoadSessionsAsync()
