@@ -227,7 +227,7 @@ public class AuthenticationService
             return Response.Fail<TokenInfo>(AccessDeniedMessage);
         }
 
-        var session = await BeginSessionAsync(client, null, ipAddress, userAgent, GrantType.Implicit, false);
+        var session = await BeginSessionAsync(client, user, ipAddress, userAgent, GrantType.Implicit, false);
 
         var effectiveRoles = new List<string>();
         await foreach (var role in _authorizationService.GetEffectiveRoles(user.Roles, cancellationToken)
