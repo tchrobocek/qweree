@@ -52,7 +52,7 @@
         try
         {
             await AuthenticationService.AuthenticateAsync(_username, _password);
-            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}&state={State}&logout", true);
+            NavigationManager.NavigateTo($"/authorize-app?client_id={ClientId}&redirect_uri={HttpUtility.UrlEncode(RedirectUri)}&state={State}&logout=true", true);
         }
         catch (ClientErrorErrorException)
         {

@@ -20,13 +20,21 @@
             <MudCheckBox Class="mt-6" Disabled T="bool" Checked="true">@_client?.ApplicationName will see your name and username</MudCheckBox>
             <MudCheckBox Disabled T="bool" Checked="true">@_client?.ApplicationName will see your email</MudCheckBox>
             <MudCheckBox Disabled T="bool" Checked="true">@_client?.ApplicationName will see your roles</MudCheckBox>
-            <MudButton OnClick="AgreeAsync" Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true">Agree</MudButton>
-            <MudButton OnClick="Cancel" Class="mt-6" Variant="Variant.Filled" Size="Size.Large" FullWidth="true">Cancel</MudButton>
+            @if (!_agreed)
+            {
+                <MudButton OnClick="Agree" Class="mt-6" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true">Agree</MudButton>
+                <MudButton OnClick="Cancel" Class="mt-6" Variant="Variant.Filled" Size="Size.Large" FullWidth="true">Cancel</MudButton>
+            }
+            else
+            {
+                <MudText Typo="Typo.body2">Redirecting back.</MudText>
+            }
         </MudPaper>
     </div>
 </MudContainer>
 @code {
     private AuthClient? _client;
+    private bool _agreed;
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "client_id")]
@@ -57,7 +65,7 @@
         _client = await response.ReadPayloadAsync();
     }
 
-    private async Task AgreeAsync()
+    private async void Agree()
     {
         var response = await MyAccountClient.ApplicationConsentAsync(ClientId ?? string.Empty, RedirectUri ?? string.Empty);
 
@@ -72,11 +80,15 @@
                 await AuthenticationService.LogoutAsync();
         }
 
+        _agreed = true;
+        await Task.Delay(TimeSpan.FromSeconds(2));
         NavigationManager.NavigateTo(redirect ?? "/", true);
     }
 
-    private void Cancel()
+    private async void Cancel()
     {
+        _agreed = true;
+        await Task.Delay(TimeSpan.FromSeconds(2));
         NavigationManager.NavigateTo(RedirectUri ?? "/");
     }
 }
