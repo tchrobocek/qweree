@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -76,20 +74,6 @@ public class MyAccountService
         await _userRepository.ReplaceAsync(id.ToString(), user, cancellationToken);
 
         return Response.Ok();
-    }
-
-    public async Task<Response<MyProfile>> GetMeAsync(CancellationToken cancellationToken = new())
-    {
-        try
-        {
-            var item = await _userRepository.GetAsync(_sessionStorage.UserId, cancellationToken);
-            return Response.Ok(new MyProfile(item.Id, item.Username, item.ContactEmail,
-                item.Properties.Select(p => new UserProperty(p.Key, p.Value)).ToImmutableArray()));
-        }
-        catch (DocumentNotFoundException)
-        {
-            return Response.Fail<MyProfile>(new Error("User was not found.", StatusCodes.Status404NotFound));
-        }
     }
 
     public async Task<CollectionResponse<SessionInfo>> FindMySessions(CancellationToken cancellationToken = new())

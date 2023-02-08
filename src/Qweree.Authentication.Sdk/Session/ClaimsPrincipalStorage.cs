@@ -16,6 +16,7 @@ public class ClaimsPrincipalStorage : ISessionStorage
         SessionId = session;
     }
     public ClaimsPrincipal ClaimsPrincipal { get; }
+    public Identity Identity => _identity;
     public IdentityUser? CurrentUser => _identity.User;
     public IdentityClient CurrentClient => _identity.Client!;
     public Guid UserId => (Guid)(CurrentUser?.Id ?? CurrentClient.Id)!;

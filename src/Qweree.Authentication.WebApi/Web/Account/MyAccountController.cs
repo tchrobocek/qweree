@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,14 +10,14 @@ using Qweree.AspNet.Web;
 using Qweree.Authentication.Sdk.Account.MyAccount;
 using Qweree.Authentication.Sdk.Identity;
 using Qweree.Authentication.Sdk.OAuth2;
+using Qweree.Authentication.Sdk.Session;
 using Qweree.Authentication.WebApi.Domain.Account;
 using Qweree.Authentication.WebApi.Domain.Session;
 using Qweree.Authentication.WebApi.Infrastructure;
-using Qweree.Authentication.WebApi.Infrastructure.Account;
 using Qweree.Authentication.WebApi.Infrastructure.Session;
 using Qweree.Sdk;
 using ChangeMyPasswordInput = Qweree.Authentication.WebApi.Domain.Account.ChangeMyPasswordInput;
-using IdentityUser = Qweree.Authentication.Sdk.Session.IdentityUser;
+using IdentityMapper = Qweree.Authentication.Sdk.Session.IdentityMapper;
 using SdkChangeMyPasswordInput = Qweree.Authentication.Sdk.Account.MyAccount.ChangeMyPasswordInput;
 
 namespace Qweree.Authentication.WebApi.Web.Account;
@@ -28,11 +29,13 @@ public class MyAccountController : ControllerBase
 {
     private readonly MyAccountService _myAccountService;
     private readonly AuthSdkMapperService _authSdkMapper;
+    private readonly ISessionStorage _sessionStorage;
 
-    public MyAccountController(MyAccountService myAccountService, AuthSdkMapperService authSdkMapper)
+    public MyAccountController(MyAccountService myAccountService, AuthSdkMapperService authSdkMapper, ISessionStorage sessionStorage)
     {
         _myAccountService = myAccountService;
         _authSdkMapper = authSdkMapper;
+        _sessionStorage = sessionStorage;
     }
 
     /// <summary>
@@ -56,15 +59,11 @@ public class MyAccountController : ControllerBase
     ///     Get my account.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IdentityUser), StatusCodes.Status200OK)]
-    public async Task<IActionResult> MyProfileGetActionAsync()
+    [ProducesResponseType(typeof(ClaimsPrincipal), StatusCodes.Status200OK)]
+    [Authorize]
+    public IActionResult MyProfileGetActionAsync()
     {
-        var response = await _myAccountService.GetMeAsync();
-
-        if (response.Status != ResponseStatus.Ok)
-            return response.ToErrorActionResult();
-
-        return Ok(MyProfileMapper.Map(response.Payload!));
+        return Ok(IdentityMapper.ToClaimsPrincipal(_sessionStorage.Identity));
     }
 
     /// <summary>

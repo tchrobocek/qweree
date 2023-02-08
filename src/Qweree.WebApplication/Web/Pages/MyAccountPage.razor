@@ -9,9 +9,7 @@
 @using Qweree.Gateway.Sdk
 @using Qweree.WebApplication.Infrastructure.Extensions
 @using Qweree.WebApplication.Infrastructure.View
-@using ClaimsPrincipalStorage = Qweree.WebApplication.Infrastructure.Authentication.ClaimsPrincipalStorage
 
-@inject ClaimsPrincipalStorage Storage
 @inject MyAccountClient MyAccountClient
 @inject AuthenticationClient AuthenticationClient
 @inject ISnackbar Snackbar
@@ -35,11 +33,11 @@
         <MudItem xs="8">
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-8">
                 <MudTabPanel Text="My Profile">
-                    @if (_user is not null)
+                    @if (_identity.User is not null)
                     {
-                        <MudText Typo="Typo.body1">Username: @_user.Username</MudText>
-                        <MudText Typo="Typo.body1">Contact email: @_user.ContactEmail</MudText>
-                        <MudText Typo="Typo.body1">Full name: @_user.GetFullName()</MudText>
+                        <MudText Typo="Typo.body1">Username: @_identity.User.Username</MudText>
+                        <MudText Typo="Typo.body1">Contact email: @_identity.Email</MudText>
+                        <MudText Typo="Typo.body1">Full name: @_identity.User.GetFullName()</MudText>
                     }
                 </MudTabPanel>
                 <MudTabPanel Text="Active sessions">
@@ -83,7 +81,6 @@
 
 @code {
     private Identity? _identity;
-    private MyProfile? _user;
     private MyAccountSessionInfo[]? _sessions;
 
     private string _oldPassword = string.Empty;
@@ -94,15 +91,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _identity = await Storage.GetIdentityAsync();
-
         var id = _identity?.User?.Id;
 
         if (id is not null)
         {
-            var userResponse = await MyAccountClient.MyProfileGetAsync();
-            if (userResponse.IsSuccessful)
-                _user = await userResponse.ReadPayloadAsync();
+            var identity = await MyAccountClient.MyProfileGetAsync();
+            if (identity.IsSuccessful)
+                _identity = IdentityMapper.ToIdentity((await identity.ReadPayloadAsync())!);
 
             await LoadSessionsAsync();
         }
