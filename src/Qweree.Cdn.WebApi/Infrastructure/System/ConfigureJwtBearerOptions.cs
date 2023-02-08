@@ -28,9 +28,11 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
     {
         if (name == "AccessToken")
         {
-            options.RequireHttpsMetadata = false;
             options.Authority = _qwereeOptions.Value.AuthUri;
+            options.RequireHttpsMetadata = false;
+            options.RefreshOnIssuerKeyNotFound = true;
             options.SaveToken = true;
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
